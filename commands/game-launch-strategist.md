@@ -1,9 +1,10 @@
 ---
-description: Analizza un progetto indie game e produce strategia di lancio, analisi mercato con scraper, focus group e piano operativo
-argument-hint: "[opzioni: modalita Completa, Rapida, Mirata, Aggiornamento]"
+description: Strategia di lancio per un gioco indie - analisi di mercato con dati reali, posizionamento, focus group, critiche reali, pre-mortem e piano operativo
+argument-hint: "[Completa | Rapida | Mirata <area> | Aggiornamento]"
 ---
 
-Carica la skill `game-launch-strategist` ed esegui la strategia di lancio per il progetto corrente: $ARGUMENTS
+Carica la skill `game-launch-strategist` e applicala al progetto nella directory corrente. Richiesta dell'utente: $ARGUMENTS
 
-1. Ispeziona la directory di lavoro corrente (codice sorgente, GDD, asset, configurazioni, Steamworks). Se $ARGUMENTS specifica una modalita (Completa, Rapida, Mirata, Aggiornamento) o un focus particolare, applicala immediatamente.
-2. Esegui la pipeline della skill sfruttando gli strumenti di ricerca in `scripts/research/` per comparabili Steam, creator YouTube/social e regole subreddit, producendo i file operativi in `/launch/` e il debriefing finale.
+1. Leggi la data di sistema e `references/01-discovery.md` della skill, poi esegui la Fase 0 ispezionando la directory (codice, GDD, asset, configurazioni, Steamworks).
+2. Se la richiesta indica una modalità (Completa, Rapida, Mirata, Aggiornamento) o un'area (es. "solo prezzo", "solo testi dello store"), applicala subito. Se è vuota o ambigua usa **Completa** e dichiaralo.
+3. Segui la skill fase per fase: leggi il file di `references/` di ciascuna fase, usa gli script in `scripts/research/` per comparabili Steam, recensioni reali, creator e regole subreddit, scrivi i file in `launch/` e chiudi con il debriefing in chat.

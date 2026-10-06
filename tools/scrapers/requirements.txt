@@ -1,2 +1,0 @@
-# Nessuna dipendenza esterna: solo libreria standard Python >= 3.9.
-# Testato con Python 3.10.

@@ -82,11 +82,15 @@ def main():
     ref = datetime.date.fromisoformat(a.ref_date)
     today = datetime.date.today().isoformat()
     rows = []
+    no_subs = 0
 
     for path in a.youtube:
         for c in load_json(path):
             name, url = c["ch"].strip(), "https://www.youtube.com" + c["url"]
-            if name in excl or url in excl or c.get("subs") is None:
+            if name in excl or url in excl:
+                continue
+            if c.get("subs") is None:
+                no_subs += 1
                 continue
             s = c["subs"]
             lang = lang_over.get(name) or c.get("lang") or COUNTRY_LANG.get((c.get("country") or "").upper()) or a.default_lang
@@ -126,6 +130,8 @@ def main():
     order, lord = {"A": 0, "B": 1, "C": 2}, {l: i for i, l in enumerate(a.priority_langs.upper().split(","))}
     rows.sort(key=lambda r: (order[r["priorita"]], lord.get(r["lingua"], 99), r["piattaforma"] == "YouTube",
                              r["iscritti_follower"] if isinstance(r["iscritti_follower"], int) else 0))
+    if no_subs:
+        log(f"WARN {no_subs} YouTube channels skipped: subscriber count unknown (hidden or unreadable); check them by hand")
     write_csv(rows, a.out, FIELDS)
     log("priorita", dict(Counter(r["priorita"] for r in rows)), "| lingua", dict(Counter(r["lingua"] for r in rows)),
         "| piattaforma", dict(Counter(r["piattaforma"] for r in rows)))

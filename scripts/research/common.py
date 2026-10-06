@@ -5,6 +5,7 @@ Stdlib only. Every tool in this folder imports from here.
 from __future__ import annotations
 
 import csv
+import datetime
 import json
 import os
 import random
@@ -140,6 +141,11 @@ def write_output(obj, out: str | None, csv_rows: list[dict] | None = None):
         write_csv(csv_rows if csv_rows is not None else obj, out)
     else:
         write_json(obj, out)
+
+
+def ts_to_date(ts) -> str:
+    """Unix seconds -> 'YYYY-MM-DD' (UTC)."""
+    return datetime.datetime.fromtimestamp(int(ts), datetime.timezone.utc).strftime("%Y-%m-%d")
 
 
 def q(s: str) -> str:
