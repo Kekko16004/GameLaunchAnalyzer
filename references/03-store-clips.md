@@ -40,4 +40,6 @@ Output: **`launch/04b-store-copy.md`**. Non limitarti all'audit: **scrivi i test
 8. **Controllo veridicità**: per ogni affermazione dei testi indica l'evidenza nel gioco (file, scena, clip) in una tabella `affermazione | evidenza`. Mai promettere feature assenti, premi o citazioni inventati, paragoni con titoli famosi non giustificati. Dichiara l'uso di AI generativa dove la piattaforma lo richiede.
 9. **Piano di test dei testi**: quale variante provare per prima e come misurare (click sulla capsule, tasso di wishlist per visita alla pagina).
 
+**Dopo capsule, testi o trailer nuovi proponi all'utente una nuova ondata del focus group** (`04-focus-group.md`, 7.5): è il momento in cui il panel vede per la prima volta i materiali dello store e la timeline mostra se click e punteggio salgono. Parte solo con l'ok dell'utente.
+
 Ogni file termina con TODO nel formato di `references/06-synthesis-output.md`.

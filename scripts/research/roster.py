@@ -6,6 +6,11 @@ traits must never change, and adding more testers must never alter the existing 
 from sha256(seed:ID), so the same seed + cohorts always give the same roster, and --per-group 27 -> 36 only
 appends A-28.. / B-28.. (the first 27 of each group stay identical).
 
+Casting follows the focus-group rules of the skill: every tester has a skill level, personality, speaking style
+and (about 1 in 9) an accessibility need; a 10-person jury covering the mandatory roles (novice, expert, skeptic,
+impatient, accessibility, contrarian, value hunter, clip/stream creator) is picked from the SAME IDs, so the
+live debate keeps the same voices from wave to wave.
+
 Two groups (A = core/experts, B = discovery/casual), 3 cohorts each (they come from the genre playbook),
 cohort of tester n = cohorts[(n-1) % 3]. In every cohort at least 22% of the members are "contrarians"
 (mandatory dissent: the skill requires >= 15% of each cohort to contradict its majority).
@@ -48,6 +53,22 @@ PATIENCE = {"A": {"bassa (~5 min)": 15, "media (~15 min)": 45, "alta (30+ min)":
             "B": {"bassa (~5 min)": 40, "media (~15 min)": 40, "alta (30+ min)": 20}}
 DISCOVERY = {"A": {"Reddit / Discord": 30, "YouTube": 30, "Steam browse / tag": 15, "streamer": 10, "amici": 10, "TikTok / Shorts": 5},
              "B": {"TikTok / Shorts": 30, "YouTube": 20, "streamer": 15, "Steam browse / tag": 15, "amici": 15, "Reddit / Discord": 5}}
+PERSONALITY = {"A": {"scettico": 25, "meticoloso": 20, "analitico": 20, "schietto": 15, "entusiasta": 10, "ironico": 10},
+               "B": {"impaziente": 25, "entusiasta": 20, "schietto": 15, "scettico": 15, "pacato": 15, "ironico": 10}}
+STYLE = {"concisa": 25, "prolissa": 15, "tecnica": 20, "colloquiale": 25, "diretta": 15}
+ACCESS = ["daltonismo (rosso-verde)", "bassa visione / testo piccolo", "schermo piccolo / Steam Deck", "una sola mano",
+          "vincolo motorio (input lenti o limitati)", "sensibilità a luci lampeggianti / motion sickness",
+          "udito ridotto (servono sottotitoli)"]
+JURY_ROLES = (  # (role, predicate)
+    ("principiante", lambda t: t["skill_level"] == "principiante"),
+    ("esperto / veterano", lambda t: t["skill_level"] == "esperto" and t["group"] == "A"),
+    ("scettico", lambda t: t["personality"] == "scettico"),
+    ("impaziente", lambda t: t["patience"].startswith("bassa")),
+    ("accessibilità", lambda t: bool(t["accessibility"])),
+    ("bastian contrario", lambda t: t["contrarian"]),
+    ("cacciatore di valore / rimborsi", lambda t: t["group"] == "B" and t["price_sensitivity"] == "alta"),
+    ("creator di clip / streamer", lambda t: t["discovery"] in ("TikTok / Shorts", "streamer")),
+)
 LANGS = "EN:55,IT:10,DE:8,ES:8,PT-BR:7,FR:5,PL:4,RU:3"
 BIAS = [
     "diffida degli asset store e dei giochi che sembrano un kit", "abbandona i tutorial lunghi, preferisce capire giocando",
@@ -96,12 +117,39 @@ def build_tester(group: str, n: int, cohorts: list[str], seed: str, langs: dict)
     discovery = ("TikTok / Shorts" if SCROLL_RX.search(cohort) else "streamer" if STREAM_RX.search(cohort)
                  else pick(r, DISCOVERY[group]))
     hours = pick(r, HOURS[group]) if not EXPERT_RX.search(cohort) or group == "B" else pick(r, {"100-500h": 55, "500h+": 45})
-    return dict(
+    t = dict(
         id=tid, group=group, cohort=cohort, cohort_index=c_idx + 1,
         name=f"{r.choice(NAMES)} {r.choice('ABCDEFGHILMNOPRSTVZ')}.", age=pick(r, AGE[group]),
         hours_in_genre=hours, device=pick(r, DEVICE), price_sensitivity=price, patience=patience,
         discovery=discovery, language=pick(r, langs), starting_bias=r.choice(BIAS),
         contrarian=(k % 4 == 3))  # k-th member of the cohort; stable when appending; 2/9 at 27, 1/4 at 12
+    # drawn last so the traits above never depend on them
+    t["skill_level"] = {"<10h": "principiante", "10-100h": "intermedio"}.get(hours, "esperto")
+    t["personality"] = pick(r, PERSONALITY[group])
+    t["speaking_style"] = pick(r, STYLE)
+    acc = r.choice(ACCESS)
+    t["accessibility"] = acc if (n - 1) % 9 == 5 else None  # n = 6, 15, 24...: stable when appending
+    return t
+
+
+def pick_jury(testers: list[dict], size: int = 10) -> list[dict]:
+    """First tester (by ID order) that fills each mandatory role, then the earliest unused IDs alternating A/B.
+    Depends only on earlier IDs, so appending testers does not change an existing jury."""
+    testers = sorted(testers, key=lambda t: (int(t["id"][2:]), t["group"]))  # A-01, B-01, A-02, ...: new IDs always last
+    chosen: dict[str, str] = {}
+    for role, ok in JURY_ROLES:
+        for t in testers:
+            if t["id"] not in chosen and ok(t):
+                chosen[t["id"]] = role
+                break
+    by_group = {g: [t for t in testers if t["group"] == g and t["id"] not in chosen] for g in "AB"}
+    i = 0
+    while len(chosen) < min(size, len(testers)) and (by_group["A"] or by_group["B"]):
+        g = "AB"[i % 2]
+        if by_group[g]:
+            chosen[by_group[g].pop(0)["id"]] = "voce di coorte"
+        i += 1
+    return [dict(id=k, role=v) for k, v in chosen.items()]
 
 
 def to_md(testers: list[dict], existing: str = "") -> str:
@@ -109,10 +157,11 @@ def to_md(testers: list[dict], existing: str = "") -> str:
             "Tester **fittizi**. Le colonne tecniche sono generate da `roster.py` e **non si modificano mai** "
             "(gli ID servono al delta in modalità Aggiornamento). Compila a mano solo la colonna *Scheda*: gusti, "
             "giochi di riferimento, cosa lo fa uscire dal gioco.\n\n"
-            "| ID | Nome | Coorte | Età | Ore nel genere | Dispositivo | Prezzo | Pazienza | Scoperta | Lingua | Pregiudizio | Bastian contrario | Scheda |\n"
-            "|---|---|---|---|---|---|---|---|---|---|---|---|---|\n")
+            "| ID | Nome | Coorte | Età | Ore nel genere | Livello | Personalità | Stile | Dispositivo | Accessibilità | Prezzo | Pazienza | Scoperta | Lingua | Pregiudizio | Bastian contrario | Scheda |\n"
+            "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n")
     have = set(re.findall(r"^\| ([AB]-\d+) \|", existing, re.M))
-    rows = [f"| {t['id']} | {t['name']} | {t['cohort']} | {t['age']} | {t['hours_in_genre']} | {t['device']} | "
+    rows = [f"| {t['id']} | {t['name']} | {t['cohort']} | {t['age']} | {t['hours_in_genre']} | {t['skill_level']} | "
+            f"{t['personality']} | {t['speaking_style']} | {t['device']} | {t['accessibility'] or '-'} | "
             f"{t['price_sensitivity']} | {t['patience']} | {t['discovery']} | {t['language']} | {t['starting_bias']} | "
             f"{'sì' if t['contrarian'] else 'no'} |  |\n" for t in testers if t["id"] not in have]
     if not existing:
@@ -145,7 +194,7 @@ def main():
             raise SystemExit(f"{a.out} was made with a different seed/cohorts/langs: regenerating would change existing "
                              "tester traits and break the update delta. Use the same arguments, or --force to start over.")
     testers = [build_tester(g, n, c, a.seed, langs) for g, c in (("A", ca), ("B", cb)) for n in range(1, a.per_group + 1)]
-    write_json(dict(meta, per_group=a.per_group, testers=testers), a.out)
+    write_json(dict(meta, per_group=a.per_group, jury=pick_jury(testers), testers=testers), a.out)
     if a.md:
         existing = open(a.md, encoding="utf-8").read() if os.path.exists(a.md) else ""
         os.makedirs(os.path.dirname(os.path.abspath(a.md)), exist_ok=True)

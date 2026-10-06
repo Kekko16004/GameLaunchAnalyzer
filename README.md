@@ -11,7 +11,18 @@ The skill itself is written in **Italian** (instructions and generated reports);
 | **Completa** (default) | Every phase and file, full script pipeline, 54 simulated testers. |
 | **Rapida** | Verdict, 5 high-impact levers and a 14-day TODO from a reduced panel (24 testers). |
 | **Mirata** | One area only, e.g. "just the store copy", "just pricing", "just creators". |
-| **Aggiornamento** | `launch/` already exists: re-runs the affected phases with the **same tester IDs** and reports a delta per tester and per fix. |
+| **Ondata** | `launch/fg/` already exists: runs the next focus-group wave with the **same testers** on the current state of the game, then delta and timeline. |
+| **Aggiornamento** | `launch/` already exists: re-runs the affected phases (including a new wave, with your OK) and reports what changed. |
+
+### Focus group in waves
+
+The simulated focus group follows a conversational format (casting with mandatory diversity, independent first impressions, a lively jury debate, a structured report) and runs **early**, right after the dev audit:
+
+1. **Wave 1** judges the current state of the game; a **problem report** goes to you in chat as soon as it ends.
+2. You fix what you decide to fix and say so: only then does the skill launch the **next wave**, with the same testers and the same 10-person jury, seeing only the current state (never the old critiques or the list of fixes).
+3. `fg_waves.py` computes score, delta per tester and per issue, and a **timeline** across waves, so changes over time are visible and reproducible.
+
+Simulated testers rank problems; they never replace real playtests.
 
 Principles: honest verdicts, every number carries a source or a label (`[FATTO]`, `[STIMA]`, `[OPINIONE]`, `[DA VERIFICARE]`), simulated and real critiques are never mixed, no deceptive tactics, nothing outside `launch/` is modified.
 
@@ -50,7 +61,7 @@ references/
   05-outreach-community-legal.md  phases 8, 9, 10  creators, community, real-test kit, legal/tax
   06-synthesis-output.md      phase 11             report, TODO, status, debrief, QA checklist
   playbooks.md                21 genre playbooks + default thresholds
-scripts/research/             research tools (see its README)
+scripts/research/             research tools incl. roster.py and fg_waves.py (see its README)
 commands/                     slash command
 install.sh / install.ps1 / installer.bat
 ```
@@ -59,7 +70,7 @@ install.sh / install.ps1 / installer.bat
 
 ## Research tools
 
-`scripts/research/` holds stdlib-only tools with rate limiting and exponential backoff: `steam_discover.py` (find comparables), `steam_comps.py` (store data, reviews, sales estimates), `steam_reviews.py` (real negative/positive reviews with themes), `roster.py` (stable simulated testers), `yt_research.py`, `social_verify.py`, `reddit_rules.py`, `build_creators.py`. Details, options and known limits are in [`scripts/research/README.md`](scripts/research/README.md).
+`scripts/research/` holds stdlib-only tools with rate limiting and exponential backoff: `steam_discover.py` (find comparables), `steam_comps.py` (store data, reviews, sales estimates), `steam_reviews.py` (real negative/positive reviews with themes), `roster.py` (stable simulated testers), `fg_waves.py` (waves, deltas, timeline), `yt_research.py`, `social_verify.py`, `reddit_rules.py`, `build_creators.py`. Details, options and known limits are in [`scripts/research/README.md`](scripts/research/README.md).
 
 Optional environment variables (never stored in files): `YOUTUBE_API_KEY`, `REDDIT_CLIENT_ID`, `REDDIT_CLIENT_SECRET`, `REDDIT_USER_AGENT`, `TWITCH_CLIENT_ID`, `TWITCH_CLIENT_SECRET`, `IG_OEMBED_TOKEN`. Without them the tools degrade gracefully and the skill records what has to be checked by hand.
 

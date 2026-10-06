@@ -13,7 +13,8 @@ Reusable tools for launch market research: Steam comparables and reviews, creato
 | `steam_discover.py` | Find comparables: store search by keyword/name, most-reviewed games per tag (SteamSpy) | 2 |
 | `steam_comps.py` | Store data + review summary + Boxleiter estimates (+ SteamSpy / Gamalytic) for given app ids | 2, 6, 6B |
 | `steam_reviews.py` | Real negative/positive Steam reviews with date, playtime, votes, URL, keyword themes | 7 (real critiques) |
-| `roster.py` | Deterministic roster of simulated testers with stable IDs | 7 |
+| `roster.py` | Deterministic roster of simulated testers with stable IDs, casting traits and a 10-person jury | 7 |
+| `fg_waves.py` | Validate a focus-group wave, compute score and metrics, delta between waves, timeline | 7 |
 | `yt_research.py` | Search recent videos, group by channel, add subscribers, verify URLs | 8 |
 | `social_verify.py` | Verify TikTok / YouTube (Shorts) / Instagram / Twitch URLs with official endpoints | 8 |
 | `reddit_rules.py` | Subreddit rules, subscribers, self-promotion flags | 9 |
@@ -81,7 +82,25 @@ Two groups (A = core/experts, B = discovery/casual), exactly three cohorts each 
 
 The Markdown file is append-only: rerunning only adds rows for new IDs, so hand-written cards are never overwritten. Rerunning with a different seed, cohorts or language weights is refused unless you pass `--force`.
 
+Casting traits (same idea as a persona panel): skill level (derived from hours in genre), personality, speaking style, and an accessibility need for about 1 tester in 9 (colour-blindness, low vision, small screen, one hand, motor constraint, flashing lights/motion sickness, reduced hearing). `roster.json` also holds a **jury** of 10 IDs covering the mandatory roles (novice, expert, skeptic, impatient, accessibility, contrarian, value hunter, clip/stream creator): the same people debate in every wave, and the jury does not change when testers are appended.
+
 Everything is fictional and simulated; the default language weights are **not market data** (`--langs "EN:55,IT:10,..."` to adjust).
+
+## 4b. `fg_waves.py`: focus-group waves, deltas, timeline
+
+The simulated panel judges the game; this tool does the arithmetic, so scores and trends are reproducible. A *wave* is one run of the same roster on one state of the game, stored as `launch/fg/waves/wNN-YYYY-MM-DD.json` (schema in the script's header: per tester `verdict` WISHLIST/SALDI/IGNORO/REFUND, `click`, `pitch_ok`, `issues`; a list of issues with stable keys, severity and recommendation; optional `controls` and, from wave 2, `fixes`).
+
+```bash
+python fg_waves.py metrics launch/fg/waves/w01-2026-10-06.json --roster launch/fg/roster.json -o launch/fg/waves/w01-metrics.md
+python fg_waves.py delta launch/fg/waves/w01-2026-10-06.json launch/fg/waves/w02-2026-10-27.json --roster launch/fg/roster.json -o launch/fg/waves/w02-delta.md
+python fg_waves.py timeline launch/fg/waves --roster launch/fg/roster.json -o launch/fg/timeline.md --csv launch/fg/timeline.csv
+```
+
+- `metrics`: validates (tester IDs against the roster, verdict values, duplicates, issue keys), then computes verdict counts, the wishlist score `((W*1.0)+(S*0.4)-(I*0.2)-(R*0.8))/N*100` (range -80..100, not a percentage), A vs B score and gap (flagged above 15), first-glance click, pitch comprehension, and the issue matrix ranked by frequency x severity. Gate A threshold: `--gate N`, else 80% of the success control (min 30), else 35.
+- `delta`: score on the **same testers only** (new IDs are listed but excluded from the like-for-like score), verdict movements, effect of each issue (RESOLVED / IMPROVED / WORSE / NEW / UNCHANGED, noise band `--noise`, default 10 points), fixes applied, per-tester changes with an empty "attributed cause" column.
+- `timeline`: all waves in a folder (`wNN-*.json`) with score trend and sparkline, verdict shares, click, pitch, A/B scores, number of high-severity issues, top issue and Gate A status.
+
+**Limits:** the panel is simulated with the same biases every time, so deltas are directional, not proof; differences of a few points are noise (with N = 54 a percentage carries roughly +-13 points of uncertainty). Confirm important changes with real testers.
 
 ## 5. `yt_research.py`: YouTube creators
 
@@ -188,4 +207,4 @@ python build_creators.py --youtube out/yt_shortlist.json --social out/social.jso
 | `steam_comps.py`, `yt_research.py` (html backend: search, channels, subs, verify), `social_verify.py` (TikTok, YouTube), `build_creators.py` | Run against the live services on 2026-10-06 (PlateUp! 27,376 reviews at 94.7%, SteamSpy 1–2M owners, Gamalytic 2.39M copies = 87 copies/review; 20 videos, 14 channels, 3/3 subscriber counts; 2 TikToks and 1 Short verified). Re-checked offline after the date-handling changes. |
 | `reddit_rules.py` anonymous | `403 Blocked` (expected: OAuth needed). |
 | `yt_research.py --backend api` | Not tested (no `YOUTUBE_API_KEY`). |
-| `steam_reviews.py`, `steam_discover.py`, `roster.py` | Tested **offline** against canned responses shaped like the documented APIs (paging, duplicate and cursor handling, filters, day-range cap, early stop on recent sort, theme tally, CSV output, tag ranking, roster determinism and append-only behaviour). **Not yet run against the live Steam endpoints**: do a first run with one app id and check the output before relying on it. |
+| `steam_reviews.py`, `steam_discover.py`, `roster.py`, `fg_waves.py` | Tested **offline** against canned responses shaped like the documented APIs (paging, duplicate and cursor handling, filters, day-range cap, early stop on recent sort, theme tally, CSV output, tag ranking, roster determinism, stable jury and append-only behaviour, wave validation, metrics, delta and timeline on synthetic waves). **Not yet run against the live Steam endpoints**: do a first run with one app id and check the output before relying on it. |

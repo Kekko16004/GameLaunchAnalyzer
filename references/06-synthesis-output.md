@@ -21,7 +21,7 @@ In `launch/`:
 - `00-brief.md`, `01-dev.md`, `01b-positioning.md`, `02-platform.md`, `03-pricing.md`, `04-clips.md`, `04b-store-copy.md`
 - `05-focusgroup.md`, `05a-critiche-simulate.md`, `05b-critiche-reali.md`, `05c-premortem.md`
 - `06-creators.md`, `07-community.md`, `08-brand-legal.md`
-- `fg/roster.md`, `fg/roster.json`, `fg/group_a.md`, `fg/group_b.md`, `fg/runs/` (una per versione)
+- `fg/roster.md`, `fg/roster.json` (tester con ID stabili e giuria), `fg/waves/` (una serie di file per ondata: evidenze, gruppi A e B, dati JSON, dibattito, report, delta), `fg/timeline.md`, `fg/timeline.csv`
 - `comps.csv`, `sources.md`, `creators.csv`, `calendar.md`
 - `_raw/`: dati grezzi degli script (`comps.json`, `reviews_*.json`, `yt_*.json`, `social_verified.json`, `reddit_rules.md`, `curation.json`, `topics.json`)
 - `playbook-usato.md` (solo se ad hoc), `ricerche-manuali.md` (solo se serve), `history/` (in Aggiornamento)
@@ -38,6 +38,10 @@ Le modalità Rapida e Mirata producono solo i file delle fasi eseguite, più `RE
 Aggiornato: AAAA-MM-GG HH:MM | Modalità: Completa | Build/commit analizzato: <id>
 
 | Fase | Stato (fatta / parziale / da fare) | File | Confidenza (bassa/media/alta) | Note |
+|---|---|---|---|---|
+
+## Ondate del focus group
+| Ondata | Data | Build | Punteggio | Stato (fatta / proposta, in attesa di ok) |
 |---|---|---|---|---|
 
 ## Ipotesi aperte
@@ -64,7 +68,7 @@ Per ogni ricerca che non hai potuto fare: obiettivo, query o URL suggeriti, a co
 2. **Genere, playbook, fase e confidenza per sezione.**
 3. **Posizionamento e differenziazione**: pitch, 3 differenziatori, esito del test contro i comparabili.
 4. **Audit dev e pilastri di genere.**
-5. **Critiche**: top critiche simulate (A), temi reali del genere (B), matrice di convergenza, 3 dealbreaker. Metriche del panel con calibrazione dichiarata.
+5. **Critiche e ondate**: top critiche simulate (A) dell'ultima ondata, temi reali del genere (B), matrice di convergenza, 3 dealbreaker, metriche del panel con calibrazione dichiarata e **timeline delle ondate** (`fg/timeline.md`) se ce n'è più d'una.
 6. **Pre-mortem**: le 5 cause e la tabella dei tripwire.
 7. **Mercato, comparabili e prezzo**: scenari con "cosa deve essere vero".
 8. **Capsule, hook, testi dello store e trailer.**
@@ -86,7 +90,7 @@ Raggruppate per area: **Dev e pilastri**, **Posizionamento e store**, **Marketin
 
 ## Delta in modalità Aggiornamento (`history/AAAA-MM-GG-delta.md`)
 
-Cosa è migliorato, cosa è peggiorato, quali TODO sono chiuse, quali verdetti cambiano, quali tripwire del pre-mortem sono scattati, punteggio wishlist prima → dopo e tabella per tester (vedi `04-focus-group.md` 7.5).
+Cosa è migliorato, cosa è peggiorato, quali TODO sono chiuse, quali verdetti cambiano, quali tripwire del pre-mortem sono scattati. Per il focus group rimanda a `fg/waves/wNN-delta.md` e `fg/timeline.md` (prodotti da `fg_waves.py`, vedi `04-focus-group.md` 7.5); non ricalcolare i numeri a mano.
 
 ---
 
@@ -136,7 +140,9 @@ Criteri di stop o pivot: [soglie misurabili e date].
 Prima di incassare: [accordo tra soci se serve], [commercialista e inquadramento], [verifiche fiscali Steam]. Rimasto da verificare: [elenco breve o "nulla"].
 ```
 
-In modalità **Aggiornamento** aggiungi dopo il verdetto una riga di delta: punteggio wishlist prima → dopo, critiche risolte e peggiorate, fix più efficace, tripwire scattati.
+Se esiste più di un'ondata aggiungi dopo il verdetto una riga di delta (dal tool): punteggio wishlist prima → dopo sugli stessi tester, problemi risolti e peggiorati, fix più efficace, tripwire scattati. Se un'ondata è **in attesa dell'ok dell'utente**, dillo qui con la data proposta.
+
+La **segnalazione problemi** a fine di ogni ondata ha un suo formato breve (`04-focus-group.md`, 7.4) e viene mandata subito, non aspetta il debriefing finale.
 
 In **Rapida** e **Mirata** il debriefing si accorcia alle sole righe delle fasi eseguite.
 
@@ -151,7 +157,8 @@ In **Rapida** e **Mirata** il debriefing si accorcia alle sole righe delle fasi 
 - [ ] Matrice di convergenza presente e i 3 dealbreaker ne derivano.
 - [ ] Pre-mortem con 5 cause, segnale misurabile, soglia e data; almeno una contraddice il verdetto positivo.
 - [ ] Testi dello store scritti (descrizioni, tag, 3 capsule, trailer) e ogni affermazione ha un'evidenza nel gioco.
-- [ ] Roster con ID stabili (in Aggiornamento riusati e delta calcolato); metodo di indipendenza dei gruppi dichiarato.
+- [ ] Roster con ID stabili e giuria fissa; ogni ondata ha il suo file JSON validato da `fg_waves.py`; punteggi, delta e timeline vengono dal tool; metodo di indipendenza dei gruppi dichiarato.
+- [ ] Ondata 1 eseguita prima delle fasi di piattaforma, prezzo e store e seguita dalla segnalazione problemi; nessuna ondata successiva lanciata senza l'ok dell'utente; evidenze delle ondate successive senza critiche né fix precedenti.
 - [ ] Focus group calibrato (controlli o confronto col comparabile) e dichiarato non-dato-di-mercato; soglia del Gate A motivata.
 - [ ] Ogni numero ha **[FATTO]**, **[STIMA]**, **[OPINIONE]** o **[DA VERIFICARE]**; nessun URL, email o creator inventato; ogni dato "da verificare sempre" ha data di consultazione.
 - [ ] Cancelli con date assolute e soglie adattate al genere; TODO con azione, scadenza, ore, dipendenze, metrica; ore totali entro la capacità del team.

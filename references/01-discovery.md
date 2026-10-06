@@ -106,6 +106,10 @@ Uscite grandi nello stesso genere nei prossimi 12 mesi (da evitare), saldi stagi
 
 Ricerca su Steam, Google, itch.io, TikTok, YouTube; controllo base su EUIPO e TMview (e sull'ufficio marchi del paese del team). Non è consulenza legale: segnala dove serve un professionista.
 
+### 2.8 Recensioni reali dei comparabili (per la Sezione B)
+
+Raccoglile **ora**, con `steam_reviews.py` sui 5-8 comparabili più vicini (comandi in `04-focus-group.md`, 7.2): servono già all'Ondata 1 del focus group, che arriva subito dopo l'audit.
+
 `sources.md`: una riga per fonte, con URL, data di consultazione e a quale numero o regola serve.
 
 ---

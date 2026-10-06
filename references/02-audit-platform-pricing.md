@@ -29,6 +29,8 @@ Chiudi con il punteggio pilastri (n PASS / totale) e i **3 pilastri più deboli 
 - **Feature a rischio da tagliare** contro il feature creep: per ogni taglio, ore risparmiate e impatto atteso sul divertimento.
 - Accessibilità di base (sottotitoli, rimappatura tasti, opzioni per daltonici): pesa spesso sulle recensioni.
 
+**Subito dopo la Fase 3 parte l'Ondata 1 del focus group** (`04-focus-group.md`), con segnalazione dei problemi all'utente. Le fasi seguenti (4, 5, 6, 6B) si eseguono dopo; quelle che dipendono dal prodotto si rivedono se i fix cambiano qualcosa.
+
 ---
 
 ## FASE 4: Steam, itch.io, demo e calendario
@@ -41,17 +43,17 @@ Output: **`launch/02-platform.md`** e **`launch/calendar.md`**.
 2. **itch.io vs Steam.** itch per test precoci con alpha/beta tester senza bruciare il primo impatto su Steam; il traffico caldo va convogliato verso la wishlist Steam. Se l'obiettivo è itch-first, adatta il piano (revenue share, bundle, jam, devlog).
 3. **Cancelli Go / No-Go prima di pagare la fee di Steam Direct.**
    - **Gate 0, posizionamento**: la Fase 2B non è in FAIL.
-   - **Gate A, qualità percepita**: punteggio wishlist del focus group (Fase 7) sopra la soglia. Default **35 [OPINIONE]** (il punteggio non è una percentuale, vedi formula in `04-focus-group.md`), oppure 80% del punteggio del comparabile di successo usato come controllo, minimo 30. Regolabile e motivato. È un filtro, non una garanzia.
+   - **Gate A, qualità percepita**: punteggio wishlist del focus group (Fase 7) sopra la soglia. Default **35 [OPINIONE]** (il punteggio non è una percentuale, vedi formula in `04-focus-group.md`), oppure 80% del punteggio del comparabile di successo usato come controllo, minimo 30. Conta l'**ultima ondata**; la timeline mostra se il punteggio sale dopo i fix. Regolabile e motivato. È un filtro, non una garanzia.
    - **Gate B, test reale**: data fissata per un test con almeno **20 tester esterni** che non conoscono il team (kit in Fase 9). Soglie di default **[OPINIONE]**: sessione media sopra la durata minima del genere (tabella soglie, default 25 minuti) e almeno il 50% che inizia spontaneamente una seconda sessione.
-   - **Gate C, capsule**: la capsule passa lo scroll test in almeno due round con persone esterne.
+   - **Gate C, capsule**: la capsule passa lo scroll test in almeno due round con persone esterne. Un'ondata del focus group con le capsule nuove è un pre-test utile, non sostituisce le persone vere.
    - Se un gate fallisce: non pagare, scrivi quale azione lo sblocca e quando ripetere il test.
 4. **Roadmap a ritroso con date assolute**: gate test, pagamento Steam Direct (solo se i gate passano), pubblicazione della pagina, date Next Fest con deadline di iscrizione e di invio build, data di lancio proposta, finestra di saldi successiva.
 5. **Primi 14 giorni di lancio** (Steam premia la velocità iniziale): chi viene avvisato, quando, con quali asset, e piano B se la prima settimana va sotto le attese (aggiornamento di contenuto, DLC gratuito, evento a tema).
-6. **Calendario dei tripwire**: inserisci in `calendar.md` le date in cui misurare i segnali d'allarme del pre-mortem (Fase 7B).
+6. **Calendario dei tripwire e delle ondate**: inserisci in `calendar.md` le date in cui misurare i segnali d'allarme del pre-mortem (Fase 7B) e le **ondate del focus group proposte** (dopo i fix, dopo le capsule, prima di Next Fest, prima di pagare Steam Direct, pre-lancio): ognuna parte solo con l'ok dell'utente.
 
 Formato di `calendar.md`:
 
-| Data (AAAA-MM-GG) | Evento | Tipo (gate / scadenza / tripwire / lancio) | Dipendenze | Verificato il |
+| Data (AAAA-MM-GG) | Evento | Tipo (gate / scadenza / tripwire / ondata / lancio) | Dipendenze | Verificato il |
 |---|---|---|---|---|
 
 ---
