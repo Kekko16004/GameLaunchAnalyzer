@@ -8,7 +8,8 @@ Endpoint (public, no login): https://store.steampowered.com/appreviews/<appid>?j
 Sampling honesty:
   --sort helpful  (default) = Steam's "most helpful" order: over-represents the most discussed problems.
   --sort recent             = newest first: closer to a random slice of current complaints.
-The theme tally is a keyword heuristic over English text. It is a starting point for the human/LLM
+The theme tally is a keyword heuristic over English text (complaint themes for negative reviews, praise themes
+for positive ones, see --taxonomy). It is a starting point for the human/LLM
 reader, NOT an analysis: read a sample of the reviews and correct the themes by hand.
 
 Examples:
@@ -30,7 +31,7 @@ from common import load_json, log, read_list, safe_json, set_rate, ts_to_date, w
 THEMES = {
     "onboarding_tutorial": r"tutorial|confus|no explanation|doesn'?t explain|hard to understand|learning curve|unclear|don'?t know what (?:to do|i'?m doing)",
     "repetitive_shallow": r"repetitiv|\brepeat|grind|boring|tedious|monoton|same thing|samey|shallow|get(?:s|ting)? old",
-    "difficulty_balance": r"unbalanc|balanc|too hard|too easy|unfair|overpowered|\bop\b|\brng\b|cheap death|difficulty spike|pay[- ]to[- ]win",
+    "difficulty_balance": r"unbalanc|balanc|too hard|too easy|unfair|overpowered|(?<![\w-])op(?![\w-])|\brng\b|cheap death|difficulty spike|pay[- ]to[- ]win",
     "bugs_crashes": r"\bbugs?\b|bugg|crash|glitch|broken|freez|soft ?lock|game[- ]breaking|save(?:s|file)? (?:lost|corrupt|wiped)",
     "performance": r"perform|\bfps\b|frame ?rate|stutter|\blag\b|optimi[sz]|memory leak|loading (?:time|screen)",
     "price_value_length": r"overpriced|not worth|too short|too expensive|wait for (?:a )?sale|for the price|hours? of content|money",
@@ -48,11 +49,45 @@ THEMES = {
 }
 
 
-def compile_themes(path: str | None) -> dict:
-    src = dict(THEMES)
+# what players PRAISE (used for positive reviews: "what the audience rewards")
+PRAISE_THEMES = {
+    "fun_addictive": r"\bfun\b|addict|one more (?:run|turn|game|level)|hooked|can'?t stop|so good|a blast",
+    "art_style": r"art ?style|beautiful|gorgeous|graphics|visuals?|pixel art|aesthetic|stunning|charming",
+    "music_sound": r"\bmusic\b|soundtrack|\bost\b|sound design|\bsfx\b|\baudio\b",
+    "depth_variety": r"depth|variety|diverse|\bbuilds?\b|synerg|so many (?:options|ways)|strateg",
+    "replayability": r"replay|run after run|hundreds of hours|endless|every run|different every",
+    "value_for_money": r"worth (?:it|the|every)|great value|bargain|cheap|price",
+    "story_characters": r"\bstory\b|character|writing|dialog|\blore\b|world.?building|narrative",
+    "polish_feel": r"polish|smooth|responsive|tight controls|satisfying|juicy|game ?feel|feels? (?:great|good)",
+    "coop_friends": r"co-?op|with (?:my )?friends|multiplayer|\bparty\b",
+    "content_amount": r"lots? of content|so much content|plenty of|content-?rich|hours of content",
+    "dev_support_positive": r"devs? (?:are|is)|active dev|developers? (?:are|is)|listens?|regular updates|patches",
+    "easy_to_learn": r"easy to (?:learn|pick up)|intuitive|accessible|beginner|newcomer",
+    "relaxing_cozy": r"relax|cozy|cosy|\bchill\b|comfort|wholesome|\bcalm\b|stress.?free",
+    "challenge_rewarding": r"challeng|rewarding|skill|mastery",
+}
+
+
+def compile_themes(path: str | None, review_type: str = "negative", taxonomy: str = "auto") -> dict:
+    """taxonomy auto: complaints for negative reviews, praise for positive, both for 'all'."""
+    kind = taxonomy if taxonomy != "auto" else {"negative": "complaints", "positive": "praise"}.get(review_type, "both")
+    src = {}
+    if kind in ("complaints", "both"):
+        src.update(THEMES)
+    if kind in ("praise", "both"):
+        src.update(PRAISE_THEMES)
     if path:
         src.update(load_json(path))
     return {k: re.compile(v, re.I) for k, v in src.items()}
+
+
+def default_opts(**kw):
+    """Options object for fetch_reviews when used as a library (same defaults as the command line)."""
+    import types
+    o = dict(type="negative", sort="helpful", language="english", within_days=None, limit=100, max_pages=30, min_votes_up=0,
+             max_playtime_h=None, min_playtime_h=None, purchase="all", include_offtopic=False, max_chars=1500)
+    o.update(kw)
+    return types.SimpleNamespace(**o)
 
 
 def game_name(appid: int) -> str | None:
@@ -151,6 +186,8 @@ def main():
     ap.add_argument("--purchase", default="all", choices=["all", "steam", "other"], help="purchase type (other = key/non-Steam)")
     ap.add_argument("--include-offtopic", action="store_true", help="include Steam-flagged off-topic/review-bomb activity")
     ap.add_argument("--max-chars", type=int, default=1500, help="truncate stored review text (default 1500)")
+    ap.add_argument("--taxonomy", default="auto", choices=["auto", "complaints", "praise", "both"],
+                    help="theme list: auto = complaints for negative, praise for positive, both for all")
     ap.add_argument("--themes-json", help='JSON {"theme": "regex"} added to / overriding the built-in themes')
     ap.add_argument("--rate", type=float, default=1.2, help="min seconds between requests (default 1.2)")
     ap.add_argument("-o", "--out", default="-", help="output .json or .csv (default stdout JSON)")
@@ -159,7 +196,7 @@ def main():
     ids = [int(x) for x in read_list(a.appids, a.ids_file)]
     if not ids:
         ap.error("no app ids given")
-    themes = compile_themes(a.themes_json)
+    themes = compile_themes(a.themes_json, a.type, a.taxonomy)
     games = []
     for i in ids:
         g = fetch_reviews(i, a, themes)

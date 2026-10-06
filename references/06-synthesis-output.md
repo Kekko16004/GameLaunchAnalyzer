@@ -22,8 +22,8 @@ In `launch/`:
 - `05-focusgroup.md`, `05a-critiche-simulate.md`, `05b-critiche-reali.md`, `05c-premortem.md`
 - `06-creators.md`, `07-community.md`, `08-brand-legal.md`
 - `fg/roster.md`, `fg/roster.json` (tester con ID stabili e giuria), `fg/waves/` (una serie di file per ondata: evidenze, gruppi A e B, dati JSON, dibattito, report, delta), `fg/timeline.md`, `fg/timeline.csv`
-- `comps.csv`, `sources.md`, `creators.csv`, `calendar.md`
-- `_raw/`: dati grezzi degli script (`comps.json`, `reviews_*.json`, `yt_*.json`, `social_verified.json`, `reddit_rules.md`, `curation.json`, `topics.json`)
+- `comps.csv`, `sources.md`, `creators.csv`, `calendar.md`, `03-pricing-calc.md`, `wishlists.csv`, `wishlist-status.md`, `status.json`, `STATUS.html`
+- `_raw/`: dati grezzi degli script (`comps.json`, `corpus.json`/`corpus.md`, `store_pages.json`/`store_bench.md`, `hooks/`, `gt_*.json`/`gt_*.md`, `econ.json`, `wl_plan.json`, `my_features.json`, `reviews_*.json`, `yt_*.json`, `social_verified.json`, `reddit_rules.md`, `curation.json`, `topics.json`)
 - `playbook-usato.md` (solo se ad hoc), `ricerche-manuali.md` (solo se serve), `history/` (in Aggiornamento)
 - `REPORT.md`, `TODO.md`, `STATUS.md`
 
@@ -55,6 +55,33 @@ Aggiornato: AAAA-MM-GG HH:MM | Modalità: Completa | Build/commit analizzato: <i
 ```
 
 Alla ripresa ("continua") leggi `STATUS.md` e riparti dalla prima fase non completata, senza riscrivere i file già fatti.
+
+## `status.json` e pagina di stato (`STATUS.html`)
+
+`status.json` è il riepilogo strutturato che alimenta la pagina per soci o publisher. Scrivilo (o aggiornalo) a fine Fase 11 e dopo ogni ondata; il resto della pagina arriva dai file già prodotti (timeline, wishlist, piano economico, calendario, TODO, documenti).
+
+```json
+{
+  "game": "Nome del gioco", "updated": "AAAA-MM-GG", "mode": "Completa",
+  "verdict": {"color": "verde|giallo|rosso", "provisional": false,
+              "summary": "2-3 frasi, le stesse del verdetto esecutivo", "probability": "intervallo",
+              "risks": ["rischio 1", "rischio 2", "rischio 3"]},
+  "gates": {"0": {"state": "pass|fail|pending", "note": "..."}, "A": {}, "B": {}, "C": {}},
+  "key_numbers": [{"label": "Comparabili analizzati", "value": "18", "note": "con dati verificati"}]
+}
+```
+Genera la pagina:
+
+```bash
+python3 <skill>/scripts/research/status_page.py --launch-dir launch --audience partner     # private | partner | publisher
+```
+È un unico file HTML autonomo (nessuna richiesta di rete, tema chiaro e scuro, utilizzabile da telefono, grafici con vista tabella). **Non pubblicarla né inviarla**: dì all'utente dov'è il file e offri la pubblicazione in una riga (es. come artifact privato, se l'ambiente lo permette), e chiedi per chi è: `publisher` esclude economia interna, TODO e pre-mortem, `partner` li include, `private` aggiunge creator, community e fiscale. Controlla che nessun dato personale o riservato finisca nei documenti inclusi.
+
+## Routine settimanale (dopo l'apertura della pagina Steam)
+
+1. L'utente fornisce il totale wishlist da Steamworks: `wl_track.py add ...`.
+2. `wl_track.py status`: se esce con codice 2 riporta subito l'ALLARME e l'azione di emergenza; altrimenti riassumi velocità, posizione rispetto agli scenari e alert.
+3. Se è cambiato qualcosa di rilevante rigenera `status_page.py`. Se un'ondata del focus group è in attesa dell'ok, ricordalo.
 
 ## `ricerche-manuali.md`
 
@@ -160,6 +187,9 @@ In **Rapida** e **Mirata** il debriefing si accorcia alle sole righe delle fasi 
 - [ ] Roster con ID stabili e giuria fissa; ogni ondata ha il suo file JSON validato da `fg_waves.py`; punteggi, delta e timeline vengono dal tool; metodo di indipendenza dei gruppi dichiarato.
 - [ ] Ondata 1 eseguita prima delle fasi di piattaforma, prezzo e store e seguita dalla segnalazione problemi; nessuna ondata successiva lanciata senza l'ok dell'utente; evidenze delle ondate successive senza critiche né fix precedenti.
 - [ ] Focus group calibrato (controlli o confronto col comparabile) e dichiarato non-dato-di-mercato; soglia del Gate A motivata.
+- [ ] I benchmark di pagina store, trailer e genere vengono da `store_bench.py`, `review_corpus.py` o dal corpus GamesTracker, con n, filtri e data (altrimenti dichiarati di opinione); le cifre economiche vengono da `calc_econ.py` con aliquote dichiarate.
+- [ ] Se esiste la pagina Steam: `wishlists.csv` e `wl_plan.json` esistono e `wl_track.py status` è stato eseguito; un ALLARME è stato riportato all'utente.
+- [ ] `STATUS.html` generata per il pubblico scelto dall'utente e **non pubblicata** senza il suo ok.
 - [ ] Ogni numero ha **[FATTO]**, **[STIMA]**, **[OPINIONE]** o **[DA VERIFICARE]**; nessun URL, email o creator inventato; ogni dato "da verificare sempre" ha data di consultazione.
 - [ ] Cancelli con date assolute e soglie adattate al genere; TODO con azione, scadenza, ore, dipendenze, metrica; ore totali entro la capacità del team.
 - [ ] Il semaforo applica i criteri di `SKILL.md`; il verdetto è marcato **provvisorio** se il materiale era insufficiente.

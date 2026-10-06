@@ -28,13 +28,15 @@ Senza screenshot o capsule reali questa parte ha confidenza **bassa**: valuta so
 
 ## FASE 6B: testi dello store (scritti davvero)
 
+**Benchmark veri, non di opinione.** Prima di scrivere usa `launch/_raw/store_bench.md` (Fase 2.9) e, se c'è, `launch/_raw/gt_genre.md` (2.0): mediane e quartili dei **migliori** per lunghezza della descrizione breve e lunga, GIF, screenshot, durata del trailer, tempo al primo taglio. Se una misura manca, dichiara che la soglia è di opinione. Cita sempre n e fonte (**[FATTO]**).
+
 Output: **`launch/04b-store-copy.md`**. Non limitarti all'audit: **scrivi i testi pronti da incollare**, nella lingua del pubblico (di norma inglese, più l'italiano se il pubblico lo include), partendo dal pitch e dai differenziatori della Fase 2B.
 
 1. **Descrizione breve di Steam**: 3 varianti con il numero di caratteri accanto a ciascuna (limite attuale **[DA VERIFICARE]**). La prima frase contiene genere + promessa + differenziatore nei primi 100 caratteri.
 2. **Descrizione lunga**: struttura completa e pronta. Apertura con GIF segnaposto del core loop; titolo "About this game" con paragrafo di apertura; 4-6 blocchi (titolo breve + 2-3 righe + indicazione di GIF o screenshot); elenco "caratteristiche chiave" (5-7 voci); chiusura con call to action alla wishlist. Vietati muri di testo e superlativi non verificabili.
 3. **Scelta dei tag**: elenco ordinato con motivazione per ciascuno, ricavata dai tag dei comparabili migliori (`steam_comps.py --steamspy`, colonna `steamspy_tags`) e dal playbook. Indica i primi 5 (pesano di più, **[DA VERIFICARE]**), i tag da evitare perché promettono ciò che il gioco non è, e il numero massimo consentito.
 4. **Capsule: 3 varianti.** Le regole Valve sul testo nelle capsule sono restrittive **[DA VERIFICARE]**. Per ogni variante: composizione, logo/titolo, cosa comunica in 1,5 secondi, perché sceglierla. Proponi una **tagline** alternativa per dove il testo è consentito (descrizione breve, itch, social, trailer). Indica come testarle (due round con persone esterne, A/B se possibile).
-5. **Script del trailer** (durata da playbook; default 60-90 secondi, guarda i comparabili): shot list con tempi (0-5 s hook senza bisogno di audio, poi sviluppo, momento più forte entro metà, ultimi 5 s con titolo, data o "wishlist now"), testi a schermo, indicazioni audio e musica, cosa tagliare. Versione corta da 15-20 secondi per i social.
+5. **Script del trailer** (durata dalla mediana dei comparabili migliori in `store_bench.md`; senza dati, default 60-90 secondi **[OPINIONE]**): shot list con tempi (0-5 s hook senza bisogno di audio, poi sviluppo, momento più forte entro metà, ultimi 5 s con titolo, data o "wishlist now"), testi a schermo, indicazioni audio e musica, cosa tagliare. Versione corta da 15-20 secondi per i social.
 6. **Pagina itch.io** (se prevista): testo più breve e diretto, con link alla wishlist su Steam.
 7. **Blurb per press kit e creator**: una riga, un paragrafo, 5 fatti verificabili.
 8. **Controllo veridicità**: per ogni affermazione dei testi indica l'evidenza nel gioco (file, scena, clip) in una tabella `affermazione | evidenza`. Mai promettere feature assenti, premi o citazioni inventati, paragoni con titoli famosi non giustificati. Dichiara l'uso di AI generativa dove la piattaforma lo richiede.

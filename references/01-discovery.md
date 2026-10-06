@@ -37,7 +37,7 @@ Solo se mancano informazioni cruciali. Ordinate per importanza, ciascuna con la 
 3. Paese e inquadramento fiscale.
 4. Data di lancio desiderata e piattaforme.
 5. C'è una build giocabile? Da chi è stata provata?
-6. Esiste già una pagina Steam? Quante wishlist, follower, iscritti Discord?
+6. Esiste già una pagina Steam? Quante wishlist, follower, iscritti Discord? Usi **GamesTracker**: dove si trova il database (`data/gamestracker.db`)?
 7. Comparabili che hai in mente (e giochi con cui NON vuoi essere confrontato).
 8. Lingue del pubblico target e della localizzazione.
 
@@ -63,6 +63,18 @@ Rende la skill adattiva: pilastri, coorti, hook, creator, demo, prezzo e rischi 
 ## FASE 2: ricerca di mercato e comparabili
 
 Output: `launch/sources.md`, `launch/comps.csv`, dati grezzi in `launch/_raw/`. In Rapida bastano 8-10 comparabili; in Completa 15-25 (minimo 8).
+
+### 2.0 Corpus GamesTracker (se l'utente lo usa)
+
+Se esiste il database di GamesTracker (percorso chiesto in Fase 0, oppure `GAMESTRACKER_DB`), **è la fonte primaria dei benchmark**: centinaia di giochi reali con serie storiche, non stime a memoria. Si legge solo in lettura, senza rete:
+
+```bash
+python3 <skill>/scripts/research/gt_corpus.py info --db <percorso>      # quanto è grande e fino a quando arriva
+python3 <skill>/scripts/research/gt_corpus.py genre --db <percorso> --tag Roguelike --released-after <AAAA-MM-GG> \
+  --mine price=<prezzo> --mine screenshot_count=<n> --md launch/_raw/gt_genre.md -o launch/_raw/gt_genre.json
+python3 <skill>/scripts/research/gt_corpus.py comps --db <percorso> --tag Roguelike --limit 40 -o launch/_raw/gt_comps.json
+```
+Riporta sempre corpus (numero di giochi, intervallo degli snapshot), filtri e data: sono **[FATTO]** con questi limiti. Se `info` dice che il corpus è piccolo, dichiaralo e usa i dati con prudenza. Dal corpus ricavi anche i comparabili con recensioni a +7/+30/+90 giorni (curve di lancio vere) da affiancare a quelli di `steam_comps.py`. Se il database non c'è, procedi con le fonti pubbliche e scrivi nel brief che i benchmark non vengono dal corpus.
 
 ### 2.1 Trova i comparabili
 
@@ -92,7 +104,7 @@ Per ciascun comparabile completa a mano le colonne che gli script non danno: `vi
 
 ### 2.4 Dati di mercato del genere
 
-Post-mortem recenti; conversione wishlist→vendita (default prudente **[DA VERIFICARE]** 0,10-0,30× nel primo anno per un indie piccolo); ritmo di accumulo delle wishlist organiche; tasso di completamento della demo; quanti giochi simili escono al mese e che soglia di qualità serve per emergere.
+Post-mortem recenti; conversione wishlist→vendita (default prudente **[DA VERIFICARE]** 0,10-0,30× nel primo anno per un indie piccolo); ritmo di accumulo delle wishlist organiche; tasso di completamento della demo; quanti giochi simili escono al mese e che soglia di qualità serve per emergere. Le distribuzioni di recensioni a +30 giorni, prezzo e segnali di pagina vengono da `gt_corpus.py genre` (2.0) quando disponibile.
 
 ### 2.5 Regole attuali delle piattaforme
 
@@ -100,15 +112,30 @@ Requisiti della pagina Steam, tag, demo e playtest, finestre di visibilità al l
 
 ### 2.6 Finestra di mercato
 
-Uscite grandi nello stesso genere nei prossimi 12 mesi (da evitare), saldi stagionali e festival tematici utili.
+Uscite grandi nello stesso genere nei prossimi 12 mesi (da evitare), saldi stagionali e festival tematici utili. Con GamesTracker: `gt_corpus.py window --tag <tag> --days 365` elenca le uscite già tracciate nella tua finestra (il collector vede soprattutto uscite recenti: integra con ricerca web sulle uscite annunciate).
 
 ### 2.7 Collisioni di titolo e marchio
 
 Ricerca su Steam, Google, itch.io, TikTok, YouTube; controllo base su EUIPO e TMview (e sull'ufficio marchi del paese del team). Non è consulenza legale: segnala dove serve un professionista.
 
-### 2.8 Recensioni reali dei comparabili (per la Sezione B)
+### 2.8 Recensioni reali: dei comparabili e del genere (per la Sezione B)
 
-Raccoglile **ora**, con `steam_reviews.py` sui 5-8 comparabili più vicini (comandi in `04-focus-group.md`, 7.2): servono già all'Ondata 1 del focus group, che arriva subito dopo l'audit.
+Raccoglile **ora**: servono già all'Ondata 1 del focus group, che arriva subito dopo l'audit. Servono due letture, non una: cosa dicono sui **tuoi comparabili** e cosa dicono sui **giochi dello stesso tipo**, perché le critiche del genere valgono spesso anche per te. Prima scrivi `launch/_raw/my_features.json` con le caratteristiche del tuo gioco (dal brief e dal GDD): `{"cucina": "cook|recipe|kitchen", "co-op": "co-?op|with friends"}`. Poi:
+
+```bash
+python3 <skill>/scripts/research/review_corpus.py --comps <appid_comparabili...> --genre-tag <Tag> [<Tag>...] \
+  --max-genre-games 20 --my-features launch/_raw/my_features.json \
+  -o launch/_raw/corpus.json --md launch/_raw/corpus.md --csv launch/_raw/corpus_features.csv
+```
+Produce, da migliaia di recensioni reali con data, ore di gioco e URL: temi **puniti** e **premiati** per comparabili e per genere (percentuale media e in quanti giochi compaiono) e, per ogni caratteristica del tuo gioco, quanto è citata nelle negative contro le positive (premiata, punita, divisiva, poco discussa) con le recensioni più utili da leggere e parafrasare. Riporta sempre quante recensioni e quanti giochi, e i limiti (campione non casuale, parole chiave in inglese). I dettagli per singolo gioco (rimborsi, poche ore) si ottengono con `steam_reviews.py` (`04-focus-group.md`, 7.2).
+
+### 2.9 Pagina store e trailer dei comparabili (benchmark veri)
+
+```bash
+python3 <skill>/scripts/research/store_bench.py run --ids-file launch/_raw/ids.txt --frames-dir launch/_raw/hooks \
+  -o launch/_raw/store_pages.json --md launch/_raw/store_bench.md
+```
+Misura in automatico, per ciascun comparabile: lunghezza della descrizione breve e lunga, GIF, immagini, screenshot, numero e **durata dei trailer**, lingue, achievement, demo; con `ffmpeg` anche tempo al primo taglio, tagli nei primi 5 secondi e lunghezza media dell'inquadratura, più fotogrammi a 0/2/5/10/20/30 s. Poi quartili, confronto tra i migliori (per recensioni all'anno) e il resto, e correlazioni di rango. Guarda tu i fotogrammi per giudicare l'hook: lo strumento misura il ritmo, non capisce cosa è un buon inizio. Alimenta le Fasi 6 e 6B al posto delle soglie di opinione. Con pochi comparabili le correlazioni sono indizi, non prove.
 
 `sources.md`: una riga per fonte, con URL, data di consultazione e a quale numero o regola serve.
 

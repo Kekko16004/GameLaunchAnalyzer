@@ -51,6 +51,16 @@ Output: **`launch/02-platform.md`** e **`launch/calendar.md`**.
 5. **Primi 14 giorni di lancio** (Steam premia la velocità iniziale): chi viene avvisato, quando, con quali asset, e piano B se la prima settimana va sotto le attese (aggiornamento di contenuto, DLC gratuito, evento a tema).
 6. **Calendario dei tripwire e delle ondate**: inserisci in `calendar.md` le date in cui misurare i segnali d'allarme del pre-mortem (Fase 7B) e le **ondate del focus group proposte** (dopo i fix, dopo le capsule, prima di Next Fest, prima di pagare Steam Direct, pre-lancio): ognuna parte solo con l'ok dell'utente.
 
+7. **Tracker delle wishlist** (appena la pagina Coming Soon è online): Steam non pubblica le wishlist, quindi si registrano a mano da Steamworks una volta a settimana. Crea il piano con scenari, data di lancio e tripwire del pre-mortem, poi aggiorna e controlla:
+
+   ```bash
+   python3 <skill>/scripts/research/wl_track.py plan --launch <AAAA-MM-GG> --start <data pagina> --econ launch/_raw/econ.json \
+     --tripwire "<data>:<soglia>:<segnale>:<azione di emergenza>" --event "<data>:Next Fest" -o launch/_raw/wl_plan.json
+   python3 <skill>/scripts/research/wl_track.py add --wishlists <totale> --followers <n> --note "<cosa è successo>" --csv launch/wishlists.csv
+   python3 <skill>/scripts/research/wl_track.py status --md launch/wishlist-status.md --json launch/_raw/wl_status.json
+   ```
+   `status` confronta con i percorsi degli scenari e con i tripwire, segnala rallentamenti, cali, dati vecchi e picchi non annotati, e **esce con codice 2 se un tripwire è scattato**. Quando succede, riporta all'utente l'ALLARME con l'azione di emergenza del pre-mortem, senza minimizzare. I percorsi sono lineari: una semplificazione **[OPINIONE]**.
+
 Formato di `calendar.md`:
 
 | Data (AAAA-MM-GG) | Evento | Tipo (gate / scadenza / tripwire / ondata / lancio) | Dipendenze | Verificato il |
@@ -63,6 +73,14 @@ Formato di `calendar.md`:
 Output: **`launch/03-pricing.md`**.
 
 1. **Analisi prezzo**: distribuzione prezzi dei comparabili con oltre 100 recensioni (da `comps.csv`), rapporto prezzo/contenuto per il genere, tre proposte argomentate (**consigliato**, **penetrazione**, **premium**) con sconto di lancio conforme alle regole Steam **[DA VERIFICARE]**. Considera i prezzi regionali.
+Esegui il calcolo con lo strumento, così le cifre si riproducono e si rifanno in un secondo quando cambia un prezzo o un'aliquota (il calcolo resta leggero: un comando, una tabella):
+
+```bash
+python3 <skill>/scripts/research/calc_econ.py --price <prezzo> --costs <costi_cassa> --hours <ore> --hourly <tariffa> --partners <n> \
+  --wishlists <pess,base,ott> --conv 0.10,0.20,0.30 --md launch/03-pricing-calc.md -o launch/_raw/econ.json
+```
+Le aliquote (quota Steam, IVA/sales tax, rimborsi, sconto medio, imposte locali) sono **input dichiarati [DA VERIFICARE]** con fonte nel report, non fatti dello script. Con GamesTracker, i prezzi e le curve dei comparabili del genere vengono da `gt_corpus.py` (`price`, `reviews_d30`).
+
 2. **Dal lordo al netto**, per copia, sempre con intervalli e fonte:
 
    ```
@@ -87,5 +105,6 @@ Output: **`launch/03-pricing.md`**.
    "Cosa deve essere vero" è concreto: es. "servono 8.000 wishlist al lancio, cioè circa N visualizzazioni di trailer e M visite alla pagina a un tasso di wishlist del X%" **[STIMA]**.
 5. **Probabilità onesta** di superare il break-even, con intervallo e ragioni. Se è bassa, dillo e proponi come alzarla (scope ridotto, prezzo, genere adiacente, partner, funding).
 6. Se la Fase 2B è in FAIL o MARGINAL, marca tutte le proiezioni **"condizionate alla differenziazione"** e usa lo scenario pessimistico come caso base.
+7. **Collega gli scenari al tracker**: gli scenari di `econ.json` diventano gli obiettivi di wishlist al lancio del tracker (vedi Fase 4, punto 7).
 
 Ogni file termina con TODO nel formato di `references/06-synthesis-output.md`.

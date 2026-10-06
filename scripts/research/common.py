@@ -74,6 +74,27 @@ def http_get(url: str, *, headers: dict | None = None, data: bytes | None = None
     raise last  # type: ignore[misc]
 
 
+def http_range(url: str, start: int, length: int, *, timeout: float = 30, throttle: Throttle | None = None,
+               headers: dict | None = None) -> tuple[bytes, int | None, int]:
+    """Read at most `length` bytes from `start` (HTTP Range). Returns (data, total_size_or_None, status).
+
+    status 206 = the server honoured the range; 200 = it ignored it (data then starts at byte 0, whatever
+    `start` was) so callers must not trust the offset. Never reads more than `length` bytes.
+    """
+    (throttle or _GLOBAL_THROTTLE).wait()
+    h = {"User-Agent": DEFAULT_UA, "Range": f"bytes={start}-{start + length - 1}"}
+    if headers:
+        h.update(headers)
+    with urllib.request.urlopen(urllib.request.Request(url, headers=h), timeout=timeout) as r:
+        data = r.read(length)
+        total, cr = None, r.headers.get("Content-Range")
+        if cr and "/" in cr and cr.rsplit("/", 1)[1].isdigit():
+            total = int(cr.rsplit("/", 1)[1])
+        elif r.status == 200 and (r.headers.get("Content-Length") or "").isdigit():
+            total = int(r.headers["Content-Length"])
+        return data, total, r.status
+
+
 def get_json(url: str, **kw):
     return json.loads(http_get(url, **kw).decode("utf-8", "ignore"))
 

@@ -14,6 +14,17 @@ The skill itself is written in **Italian** (instructions and generated reports);
 | **Ondata** | `launch/fg/` already exists: runs the next focus-group wave with the **same testers** on the current state of the game, then delta and timeline. |
 | **Aggiornamento** | `launch/` already exists: re-runs the affected phases (including a new wave, with your OK) and reports what changed. |
 
+### Data and planning tools
+
+Beyond the phases, the skill ships tools that turn guesses into reproducible numbers:
+
+- **Real benchmarks.** `store_bench.py` measures store page and trailer of the comparables (description length, GIFs, trailer duration, cuts, hook frames) and relates them to how the games performed; `review_corpus.py` reads thousands of real reviews of the comparables **and** of the genre, and what they say about the features of your game.
+- **GamesTracker.** If you run [GamesTracker](https://github.com/Kekko16004/GamesTracker), `gt_corpus.py` reads its database (read-only, local) and computes genre benchmarks, launch curves, marketing timeline and the release window from hundreds of tracked games. The database never leaves your machine.
+- **Economics and wishlists.** `calc_econ.py` gives gross-to-net, break-even and three scenarios from stated assumptions; `wl_track.py` takes your weekly wishlist total and raises an alarm when a pre-mortem tripwire fires.
+- **Status page.** `status_page.py` builds one HTML file (verdict, charts, gates, calendar, TODOs) for partners or a publisher. The skill never publishes it by itself.
+
+Run the offline tests with `python tests/run_all.py`.
+
 ### Focus group in waves
 
 The simulated focus group follows a conversational format (casting with mandatory diversity, independent first impressions, a lively jury debate, a structured report) and runs **early**, right after the dev audit:
@@ -61,7 +72,8 @@ references/
   05-outreach-community-legal.md  phases 8, 9, 10  creators, community, real-test kit, legal/tax
   06-synthesis-output.md      phase 11             report, TODO, status, debrief, QA checklist
   playbooks.md                21 genre playbooks + default thresholds
-scripts/research/             research tools incl. roster.py and fg_waves.py (see its README)
+scripts/research/             research and planning tools (see its README)
+tests/                        offline tests (python tests/run_all.py)
 commands/                     slash command
 install.sh / install.ps1 / installer.bat
 ```

@@ -12,7 +12,7 @@ impatient, accessibility, contrarian, value hunter, clip/stream creator) is pick
 live debate keeps the same voices from wave to wave.
 
 Two groups (A = core/experts, B = discovery/casual), 3 cohorts each (they come from the genre playbook),
-cohort of tester n = cohorts[(n-1) % 3]. In every cohort at least 22% of the members are "contrarians"
+cohort of tester n = cohorts[(n-1) % 3]. In every cohort at least 20% of the members are "contrarians"
 (mandatory dissent: the skill requires >= 15% of each cohort to contradict its majority).
 
 Everything here is FICTIONAL and simulated: names are invented, language weights are NOT market data.
@@ -122,7 +122,7 @@ def build_tester(group: str, n: int, cohorts: list[str], seed: str, langs: dict)
         name=f"{r.choice(NAMES)} {r.choice('ABCDEFGHILMNOPRSTVZ')}.", age=pick(r, AGE[group]),
         hours_in_genre=hours, device=pick(r, DEVICE), price_sensitivity=price, patience=patience,
         discovery=discovery, language=pick(r, langs), starting_bias=r.choice(BIAS),
-        contrarian=(k % 4 == 3))  # k-th member of the cohort; stable when appending; 2/9 at 27, 1/4 at 12
+        contrarian=(k % 4 == 1))  # k-th member of the cohort: stable when appending, >= 20% of any cohort of 2+ members
     # drawn last so the traits above never depend on them
     t["skill_level"] = {"<10h": "principiante", "10-100h": "intermedio"}.get(hours, "esperto")
     t["personality"] = pick(r, PERSONALITY[group])

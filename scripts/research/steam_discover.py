@@ -54,9 +54,11 @@ def enrich(row: dict, cc: str, lang: str):
                has_demo=bool(d.get("demos")), developers=d.get("developers"))
 
 
-def cmd_tag(a):
+def candidates(tags: list[str], require_all: bool = False, min_reviews: int | None = None,
+               max_reviews: int | None = None, top: int = 100) -> list[dict]:
+    """Games listed under the given tags (SteamSpy), ranked by tags matched then review count."""
     games: dict[str, dict] = {}
-    for tag in a.tags:
+    for tag in tags:
         d = safe_json(f"https://steamspy.com/api.php?request=tag&tag={q(tag)}")
         if not d:
             log(f"WARN tag {tag!r}: empty answer (unknown tag name, rate limit or service down)")
@@ -74,12 +76,16 @@ def cmd_tag(a):
         r["reviews_total"] = pos + neg
         r["pct_positive"] = round(100 * pos / (pos + neg), 1) if pos + neg else None
         r["n_tags"] = len(r["matched_tags"])
-    if a.require_all:
-        rows = [r for r in rows if r["n_tags"] == len(a.tags)]
-    rows = [r for r in rows if (a.min_reviews is None or r["reviews_total"] >= a.min_reviews)
-            and (a.max_reviews is None or r["reviews_total"] <= a.max_reviews)]
+    if require_all:
+        rows = [r for r in rows if r["n_tags"] == len(tags)]
+    rows = [r for r in rows if (min_reviews is None or r["reviews_total"] >= min_reviews)
+            and (max_reviews is None or r["reviews_total"] <= max_reviews)]
     rows.sort(key=lambda r: (-r["n_tags"], -r["reviews_total"]))
-    rows = rows[:a.top]
+    return rows[:top]
+
+
+def cmd_tag(a):
+    rows = candidates(a.tags, a.require_all, a.min_reviews, a.max_reviews, a.top)
     if a.enrich:
         for r in rows[:a.enrich]:
             enrich(r, a.cc, a.lang)

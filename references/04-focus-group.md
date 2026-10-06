@@ -141,7 +141,7 @@ Aggiorna `05-focusgroup.md`, `05a-critiche-simulate.md`, la timeline (7.5) e `ST
 Qui **non si inventa nulla**. Ogni voce ha una fonte. Si raccoglie **una volta** in Fase 2 (comparabili) e si rifà solo se cambiano i comparabili.
 
 ### Metodo
-1. Per ciascuno dei 5-8 comparabili più vicini (3 in Rapida):
+1. **Prima di tutto** usa il corpus di recensioni della Fase 2.8 (`review_corpus.py`): comparabili e giochi dello stesso genere, con temi puniti e premiati e le recensioni che citano le caratteristiche del tuo gioco. È il materiale principale della Sezione B. Poi, per ciascuno dei 5-8 comparabili più vicini (3 in Rapida) approfondisci:
 
    ```bash
    python3 <skill>/scripts/research/steam_reviews.py <appid...> --type negative --within-days 365 --limit 150 \
