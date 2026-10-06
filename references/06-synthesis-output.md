@@ -22,8 +22,8 @@ In `launch/`:
 - `05-focusgroup.md`, `05a-critiche-simulate.md`, `05b-critiche-reali.md`, `05c-premortem.md`
 - `06-creators.md`, `07-community.md`, `08-brand-legal.md`
 - `fg/roster.md`, `fg/roster.json` (tester con ID stabili e giuria), `fg/waves/` (una serie di file per ondata: evidenze, gruppi A e B, dati JSON, dibattito, report, delta), `fg/timeline.md`, `fg/timeline.csv`
-- `comps.csv`, `sources.md`, `creators.csv`, `calendar.md`, `03-pricing-calc.md`, `wishlists.csv`, `wishlist-status.md`, `status.json`, `STATUS.html`
-- `_raw/`: dati grezzi degli script (`comps.json`, `corpus.json`/`corpus.md`, `store_pages.json`/`store_bench.md`, `hooks/`, `gt_*.json`/`gt_*.md`, `econ.json`, `wl_plan.json`, `my_features.json`, `reviews_*.json`, `yt_*.json`, `social_verified.json`, `reddit_rules.md`, `curation.json`, `topics.json`)
+- `comps.csv`, `sources.md`, `creators.csv`, `calendar.md` (con i passi 👤/🤖), `03-pricing-calc.md`, `00-intenzioni.md`, `05d-contingenze.md`, `store_kit.json`, `store_kit.md`, `store_kit/`, `wishlists.csv`, `wishlist-status.md`, `metrics.csv`, `metrics-status.md`, `watchlist.csv`, `watchlist-report.md`, `status.json`, `STATUS.html`
+- `_raw/`: dati grezzi degli script (`comps.json`, `corpus.json`/`corpus.md`, `store_pages.json`/`store_bench.md`, `hooks/`, `econ.json`, `wl_plan.json`, `contingencies.json`, `genre_bench.json`, `my_features.json`, `reviews_*.json`, `yt_*.json`, `social_verified.json`, `reddit_rules.md`, `curation.json`, `topics.json`)
 - `playbook-usato.md` (solo se ad hoc), `ricerche-manuali.md` (solo se serve), `history/` (in Aggiornamento)
 - `REPORT.md`, `TODO.md`, `STATUS.md`
 
@@ -67,7 +67,9 @@ Alla ripresa ("continua") leggi `STATUS.md` e riparti dalla prima fase non compl
               "summary": "2-3 frasi, le stesse del verdetto esecutivo", "probability": "intervallo",
               "risks": ["rischio 1", "rischio 2", "rischio 3"]},
   "gates": {"0": {"state": "pass|fail|pending", "note": "..."}, "A": {}, "B": {}, "C": {}},
-  "key_numbers": [{"label": "Comparabili analizzati", "value": "18", "note": "con dati verificati"}]
+  "key_numbers": [{"label": "Comparabili analizzati", "value": "18", "note": "con dati verificati"}],
+  "intentions": {"summary": "obiettivo, capacità, budget, canali, regole di stop in 2-3 frasi",
+                 "decisions": [{"topic": "Budget", "choice": "solo Steam Direct", "why": "nessuna ads prima dei gate"}]}
 }
 ```
 Genera la pagina:
@@ -77,11 +79,14 @@ python3 <skill>/scripts/research/status_page.py --launch-dir launch --audience p
 ```
 È un unico file HTML autonomo (nessuna richiesta di rete, tema chiaro e scuro, utilizzabile da telefono, grafici con vista tabella). **Non pubblicarla né inviarla**: dì all'utente dov'è il file e offri la pubblicazione in una riga (es. come artifact privato, se l'ambiente lo permette), e chiedi per chi è: `publisher` esclude economia interna, TODO e pre-mortem, `partner` li include, `private` aggiunge creator, community e fiscale. Controlla che nessun dato personale o riservato finisca nei documenti inclusi.
 
-## Routine settimanale (dopo l'apertura della pagina Steam)
+## Routine settimanale (dopo l'apertura della pagina Steam, e durante la beta su itch.io)
 
-1. L'utente fornisce il totale wishlist da Steamworks: `wl_track.py add ...`.
-2. `wl_track.py status`: se esce con codice 2 riporta subito l'ALLARME e l'azione di emergenza; altrimenti riassumi velocità, posizione rispetto agli scenari e alert.
-3. Se è cambiato qualcosa di rilevante rigenera `status_page.py`. Se un'ondata del focus group è in attesa dell'ok, ricordalo.
+L'utente porta i numeri, tu fai il resto. Una volta a settimana:
+
+1. **Numeri dell'utente**: totale wishlist da Steamworks (`wl_track.py add`) e le altre metriche (`metrics_track.py add --metric itch_views --value N`: visite e scarichi itch, iscritti Discord, giocatori e durata della demo, ecc.; `metrics_track.py catalog` elenca i nomi).
+2. **Controlli**: `wl_track.py status`, `metrics_track.py status`, `watchlist.py snap` seguito da `watchlist.py report --launch <data>`. Un codice di uscita 2 è un ALLARME: riportalo subito con l'azione di emergenza prevista, senza minimizzare; gli altri alert in una riga ciascuno.
+3. **Passi**: `plan_steps.py next --owner me` per dire cosa tocca all'utente adesso (e quali sono in ritardo), `plan_steps.py done N` per spuntare ciò che è fatto.
+4. Se è cambiato qualcosa di rilevante, rigenera `status_page.py` e ricorda se un'ondata del focus group è in attesa dell'ok.
 
 ## `ricerche-manuali.md`
 
@@ -92,16 +97,16 @@ Per ogni ricerca che non hai potuto fare: obiettivo, query o URL suggeriti, a co
 ## `REPORT.md` (struttura rigida)
 
 1. **Verdetto esecutivo (max 15 righe)**: semaforo verde/giallo/rosso secondo i criteri in `SKILL.md`, probabilità stimata di recuperare i costi (intervallo), 3 rischi killer. Se il posizionamento non è PASS il verdetto non può essere verde.
-2. **Genere, playbook, fase e confidenza per sezione.**
+2. **Genere, playbook, fase e confidenza per sezione.** In testa al report: il **profilo decisionale** (da `00-intenzioni.md`): cosa vuole il proprietario e quali decisioni guidano il piano.
 3. **Posizionamento e differenziazione**: pitch, 3 differenziatori, esito del test contro i comparabili.
 4. **Audit dev e pilastri di genere.**
 5. **Critiche e ondate**: top critiche simulate (A) dell'ultima ondata, temi reali del genere (B), matrice di convergenza, 3 dealbreaker, metriche del panel con calibrazione dichiarata e **timeline delle ondate** (`fg/timeline.md`) se ce n'è più d'una.
 6. **Pre-mortem**: le 5 cause e la tabella dei tripwire.
 7. **Mercato, comparabili e prezzo**: scenari con "cosa deve essere vero".
-8. **Capsule, hook, testi dello store e trailer.**
-9. **Piano piattaforme, Next Fest e gate** con date.
+8. **Capsule, hook, testi dello store e trailer**, con la **scheda copiabile delle pagine Steam e itch.io** (`store_kit.md`): ogni campo, la descrizione lunga con le posizioni di foto e GIF, tag in ordine, screenshot, capsule, impostazioni e checklist.
+9. **Piano piattaforme, Next Fest e gate** con date, e il **calendario a passi** (`calendar.md`): fasi, chi fa cosa (👤/🤖), scadenze, prossimi 5 passi per l'utente.
 10. **Creator e community**, kit del test reale.
-11. **Success Maximizer**: 5 leve, 3 "non fare", criteri di stop e pivot, verifica di capacità.
+11. **Success Maximizer**: 5 leve, 3 "non fare", criteri di stop e pivot, verifica di capacità. Seguito da **"Se… allora"**: la matrice dei piani di contingenza (`05d-contingenze.md`) con segnali, soglie, diagnosi, azioni e decisioni per ogni scenario (itch, Steam, demo, Next Fest, lancio, esterni, persone).
 12. **Legale e fiscale**: cose da fare prima di incassare.
 13. **Fonti verificate** con data di consultazione.
 
@@ -127,6 +132,8 @@ Una volta scritti i file, rispondi in chat con un debriefing diretto, numerico e
 
 ```text
 [N] persone simulate in due gruppi indipendenti, critiche reali dei comparabili e strategia di lancio completa. Parti da launch/REPORT.md e launch/TODO.md; il resto è nei file 00-08 e in fg/. Nessuna delle persone simulate ha giocato: hanno giudicato da documenti, codice, screenshot e capsule. Sono opinioni simulate, non dati di mercato. Le critiche reali vengono da fonti online verificate.
+
+Intenzioni confermate: [obiettivo, capacità, budget e rischio, canali, regola di stop, in 3 righe]. Decisioni ancora aperte: [elenco o "nessuna"].
 
 Genere e fase: [genere primario/secondario, confidenza, fase, playbook usato].
 
@@ -160,6 +167,9 @@ Prezzo e vendite: prezzo consigliato [X], sconto di lancio [Y]%. Scenario base c
 
 Canali: [piattaforma principale per questo genere e perché]. [2 hook più forti]. In lista [X] creator verificati ([Y] su [piattaforma], [Z] nella lingua del team, oppure istruzioni per cercarli a mano). Community: [dove e con quali regole].
 
+I tuoi prossimi 3 passi (👤, con data): [..]. I miei, con il tuo ok (🤖): [..]. Calendario completo in launch/calendar.md, pagine Steam e itch pronte da copiare in launch/store_kit.md.
+Se va male: [i 3 scenari più probabili, ciascuno con segnale, soglia e prima azione]. Metriche da registrare ogni settimana: [elenco].
+
 Le 5 leve in ordine: [una riga ciascuna].
 Da non fare ora: [3 punti].
 Criteri di stop o pivot: [soglie misurabili e date].
@@ -187,8 +197,12 @@ In **Rapida** e **Mirata** il debriefing si accorcia alle sole righe delle fasi 
 - [ ] Roster con ID stabili e giuria fissa; ogni ondata ha il suo file JSON validato da `fg_waves.py`; punteggi, delta e timeline vengono dal tool; metodo di indipendenza dei gruppi dichiarato.
 - [ ] Ondata 1 eseguita prima delle fasi di piattaforma, prezzo e store e seguita dalla segnalazione problemi; nessuna ondata successiva lanciata senza l'ok dell'utente; evidenze delle ondate successive senza critiche né fix precedenti.
 - [ ] Focus group calibrato (controlli o confronto col comparabile) e dichiarato non-dato-di-mercato; soglia del Gate A motivata.
-- [ ] I benchmark di pagina store, trailer e genere vengono da `store_bench.py`, `review_corpus.py` o dal corpus GamesTracker, con n, filtri e data (altrimenti dichiarati di opinione); le cifre economiche vengono da `calc_econ.py` con aliquote dichiarate.
+- [ ] I benchmark di pagina store, trailer e genere vengono da `store_bench.py`, `review_corpus.py` o `genre_bench.py`, con n, tag e data, e il limite della coda alta dichiarato (altrimenti dichiarati di opinione); le cifre economiche vengono da `calc_econ.py` con aliquote dichiarate.
 - [ ] Se esiste la pagina Steam: `wishlists.csv` e `wl_plan.json` esistono e `wl_track.py status` è stato eseguito; un ALLARME è stato riportato all'utente.
+- [ ] L'intervista è stata fatta (round completati e registro in `00-intenzioni.md`), le decisioni guidano soglie, calendario e contingenze, e i round di verifica con i dati sono stati proposti.
+- [ ] `calendar.md` ha ancore, piano a ritroso, **passi in ordine con proprietario 👤/🤖 e scadenze** (`plan_steps.py check` senza errori) e piano B.
+- [ ] `store_kit.json` passa `store_kit.py check` per Steam e itch.io; ogni slot media dice cosa mostra; i limiti hanno la data di verifica.
+- [ ] `contingencies.json` passa `metrics_track.py check`; ogni soglia ha un'origine; le soglie rispecchiano le risposte del Round 6.
 - [ ] `STATUS.html` generata per il pubblico scelto dall'utente e **non pubblicata** senza il suo ok.
 - [ ] Ogni numero ha **[FATTO]**, **[STIMA]**, **[OPINIONE]** o **[DA VERIFICARE]**; nessun URL, email o creator inventato; ogni dato "da verificare sempre" ha data di consultazione.
 - [ ] Cancelli con date assolute e soglie adattate al genere; TODO con azione, scadenza, ore, dipendenze, metrica; ore totali entro la capacità del team.

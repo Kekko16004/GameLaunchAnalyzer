@@ -28,18 +28,9 @@ Costruisci **`launch/00-brief.md`**:
 7. **Stato dei contenuti**: cosa è giocabile, cosa manca, durata di run o sessione, volumi, bug noti.
 8. **Materiale disponibile e confidenza**: elenca cosa hai (build giocabile, screenshot, clip, GDD, pagina store, dati wishlist). Ogni sezione del report riceve una confidenza **bassa / media / alta** in base al materiale: senza screenshot la capsule non si valuta, senza build il game feel non si valuta, e lo dici.
 
-### Domande all'utente (un solo blocco, massimo 8)
+### Poi l'intervista sulle intenzioni
 
-Solo se mancano informazioni cruciali. Ordinate per importanza, ciascuna con la tua ipotesi di default tra parentesi, così l'utente può rispondere "ok". Poi procedi documentando le ipotesi nel brief. Niente domande a cascata. Candidate tipiche:
-
-1. Obiettivo (vendite / community / portfolio / hobby).
-2. Team, ore a settimana, budget.
-3. Paese e inquadramento fiscale.
-4. Data di lancio desiderata e piattaforme.
-5. C'è una build giocabile? Da chi è stata provata?
-6. Esiste già una pagina Steam? Quante wishlist, follower, iscritti Discord? Usi **GamesTracker**: dove si trova il database (`data/gamestracker.db`)?
-7. Comparabili che hai in mente (e giochi con cui NON vuoi essere confrontato).
-8. Lingue del pubblico target e della localizzazione.
+Dopo aver letto il progetto **non andare avanti da solo**: esegui l'intervista a più round di `references/00-intervista.md` (obiettivi, capacità, soldi e rischio, canali, non negoziabili, scenari "e se…", conferma) e scrivi `launch/00-intenzioni.md`. Le ipotesi che non vengono confermate restano segnate nel brief. In Rapida basta un blocco di massimo 8 domande.
 
 ---
 
@@ -64,17 +55,17 @@ Rende la skill adattiva: pilastri, coorti, hook, creator, demo, prezzo e rischi 
 
 Output: `launch/sources.md`, `launch/comps.csv`, dati grezzi in `launch/_raw/`. In Rapida bastano 8-10 comparabili; in Completa 15-25 (minimo 8).
 
-### 2.0 Corpus GamesTracker (se l'utente lo usa)
+### 2.0 Benchmark di genere (dati pubblici, a ogni esecuzione)
 
-Se esiste il database di GamesTracker (percorso chiesto in Fase 0, oppure `GAMESTRACKER_DB`), **è la fonte primaria dei benchmark**: centinaia di giochi reali con serie storiche, non stime a memoria. Si legge solo in lettura, senza rete:
+I giochi più recensiti del tag, con anno di uscita, prezzo e demo, dicono cosa serve per essere visibili e come vanno le uscite recenti. Si costruiscono a runtime, ogni volta che servono, da fonti pubbliche:
 
 ```bash
-python3 <skill>/scripts/research/gt_corpus.py info --db <percorso>      # quanto è grande e fino a quando arriva
-python3 <skill>/scripts/research/gt_corpus.py genre --db <percorso> --tag Roguelike --released-after <AAAA-MM-GG> \
-  --mine price=<prezzo> --mine screenshot_count=<n> --md launch/_raw/gt_genre.md -o launch/_raw/gt_genre.json
-python3 <skill>/scripts/research/gt_corpus.py comps --db <percorso> --tag Roguelike --limit 40 -o launch/_raw/gt_comps.json
+python3 <skill>/scripts/research/genre_bench.py --tag Roguelike --tag Cooking --enrich 80 \
+  --mine price=<prezzo> --mine reviews_per_year=<obiettivo> --md launch/_raw/genre_bench.md -o launch/_raw/genre_bench.json
 ```
-Riporta sempre corpus (numero di giochi, intervallo degli snapshot), filtri e data: sono **[FATTO]** con questi limiti. Se `info` dice che il corpus è piccolo, dichiaralo e usa i dati con prudenza. Dal corpus ricavi anche i comparabili con recensioni a +7/+30/+90 giorni (curve di lancio vere) da affiancare a quelli di `steam_comps.py`. Se il database non c'è, procedi con le fonti pubbliche e scrivi nel brief che i benchmark non vengono dal corpus.
+Distribuzioni (p25 / mediana / p75 / p90), coorti per anno di uscita, fasce di prezzo, demo contro senza demo, soglia di visibilità e la posizione dei tuoi numeri. **Limite da ripetere sempre:** la lista contiene i giochi *più recensiti* del tag, cioè la coda alta di successo, non il gioco mediano: le cifre dicono cosa serve per emergere, non cosa aspettarsi. Cita tag, n e data di lettura.
+
+Poi metti sotto osservazione i comparabili più vicini e i possibili concorrenti della tua finestra: `watchlist.py add <appid...> --role comp|competitor`; ogni controllo successivo con `watchlist.py snap` e `report --launch <data>` (segnala impennate, saldi, uscite, cali di % positive e collisioni con la tua data).
 
 ### 2.1 Trova i comparabili
 
@@ -104,7 +95,7 @@ Per ciascun comparabile completa a mano le colonne che gli script non danno: `vi
 
 ### 2.4 Dati di mercato del genere
 
-Post-mortem recenti; conversione wishlist→vendita (default prudente **[DA VERIFICARE]** 0,10-0,30× nel primo anno per un indie piccolo); ritmo di accumulo delle wishlist organiche; tasso di completamento della demo; quanti giochi simili escono al mese e che soglia di qualità serve per emergere. Le distribuzioni di recensioni a +30 giorni, prezzo e segnali di pagina vengono da `gt_corpus.py genre` (2.0) quando disponibile.
+Post-mortem recenti; conversione wishlist→vendita (default prudente **[DA VERIFICARE]** 0,10-0,30× nel primo anno per un indie piccolo); ritmo di accumulo delle wishlist organiche; tasso di completamento della demo; quanti giochi simili escono al mese e che soglia di qualità serve per emergere. Le distribuzioni per anno, prezzo e demo vengono da `genre_bench.py` (2.0), con il limite della coda alta.
 
 ### 2.5 Regole attuali delle piattaforme
 
@@ -112,7 +103,7 @@ Requisiti della pagina Steam, tag, demo e playtest, finestre di visibilità al l
 
 ### 2.6 Finestra di mercato
 
-Uscite grandi nello stesso genere nei prossimi 12 mesi (da evitare), saldi stagionali e festival tematici utili. Con GamesTracker: `gt_corpus.py window --tag <tag> --days 365` elenca le uscite già tracciate nella tua finestra (il collector vede soprattutto uscite recenti: integra con ricerca web sulle uscite annunciate).
+Uscite grandi nello stesso genere nei prossimi 12 mesi (da evitare), saldi stagionali e festival tematici utili. Per i concorrenti già noti usa `watchlist.py` (ruolo `competitor`) con la tua data di lancio: segnala la collisione di finestra.
 
 ### 2.7 Collisioni di titolo e marchio
 

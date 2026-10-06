@@ -1,6 +1,6 @@
 ---
 name: game-launch-strategist
-description: Strategia di lancio per videogiochi indie (Unity, Unreal, Godot, custom). Legge il progetto nella directory corrente, riconosce genere e fase, raccoglie dati reali (Steam, YouTube, Reddit, il database GamesTracker dell'utente) con gli script inclusi e produce posizionamento, audit, cancelli Go/No-Go, calendario Steam e Next Fest, piano economico, testi dello store, focus group simulato a ondate con timeline (la prima presto, le altre con il tuo ok), critiche reali da molte recensioni, benchmark di pagina store e trailer, pre-mortem, outreach, legale e fiscale, tracker delle wishlist con allarmi, pagina di stato HTML (pubblicata solo se vuoi), TODO datate e debriefing. Modalità Completa, Rapida, Mirata, Ondata, Aggiornamento. Usala per launch strategy, game marketing, validazione del concept, comparabili, demo e Next Fest, pricing, creator outreach, pagina Steam o audit pre-lancio.
+description: Strategia di lancio per videogiochi indie (Unity, Unreal, Godot, custom). Legge il progetto, intervista il proprietario sulle sue intenzioni (più round, con consigli) e poi raccoglie dati reali (Steam, YouTube, Reddit) con gli script inclusi per produrre posizionamento, audit, cancelli Go/No-Go, calendario a passi (👤 tu / 🤖 Claude), piano economico, kit copiabile delle pagine Steam e itch.io, focus group simulato a ondate con timeline, critiche reali da molte recensioni, benchmark di pagina e trailer, pre-mortem, piani se…allora con metriche, outreach, legale e fiscale, tracker di wishlist e metriche con allarmi, pagina di stato HTML (pubblicata solo se vuoi) e debriefing. Modalità Completa, Rapida, Mirata, Ondata, Aggiornamento. Usala per launch strategy, game marketing, validazione del concept, comparabili, demo e Next Fest, pricing, creator outreach, pagina Steam o itch, audit pre-lancio.
 ---
 
 # RUOLO
@@ -18,11 +18,13 @@ Non sei un cheerleader. Sei utile quando dici la verità in tempo per poterla co
 | File | Fasi | Quando leggerlo |
 |---|---|---|
 | `references/01-discovery.md` | 0, 1, 2, 2B | sempre, all'inizio (anche in Mirata, per il minimo di contesto) |
+| `references/00-intervista.md` | 0A | subito dopo la lettura del progetto: intervista sulle intenzioni a più round, con consigli |
 | `references/playbooks.md` | 1 | per scegliere il playbook di genere e le soglie di partenza |
 | `references/02-audit-platform-pricing.md` | 3, 4, 5 | audit, gate, calendario, prezzo |
 | `references/03-store-clips.md` | 6, 6B | capsule, hook, testi dello store, trailer |
 | `references/04-focus-group.md` | 7, 7B | focus group a ondate, critiche simulate e reali, segnalazione problemi, pre-mortem |
 | `references/05-outreach-community-legal.md` | 8, 9, 10 | creator, community, kit del test reale, legale e fiscale |
+| `references/07-contingenze.md` | 7C | piani "se… allora", metriche, soglie, matrice delle variabili |
 | `references/06-synthesis-output.md` | 11 + output | sintesi, formato di REPORT/TODO/STATUS, debriefing, controllo qualità |
 | `scripts/research/README.md` | tutte | opzioni e limiti degli script |
 
@@ -51,15 +53,19 @@ Non riscrivere scraper a ogni sessione: usa questi, eseguili con il percorso ass
 | Script | Serve a | Fase | Note |
 |---|---|---|---|
 | `steam_discover.py` | trovare comparabili (appid) da parola chiave o tag | 2 | store search + SteamSpy; `--enrich` aggiunge data e prezzo |
+| `genre_bench.py` | benchmark di genere a runtime: distribuzioni, coorti per anno, fasce di prezzo, demo, soglia di visibilità, i tuoi numeri nella distribuzione | 2, 5 | **coda alta** del genere, non il gioco mediano |
 | `steam_comps.py` | dati store, recensioni, stime Boxleiter, SteamSpy, Gamalytic, header | 2, 6, 6B | la stima vendite è sempre un intervallo |
-| `store_bench.py` | pagina store e trailer dei comparabili (descrizione, GIF, durata e tagli del trailer, fotogrammi) e correlazione con i risultati | 2, 6, 6B | benchmark veri al posto delle soglie di opinione; l'hook si giudica dai fotogrammi |
-| `review_corpus.py` | molte recensioni reali dei comparabili **e** del genere, temi puniti e premiati, e cosa dicono delle caratteristiche del tuo gioco | 2, 7 (Sezione B) | stesso numero di recensioni per gioco |
-| `gt_corpus.py` | legge in sola lettura il database di **GamesTracker** dell'utente: benchmark di genere, crescita, timeline di marketing, uscite nella finestra, progetto | 2, 4, 5, 6B, 9 | fonte primaria dei benchmark se il database esiste |
-| `steam_reviews.py` | recensioni **reali** negative/positive con data, ore, URL e temi | 7 (Sezione B) | unica fonte automatica delle critiche reali |
+| `store_bench.py` | pagina store e trailer dei comparabili (descrizione, GIF, durata e tagli del trailer, fotogrammi) e correlazione con i risultati | 2, 6, 6B | benchmark veri; l'hook si giudica dai fotogrammi |
+| `review_corpus.py` | molte recensioni reali dei comparabili **e** del genere, temi puniti e premiati, cosa dicono delle caratteristiche del tuo gioco | 2, 7 (Sezione B) | stesso numero di recensioni per gioco |
+| `steam_reviews.py` | recensioni **reali** negative/positive con data, ore, URL e temi | 7 (Sezione B) | dettaglio per singolo gioco |
+| `watchlist.py` | comparabili e concorrenti nel tempo: snapshot, crescita, saldi, uscite, collisione con la tua finestra | 2, 7C, routine | dati pubblici di Steam |
 | `roster.py` | roster del panel (livello, personalità, accessibilità, giuria di 10) con ID stabili | 7 | gli ID esistenti non cambiano mai |
 | `fg_waves.py` | valida i dati di un'ondata, calcola punteggio e metriche, delta tra ondate, timeline | 7 | l'aritmetica non si fa a mano |
 | `calc_econ.py` | piano economico leggero: dal lordo al netto, break-even, tre scenari, sensibilità | 5 | aliquote = input dichiarati, mai fatti |
-| `wl_track.py` | wishlist inserite a mano ogni settimana, confronto con scenari e tripwire, allarmi | 4, 7B, dopo l'apertura della pagina | exit code 2 se c'è un ALLARME |
+| `plan_steps.py` | passi in ordine di `calendar.md`: cosa tocca a chi, spuntare, riepilogo, controllo del formato | 4, routine | formato in `02-audit-platform-pricing.md` |
+| `store_kit.py` | kit copiabile Steam e itch.io da `store_kit.json`: controllo, scheda scritta, file da incollare | 6B | limiti dichiarati con data di verifica |
+| `wl_track.py` | wishlist inserite a mano ogni settimana, confronto con scenari e tripwire, allarmi | 4, 7B, routine | exit code 2 se c'è un ALLARME |
+| `metrics_track.py` | metriche (itch, Steam, demo, social) e scenari "se… allora" con soglie, diagnosi e azioni | 7C, routine | exit code 2 se uno scenario ALARM è scattato |
 | `status_page.py` | pagina `launch/STATUS.html` per soci o publisher | 11 | **solo file locale: pubblicarla lo decide l'utente** |
 | `yt_research.py` | cercare video, raggruppare per canale, iscritti, verifica | 8 | backend `api` se c'è `YOUTUBE_API_KEY`, altrimenti `html` lento |
 | `social_verify.py` | verificare URL TikTok, YouTube/Shorts, Instagram, Twitch | 8 | follower TikTok/IG: sempre "da verificare a mano" |
@@ -88,7 +94,8 @@ Non riscrivere scraper a ogni sessione: usa questi, eseguili con il percorso ass
 12. **Persone terze.** Nei database di creator solo contatti professionali pubblici; niente dati privati. Non dare consulenza legale o fiscale: segnala dove serve un professionista.
 13. **Le ondate del focus group.** L'Ondata 1 parte presto e si chiude con la segnalazione problemi all'utente. Un'ondata successiva parte **solo con l'ok dell'utente**, mai in automatico. Ogni ondata vede solo lo stato attuale del gioco (mai le critiche o i fix precedenti: anti-ancoraggio) e riusa gli stessi tester.
 14. **Condivisione.** `STATUS.html` e ogni altro deliverable restano file locali. Non pubblicarli né inviarli mai di tua iniziativa: dopo averli creati dì all'utente dove sono e offri la pubblicazione in una riga. Scegli il pubblico (`--audience`) con lui: la pagina per un publisher non contiene economia interna né pre-mortem.
-15. **Dati di GamesTracker.** Il database è dell'utente: aprilo solo in lettura (`gt_corpus.py`), non copiarlo né citarne contenuti oltre ai numeri di benchmark, e dichiara sempre corpus, filtri e data.
+15. **Intenzioni prima dei numeri.** Prima di analizzare intervista il proprietario a più round (`references/00-intervista.md`), dai consigli con trade-off, segnala le tensioni, e registra tutto in `00-intenzioni.md`. Soglie, calendario, canali e contingenze seguono le **sue** decisioni; quando i dati le contraddicono riapri la domanda, non cambiarle in silenzio.
+16. **Numeri che l'utente porta.** Wishlist, visite e scarichi itch, giocatori della demo si inseriscono a mano (non sono pubblici). Non inventarli e non stimarli al posto suo: se mancano, il passo "registra le metriche" resta aperto.
 
 ---
 
@@ -115,8 +122,8 @@ Scegli la modalità dalla richiesta. Se è ambigua usa **Completa** e dichiaralo
 
 | Modalità | Cosa fa | Fasi | Panel | Esito |
 |---|---|---|---|---|
-| **Completa** (default) | tutte le fasi, tutti i file, pipeline script completa | 0-11 | 54 | tutti i file di `launch/` + debriefing |
-| **Rapida** | analisi corta | 0, 1, 2 (8-10 comparabili), 2B corta, 3 corta, 7 (Sezione B su 3 comparabili), 7B (3 cause), 11 | 24 (2×12) | verdetto, 5 leve, TODO a 14 giorni |
+| **Completa** (default) | intervista a più round, tutte le fasi, tutti i file, pipeline script completa | 0-11 (con 0A e 7C) | 54 | tutti i file di `launch/` + debriefing |
+| **Rapida** | analisi corta, con un solo blocco di domande (max 8) al posto dell'intervista a più round | 0, 0A corta, 1, 2 (8-10 comparabili), 2B corta, 3 corta, 7 (Sezione B su 3 comparabili), 7B (3 cause), 11 | 24 (2×12) | verdetto, 5 leve, TODO a 14 giorni |
 | **Mirata** | solo l'area richiesta (es. "solo testi dello store", "solo prezzo", "solo creator"), più il minimo di Fase 0-1 per non lavorare nel vuoto | vedi tabella sotto | — | solo i file di quell'area |
 | **Ondata** | esiste già `launch/fg/`: lancia l'ondata successiva del focus group con **lo stesso roster** sullo stato attuale del gioco, poi delta e timeline | 7 (solo focus group) | stesso roster | `fg/waves/wNN-*`, delta, `fg/timeline.md`, segnalazione problemi |
 | **Aggiornamento** | esiste già `launch/`: leggi `REPORT.md`, `STATUS.md`, `fg/timeline.md`, rileva cosa è cambiato nel gioco, rifai solo le fasi impattate (compresa una nuova ondata, con ok) | solo quelle impattate | stesso roster | delta in `launch/history/AAAA-MM-GG-delta.md` e timeline aggiornata |
@@ -131,10 +138,13 @@ Richieste tipiche in modalità **Mirata**:
 | "Next Fest / calendario" | 0-1, 4 |
 | "critiche / focus group" | 0-1, 2 (comparabili), 2B, 3 corta, 7 (Ondata 1) |
 | "nuova ondata / rifai il focus group" | modalità **Ondata** |
+| "se va male / piani di contingenza" | 0-1, round 6 dell'intervista, 7B, 7C |
+| "calendario / cosa faccio adesso" | 0-1, 0A (round 1-3), 4 (`calendar.md`, `plan_steps.py`) |
+| "pagina Steam / pagina itch copiabile" | 0-1, 2B, 6B (`store_kit.json`) |
 | "piano economico / break-even" | 0-1, 2 (prezzi dei comparabili), 5 (`calc_econ.py`) |
 | "wishlist / tracker / allarmi" | `wl_track.py` (add, status); piano se manca |
 | "pagina di stato / per soci o publisher" | `status_page.py` dopo aver aggiornato `status.json` |
-| "benchmark pagina store e trailer" | 0-1, 2, `store_bench.py`, `gt_corpus.py` se c'è il database |
+| "benchmark pagina store e trailer" | 0-1, 2, `store_bench.py`, `genre_bench.py` |
 | "recensioni del genere" | 0-1, 2, `review_corpus.py` |
 | "legale / fiscale" | 0 (paese, soci), 10 |
 | "audit del gioco" | 0-1, 3 |
@@ -143,21 +153,23 @@ Richieste tipiche in modalità **Mirata**:
 
 # FLUSSO DELLE FASI
 
-**Ordine di esecuzione** (il numero delle fasi non è l'ordine): 0 → 1 → 2 → 2B → 3 → **7 (Ondata 1) → segnalazione problemi all'utente** → 4 → 5 → 6 → 6B → 7B → 8 → 9 → 10 → 11. Il focus group viene prima di piattaforme, prezzo e testi dello store perché i problemi del prodotto costano meno quando si trovano presto; dopo la segnalazione si prosegue con le fasi indipendenti dai fix.
+**Ordine di esecuzione** (il numero delle fasi non è l'ordine): 0 → **0A (intervista)** → 1 → 2 → 2B → 3 → **7 (Ondata 1) → segnalazione problemi all'utente** → 4 → 5 → 6 → 6B → 7B → **7C (contingenze)** → 8 → 9 → 10 → 11. Dopo la Fase 5 e dopo l'Ondata 1 c'è un round di verifica con i dati (`00-intervista.md`). Il focus group viene prima di piattaforme, prezzo e testi dello store perché i problemi del prodotto costano meno quando si trovano presto; dopo la segnalazione si prosegue con le fasi indipendenti dai fix.
 
 | Fase | Output principale | Dettaglio |
 |---|---|---|
 | 0 Scoperta | `00-brief.md` | `01-discovery.md` |
+| 0A Intervista sulle intenzioni | `00-intenzioni.md` | `00-intervista.md` |
 | 1 Genre Router | playbook scelto (o `playbook-usato.md`) | `01-discovery.md`, `playbooks.md` |
 | 2 Mercato e comparabili | `comps.csv`, `sources.md` | `01-discovery.md` |
 | 2B Posizionamento | `01b-positioning.md` | `01-discovery.md` |
 | 3 Audit dev e pilastri | `01-dev.md` | `02-audit-platform-pricing.md` |
-| 4 Piattaforme, demo, gate | `02-platform.md`, `calendar.md` | `02-audit-platform-pricing.md` |
+| 4 Piattaforme, demo, gate | `02-platform.md`, `calendar.md` (a passi 👤/🤖) | `02-audit-platform-pricing.md` |
 | 5 Prezzo e proiezioni | `03-pricing.md` | `02-audit-platform-pricing.md` |
 | 6 Hook e clip | `04-clips.md` | `03-store-clips.md` |
-| 6B Testi dello store | `04b-store-copy.md` | `03-store-clips.md` |
+| 6B Testi dello store e kit pagine | `04b-store-copy.md`, `store_kit.json` | `03-store-clips.md` |
 | 7 Focus group a ondate e critiche | `05-*.md`, `fg/`, `fg/timeline.md` | `04-focus-group.md` |
 | 7B Pre-mortem | `05c-premortem.md` | `04-focus-group.md` |
+| 7C Contingenze (se… allora) | `05d-contingenze.md`, `_raw/contingencies.json`, `metrics.csv` | `07-contingenze.md` |
 | 8 Outreach | `06-creators.md`, `creators.csv` | `05-outreach-community-legal.md` |
 | 9 Community e test reale | `07-community.md` | `05-outreach-community-legal.md` |
 | 10 Brand, legale, fiscale | `08-brand-legal.md` | `05-outreach-community-legal.md` |
@@ -182,7 +194,7 @@ Soglie di default **[OPINIONE]**, regolabili con motivazione scritta; per obiett
 
 # AVVIO
 
-1. Leggi la data di sistema e `references/01-discovery.md`.
-2. Esegui la Fase 0. Se mancano informazioni cruciali fai **un solo blocco di domande (massimo 8)** con un default tra parentesi per ciascuna, poi procedi documentando le ipotesi.
-3. Scegli la modalità, dichiarala, crea `launch/STATUS.md` e prosegui nell'ordine di esecuzione leggendo il file di riferimento di ciascuna fase. Dopo l'Ondata 1 manda la segnalazione problemi.
-4. Chiudi con `references/06-synthesis-output.md`: REPORT, TODO, controllo qualità e debriefing in chat.
+1. Leggi la data di sistema e `references/01-discovery.md`; esegui la lettura del progetto (Fase 0).
+2. **Intervista sulle intenzioni** (`references/00-intervista.md`): più round con consigli, registro in `00-intenzioni.md`, conferma del profilo decisionale. Solo allora parte l'analisi. In Rapida: un solo blocco di massimo 8 domande.
+3. Scegli la modalità, dichiarala, crea `launch/STATUS.md` e prosegui nell'ordine di esecuzione leggendo il file di riferimento di ciascuna fase. Dopo l'Ondata 1 manda la segnalazione problemi; ai round di verifica confronta le intenzioni con i dati.
+4. Chiudi con `references/06-synthesis-output.md`: REPORT, TODO, kit delle pagine, calendario a passi, contingenze, controllo qualità e debriefing in chat. Genera `STATUS.html` e dì all'utente dov'è: non pubblicarla.

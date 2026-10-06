@@ -51,7 +51,6 @@ Output: **`launch/07-community.md`**.
   python3 <skill>/scripts/research/reddit_rules.py IndieDev indiegaming playmygame DestroyMyGame -o launch/_raw/reddit_rules.md
   ```
   Se risponde `403 Blocked` (senza OAuth succede quasi sempre), leggi la sidebar a mano e scrivilo in `ricerche-manuali.md`. Formati narrativi (problema risolto, clip curiosa, lezione appresa), non "comprate il mio gioco". Dichiara l'uso di AI generativa dove community o piattaforma lo richiedono.
-- **Quando pubblicare.** Con GamesTracker: `gt_corpus.py marketing --db <percorso> --tag <tag> --md launch/_raw/gt_marketing.md` mostra, per i giochi migliori e per il resto, quanti post escono nelle finestre prima e dopo l'uscita (-90..-61, -60..-31, -30..-8, -7..-1, 0..+6, +7..+30), il mix di piattaforme e la mediana di views. È co-occorrenza, non causalità: usala per calibrare cadenza e piattaforme, non come regola.
 - **Discord e newsletter**: se l'obiettivo è vendere, valuta se vale il costo di moderazione e proponi la soglia minima sensata.
 - **Cadenza di devlog**: frequenza e formato realistici per il team (meglio poco e costante).
 - **Kit del test reale (Gate B)**, pronto da usare:

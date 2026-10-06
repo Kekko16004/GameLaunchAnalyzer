@@ -61,10 +61,43 @@ Output: **`launch/02-platform.md`** e **`launch/calendar.md`**.
    ```
    `status` confronta con i percorsi degli scenari e con i tripwire, segnala rallentamenti, cali, dati vecchi e picchi non annotati, e **esce con codice 2 se un tripwire è scattato**. Quando succede, riporta all'utente l'ALLARME con l'azione di emergenza del pre-mortem, senza minimizzare. I percorsi sono lineari: una semplificazione **[OPINIONE]**.
 
-Formato di `calendar.md`:
+### Il calendario: `launch/calendar.md` (dettagliato, a passi, con chi fa cosa)
 
-| Data (AAAA-MM-GG) | Evento | Tipo (gate / scadenza / tripwire / ondata / lancio) | Dipendenze | Verificato il |
-|---|---|---|---|---|
+Non basta una tabella di date. Il calendario è il documento che l'utente segue giorno per giorno, quindi ha **quattro parti**:
+
+1. **Decisioni e ipotesi** in testa (citazione): obiettivo scelto dal proprietario (intervista), ipotesi usate, fonte e data di verifica delle date Steam.
+2. **Date fisse** (tabella `Data | Evento | Tipo | Fonte e data di verifica`): ancore non spostabili (iscrizioni, scadenze di revisione, inizio del festival, saldi da evitare). Tipo: `gate`, `scadenza`, `tripwire`, `ondata`, `lancio`.
+3. **Piano a ritroso** (tabella `Quando | Cosa | Note`): lavoro tra un'ancora e l'altra, con margini di sicurezza e il **perché** di ogni vincolo.
+4. **Passi in ordine** (sotto), il cuore: numerati, per fasi, ciascuno con il proprietario del passo.
+5. **Piano B**: cosa cambia se un gate fallisce o una scadenza salta.
+
+#### Passi in ordine (formato letto da `plan_steps.py` e dalla pagina HTML)
+
+```markdown
+## ✅ Passi in ordine
+🤖 le faccio io (Claude). Quelle segnate 👤 le fai tu
+### FASE 1 — Adesso (ottobre)
+1. [ ] 👤 **Crea il modulo di feedback**: apri `tools/release/community/feedback-form-EN.md` e segui le istruzioni in cima (~20 min). · 📅 2026-10-20
+2. [ ] 👤 **Mandami il link del modulo** (e quello d'invito del Discord). · 📅 2026-10-22
+3. [ ] 🤖 Lo collego al pulsante Feedback della beta, alla pagina itch e al Discord.
+### FASE 2 — Inizio novembre: test con persone vere
+4. [ ] 👤+🤖 **Pagina itch** in bozza. · 📅 2026-11-10
+   nota opzionale su una riga indentata
+```
+
+Regole:
+- **Ogni passo ha un proprietario:** 👤 lo fa l'utente, 🤖 lo fa Claude, 👤+🤖 insieme. I passi 🤖 che toccano il prodotto o pubblicano qualcosa riportano "(solo con il tuo ok)" (regola 8 e 14 di `SKILL.md`).
+- **I passi 👤 spiegano come:** quale file aprire, cosa produrre, quanto tempo richiede (~20 min), perché conta. Niente "gestire la community": un'azione che si può spuntare.
+- **Scadenza `· 📅 AAAA-MM-GG`** su ogni passo 👤 e sui passi con data fissa; derivata dalle ancore e dalla capacità del team (ore a settimana dall'intervista).
+- **Fasi con titolo e periodo** ("FASE 3 — Metà-fine novembre: Steam"), ordinate nel tempo; l'ultima può essere "Dopo (marzo 2027 →)".
+- **Copri l'intero percorso:** ricerca e decisioni (gate, soldi, accordo tra soci, commercialista), prodotto (🤖 con ok), materiali (capsule, trailer, pagine: vedi `store_kit.json`), community e creator, pagine itch e Steam, demo e Next Fest, metriche da registrare (`wl_track.py`, `metrics_track.py`), ondate del focus group (con ok), lancio e dopo.
+- **Controlla** con `plan_steps.py check`; durante il lavoro usa `plan_steps.py next --owner me` (cosa tocca all'utente), `done N` (spunta) e `summary`.
+
+```bash
+python3 <skill>/scripts/research/plan_steps.py check
+python3 <skill>/scripts/research/plan_steps.py next --owner me --limit 5
+python3 <skill>/scripts/research/plan_steps.py done 2 3
+```
 
 ---
 
@@ -79,7 +112,7 @@ Esegui il calcolo con lo strumento, così le cifre si riproducono e si rifanno i
 python3 <skill>/scripts/research/calc_econ.py --price <prezzo> --costs <costi_cassa> --hours <ore> --hourly <tariffa> --partners <n> \
   --wishlists <pess,base,ott> --conv 0.10,0.20,0.30 --md launch/03-pricing-calc.md -o launch/_raw/econ.json
 ```
-Le aliquote (quota Steam, IVA/sales tax, rimborsi, sconto medio, imposte locali) sono **input dichiarati [DA VERIFICARE]** con fonte nel report, non fatti dello script. Con GamesTracker, i prezzi e le curve dei comparabili del genere vengono da `gt_corpus.py` (`price`, `reviews_d30`).
+Le aliquote (quota Steam, IVA/sales tax, rimborsi, sconto medio, imposte locali) sono **input dichiarati [DA VERIFICARE]** con fonte nel report, non fatti dello script. I prezzi e le fasce di successo del genere vengono da `genre_bench.py` (fasce di prezzo).
 
 2. **Dal lordo al netto**, per copia, sempre con intervalli e fonte:
 

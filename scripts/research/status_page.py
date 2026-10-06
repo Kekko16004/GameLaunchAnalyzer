@@ -1,21 +1,28 @@
 #!/usr/bin/env python3
-"""One self-contained HTML status page for partners or a publisher: verdict, key numbers, wishlist vs scenarios,
-focus-group timeline, Go/No-Go gates, calendar, open TODOs, and the main documents (collapsible).
+"""One self-contained HTML status page for partners or a publisher: verdict, decision profile, key numbers, alerts,
+the step-by-step calendar (who does what), wishlist vs scenarios, focus-group timeline, Go/No-Go gates, copy-ready Steam
+and itch.io pages (a Copy button on every field), "if... then" contingency plans with live status, competitors, open TODOs
+and the main documents (collapsible).
 
-It only READS files already produced in `launch/` and writes `launch/STATUS.html` (no network, no external scripts,
-no tracking: everything is inline, so the file can be attached to an email as is):
-  launch/status.json         verdict, gates, key numbers (written by the skill, see references/06-synthesis-output.md)
+It only READS files already produced in `launch/` and writes `launch/STATUS.html` (no network, no external scripts, no
+tracking: everything is inline, so the file can be attached to an email as is). All text coming from files is escaped.
+  launch/status.json         verdict, gates, key numbers, intentions (written by the skill, see references/06-synthesis-output.md)
+  launch/calendar.md         dates and the `## ✅ Passi in ordine` steps with 👤/🤖 owners (plan_steps.py reads them)
+  launch/store_kit.json      copy-ready Steam and itch.io pages (store_kit.py)
+  launch/_raw/contingencies.json + launch/metrics.csv    "if... then" scenarios and the numbers you record (metrics_track.py)
   launch/fg/timeline.csv     focus-group waves (fg_waves.py timeline --csv)
-  launch/wishlists.csv + launch/_raw/wl_plan.json   wishlist tracker (wl_track.py)
-  launch/_raw/econ.json      economic plan (calc_econ.py)
-  launch/calendar.md, launch/TODO.md, launch/REPORT.md and the other documents
+  launch/wishlists.csv + launch/_raw/wl_plan.json        wishlist tracker (wl_track.py)
+  launch/watchlist.csv       comparables and competitors over time (watchlist.py)
+  launch/_raw/econ.json      economic plan (calc_econ.py);  launch/TODO.md and the reports in launch/
 Anything missing is simply left out.
 
 Sharing: the page contains strategy. --audience picks what goes in (default partner):
-  private    everything, including pre-mortem, creators, community, legal/fiscal
-  partner    verdict, numbers, charts, gates, calendar, economics, positioning, platform, pricing, focus group, pre-mortem
-  publisher  verdict, positioning, platform, focus group, charts, calendar (no economics, no pricing, no pre-mortem)
-Add/remove with --include / --exclude (file stems such as 03-pricing) and --hide economics,todo,calendar.
+  private    everything, including creators, community, legal/fiscal
+  partner    everything except creators, community and legal/fiscal documents
+  publisher  verdict, numbers, charts, gates, calendar dates, store pages, positioning, platform, focus group;
+             no steps, economics, TODO, contingencies, competitors or decision profile
+Add/remove documents with --include / --exclude (file stems such as 03-pricing) and sections with
+--hide economics,todo,calendar,steps,storekit,contingencies,watchlist,intentions.
 Publishing the page anywhere is YOUR decision: this tool only writes the local file.
 
   python status_page.py [--launch-dir launch] [--audience partner] [-o launch/STATUS.html]
@@ -31,18 +38,22 @@ import math
 import os
 import re
 from common import load_json, log
+import metrics_track as mt
+import plan_steps as ps
+import store_kit as sk
+import watchlist as wlist
 import wl_track as wl
 
 MONTHS = "gen feb mar apr mag giu lug ago set ott nov dic".split()
 DOCS = {  # stem -> title
-    "REPORT": "Report completo", "00-brief": "Brief del progetto", "01b-positioning": "Posizionamento", "01-dev": "Audit del prodotto",
+    "REPORT": "Report completo", "00-intenzioni": "Intenzioni e decisioni", "04b-store-copy": "Testi dello store e trailer", "05d-contingenze": "Piani di contingenza (se… allora)", "00-brief": "Brief del progetto", "01b-positioning": "Posizionamento", "01-dev": "Audit del prodotto",
     "02-platform": "Piattaforme, demo e gate", "03-pricing": "Prezzo ed economia", "05-focusgroup": "Focus group", "05c-premortem": "Pre-mortem",
     "06-creators": "Creator", "07-community": "Community e test reale", "08-brand-legal": "Brand, legale e fiscale"}
 AUDIENCES = {
     "private": list(DOCS),
-    "partner": ["REPORT", "01b-positioning", "02-platform", "03-pricing", "05-focusgroup", "05c-premortem"],
+    "partner": ["REPORT", "00-intenzioni", "01b-positioning", "02-platform", "03-pricing", "05-focusgroup", "05c-premortem", "05d-contingenze"],
     "publisher": ["01b-positioning", "02-platform", "05-focusgroup"]}
-HIDE_BY_AUDIENCE = {"private": set(), "partner": set(), "publisher": {"economics", "todo"}}
+HIDE_BY_AUDIENCE = {"private": set(), "partner": set(), "publisher": {"economics", "todo", "contingencies", "steps", "watchlist", "intentions"}}
 
 CSS = """
 :root{color-scheme:light;--bg:#f9f9f7;--surface:#fcfcfb;--ink:#0b0b0b;--ink2:#52514e;--muted:#898781;--grid:#e1e0d9;--axis:#c3c2b7;--ring:rgba(11,11,11,.10);
@@ -55,15 +66,29 @@ main{max-width:1040px;margin:0 auto;padding:24px 16px 64px;overflow-wrap:anywher
 button.theme{background:var(--surface);color:var(--ink2);border:1px solid var(--ring);border-radius:8px;padding:6px 10px;cursor:pointer;font:inherit;font-size:.85rem}
 .card{background:var(--surface);border:1px solid var(--ring);border-radius:12px;padding:16px}.grid{display:grid;gap:12px}.g4{grid-template-columns:repeat(auto-fit,minmax(min(200px,100%),1fr))}
 .verdict{display:flex;gap:16px;align-items:flex-start}.verdict>div:first-child svg{width:40px;height:40px}.verdict>div:last-child{min-width:0}.verdict .big{font-size:1.25rem;font-weight:600}.tile .v{font-size:1.9rem;font-weight:600;line-height:1.1}.tile .l{color:var(--ink2);font-size:.85rem}.tile .d{color:var(--ink2);font-size:.85rem;margin-top:4px}
-.state{display:inline-flex;align-items:center;gap:6px;font-weight:600}.state svg{flex:none}ul.clean{list-style:none;margin:0;padding:0}ul.clean li{display:flex;gap:8px;align-items:flex-start;padding:6px 0;border-top:1px solid var(--grid)}ul.clean li:first-child{border-top:0}
+.state{display:inline-flex;align-items:center;gap:6px;font-weight:600;white-space:nowrap;flex:none}.state svg{flex:none}.g2{grid-template-columns:repeat(auto-fit,minmax(min(380px,100%),1fr))}ul.clean{list-style:none;margin:0;padding:0}ul.clean li{display:flex;gap:8px;align-items:flex-start;padding:6px 0;border-top:1px solid var(--grid)}ul.clean li:first-child{border-top:0}
 table{border-collapse:collapse;width:100%;font-size:.9rem}th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--grid);vertical-align:top}th{color:var(--ink2);font-weight:600}td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
 .wrap{overflow-x:auto}tr.past td{color:var(--muted)}details{margin-top:8px}summary{cursor:pointer;color:var(--ink2)}
 .chart{position:relative}.chart svg{width:100%;height:auto;display:block}.tip{position:absolute;pointer-events:none;background:var(--surface);color:var(--ink);border:1px solid var(--ring);border-radius:8px;padding:8px 10px;font-size:.85rem;white-space:pre-line;box-shadow:0 2px 10px rgba(0,0,0,.15);display:none;max-width:260px;z-index:2}
 .doc{margin-top:12px}.doc h3{font-size:1rem}.doc h4,.doc h5{font-size:.95rem;margin:14px 0 6px}.doc code{background:var(--grid);padding:1px 4px;border-radius:4px;font-size:.85em}.doc pre{background:var(--grid);padding:10px;border-radius:8px;overflow-x:auto}.doc blockquote{margin:8px 0;padding-left:12px;border-left:3px solid var(--axis);color:var(--ink2)}
-a{color:var(--s1)}footer{margin-top:40px}.legend{display:flex;gap:16px;flex-wrap:wrap;color:var(--ink2);font-size:.85rem;margin:6px 0}.legend i{display:inline-block;width:18px;height:0;border-top:2px solid;vertical-align:middle;margin-right:6px}
+a{color:var(--s1)}footer{margin-top:40px}
+.progress{height:10px;border-radius:5px;background:var(--grid);overflow:hidden;margin:8px 0}.progress span{display:block;height:100%;background:var(--s1);border-radius:5px}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}.filters button,button.copy{background:var(--surface);color:var(--ink);border:1px solid var(--ring);border-radius:8px;padding:6px 12px;cursor:pointer;font:inherit;font-size:.85rem}
+.filters button[aria-pressed="true"]{border-color:var(--s1);box-shadow:inset 0 0 0 1px var(--s1)}button.copy.ok{border-color:var(--good)}
+ol.steps{list-style:none;margin:8px 0 0;padding:0}.step{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;padding:10px 0;border-top:1px solid var(--grid)}.step[hidden]{display:none}.step .meta{display:flex;gap:10px;flex-wrap:wrap;align-items:center;font-size:.85rem;color:var(--ink2)}
+.step .n{color:var(--muted);font-variant-numeric:tabular-nums}.step .stext{grid-column:2}.step .notes{grid-column:2;color:var(--ink2);font-size:.9rem}.owner{font-weight:600;color:var(--ink)}.step[data-state="done"] .stext{color:var(--muted)}
+summary .count{color:var(--ink2);font-weight:400;margin-left:8px}.field{padding:10px 0;border-top:1px solid var(--grid)}.field:first-of-type{border-top:0}.fh{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap}
+pre.val{background:var(--grid);padding:10px;border-radius:8px;white-space:pre-wrap;overflow-wrap:anywhere;margin:6px 0;font:inherit;font-size:.9rem}.slot{border:2px dashed var(--axis);border-radius:8px;padding:12px;margin:6px 0;color:var(--ink2);font-size:.9rem}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0}.chip{border:1px solid var(--ring);border-radius:999px;padding:3px 10px;font-size:.85rem;background:var(--surface)}.chip.top5{border-color:var(--s1);font-weight:600}.chip b{color:var(--muted);margin-right:4px;font-weight:400}
+.over{color:var(--crit);font-weight:600}.legend{display:flex;gap:16px;flex-wrap:wrap;color:var(--ink2);font-size:.85rem;margin:6px 0}.legend i{display:inline-block;width:18px;height:0;border-top:2px solid;vertical-align:middle;margin-right:6px}
 """
 JS = """
-(function(){var b=document.getElementById('theme');if(b){b.addEventListener('click',function(){var r=document.documentElement,d=r.getAttribute('data-theme')==='dark'||(!r.getAttribute('data-theme')&&matchMedia('(prefers-color-scheme: dark)').matches);r.setAttribute('data-theme',d?'light':'dark');});}
+(function(){document.querySelectorAll('.copy').forEach(function(b){b.addEventListener('click',function(){var t=b.getAttribute('data-copy')||'';function ok(){var o=b.textContent;b.textContent='Copiato';b.classList.add('ok');setTimeout(function(){b.textContent=o;b.classList.remove('ok');},1500);}
+if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(ok,function(){fb(t,ok);});}else{fb(t,ok);}});});
+function fb(t,ok){var a=document.createElement('textarea');a.value=t;a.style.position='fixed';a.style.opacity='0';document.body.appendChild(a);a.select();try{document.execCommand('copy');ok();}catch(e){}document.body.removeChild(a);}
+document.querySelectorAll('.filters button').forEach(function(b){b.addEventListener('click',function(){var f=b.getAttribute('data-f');document.querySelectorAll('.filters button').forEach(function(x){x.setAttribute('aria-pressed',x===b?'true':'false');});
+document.querySelectorAll('.step').forEach(function(s){var o=s.getAttribute('data-owner');s.hidden=!(f==='all'||o===f||o==='both');});});});
+var b=document.getElementById('theme');if(b){b.addEventListener('click',function(){var r=document.documentElement,d=r.getAttribute('data-theme')==='dark'||(!r.getAttribute('data-theme')&&matchMedia('(prefers-color-scheme: dark)').matches);r.setAttribute('data-theme',d?'light':'dark');});}
 document.querySelectorAll('.chart').forEach(function(c){var tip=c.querySelector('.tip'),cross=c.querySelector('.cross');
 c.querySelectorAll('.hit').forEach(function(h){function show(){var x=h.getAttribute('data-x');if(cross){cross.setAttribute('x1',x);cross.setAttribute('x2',x);cross.style.display='block';}
 tip.textContent=h.getAttribute('data-tip');tip.style.display='block';var svg=c.querySelector('svg'),k=svg.getBoundingClientRect().width/svg.viewBox.baseVal.width;tip.style.left=Math.min(x*k+12,c.clientWidth-270)+'px';tip.style.top='8px';}
@@ -268,21 +293,6 @@ def timeline_section(root: str):
 
 
 # ----------------------------------------------------------------------------- other sources
-def read_calendar(root: str):
-    p = os.path.join(root, "calendar.md")
-    if not os.path.exists(p):
-        return []
-    rows, header = [], None
-    for ln in open(p, encoding="utf-8").read().splitlines():
-        if ln.strip().startswith("|"):
-            cells = [c.strip() for c in ln.strip().strip("|").split("|")]
-            if header is None and cells and cells[0].lower().startswith("data"):
-                header = cells
-            elif header and not re.match(r"^[-:\s|]+$", ln) and re.match(r"\d{4}-\d{2}-\d{2}", cells[0]):
-                rows.append(cells)
-    return sorted(rows, key=lambda r: r[0])
-
-
 def read_todos(root: str):
     p = os.path.join(root, "TODO.md")
     if not os.path.exists(p):
@@ -304,12 +314,154 @@ def read_todos(root: str):
 
 
 # ----------------------------------------------------------------------------- page
+OWNER = {"me": "👤 Tu", "claude": "🤖 Claude", "both": "👤+🤖 Insieme", "none": "—"}
+STEP_STATE = {"done": ("pass", "Fatto"), "open": ("pending", "Da fare"), "overdue": ("warn", "In ritardo")}
+
+
+def step_li(s: dict, today: dt.date) -> str:
+    st = ps.status_of(s, today)
+    due = f'<span>entro {fmt_date(s["due"])}</span>' if s.get("due") else ""
+    notes = f'<div class="notes">{"<br>".join(inline(n) for n in s["notes"])}</div>' if s.get("notes") else ""
+    return (f'<li class="step" data-owner="{s["owner"]}" data-state="{st}"><span class="n">{s["n"]}.</span><div class="meta">{state(*STEP_STATE[st])}<span class="owner">{OWNER[s["owner"]]}</span>{due}</div>'
+            f'<div class="stext">{inline(s["text"])}</div>{notes}</li>')
+
+
+def steps_section(plan: dict, today: dt.date) -> str:
+    sm = ps.summary(plan, today)
+    pct = round(100 * sm["done"] / sm["total"]) if sm["total"] else 0
+    now_me, now_ai = ps.next_steps(plan, "me", 3, today), ps.next_steps(plan, "claude", 3, today)
+    box = lambda title, items: (f'<div class="card"><h3>{title}</h3>' + ("<ul class=\"clean\">" + "".join(f'<li>{state(*STEP_STATE[ps.status_of(s, today)])}<span><strong>{s["n"]}.</strong> {inline(s["text"])}'
+                                + (f' <span class="note">(entro {fmt_date(s["due"])})</span>' if s.get("due") else "") + "</span></li>" for s in items) + "</ul>" if items else "<p class=\"note\">Niente in sospeso.</p>") + "</div>")
+    out = ['<h2>Passi in ordine</h2><div class="card">', f'<p class="sub">{esc(plan.get("intro") or "👤 = li fai tu · 🤖 = li fa Claude · 👤+🤖 = insieme")}</p>',
+           f'<div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{pct}" aria-label="Avanzamento dei passi"><span style="width:{pct}%"></span></div>',
+           f'<p><strong>{sm["done"]} di {sm["total"]}</strong> fatti · {sm["overdue"]} in ritardo · ancora aperti: {sm["me_open"]} tuoi, {sm["claude_open"]} di Claude</p>',
+           '<div class="filters" role="group" aria-label="Filtra i passi"><button type="button" data-f="all" aria-pressed="true">Tutti</button><button type="button" data-f="me" aria-pressed="false">Solo i miei</button>'
+           '<button type="button" data-f="claude" aria-pressed="false">Solo Claude</button></div></div>', '<div class="grid g2" style="margin-top:12px">' + box("Tocca a te adesso", now_me) + box("Tocca a Claude", now_ai) + "</div>"]
+    first_open = next((k for k, p in enumerate(plan["phases"]) if any(not s["done"] for s in p["steps"])), 0)
+    for k, p in enumerate(plan["phases"]):
+        done = sum(s["done"] for s in p["steps"])
+        out.append(f'<details class="card" style="margin-top:12px"{" open" if k == first_open else ""}><summary><strong>{inline(p["title"])}</strong><span class="count">{done}/{len(p["steps"])} fatti</span></summary>'
+                   f'<ol class="steps">{"".join(step_li(x, today) for x in p["steps"])}</ol></details>')
+    return "".join(out)
+
+
+def copy_btn(text: str) -> str:
+    return f'<button type="button" class="copy" data-copy="{esc(text)}">Copia</button>'
+
+
+def kit_platform(pf: str, title: str, p: dict, verified: str) -> str:
+    limits = p.get("limits") or {}
+    o = [f'<details class="card" style="margin-top:12px" open><summary><strong>{esc(title)}</strong><span class="count">limiti verificati il {esc(verified or "[DA VERIFICARE]")}</span></summary>']
+    for f in p.get("fields", []):
+        val, lim = str(f.get("value") or ""), limits.get(f.get("key"))
+        cnt = f'<span class="note">{len(val)}{"/" + str(lim) if lim else ""} caratteri</span>' + (f' {state("fail", "Oltre il limite")}' if lim and len(val) > lim else "")
+        o.append(f'<div class="field"><div class="fh"><strong>{esc(f.get("label") or f["key"])}</strong><span>{cnt} {copy_btn(val)}</span></div><pre class="val">{esc(val)}</pre>' + (f'<p class="note">{esc(f["note"])}</p>' if f.get("note") else "") + "</div>")
+    ld = p.get("long_description") or {}
+    if ld.get("blocks"):
+        full = sk.assemble(ld)
+        o.append(f'<div class="field"><div class="fh"><strong>Descrizione lunga ({esc(ld.get("format", "testo"))})</strong><span><span class="note">{len(full)} caratteri</span> {copy_btn(full)}</span></div>'
+                 '<p class="note">I riquadri tratteggiati sono i punti dove vanno foto e GIF: nel testo copiato compaiono come segnaposto &lt;&lt;&lt; … &gt;&gt;&gt; da sostituire con l\'upload.</p>')
+        for b in ld["blocks"]:
+            if b.get("type") == "media":
+                o.append(f'<div class="slot"><strong>📷 {esc(b.get("slot", "Media"))}</strong>: {esc(b.get("what", ""))}<br><span class="note">file: {esc(b.get("file") or "da produrre")}{" · alt: " + esc(b["alt"]) if b.get("alt") else ""}</span></div>')
+            else:
+                o.append(f'<pre class="val">{esc(b.get("value", ""))}</pre>')
+        o.append("</div>")
+    if p.get("tags"):
+        allt = ", ".join(t["tag"] for t in p["tags"])
+        o.append(f'<div class="field"><div class="fh"><strong>Tag, in ordine</strong><span class="note">i primi 5 pesano di più {copy_btn(allt)}</span></div><div class="chips">'
+                 + "".join(f'<span class="chip{" top5" if i <= 5 else ""}" title="{esc(t.get("why", ""))}"><b>{i}</b>{esc(t["tag"])}</span>' for i, t in enumerate(p["tags"], 1)) + "</div>"
+                 + ("<details><summary>Perché questi tag</summary><ul>" + "".join(f'<li><strong>{esc(t["tag"])}</strong>: {esc(t.get("why", ""))}</li>' for t in p["tags"]) + "</ul></details>")
+                 + ("<p class=\"note\">Da evitare: " + "; ".join(f"{esc(t['tag'])} ({esc(t.get('why', ''))})" for t in p["avoid_tags"]) + "</p>" if p.get("avoid_tags") else "") + "</div>")
+    def tbl(title: str, head: list[str], rows: list[list]) -> str:
+        return (f'<div class="field"><strong>{esc(title)}</strong><div class="wrap"><table><thead><tr>{"".join(f"<th>{esc(h)}</th>" for h in head)}</tr></thead><tbody>'
+                + "".join("<tr>" + "".join(f"<td>{esc(c)}</td>" for c in r) + "</tr>" for r in rows) + "</tbody></table></div></div>")
+    if p.get("screenshots"):
+        o.append(tbl("Screenshot, in ordine", ["#", "Cosa mostra", "Didascalia", "File"], [[x.get("order"), x.get("what", ""), x.get("caption", ""), x.get("file") or "da produrre"] for x in sorted(p["screenshots"], key=lambda x: x.get("order") or 0)]))
+    if p.get("capsules"):
+        o.append(tbl("Immagini e capsule", ["Nome", "Misura", "Cosa deve comunicare"], [[c.get("name"), c.get("size", "[DA VERIFICARE]"), c.get("what", "")] for c in p["capsules"]]))
+    if p.get("trailer"):
+        t = p["trailer"]
+        o.append(f'<div class="field"><strong>Trailer</strong><p>Durata prevista {esc(t.get("duration_s", "?"))} s · posizione: {esc(t.get("placement", ""))} · script: {esc(t.get("script", ""))}</p></div>')
+    if p.get("settings"):
+        o.append(tbl("Impostazioni da compilare", ["Voce", "Valore", "Nota"], [[x.get("label"), x.get("value"), x.get("note", "")] for x in p["settings"]]))
+    if p.get("checklist"):
+        o.append('<div class="field"><strong>Controlli prima di pubblicare</strong><ul class="clean">' + "".join(f"<li>{state('pending', 'Da fare')}<span>{esc(c)}</span></li>" for c in p["checklist"]) + "</ul></div>")
+    o.append("</details>")
+    return "".join(o)
+
+
+def kit_section(kit: dict) -> str:
+    out = ['<h2>Pagine store: scheda copiabile</h2><p class="note">Ogni campo ha il suo pulsante Copia. I testi vengono da <code>store_kit.json</code>; i limiti di caratteri sono quelli dichiarati nel file con la data di verifica.</p>']
+    for pf, title in (("steam", "Pagina Steam"), ("itch", "Pagina itch.io")):
+        if kit.get(pf):
+            out.append(kit_platform(pf, title, kit[pf], kit.get("verified_on", "")))
+    return "".join(out)
+
+
+SC_STATE = {"SCATTATO": ("fail", "Scattato"), "OK": ("pass", "Ok"), "SENZA DATI": ("pending", "Senza dati"), "NON ANCORA": ("na", "Non ancora attivo")}
+
+
+def contingency_section(root: str, today: dt.date):
+    path = os.path.join(root, "_raw", "contingencies.json")
+    if not os.path.exists(path):
+        return None, []
+    rows = mt.read_metrics(os.path.join(root, "metrics.csv"), os.path.join(root, "wishlists.csv"))
+    res = mt.evaluate(load_json(path), rows, today)
+    order = ["SCATTATO", "SENZA DATI", "OK", "NON ANCORA"]
+    res.sort(key=lambda r: (order.index(r["status"]), r.get("area", "")))
+    n = {k: sum(1 for r in res if r["status"] == k) for k in order}
+    o = [f'<h2>Se… allora: piani di contingenza</h2><p class="sub">{n["SCATTATO"]} scattati · {n["OK"]} ok · {n["SENZA DATI"]} senza dati · {n["NON ANCORA"]} non ancora attivi. Le soglie sono ipotesi dichiarate: la fonte è scritta sotto ogni scenario.</p>']
+    alerts = []
+    for r in res:
+        if r["status"] == "SCATTATO":
+            alerts.append(("ALARM" if r.get("severity") == "ALARM" else "ATTENZIONE", f"Scenario scattato · {r.get('area', '')}: {r['title']}"))
+        sig = "".join(f"<li>{state('pass' if x['holds'] else 'fail' if x['holds'] is False else 'pending', 'Vero' if x['holds'] else 'Falso' if x['holds'] is False else 'Senza dati')}<span>{esc(x['label'])} {esc(x['op'])} {esc(x['threshold'])} → {esc(x['detail'])}</span></li>" for x in r["signals_eval"])
+        body = [f'<ul class="clean">{sig}</ul>'] if sig else []
+        if r.get("diagnosis"):
+            body.append("<h3>Prima controlla</h3><ol>" + "".join(f"<li>{inline(d)}</li>" for d in r["diagnosis"]) + "</ol>")
+        if r.get("actions"):
+            body.append("<h3>Azioni, dalla più economica</h3><ul>" + "".join(f'<li>{inline(a["text"])} <span class="note">({esc(OWNER.get(a.get("owner", "none"), a.get("owner", "")))}, costo {esc(a.get("cost", "?"))})</span></li>' for a in r["actions"]) + "</ul>")
+        if r.get("decision"):
+            body.append(f"<h3>Decisione</h3><p>{inline(r['decision'])}</p>")
+        if r.get("evidence"):
+            body.append(f'<p class="note">Origine della soglia: {esc(r["evidence"])}</p>')
+        o.append(f'<details class="card" style="margin-top:12px"{" open" if r["status"] == "SCATTATO" else ""}><summary>{state(*SC_STATE[r["status"]])} <strong>{esc(r.get("area", ""))}</strong> · {esc(r["title"])}'
+                 f'<span class="count">{esc(r.get("severity", "ATTENZIONE"))}</span></summary>{"".join(body)}</details>')
+    return "".join(o), alerts
+
+
+def watch_section(root: str, today: dt.date):
+    rows = wlist.read(os.path.join(root, "watchlist.csv"))
+    if not rows:
+        return None, []
+    launch = None
+    plan_path = os.path.join(root, "_raw", "wl_plan.json")
+    if os.path.exists(plan_path):
+        try:
+            launch = dt.date.fromisoformat(load_json(plan_path).get("launch"))
+        except (TypeError, ValueError):
+            pass
+    a = wlist.analyse(rows, today, launch, 30, 3.0)
+    f = lambda v: "-" if v is None else fmt_n(v)
+    body = ('<h2>Concorrenti e comparabili</h2><div class="card wrap"><table><thead><tr><th>Gioco</th><th>Ruolo</th><th class="n">Recensioni</th><th class="n">+7 giorni</th><th class="n">+30 giorni</th><th class="n">% positive</th><th>Uscita</th></tr></thead><tbody>'
+            + "".join(f'<tr><td>{esc(g["name"])}</td><td>{esc(g["role"])}</td><td class="n">{f(g["reviews"])}</td><td class="n">{f(g["gain_7d"])}</td><td class="n">{f(g["gain_30d"])}</td><td class="n">{esc(g["pct_positive"] or "-")}</td><td>{esc(g["release"] or "-")}</td></tr>' for g in a["games"])
+            + "</tbody></table><p class=\"note\">Dati pubblici di Steam. Le wishlist e le vendite degli altri giochi non sono pubbliche.</p></div>")
+    return body, [(x["level"], f"{x['game']}: {x['text']}") for x in a["alerts"] if x["level"] != "INFO"]
+
+
 def build(root: str, audience: str, include: list[str], exclude: list[str], hide: set[str], today: dt.date) -> str:
     st = load_json(os.path.join(root, "status.json")) if os.path.exists(os.path.join(root, "status.json")) else {}
     hide = set(hide) | HIDE_BY_AUDIENCE[audience]
     wl_a, wl_svg = wishlist_section(root, today)
     fg_rows, fg_svg = timeline_section(root)
     econ = load_json(os.path.join(root, "_raw", "econ.json")) if os.path.exists(os.path.join(root, "_raw", "econ.json")) and "economics" not in hide else None
+    cal_path = os.path.join(root, "calendar.md")
+    cal_md = open(cal_path, encoding="utf-8").read() if os.path.exists(cal_path) else ""
+    plan = ps.parse(cal_md) if cal_md else dict(phases=[])
+    kit = load_json(os.path.join(root, "store_kit.json")) if os.path.exists(os.path.join(root, "store_kit.json")) and "storekit" not in hide else None
+    cont_html, cont_alerts = (None, []) if "contingencies" in hide else contingency_section(root, today)
+    watch_html, watch_alerts = (None, []) if "watchlist" in hide else watch_section(root, today)
     sec = []
     v = st.get("verdict") or {}
     if v:
@@ -318,6 +470,10 @@ def build(root: str, audience: str, include: list[str], exclude: list[str], hide
         sec.append(f'<section class="card verdict"><div>{ICONS[kind][0]}</div><div><div class="big">Verdetto: {esc(word)}{" (provvisorio)" if v.get("provisional") else ""}</div>'
                    f'<p>{esc(v.get("summary", ""))}</p>' + (f'<p class="sub">Probabilità stimata di recuperare i costi: {esc(v["probability"])}</p>' if v.get("probability") else "")
                    + (f'<ul class="clean">{risks}</ul>' if risks else "") + "</div></section>")
+    it = st.get("intentions") or {}
+    if it and "intentions" not in hide:
+        rows = "".join(f'<tr><td>{esc(d.get("topic"))}</td><td>{esc(d.get("choice"))}</td><td>{esc(d.get("why", ""))}</td></tr>' for d in it.get("decisions", []))
+        sec.append(f'<h2>Profilo decisionale</h2><div class="card"><p>{esc(it.get("summary", ""))}</p>' + (f'<div class="wrap"><table><thead><tr><th>Tema</th><th>Scelta</th><th>Perché</th></tr></thead><tbody>{rows}</tbody></table></div>' if rows else "") + "</div>")
     tiles = []
     if wl_a and "current" in wl_a:
         vel = wl_a.get("velocity_4w")
@@ -327,6 +483,9 @@ def build(root: str, audience: str, include: list[str], exclude: list[str], hide
     if fg_rows:
         last, prev = fg_rows[-1], fg_rows[-2] if len(fg_rows) > 1 else None
         tiles.append(("Punteggio focus group", last["score"], f"ondata {last['wave']}" + (f", {float(last['score']) - float(prev['score']):+.1f} rispetto alla precedente" if prev else "")))
+    if plan["phases"] and "steps" not in hide:
+        sm = ps.summary(plan, today)
+        tiles.append(("Passi fatti", f"{sm['done']}/{sm['total']}", f"{sm['overdue']} in ritardo" if sm["overdue"] else "nessuno in ritardo"))
     if econ:
         tiles.append(("Break-even", fmt_n(econ["breakeven"]["copies_with_time"]), f"copie (netto per copia {econ['net_per_copy']:.2f})"))
     gates = st.get("gates") or {}
@@ -336,10 +495,12 @@ def build(root: str, audience: str, include: list[str], exclude: list[str], hide
         tiles.append((k.get("label", ""), k.get("value", ""), k.get("note", "")))
     if tiles:
         sec.append('<h2>Numeri chiave</h2><div class="grid g4">' + "".join(f'<div class="card tile"><div class="l">{esc(l)}</div><div class="v">{esc(val)}</div><div class="d">{esc(d)}</div></div>' for l, val, d in tiles) + "</div>")
-    if wl_a and wl_a.get("alerts"):
+    alerts = [(x["level"], x["text"]) for x in (wl_a or {}).get("alerts", [])] + cont_alerts + watch_alerts
+    if alerts:
         icon = {"ALARM": ("fail", "Allarme"), "ATTENZIONE": ("warn", "Attenzione"), "INFO": ("info", "Info")}
-        sec.append('<h2>Alert wishlist</h2><div class="card"><ul class="clean">' + "".join(f"<li>{state(*icon[x['level']])}<span>{esc(x['text'])}</span></li>"
-                   for x in sorted(wl_a["alerts"], key=lambda x: ["ALARM", "ATTENZIONE", "INFO"].index(x["level"]))) + "</ul></div>")
+        sec.append('<h2>Alert</h2><div class="card"><ul class="clean">' + "".join(f"<li>{state(*icon[lv])}<span>{esc(t)}</span></li>" for lv, t in sorted(alerts, key=lambda x: ["ALARM", "ATTENZIONE", "INFO"].index(x[0]))) + "</ul></div>")
+    if plan["phases"] and "steps" not in hide:
+        sec.append(steps_section(plan, today))
     if wl_svg or fg_svg:
         sec.append("<h2>Andamento</h2><div class=\"grid\">")
         if wl_svg:
@@ -353,11 +514,16 @@ def build(root: str, audience: str, include: list[str], exclude: list[str], hide
         sec.append('<h2>Cancelli Go / No-Go</h2><div class="grid g4">' + "".join(
             f'<div class="card"><div>{state({"pass": "pass", "fail": "fail", "pending": "pending"}.get(g.get("state"), "na"))}</div><h3>{esc(names.get(k, "Gate " + k))}</h3><p class="note">{esc(g.get("note", ""))}</p></div>'
             for k, g in gates.items()) + "</div>")
-    cal = read_calendar(root)
-    if cal and "calendar" not in hide:
-        today_s = today.isoformat()
-        sec.append('<h2>Calendario</h2><div class="card wrap"><table><thead><tr><th>Data</th><th>Evento</th><th>Tipo</th></tr></thead><tbody>' + "".join(
-            f'<tr class="{"past" if r[0] < today_s else ""}"><td>{fmt_date(r[0])}</td><td>{esc(r[1] if len(r) > 1 else "")}</td><td>{esc(r[2] if len(r) > 2 else "")}</td></tr>' for r in cal) + "</tbody></table></div>")
+    if cal_md and "calendar" not in hide:
+        rest = (plan.get("before", "") + "\n" + plan.get("after", "")) if plan["phases"] else cal_md
+        if rest.strip():
+            sec.append(f'<h2>Date fisse e piano a ritroso</h2><details class="card doc" open><summary><strong>calendar.md</strong></summary>{md_to_html(rest)}</details>')
+    if kit:
+        sec.append(kit_section(kit))
+    if cont_html:
+        sec.append(cont_html)
+    if watch_html:
+        sec.append(watch_html)
     todos, done, hours = read_todos(root)
     if todos and "todo" not in hide:
         sec.append(f'<h2>Prossime azioni</h2><div class="card"><p class="sub">{len(todos)} aperte, {done} chiuse, circa {hours:.0f} ore residue.</p><div class="wrap"><table><thead><tr><th>Azione</th><th>Scadenza</th><th class="n">Ore</th></tr></thead><tbody>'
@@ -366,7 +532,7 @@ def build(root: str, audience: str, include: list[str], exclude: list[str], hide
         sec.append('<h2>Economia</h2><div class="card wrap"><table><thead><tr><th>Scenario</th><th class="n">Wishlist</th><th class="n">Copie</th><th class="n">Netto</th><th class="n">Utile (cassa)</th></tr></thead><tbody>' + "".join(
             f'<tr><td>{esc(s["name"])}</td><td class="n">{fmt_n(s["wishlists"])}</td><td class="n">{fmt_n(s["copies"])}</td><td class="n">{fmt_n(s["net"])}</td><td class="n">{fmt_n(s["profit_cash"])}</td></tr>' for s in econ["scenarios"])
             + f'</tbody></table><p class="note">Netto per copia {econ["net_per_copy"]:.2f}; aliquote e conversioni sono ipotesi dichiarate nel piano, da verificare.</p></div>')
-    stems = [s for s in (include or AUDIENCES[audience]) if s not in exclude]
+    stems = [x for x in (include or AUDIENCES[audience]) if x not in exclude]
     docs = []
     for stem in stems:
         p = os.path.join(root, f"{stem}.md")

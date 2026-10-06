@@ -28,7 +28,22 @@ Senza screenshot o capsule reali questa parte ha confidenza **bassa**: valuta so
 
 ## FASE 6B: testi dello store (scritti davvero)
 
-**Benchmark veri, non di opinione.** Prima di scrivere usa `launch/_raw/store_bench.md` (Fase 2.9) e, se c'è, `launch/_raw/gt_genre.md` (2.0): mediane e quartili dei **migliori** per lunghezza della descrizione breve e lunga, GIF, screenshot, durata del trailer, tempo al primo taglio. Se una misura manca, dichiara che la soglia è di opinione. Cita sempre n e fonte (**[FATTO]**).
+**Sorgente unica: `launch/store_kit.json`.** Scrivi prima di tutto questo file (formato nella testata di `scripts/research/store_kit.py`): da lì escono la scheda scritta del report, i file da incollare e i pulsanti "Copia" della pagina HTML. Contiene, **per Steam e per itch.io**:
+- **campi** (nome, descrizione breve, tagline, sviluppatore, tipo di progetto, prezzo…) con il testo definitivo, il **limite di caratteri dichiarato con la data di verifica** (`limits`, **[DA VERIFICARE]**) e una nota;
+- **descrizione lunga come blocchi**: testo (BBCode per Steam, Markdown per itch) e **posizioni dei media** (`type: media`) che dicono **cosa va in ogni punto** (quale GIF, quale screenshot, cosa mostra, file e alt), così l'utente sa dove mettere foto e GIF;
+- **tag in ordine** con il perché (i primi 5 pesano di più) e **tag da evitare**;
+- **screenshot in ordine** con cosa mostrano e didascalia (il primo è gameplay puro con feedback);
+- **capsule e immagini** (nome, misura **[DA VERIFICARE]**, cosa devono comunicare in 1,5 secondi), **trailer** (durata, posizione, script);
+- **impostazioni da compilare** (lingue, questionario dei contenuti, dichiarazione AI, categorie, prezzo, data, demo) e **checklist** prima di pubblicare.
+
+```bash
+python3 <skill>/scripts/research/store_kit.py check launch/store_kit.json            # limiti, tag, ordine screenshot, slot senza descrizione
+python3 <skill>/scripts/research/store_kit.py render launch/store_kit.json --md launch/store_kit.md   # scheda scritta per il report
+python3 <skill>/scripts/research/store_kit.py export launch/store_kit.json --dir launch/store_kit     # un file per campo, da incollare
+```
+Poi i punti 1-9 sotto sono il **contenuto** da mettere nel kit (non un documento a parte): `04b-store-copy.md` conserva trailer, capsule e piano di test, il kit conserva i testi copiabili.
+
+**Benchmark veri, non di opinione.** Prima di scrivere usa `launch/_raw/store_bench.md` (Fase 2.9) e `launch/_raw/genre_bench.md` (2.0): mediane e quartili dei **migliori** per lunghezza della descrizione breve e lunga, GIF, screenshot, durata del trailer, tempo al primo taglio. Se una misura manca, dichiara che la soglia è di opinione. Cita sempre n e fonte (**[FATTO]**).
 
 Output: **`launch/04b-store-copy.md`**. Non limitarti all'audit: **scrivi i testi pronti da incollare**, nella lingua del pubblico (di norma inglese, più l'italiano se il pubblico lo include), partendo dal pitch e dai differenziatori della Fase 2B.
 
@@ -37,7 +52,7 @@ Output: **`launch/04b-store-copy.md`**. Non limitarti all'audit: **scrivi i test
 3. **Scelta dei tag**: elenco ordinato con motivazione per ciascuno, ricavata dai tag dei comparabili migliori (`steam_comps.py --steamspy`, colonna `steamspy_tags`) e dal playbook. Indica i primi 5 (pesano di più, **[DA VERIFICARE]**), i tag da evitare perché promettono ciò che il gioco non è, e il numero massimo consentito.
 4. **Capsule: 3 varianti.** Le regole Valve sul testo nelle capsule sono restrittive **[DA VERIFICARE]**. Per ogni variante: composizione, logo/titolo, cosa comunica in 1,5 secondi, perché sceglierla. Proponi una **tagline** alternativa per dove il testo è consentito (descrizione breve, itch, social, trailer). Indica come testarle (due round con persone esterne, A/B se possibile).
 5. **Script del trailer** (durata dalla mediana dei comparabili migliori in `store_bench.md`; senza dati, default 60-90 secondi **[OPINIONE]**): shot list con tempi (0-5 s hook senza bisogno di audio, poi sviluppo, momento più forte entro metà, ultimi 5 s con titolo, data o "wishlist now"), testi a schermo, indicazioni audio e musica, cosa tagliare. Versione corta da 15-20 secondi per i social.
-6. **Pagina itch.io** (se prevista): testo più breve e diretto, con link alla wishlist su Steam.
+6. **Pagina itch.io** (se prevista), **completa quanto quella Steam** e nel kit (`itch`): titolo, tagline, tipo di progetto (scaricabile, browser), stato di rilascio, prezzo e donazioni, genere, **tag** (massimo da verificare), descrizione in Markdown **con le posizioni dei media** (cover, GIF, screenshot, trailer incorporato), piattaforme e file, impostazioni di community e commenti, accessibilità, e il **link alla wishlist su Steam** appena esiste. Testo più breve e diretto; in bozza o con accesso limitato finché la build non è pronta.
 7. **Blurb per press kit e creator**: una riga, un paragrafo, 5 fatti verificabili.
 8. **Controllo veridicità**: per ogni affermazione dei testi indica l'evidenza nel gioco (file, scena, clip) in una tabella `affermazione | evidenza`. Mai promettere feature assenti, premi o citazioni inventati, paragoni con titoli famosi non giustificati. Dichiara l'uso di AI generativa dove la piattaforma lo richiede.
 9. **Piano di test dei testi**: quale variante provare per prima e come misurare (click sulla capsule, tasso di wishlist per visita alla pagina).

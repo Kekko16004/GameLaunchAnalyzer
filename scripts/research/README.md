@@ -21,7 +21,11 @@ Reusable tools for launch market research: Steam comparables and reviews, creato
 | `build_creators.py` | Merge everything into a prioritised creators CSV | 8 |
 | `review_corpus.py` | Many real reviews of the comparables AND of the genre: punished/rewarded themes, what they say about your game's features | 2, 7 |
 | `store_bench.py` | Store page and trailer analysis of the comparables (description, GIFs, trailer length, cuts, frames) vs how they performed | 2, 6, 6B |
-| `gt_corpus.py` | Read-only benchmarks from a GamesTracker database: genre distributions, growth, marketing timeline, release window, your project | 2, 4, 5, 6B, 9 |
+| `genre_bench.py` | Genre benchmarks at runtime from public data: distributions, cohorts by year, price bands, demo, visibility bar, your numbers | 2, 5 |
+| `watchlist.py` | Comparables and competitors over time: snapshots, growth, discounts, releases, collision with your window | 2, 7C |
+| `plan_steps.py` | Step-by-step calendar: who does what (👤 / 🤖), due dates, ticking, summary, format check | 4 |
+| `store_kit.py` | Copy-ready Steam and itch.io pages from `store_kit.json`: check, written sheet, files to paste | 6B |
+| `metrics_track.py` | Metrics you record and "if... then" contingency scenarios with thresholds, diagnosis and actions | 7C |
 | `calc_econ.py` | Light economic plan: gross to net, break-even, three scenarios, sensitivity | 5 |
 | `wl_track.py` | Weekly wishlist records vs scenarios and pre-mortem tripwires, with alarms | 4, 7B |
 | `status_page.py` | One self-contained HTML status page for partners or a publisher | 11 |
@@ -128,27 +132,58 @@ Per game, automatically: short and long description length and words, GIFs, othe
 
 **Limits:** the tool measures pacing; **what the hook is** must be judged by looking at the frames. Correlations over a few comparables are hints, not proof (budget, genre, timing, luck). Servers that ignore HTTP Range give no duration; without `ffmpeg` there are no cuts or frames.
 
-## 4e. `gt_corpus.py`: benchmarks from your GamesTracker database
-
-[GamesTracker](https://github.com/Kekko16004/GamesTracker) keeps append-only snapshots of reviews, players and owner estimates, store-page signals and social posts for many recently released games. This tool opens its SQLite file **read-only** (it cannot modify it, needs no network) and computes real benchmarks. Database path: `--db`, or env `GAMESTRACKER_DB`, or `data/gamestracker.db`, or `../GamesTracker/data/gamestracker.db`.
+## 4e. `genre_bench.py`: genre benchmarks from public data
 
 ```bash
-python gt_corpus.py info --db path/to/gamestracker.db
-python gt_corpus.py genre --tag Roguelike --released-after 2024-01-01 --mine price=14.99 --mine screenshot_count=8 --md gt_genre.md -o gt_genre.json
-python gt_corpus.py comps --tag Roguelike --limit 40 -o gt_comps.json
-python gt_corpus.py marketing --tag Roguelike --md gt_marketing.md
-python gt_corpus.py window --tag Roguelike --days 365
-python gt_corpus.py project --name "My game"
+python genre_bench.py --tag Roguelike --tag Cooking --enrich 80 --mine price=14.99 --mine reviews_per_year=500 --md genre_bench.md -o genre_bench.json
 ```
-- `info`: tables, games (and how many were discarded by GamesTracker's quality filter), snapshot range, top tags, and whether the corpus is big enough.
-- `genre`: distributions (p25 / median / p75 / p90) of reviews at +1/+7/+30/+90 days, % positive at +30, price, screenshots, description length, trailer and demo share, social posts before launch, peak players; the best quartile (by reviews at +30 days) vs the rest; Spearman correlations; `--mine key=value` gives the percentile of YOUR value.
-- `marketing`: social posts per window relative to release (-90..-61 … +7..+30), platform mix, median views, best quartile vs the rest.
-- `window`: tracked games releasing in the next N days for a tag.
-- `project`: your own project saved in GamesTracker (concept, simulator result, discount plan).
+Takes the ~100 most reviewed games of the tag(s) (SteamSpy), enriches them with release date, price and demo from the Steam store (1 request each, `--enrich N`), and reports distributions (p25 / median / p75 / p90) of reviews, reviews per year, % positive, price and age; cohorts by release year (how crowded the genre is and how recent releases do); price bands; demo vs no demo; Spearman price vs reviews per year; the visibility bar; and with `--mine` the percentile of your own values. Built at run time from public data, nothing local to maintain.
 
-**Limits:** GamesTracker discards low-quality games (excluded by default; `--include-discarded`), so benchmarks describe decently made games; owner numbers are SteamSpy ranges; wishlists are not public and are not in the corpus; social metrics co-occur with growth, they do not prove causation. Enum values are matched case-insensitively (SQLAlchemy stores names such as `STEAM`, `M1`). Tested against a database built with the documented schema, not yet against a real GamesTracker file: run `info` first.
+**Limit, quote it every time:** the list holds the MOST REVIEWED games of the tag, so the numbers describe the successful tail, not the median game. Reviews per year is a proxy for sales.
 
-## 4f. `calc_econ.py`: light economic plan
+## 4f. `watchlist.py`: comparables and competitors over time
+
+```bash
+python watchlist.py add 1599600 728880 --role comp
+python watchlist.py add 2000000 --role competitor
+python watchlist.py snap                      # whenever you like, weekly is plenty
+python watchlist.py report --launch 2027-03-01 --window-days 30 --md launch/watchlist-report.md
+```
+Append-only snapshots in `launch/watchlist.csv` (store details, review summary, current players: public endpoints). The report gives reviews and growth over 7 and 30 days, and alerts: a game going viral (gain well above its own median), a discount (with the date it was first seen), a release, a drop in % positive, a player spike, and **a competitor releasing within N days of your launch date** (ALARM). Wishlists and sales of other games are not public.
+
+## 4g. `plan_steps.py`: the step-by-step calendar
+
+Reads the `## ✅ Passi in ordine` section of `launch/calendar.md`: `### FASE n — title` headings and numbered steps `N. [ ] 👤 text · 📅 AAAA-MM-GG` (owner 👤 you, 🤖 Claude, 👤+🤖 together; indented lines are notes).
+
+```bash
+python plan_steps.py next --owner me          # what is next for you, overdue first
+python plan_steps.py done 2 3                 # tick steps (idempotent); undo unticks
+python plan_steps.py summary                  # progress per phase
+python plan_steps.py check                    # duplicate numbers, missing owner, user steps without a date...
+```
+
+## 4h. `store_kit.py`: copy-ready Steam and itch.io pages
+
+One source, `launch/store_kit.json` (shape in the script header): fields with declared character limits, the long description as blocks with **media slots that say what goes where** (which GIF, which screenshot, file, alt), ordered tags with the reason, tags to avoid, screenshots in order, capsules with sizes, trailer, settings to fill in, and a pre-publish checklist, for both platforms.
+
+```bash
+python store_kit.py check launch/store_kit.json
+python store_kit.py render launch/store_kit.json --md launch/store_kit.md
+python store_kit.py export launch/store_kit.json --dir launch/store_kit
+```
+`check` verifies required fields, characters against the limits written in the file (with their verification date: limits are never hard-coded), tag count and duplicates, screenshot order, slots without a description, leftover placeholders. The HTML status page shows the same data with a Copy button on every field.
+
+## 4i. `metrics_track.py`: metrics and "if... then" plans
+
+```bash
+python metrics_track.py add --metric itch_views --value 412 --note "after the Reddit post"
+python metrics_track.py status --md launch/metrics-status.md
+python metrics_track.py check          # validate launch/_raw/contingencies.json
+python metrics_track.py catalog        # usual metric names and where each number comes from
+```
+You record numbers (itch views and downloads, Discord members, demo players and median playtime, test sessions, reviews, refund rate...) in `launch/metrics.csv`; wishlists are read from `launch/wishlists.csv` automatically. `contingencies.json` holds scenarios (shape in the script header): signals (`level`, `gain`, `avg`, `drop`, `ratio` with window and threshold), start date, severity, diagnosis in order, actions from the cheapest, a decision and where the threshold comes from. `status` marks each scenario Triggered / Ok / No data / Not yet active; **exit code 2 if an ALARM scenario triggered**. Thresholds are opinions unless the scenario cites a benchmark.
+
+## 4j. `calc_econ.py`: light economic plan
 
 ```bash
 python calc_econ.py --price 14.99 --costs 3500 --hours 600 --hourly 12 --partners 2 \
@@ -156,7 +191,7 @@ python calc_econ.py --price 14.99 --costs 3500 --hours 600 --hourly 12 --partner
 ```
 `net per copy = price x (1 - avg_discount) x (1 - vat_share) x (1 - refund) x (1 - steam_cut) x (1 - local_tax)`; break-even copies = total costs / net (cash costs, and cash costs plus time x hourly rate); wishlists needed at each conversion; three scenarios (copies = wishlists x conversion) with gross, net, profit (cash and with time), per partner, multiple of break-even; sensitivity (price -20% / +20%, double refunds). Defaults (steam-cut 0.30, vat-share 0.10, refund 0.06, avg-discount 0.15, local-tax 0) are **inputs to verify**, not facts; percentages above 1 are read as percent. `--config file.json` takes the same keys.
 
-## 4g. `wl_track.py`: wishlist tracker
+## 4k. `wl_track.py`: wishlist tracker
 
 Steam does not publish wishlists: type the total from Steamworks once a week.
 
@@ -168,9 +203,9 @@ python wl_track.py status --md launch/wishlist-status.md --json launch/_raw/wl_s
 ```
 `status` reports current total, 1-week and 4-week velocity, position against the linear path of each scenario, wishlists per week still needed, tripwires (OK / ALARM / PENDING / NO DATA), and alerts (slowdown, drops over two records, stale data, unexplained spikes). **Exit code 2 when a tripwire has fired.** Targets are interpolated linearly: a simplification, real curves are spiky.
 
-## 4h. `status_page.py`: status page for partners or a publisher
+## 4l. `status_page.py`: status page for partners or a publisher
 
-Reads files already in `launch/` (`status.json`, `fg/timeline.csv`, `wishlists.csv` + `_raw/wl_plan.json`, `_raw/econ.json`, `calendar.md`, `TODO.md`, the main reports) and writes one self-contained `launch/STATUS.html`: no network requests, no external scripts, light and dark theme, readable on a phone, charts with hover tooltips and a table view, status icons always paired with a label. All text from files is escaped. `--audience private|partner|publisher` (default partner) controls what is included (publisher: no internal economics, TODO or pre-mortem); `--include`, `--exclude`, `--hide` refine it. The tool never publishes anything: sharing the page is the user's decision.
+Reads files already in `launch/` (`status.json`, `calendar.md` with its steps, `store_kit.json`, `_raw/contingencies.json` + `metrics.csv`, `fg/timeline.csv`, `wishlists.csv` + `_raw/wl_plan.json`, `watchlist.csv`, `_raw/econ.json`, `TODO.md`, the main reports) and writes one self-contained `launch/STATUS.html`: verdict, decision profile, key numbers, alerts, **step-by-step calendar** (progress bar, "your turn now" and "Claude's turn" boxes, filter by owner, overdue flagged), charts with hover tooltips and a table view, gates, **copy-ready store pages with a Copy button on every field and dashed boxes marking where photos and GIFs go**, **"if... then" scenarios with live status**, competitors, TODOs, documents. No network requests, no external scripts, light and dark theme, readable on a phone, status icons always paired with a label, all text escaped. `--audience private|partner|publisher` (default partner) controls what is included; `--include`, `--exclude`, `--hide` refine it. The tool never publishes anything: sharing the page is the user's decision.
 
 ## 5. `yt_research.py`: YouTube creators
 
@@ -277,5 +312,5 @@ python build_creators.py --youtube out/yt_shortlist.json --social out/social.jso
 | `steam_comps.py`, `yt_research.py` (html backend: search, channels, subs, verify), `social_verify.py` (TikTok, YouTube), `build_creators.py` | Run against the live services on 2026-10-06 (PlateUp! 27,376 reviews at 94.7%, SteamSpy 1–2M owners, Gamalytic 2.39M copies = 87 copies/review; 20 videos, 14 channels, 3/3 subscriber counts; 2 TikToks and 1 Short verified). Re-checked offline after the date-handling changes. |
 | `reddit_rules.py` anonymous | `403 Blocked` (expected: OAuth needed). |
 | `yt_research.py --backend api` | Not tested (no `YOUTUBE_API_KEY`). |
-| `review_corpus.py`, `store_bench.py`, `gt_corpus.py`, `calc_econ.py`, `wl_track.py`, `status_page.py` | Tested offline in `tests/` (canned API-shaped answers; a synthetic GamesTracker database with the documented schema; a generated MP4 served with HTTP Range support for the duration and cut analysis, run with real `ffmpeg`; arithmetic of the economic plan checked independently; the status page rendered in Chromium at desktop and 390 px width: no horizontal overflow, no script errors, hostile text stays inert). **Not yet run against the live services or a real GamesTracker file.** |
+| `review_corpus.py`, `store_bench.py`, `genre_bench.py`, `watchlist.py`, `plan_steps.py`, `store_kit.py`, `metrics_track.py`, `calc_econ.py`, `wl_track.py`, `status_page.py` | Tested offline in `tests/` (canned API-shaped answers; a generated MP4 served with HTTP Range support for the duration and cut analysis, run with real `ffmpeg`; arithmetic of the economic plan checked independently; the status page rendered in Chromium at desktop and 390 px width: no horizontal overflow, no script errors, hostile text stays inert). `plan_steps.py` was also checked on a real step list written by the project owner (30 steps, 6 phases). **Not yet run against the live Steam services.** |
 | `steam_reviews.py`, `steam_discover.py`, `roster.py`, `fg_waves.py` | Tested **offline** against canned responses shaped like the documented APIs (paging, duplicate and cursor handling, filters, day-range cap, early stop on recent sort, theme tally, CSV output, tag ranking, roster determinism, stable jury and append-only behaviour, wave validation, metrics, delta and timeline on synthetic waves). **Not yet run against the live Steam endpoints**: do a first run with one app id and check the output before relying on it. |
