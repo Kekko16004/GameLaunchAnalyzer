@@ -14,9 +14,8 @@ Examples:
 from __future__ import annotations
 
 import argparse
-import datetime
 import os
-from common import http_get, log, read_list, safe_json, set_rate, write_csv, write_json
+from common import http_get, log, read_list, safe_json, set_rate, ts_to_date, write_csv, write_json
 
 
 def fetch_app(appid: int, cc: str, lang: str, use_spy: bool, use_gam: bool, multipliers: list[int]) -> dict:
@@ -55,7 +54,7 @@ def fetch_app(appid: int, cc: str, lang: str, use_spy: bool, use_gam: bool, mult
             gamalytic_avg_playtime_h=round(g["avgPlaytime"], 1) if g.get("avgPlaytime") is not None else None,
             gamalytic_followers=g.get("followers"), gamalytic_tags=(g.get("tags") or [])[:10],
             gamalytic_early_access=g.get("earlyAccess"), gamalytic_price=g.get("price"),
-            gamalytic_first_release=datetime.datetime.utcfromtimestamp(first / 1000).strftime("%Y-%m-%d") if first else None,
+            gamalytic_first_release=ts_to_date(first / 1000) if first else None,
             gamalytic_audience_overlap=[x.get("name") for x in (g.get("audienceOverlap") or [])[:8]],
         )
         if o["gamalytic_copies"] and total:

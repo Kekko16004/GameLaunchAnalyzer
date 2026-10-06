@@ -18,6 +18,8 @@ $SourceDir = $PSScriptRoot
 $User = $env:USERPROFILE
 $CmdSource = Join-Path $SourceDir "commands\game-launch-strategist.md"
 $SkillFile = Join-Path $SourceDir "SKILL.md"
+# Only these items are part of the skill (no .git, installers, README, command file)
+$Payload = @("SKILL.md", "references", "scripts")
 
 if (-not (Test-Path -LiteralPath $SkillFile)) {
     Write-Error "SKILL.md not found in $SourceDir"
@@ -61,16 +63,49 @@ $Targets = [ordered]@{
 $LegacyNames = @("game_launch_strategist", "launch-strategist", "gamelaunchstrategist")
 
 function Remove-ExistingPath([string]$Path) {
-    if (Test-Path -LiteralPath $Path) {
-        $item = Get-Item -LiteralPath $Path -Force
-        if ($item.PSIsContainer -or ($item.Attributes -band [System.IO.FileAttributes]::ReparsePoint)) {
-            if ($item.Attributes -band [System.IO.FileAttributes]::ReparsePoint) {
-                [System.IO.Directory]::Delete($Path, $false)
-            } else {
-                Remove-Item -LiteralPath $Path -Recurse -Force
+    if (-not (Test-Path -LiteralPath $Path)) { return }
+    $item = Get-Item -LiteralPath $Path -Force
+    $isLink = [bool]($item.Attributes -band [System.IO.FileAttributes]::ReparsePoint)
+    if ($item.PSIsContainer -and -not $isLink) {
+        # Delete links inside first (non-recursive) so a recursive delete can never follow them into the source repo
+        foreach ($child in Get-ChildItem -LiteralPath $Path -Force) {
+            if ($child.Attributes -band [System.IO.FileAttributes]::ReparsePoint) {
+                if ($child.PSIsContainer) { [System.IO.Directory]::Delete($child.FullName, $false) }
+                else { [System.IO.File]::Delete($child.FullName) }
             }
+        }
+        Remove-Item -LiteralPath $Path -Recurse -Force
+    } elseif ($item.PSIsContainer) {
+        [System.IO.Directory]::Delete($Path, $false)
+    } else {
+        Remove-Item -LiteralPath $Path -Force
+    }
+}
+
+function Copy-SkillPayload([string]$Dest) {
+    New-Item -ItemType Directory -Path $Dest -Force | Out-Null
+    foreach ($name in $Payload) {
+        $src = Join-Path $SourceDir $name
+        if (Test-Path -LiteralPath $src) { Copy-Item -LiteralPath $src -Destination (Join-Path $Dest $name) -Recurse -Force }
+    }
+    Get-ChildItem -LiteralPath $Dest -Recurse -Directory -Force -Filter "__pycache__" -ErrorAction SilentlyContinue |
+        ForEach-Object { Remove-Item -LiteralPath $_.FullName -Recurse -Force }
+}
+
+function Link-SkillPayload([string]$Dest) {
+    New-Item -ItemType Directory -Path $Dest -Force | Out-Null
+    foreach ($name in $Payload) {
+        $src = Join-Path $SourceDir $name
+        $dst = Join-Path $Dest $name
+        if (-not (Test-Path -LiteralPath $src)) { continue }
+        if ((Get-Item -LiteralPath $src).PSIsContainer) {
+            New-Item -ItemType Junction -Path $dst -Target $src | Out-Null
         } else {
-            Remove-Item -LiteralPath $Path -Force
+            try { New-Item -ItemType SymbolicLink -Path $dst -Target $src -ErrorAction Stop | Out-Null }
+            catch {
+                try { New-Item -ItemType HardLink -Path $dst -Target $src -ErrorAction Stop | Out-Null }
+                catch { Copy-Item -LiteralPath $src -Destination $dst -Force }
+            }
         }
     }
 }
@@ -91,14 +126,15 @@ function Install-Target([string]$Key) {
         Remove-ExistingPath $skillPath
         if ($Mode -eq "link") {
             try {
-                New-Item -ItemType Junction -Path $skillPath -Target $SourceDir | Out-Null
+                Link-SkillPayload $skillPath
                 Write-Host "    Link (updated): $skillPath -> $SourceDir"
             } catch {
                 Write-Host "    Fallback to copy for: $skillPath"
-                Copy-Item -Path $SourceDir -Destination $skillPath -Recurse -Force
+                Remove-ExistingPath $skillPath
+                Copy-SkillPayload $skillPath
             }
         } else {
-            Copy-Item -Path $SourceDir -Destination $skillPath -Recurse -Force
+            Copy-SkillPayload $skillPath
             Write-Host "    Copy (updated): $skillPath"
         }
     }

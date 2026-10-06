@@ -103,7 +103,7 @@ def api_search(query: str, within: str, key: str, max_results: int, region: str 
     params = f"part=snippet&type=video&maxResults={min(max_results, 50)}&q={q(query)}&key={key}"
     if DAYS[within] is not None:
         hours = 1 if within == "hour" else DAYS[within] * 24
-        after = datetime.datetime.utcnow() - datetime.timedelta(hours=hours)
+        after = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(hours=hours)
         params += "&publishedAfter=" + after.strftime("%Y-%m-%dT%H:%M:%SZ")
     if region:
         params += f"&regionCode={region}"

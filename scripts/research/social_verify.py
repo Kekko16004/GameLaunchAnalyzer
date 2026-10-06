@@ -20,12 +20,11 @@ Examples:
 from __future__ import annotations
 
 import argparse
-import datetime
 import json
 import os
 import re
 import urllib.parse
-from common import get_json, http_get, log, q, read_list, set_rate, write_output
+from common import get_json, http_get, log, q, read_list, set_rate, ts_to_date, write_output
 
 
 def platform_of(u: str) -> str | None:
@@ -41,8 +40,7 @@ def tiktok(u: str) -> dict:
     o = {}
     m = re.search(r"/(?:video|photo)/(\d+)", u)
     if m:
-        ts = int(m.group(1)) >> 32
-        o["date"] = datetime.datetime.utcfromtimestamp(ts).strftime("%Y-%m-%d")
+        o["date"] = ts_to_date(int(m.group(1)) >> 32)
     e = get_json("https://www.tiktok.com/oembed?url=" + q(u))
     o.update(author=e.get("author_name"), author_url=e.get("author_url"), handle=e.get("author_unique_id"),
              title=(e.get("title") or "")[:200], followers="manual (requires login)")

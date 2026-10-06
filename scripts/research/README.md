@@ -1,26 +1,53 @@
-# research-scrapers
+# research scripts
 
-Strumenti riutilizzabili per la ricerca di mercato di un lancio indie (comparabili Steam, creator YouTube/TikTok, regole subreddit). Versioni generiche e ripulite degli script scritti a mano in `BuffetPanic/launch/_raw/` (che restano invariati). Niente è legato a un gioco specifico: tutto passa da argomenti CLI.
+Reusable tools for launch market research: Steam comparables and reviews, creators on YouTube/TikTok/Twitch, subreddit rules, and the simulated-tester roster. Nothing is tied to a specific game: everything goes through CLI arguments.
 
-- **Requisiti:** Python >= 3.9, solo libreria standard (`requirements.txt` è vuoto di proposito).
-- **Rete:** ogni tool rispetta un intervallo minimo tra le richieste (`--rate`, in secondi), riprova con backoff esponenziale sugli errori 429/5xx e rispetta `Retry-After`.
-- **Output:** JSON (default su stdout, oppure `-o file.json`) o CSV (`-o file.csv`, UTF-8 con BOM, si apre bene in Excel). I log vanno su stderr.
-- **Credenziali:** nessuna nei file. Le chiavi opzionali si passano **solo** tramite variabili d'ambiente.
+- **Requirements:** Python ≥ 3.9, standard library only (`requirements.txt` is empty on purpose).
+- **Network:** every tool keeps a minimum interval between requests (`--rate`, seconds), retries 429/5xx with exponential backoff and honours `Retry-After`.
+- **Output:** JSON (stdout by default, or `-o file.json`) or CSV (`-o file.csv`, UTF-8 with BOM, opens cleanly in Excel). Logs go to stderr.
+- **Credentials:** never in files. Optional keys are passed **only** through environment variables.
+- **Failure mode:** a blocked or failing endpoint is logged and skipped; the tools never invent data and never try to bypass logins, CAPTCHAs or blocks.
 
-| Tool | Da quale script originale | Cosa fa |
+| Tool | What it does | Skill phase |
 |---|---|---|
-| `steam_comps.py` | `fetch.py`, `comps.py`, `comps2.py` | Dati store + recensioni + stime Boxleiter (+ SteamSpy / Gamalytic) per i comparabili |
-| `yt_research.py` | `yt.py`, `yt_batch.py`, `subs.py` (+ il raggruppamento per canale fatto a mano) | Cerca video recenti, li raggruppa per canale, aggiunge gli iscritti, verifica gli URL |
-| `social_verify.py` | `tt.py` | Verifica gli URL di TikTok / YouTube (anche Shorts) / Instagram / Twitch con endpoint ufficiali |
-| `reddit_rules.py` | (da `reddit_rules.txt`, fallito con 403) | Regole del subreddit + iscritti + segnalazione delle regole sulla promozione |
-| `build_creators.py` | `build_creators.py` | Unisce tutto in un CSV di creator ordinato per priorità |
-| `common.py` | — | HTTP con throttle e retry, scrittura JSON/CSV (lo usano tutti) |
+| `steam_discover.py` | Find comparables: store search by keyword/name, most-reviewed games per tag (SteamSpy) | 2 |
+| `steam_comps.py` | Store data + review summary + Boxleiter estimates (+ SteamSpy / Gamalytic) for given app ids | 2, 6, 6B |
+| `steam_reviews.py` | Real negative/positive Steam reviews with date, playtime, votes, URL, keyword themes | 7 (real critiques) |
+| `roster.py` | Deterministic roster of simulated testers with stable IDs, casting traits and a 10-person jury | 7 |
+| `fg_waves.py` | Validate a focus-group wave, compute score and metrics, delta between waves, timeline | 7 |
+| `yt_research.py` | Search recent videos, group by channel, add subscribers, verify URLs | 8 |
+| `social_verify.py` | Verify TikTok / YouTube (Shorts) / Instagram / Twitch URLs with official endpoints | 8 |
+| `reddit_rules.py` | Subreddit rules, subscribers, self-promotion flags | 9 |
+| `build_creators.py` | Merge everything into a prioritised creators CSV | 8 |
+| `review_corpus.py` | Many real reviews of the comparables AND of the genre: punished/rewarded themes, what they say about your game's features | 2, 7 |
+| `store_bench.py` | Store page and trailer analysis of the comparables (description, GIFs, trailer length, cuts, frames) vs how they performed | 2, 6, 6B |
+| `genre_bench.py` | Genre benchmarks at runtime from public data: distributions, cohorts by year, price bands, demo, visibility bar, your numbers | 2, 5 |
+| `watchlist.py` | Comparables and competitors over time: snapshots, growth, discounts, releases, collision with your window | 2, 7C |
+| `plan_steps.py` | Step-by-step calendar: who does what (👤 / 🤖), due dates, ticking, summary, format check | 4 |
+| `store_kit.py` | Copy-ready Steam and itch.io pages from `store_kit.json`: check, written sheet, files to paste | 6B |
+| `metrics_track.py` | Metrics you record and "if... then" contingency scenarios with thresholds, diagnosis and actions | 7C |
+| `calc_econ.py` | Light economic plan: gross to net, break-even, three scenarios, sensitivity | 5 |
+| `wl_track.py` | Weekly wishlist records vs scenarios and pre-mortem tripwires, with alarms | 4, 7B |
+| `status_page.py` | One self-contained HTML status page for partners or a publisher | 11 |
+| `common.py` | Throttled HTTP with retries, JSON/CSV writers (used by all) | – |
 
 ---
 
-## 1. `steam_comps.py`: comparabili Steam
+## 1. `steam_discover.py`: find comparables
 
-Endpoint: `store.steampowered.com/api/appdetails`, `store.steampowered.com/appreviews` (pubblici); opzionali `steamspy.com/api.php` (`--steamspy`) e `gamalytic.com/api/game-details` (`--gamalytic`, stime di terze parti).
+```bash
+python steam_discover.py search "cooking roguelite" "overcooked" --limit 8 -o search.json
+python steam_discover.py tag Roguelike Cooking --enrich 40 --released-after 2021 --max-reviews 20000 -o tags.csv
+```
+
+- `search` uses the public store search endpoint and returns `appid, name, price, metascore, url` per hit (bundles are skipped).
+- `tag` merges the SteamSpy top-100 lists of one or more tags. Games matching more tags rank first, then by review count. `--require-all` keeps only games present in every list; `--min-reviews` / `--max-reviews` cut mega-hits or unproven titles; `--enrich N` adds release date, price, genres and demo from the store for the top N rows (one request each); `--released-after YEAR` filters on the enriched date.
+
+**Limits:** SteamSpy is third-party and lists only about 100 games per tag; owners are ranges; tag names are case-sensitive (`Roguelike`, `City Builder`). The output is a candidate list, not the final comparable set.
+
+## 2. `steam_comps.py`: Steam comparables
+
+Endpoints: `store.steampowered.com/api/appdetails`, `store.steampowered.com/appreviews` (public); optional `steamspy.com/api.php` (`--steamspy`) and `gamalytic.com/api/game-details` (`--gamalytic`, third-party estimates).
 
 ```bash
 python steam_comps.py 1599600 728880 -o comps.json
@@ -28,75 +55,212 @@ python steam_comps.py --ids-file ids.txt --steamspy --gamalytic --boxleiter 30,6
 python steam_comps.py 1599600 --cc it --lang italian -o plateup_it.json
 ```
 
-Ogni gioco produce una riga con: `name, release_date, coming_soon, price_base_cents, price_now_cents, discount_pct, developers, publishers, genres, categories, demos, movies, screenshots, reviews_total, reviews_positive, pct_positive, review_score_desc, boxleiter_x30, boxleiter_x60`. Con `--steamspy` si aggiungono `steamspy_owners` e `steamspy_tags`. Con `--gamalytic` si aggiungono `gamalytic_copies`, `revenue`, `accuracy`, `avg_playtime_h`, `followers`, `tags`, `first_release`, `audience_overlap` e `copies_per_review`. `--headers-dir` salva anche `<appid>.jpg`, cioè le capsule header usate per i confronti visivi.
+One row per game: `name, release_date, coming_soon, price_base_cents, price_now_cents, discount_pct, developers, publishers, genres, categories, demos, movies, screenshots, reviews_total, reviews_positive, pct_positive, review_score_desc, boxleiter_x30, boxleiter_x60`. `--steamspy` adds `steamspy_owners`, `steamspy_tags`. `--gamalytic` adds `gamalytic_copies`, `revenue`, `accuracy`, `avg_playtime_h`, `followers`, `tags`, `first_release`, `audience_overlap`, `copies_per_review`. `--headers-dir` also saves `<appid>.jpg` capsule headers for visual comparison.
 
-**Limiti:** Boxleiter è solo una regola empirica (copie ≈ recensioni × 30–60). Gamalytic e SteamSpy sono stime di terze parti con accuratezza variabile, e Gamalytic può cambiare l'API senza preavviso. `appdetails` ha un rate limit di circa 200 richieste ogni 5 minuti: non scendere sotto `--rate 1`.
+**Limits:** Boxleiter is a rule of thumb (copies ≈ reviews × 30–60, varies by genre, price and year). Gamalytic and SteamSpy are estimates with varying accuracy, and Gamalytic may change its API without notice. `appdetails` allows roughly 200 requests per 5 minutes: do not go below `--rate 1`.
 
-## 2. `yt_research.py`: creator YouTube
-
-Ci sono due backend:
-- **`api`**: YouTube Data API v3 ufficiale. Serve `YOUTUBE_API_KEY` (gratis da Google Cloud Console). Una ricerca costa 100 unità e la quota giornaliera è di 10.000, cioè circa 90 query al giorno. Dà date esatte (`publishedAt`) e iscritti esatti. **È il backend consigliato.**
-- **`html`**: legge `ytInitialData` dalla pagina pubblica dei risultati, senza chiave e senza login. È quello che faceva `yt.py`. È fragile (si rompe se cambia il layout), le date sono relative ("2w ago") e i ToS di YouTube non incoraggiano l'accesso automatico: usalo con volumi bassi e `--rate` alto.
-- `auto` (default): usa `api` se la chiave è impostata, altrimenti `html`.
+## 3. `steam_reviews.py`: real reviews for the "real critiques" section
 
 ```bash
-# 1) ricerca: query singole, oppure un file topics.json {"PlateUp!": ["PlateUp", "PlateUp ita"], ...}
+python steam_reviews.py 1599600 728880 --type negative --within-days 365 --limit 150 -o reviews_neg.json
+python steam_reviews.py 1599600 --type negative --sort recent --max-playtime-h 2 -o refund_like.json
+python steam_reviews.py 1599600 --type positive --limit 100 -o praised.json
+python steam_reviews.py --ids-file ids.txt --language all --themes-json my_themes.json -o reviews.csv
+```
+
+Uses the public `appreviews` endpoint with cursor pagination (100 per page). Per review: `date, language, playtime_at_review_h, playtime_forever_h, votes_up, votes_funny, helpful_score, steam_purchase, received_for_free, early_access, url, text (truncated), themes`. Per game: a summary with the theme tally (count and %), median playtime at review, share of reviews written under 2 hours (a refund-like signal), median helpful votes and the date range.
+
+Filters: `--type negative|positive|all`, `--sort helpful|recent|updated`, `--language`, `--within-days`, `--min-votes-up`, `--min/--max-playtime-h`, `--purchase all|steam|other`, `--include-offtopic`, `--limit`, `--max-pages`. Reviewer names are not collected.
+
+**Limits and honesty:**
+- `--sort helpful` (Steam's order) over-represents the most discussed problems; `--sort recent` is closer to a random slice of current complaints. State which one you used.
+- Themes come from an English keyword list (`THEMES` in the script; extend or override with `--themes-json {"theme": "regex"}`). They are a starting point: read a sample and correct by hand. Non-English reviews are not matched unless you add patterns.
+- `day_range` is capped at 365 and honoured by Steam only with the helpful order. Steam hides flagged review-bomb periods by default (`--include-offtopic` to see them).
+- In deliverables paraphrase reviews, quote under 15 words, one quote per source.
+
+## 4. `roster.py`: simulated testers with stable IDs
+
+```bash
+python roster.py --cohorts-a "veterans;min-maxers;balance critics" \
+                 --cohorts-b "casuals;clip scrollers;value hunters" --seed mygame \
+                 -o launch/fg/roster.json --md launch/fg/roster.md
+python roster.py ... --per-group 12      # quick mode (2 x 12)
+python roster.py ... --per-group 36      # later: appends A-28.. / B-28.., existing IDs untouched
+```
+
+Two groups (A = core/experts, B = discovery/casual), exactly three cohorts each (taken from the genre playbook); tester *n* belongs to cohort `(n-1) % 3`. Every trait (name, age band, hours in genre, device, price sensitivity, patience, discovery channel, language, starting bias, contrarian flag) is derived from `sha256(seed:ID)`, so the same seed and cohorts always give the same roster and adding testers never changes the existing ones. At least 20% of every cohort (of 2 or more testers) are flagged contrarians (the skill requires mandatory dissent of at least 15%).
+
+The Markdown file is append-only: rerunning only adds rows for new IDs, so hand-written cards are never overwritten. Rerunning with a different seed, cohorts or language weights is refused unless you pass `--force`.
+
+Casting traits (same idea as a persona panel): skill level (derived from hours in genre), personality, speaking style, and an accessibility need for about 1 tester in 9 (colour-blindness, low vision, small screen, one hand, motor constraint, flashing lights/motion sickness, reduced hearing). `roster.json` also holds a **jury** of 10 IDs covering the mandatory roles (novice, expert, skeptic, impatient, accessibility, contrarian, value hunter, clip/stream creator): the same people debate in every wave, and the jury does not change when testers are appended.
+
+Everything is fictional and simulated; the default language weights are **not market data** (`--langs "EN:55,IT:10,..."` to adjust).
+
+## 4b. `fg_waves.py`: focus-group waves, deltas, timeline
+
+The simulated panel judges the game; this tool does the arithmetic, so scores and trends are reproducible. A *wave* is one run of the same roster on one state of the game, stored as `launch/fg/waves/wNN-YYYY-MM-DD.json` (schema in the script's header: per tester `verdict` WISHLIST/SALDI/IGNORO/REFUND, `click`, `pitch_ok`, `issues`; a list of issues with stable keys, severity and recommendation; optional `controls` and, from wave 2, `fixes`).
+
+```bash
+python fg_waves.py metrics launch/fg/waves/w01-2026-10-06.json --roster launch/fg/roster.json -o launch/fg/waves/w01-metrics.md
+python fg_waves.py delta launch/fg/waves/w01-2026-10-06.json launch/fg/waves/w02-2026-10-27.json --roster launch/fg/roster.json -o launch/fg/waves/w02-delta.md
+python fg_waves.py timeline launch/fg/waves --roster launch/fg/roster.json -o launch/fg/timeline.md --csv launch/fg/timeline.csv
+```
+
+- `metrics`: validates (tester IDs against the roster, verdict values, duplicates, issue keys), then computes verdict counts, the wishlist score `((W*1.0)+(S*0.4)-(I*0.2)-(R*0.8))/N*100` (range -80..100, not a percentage), A vs B score and gap (flagged above 15), first-glance click, pitch comprehension, and the issue matrix ranked by frequency x severity. Gate A threshold: `--gate N`, else 80% of the success control (min 30), else 35.
+- `delta`: score on the **same testers only** (new IDs are listed but excluded from the like-for-like score), verdict movements, effect of each issue (RESOLVED / IMPROVED / WORSE / NEW / UNCHANGED, noise band `--noise`, default 10 points), fixes applied, per-tester changes with an empty "attributed cause" column.
+- `timeline`: all waves in a folder (`wNN-*.json`) with score trend and sparkline, verdict shares, click, pitch, A/B scores, number of high-severity issues, top issue and Gate A status.
+
+**Limits:** the panel is simulated with the same biases every time, so deltas are directional, not proof; differences of a few points are noise (with N = 54 a percentage carries roughly +-13 points of uncertainty). Confirm important changes with real testers.
+
+## 4c. `review_corpus.py`: real reviews at scale, comparables and genre
+
+```bash
+python review_corpus.py --comps 1599600 728880 --genre-tag Roguelike Cooking --max-genre-games 20 \
+    --my-features my_features.json -o corpus.json --md corpus.md --csv corpus_features.csv
+```
+Two groups: `comps` (your closest comparables) and `genre` (other games of the same type, from SteamSpy tag lists, or `--genre-ids` with ids or a `steam_discover.py` file). Per game it takes the same number of negative (`--neg-per-game`, default 150) and positive (`--pos-per-game`, 100) reviews of the last `--within-days` (730), then reports complaint themes and praise themes per group as a **macro-average across games** plus **breadth** (in how many games the theme is at least 10% of the sample). With `--my-features` (`{"cooking": "cook|recipe", "co-op": ["co-op", "coop"]}`) it counts how often each feature of YOUR game is mentioned in negative vs positive reviews (rewarded / punished / divisive / rarely discussed) and keeps the most helpful reviews that mention it (with URL) for you to read and paraphrase. Reviews are cached per game in `--cache-dir` (resume after interruption, `--refresh` to refetch).
+
+**Limits:** non-random samples (`--sort`), English keyword themes, genre games come from the top ~100 SteamSpy list per tag (bias towards well-known titles).
+
+## 4d. `store_bench.py`: store page and trailer benchmarks
+
+```bash
+python store_bench.py run 1599600 728880 --ids-file comps_ids.txt --frames-dir launch/_raw/hooks -o pages.json --md store_bench.md
+python store_bench.py analyze pages.json --md store_bench.md
+```
+Per game, automatically: short and long description length and words, GIFs, other images, looping videos, headings, bullets, screenshots, trailers, languages, achievements, categories, demo, price; trailer **duration** read from the MP4 `moov/mvhd` header with 16-byte HTTP Range reads (no download); with `ffmpeg` installed also time to first cut, cuts in the first 5 s and average shot length of the first 30 s, plus frames at 0/2/5/10/20/30 s in `--frames-dir`. Outcome: reviews, % positive and reviews per year since release. `analyze` gives quartiles, the best third vs the rest (medians) and Spearman correlations with log(reviews per year) and % positive, always with n.
+
+**Limits:** the tool measures pacing; **what the hook is** must be judged by looking at the frames. Correlations over a few comparables are hints, not proof (budget, genre, timing, luck). Servers that ignore HTTP Range give no duration; without `ffmpeg` there are no cuts or frames.
+
+## 4e. `genre_bench.py`: genre benchmarks from public data
+
+```bash
+python genre_bench.py --tag Roguelike --tag Cooking --enrich 80 --mine price=14.99 --mine reviews_per_year=500 --md genre_bench.md -o genre_bench.json
+```
+Takes the ~100 most reviewed games of the tag(s) (SteamSpy), enriches them with release date, price and demo from the Steam store (1 request each, `--enrich N`), and reports distributions (p25 / median / p75 / p90) of reviews, reviews per year, % positive, price and age; cohorts by release year (how crowded the genre is and how recent releases do); price bands; demo vs no demo; Spearman price vs reviews per year; the visibility bar; and with `--mine` the percentile of your own values. Built at run time from public data, nothing local to maintain.
+
+**Limit, quote it every time:** the list holds the MOST REVIEWED games of the tag, so the numbers describe the successful tail, not the median game. Reviews per year is a proxy for sales.
+
+## 4f. `watchlist.py`: comparables and competitors over time
+
+```bash
+python watchlist.py add 1599600 728880 --role comp
+python watchlist.py add 2000000 --role competitor
+python watchlist.py snap                      # whenever you like, weekly is plenty
+python watchlist.py report --launch 2027-03-01 --window-days 30 --md launch/watchlist-report.md
+```
+Append-only snapshots in `launch/watchlist.csv` (store details, review summary, current players: public endpoints). The report gives reviews and growth over 7 and 30 days, and alerts: a game going viral (gain well above its own median), a discount (with the date it was first seen), a release, a drop in % positive, a player spike, and **a competitor releasing within N days of your launch date** (ALARM). Wishlists and sales of other games are not public.
+
+## 4g. `plan_steps.py`: the step-by-step calendar
+
+Reads the `## ✅ Passi in ordine` section of `launch/calendar.md`: `### FASE n — title` headings and numbered steps `N. [ ] 👤 text · 📅 AAAA-MM-GG` (owner 👤 you, 🤖 Claude, 👤+🤖 together; indented lines are notes).
+
+```bash
+python plan_steps.py next --owner me          # what is next for you, overdue first
+python plan_steps.py done 2 3                 # tick steps (idempotent); undo unticks
+python plan_steps.py summary                  # progress per phase
+python plan_steps.py check                    # duplicate numbers, missing owner, user steps without a date...
+```
+
+## 4h. `store_kit.py`: copy-ready Steam and itch.io pages
+
+One source, `launch/store_kit.json` (shape in the script header): fields with declared character limits, the long description as blocks with **media slots that say what goes where** (which GIF, which screenshot, file, alt), ordered tags with the reason, tags to avoid, screenshots in order, capsules with sizes, trailer, settings to fill in, and a pre-publish checklist, for both platforms.
+
+```bash
+python store_kit.py check launch/store_kit.json
+python store_kit.py render launch/store_kit.json --md launch/store_kit.md
+python store_kit.py export launch/store_kit.json --dir launch/store_kit
+```
+`check` verifies required fields, characters against the limits written in the file (with their verification date: limits are never hard-coded), tag count and duplicates, screenshot order, slots without a description, leftover placeholders. The HTML status page shows the same data with a Copy button on every field.
+
+## 4i. `metrics_track.py`: metrics and "if... then" plans
+
+```bash
+python metrics_track.py add --metric itch_views --value 412 --note "after the Reddit post"
+python metrics_track.py status --md launch/metrics-status.md
+python metrics_track.py check          # validate launch/_raw/contingencies.json
+python metrics_track.py catalog        # usual metric names and where each number comes from
+```
+You record numbers (itch views and downloads, Discord members, demo players and median playtime, test sessions, reviews, refund rate...) in `launch/metrics.csv`; wishlists are read from `launch/wishlists.csv` automatically. `contingencies.json` holds scenarios (shape in the script header): signals (`level`, `gain`, `avg`, `drop`, `ratio` with window and threshold), start date, severity, diagnosis in order, actions from the cheapest, a decision and where the threshold comes from. `status` marks each scenario Triggered / Ok / No data / Not yet active; **exit code 2 if an ALARM scenario triggered**. Thresholds are opinions unless the scenario cites a benchmark.
+
+## 4j. `calc_econ.py`: light economic plan
+
+```bash
+python calc_econ.py --price 14.99 --costs 3500 --hours 600 --hourly 12 --partners 2 \
+    --wishlists 3000,8000,20000 --conv 0.10,0.20,0.30 --md launch/03-pricing-calc.md -o launch/_raw/econ.json
+```
+`net per copy = price x (1 - avg_discount) x (1 - vat_share) x (1 - refund) x (1 - steam_cut) x (1 - local_tax)`; break-even copies = total costs / net (cash costs, and cash costs plus time x hourly rate); wishlists needed at each conversion; three scenarios (copies = wishlists x conversion) with gross, net, profit (cash and with time), per partner, multiple of break-even; sensitivity (price -20% / +20%, double refunds). Defaults (steam-cut 0.30, vat-share 0.10, refund 0.06, avg-discount 0.15, local-tax 0) are **inputs to verify**, not facts; percentages above 1 are read as percent. `--config file.json` takes the same keys.
+
+## 4k. `wl_track.py`: wishlist tracker
+
+Steam does not publish wishlists: type the total from Steamworks once a week.
+
+```bash
+python wl_track.py add --wishlists 1840 --followers 310 --note "Reddit post" --csv launch/wishlists.csv
+python wl_track.py plan --launch 2027-03-01 --start 2026-10-01 --econ launch/_raw/econ.json \
+    --tripwire "2026-12-01:1500:8 weeks after the page:cut paid ads" --event "2026-11-17:Next Fest" -o launch/_raw/wl_plan.json
+python wl_track.py status --md launch/wishlist-status.md --json launch/_raw/wl_status.json
+```
+`status` reports current total, 1-week and 4-week velocity, position against the linear path of each scenario, wishlists per week still needed, tripwires (OK / ALARM / PENDING / NO DATA), and alerts (slowdown, drops over two records, stale data, unexplained spikes). **Exit code 2 when a tripwire has fired.** Targets are interpolated linearly: a simplification, real curves are spiky.
+
+## 4l. `status_page.py`: status page for partners or a publisher
+
+Reads files already in `launch/` (`status.json`, `calendar.md` with its steps, `store_kit.json`, `_raw/contingencies.json` + `metrics.csv`, `fg/timeline.csv`, `wishlists.csv` + `_raw/wl_plan.json`, `watchlist.csv`, `_raw/econ.json`, `TODO.md`, the main reports) and writes one self-contained `launch/STATUS.html`: verdict, decision profile, key numbers, alerts, **step-by-step calendar** (progress bar, "your turn now" and "Claude's turn" boxes, filter by owner, overdue flagged), charts with hover tooltips and a table view, gates, **copy-ready store pages with a Copy button on every field and dashed boxes marking where photos and GIFs go**, **"if... then" scenarios with live status**, competitors, TODOs, documents. No network requests, no external scripts, light and dark theme, readable on a phone, status icons always paired with a label, all text escaped. `--audience private|partner|publisher` (default partner) controls what is included; `--include`, `--exclude`, `--hide` refine it. The tool never publishes anything: sharing the page is the user's decision.
+
+## 5. `yt_research.py`: YouTube creators
+
+Two backends:
+- **`api`**: official YouTube Data API v3. Needs `YOUTUBE_API_KEY` (free from Google Cloud Console). A search costs 100 units against a 10,000 daily quota (about 90 queries/day). Exact dates and subscriber counts. **Recommended.**
+- **`html`**: reads `ytInitialData` from the public results page, no key, no login. Fragile (breaks on layout changes), dates are relative ("2w ago"), and YouTube's ToS discourage automated access: use low volume and a high `--rate`.
+- `auto` (default): `api` if the key is set, otherwise `html`.
+
+```bash
 python yt_research.py search -q "PlateUp" -q "PlateUp ita" --within month --dedupe -o yt_raw.json
 python yt_research.py search --topics-json topics.json --within month --within year --dedupe -o yt_raw.json
 python yt_research.py search -q "cooking roguelite" --backend api --region IT --lang it -o yt_it.json
-
-# 2) raggruppa per canale, tenendo solo i video degli ultimi 90 giorni
 python yt_research.py channels yt_raw.json --max-days 90 --exclude-title "trailer|soundtrack|ost" -o yt_channels.json
-
-# 3) iscritti, paese e descrizione, filtrati per fascia
 python yt_research.py subs yt_channels.json --min-subs 1000 --max-subs 1000000 -o yt_shortlist.json
-
-# 4) verifica che esistano video o Shorts specifici (oEmbed ufficiale, senza chiave)
 python yt_research.py verify https://www.youtube.com/shorts/XXXXXXXXXXX --urls-file urls.txt -o yt_verified.json
 ```
 
-Valori di `--within`: `hour, today, week, month, year, any` (ripetibile). Campi dei video: `vid, title, ch, url, when, days, views, topic, query, window`.
+`topics.json` is `{"Comparable": ["query", "query ita"], ...}`. `--within` values: `hour, today, week, month, year, any` (repeatable).
 
-**Limiti:** con `html` l'età dei video è approssimata ("1mo" diventa 30 giorni). Alcuni canali nascondono gli iscritti (`subs = null`; tienili con `--keep-unknown`). `subs --backend api` funziona solo per i canali trovati via API, cioè quelli che hanno un `channel_id`.
+**Limits:** with `html`, video age is approximate ("1mo" becomes 30 days). Some channels hide subscribers (`subs = null`; keep them with `--keep-unknown`). `subs --backend api` only works for channels found through the API (those with a `channel_id`).
 
-## 3. `social_verify.py`: verifica URL social (solo endpoint ufficiali)
+## 6. `social_verify.py`: social URL verification (official endpoints only)
 
 ```bash
-python social_verify.py https://www.tiktok.com/@utente/video/7677411131643809031 -o tt_verified.json
+python social_verify.py https://www.tiktok.com/@user/video/7677411131643809031 -o tt_verified.json
 python social_verify.py --urls-file urls.txt --since 2026-07-01 -o verified.csv
 ```
 
-La piattaforma viene riconosciuta dall'URL. Campi: `url, platform, ok, date, author, author_url, title, recent` (`recent` compare solo con `--since`).
+The platform is detected from the URL. Output fields: `url, platform, ok, date, author, author_url, title, recent` (`recent` only with `--since`).
 
-| Piattaforma | Endpoint | Chiave | Cosa restituisce |
+| Platform | Endpoint | Key | Returns |
 |---|---|---|---|
-| TikTok | `tiktok.com/oembed` | nessuna | autore, handle, didascalia; **data ricavata dall'ID** (`id >> 32`) |
-| YouTube e Shorts | `youtube.com/oembed` | nessuna | autore, canale, titolo (niente data: per quella usa `yt_research.py --backend api`) |
-| Instagram | Graph API `instagram_oembed` | `IG_OEMBED_TOKEN` = `APP_ID\|CLIENT_TOKEN` di un'app Meta con "oEmbed Read" | autore, didascalia |
-| Twitch | Helix (`clips`, `videos`, `users`) | `TWITCH_CLIENT_ID` + `TWITCH_CLIENT_SECRET` (app token client-credentials) | clip/VOD: data, visualizzazioni; canale: ultimi 5 VOD con data |
+| TikTok | `tiktok.com/oembed` | none | author, handle, caption; **date decoded from the video id** (`id >> 32`) |
+| YouTube / Shorts | `youtube.com/oembed` | none | author, channel, title (no date: use `yt_research.py --backend api`) |
+| Instagram | Graph API `instagram_oembed` | `IG_OEMBED_TOKEN` = `APP_ID\|CLIENT_TOKEN` of a Meta app with "oEmbed Read" | author, caption |
+| Twitch | Helix (`clips`, `videos`, `users`) | `TWITCH_CLIENT_ID` + `TWITCH_CLIENT_SECRET` | clip/VOD: date, views; channel: last 5 VODs |
 
-Senza chiave, Instagram e Twitch vengono **saltati** (`skipped`) invece di essere letti dalle pagine.
+Without keys Instagram and Twitch are **skipped**, never scraped.
 
-**Limiti (lavoro manuale):**
-- **Follower TikTok:** non sono disponibili senza login. La pagina profilo e le pagine `/discover` rimandano al login (vedi `_raw/tt1.html`). Vanno letti a mano dall'app o dal browser.
-- **Follower Instagram e Twitch:** servono token utente o permessi di business, quindi vanno letti a mano.
-- **Ricerca su TikTok e Instagram:** non esiste un endpoint pubblico e legittimo senza login. Gli URL vanno trovati a mano (o tramite ricerca web) e poi verificati qui.
-- **X/Twitter:** escluso. L'API richiede un piano a pagamento e l'oEmbed non dà dati utili per verificare la copertura.
+**Manual work:** TikTok followers need a login (profile and `/discover` pages redirect to it); Instagram and Twitch follower counts need user tokens or business permissions; there is no public, legitimate search endpoint for TikTok or Instagram (find URLs by hand or web search, then verify them here); X/Twitter is excluded (paid API, oEmbed gives nothing useful).
 
-## 4. `reddit_rules.py`: regole dei subreddit
+## 7. `reddit_rules.py`: subreddit rules
 
 ```bash
-export REDDIT_CLIENT_ID=...  REDDIT_CLIENT_SECRET=...   # app "script" su reddit.com/prefs/apps
-export REDDIT_USER_AGENT="launch-research/1.0 by u/tuonome"
+export REDDIT_CLIENT_ID=...  REDDIT_CLIENT_SECRET=...   # "script" app at reddit.com/prefs/apps
+export REDDIT_USER_AGENT="launch-research/1.0 by u/yourname"
 python reddit_rules.py IndieDev indiegaming playmygame DestroyMyGame -o reddit_rules.md
 python reddit_rules.py --subs-file subs.txt -o reddit_rules.json
 ```
 
-Restituisce le regole (titolo e testo), `subscribers`, `submission_type` e `promo_related_rules`, cioè i numeri delle regole che parlano di autopromozione, rapporto 10%, flair, Screenshot Saturday e simili. In `.md` queste regole sono marcate **[promo]**.
+Returns rules (title and text), `subscribers`, `submission_type` and `promo_related_rules`: the numbers of rules mentioning self-promotion, 10% ratio, flair, Screenshot Saturday and similar (flagged **[promo]** in `.md`). The flagging is a regex heuristic: read the rules.
 
-**Limiti:** senza OAuth Reddit risponde quasi sempre `403 Blocked` (verificato oggi). Lo script non prova ad aggirare il blocco: lo segnala e rimanda alla sidebar. Con OAuth app-only (gratis) funziona.
+**Limits:** anonymous requests usually get `403 Blocked`. The script does not try to bypass it: it reports the error and points to the sidebar. App-only OAuth (free) works.
 
-## 5. `build_creators.py`: CSV dei creator
+## 8. `build_creators.py`: creators CSV
 
 ```bash
 python build_creators.py --youtube yt_shortlist.json --social tt_verified.json \
@@ -104,36 +268,35 @@ python build_creators.py --youtube yt_shortlist.json --social tt_verified.json \
   --ref-date 2026-10-06 -o creators.csv
 ```
 
-`curation.json` (opzionale) contiene le scelte manuali, che prima erano scritte nel codice:
+`curation.json` (optional) holds the manual choices that would otherwise live in code:
 
 ```json
 {
-  "exclude":   ["Canale da escludere"],
-  "lang":      {"NomeCanale": "IT", "Furo": "EN"},
-  "topic_fit": {"PlateUp!": "cucina + roguelite (il comp più vicino)"},
-  "notes":     {"https://www.tiktok.com/@x/video/123": "Curatore co-op indie, chiude con 'wishlist it'"},
+  "exclude":   ["Channel to exclude"],
+  "lang":      {"ChannelName": "IT", "Other": "EN"},
+  "topic_fit": {"PlateUp!": "cooking + roguelite (closest comp)"},
+  "notes":     {"https://www.tiktok.com/@x/video/123": "Co-op indie curator, ends with 'wishlist it'"},
   "topics":    {"https://www.tiktok.com/@x/video/123": "Big Walk"}
 }
 ```
 
-Colonne (le stesse di `launch/creators.csv`): `piattaforma, nome, url, lingua, iscritti_follower, segmento, priorita, gioco_coperto, titolo_video, url_video, data_pubblicazione_circa, views, perche, contatto, data_verifica`.
+Columns: `piattaforma, nome, url, lingua, iscritti_follower, segmento, priorita, gioco_coperto, titolo_video, url_video, data_pubblicazione_circa, views, perche, contatto, data_verifica`.
 
-Regole:
-- **Lingua:** `config.lang`, poi il paese del canale, poi `--default-lang`.
-- **Segmento:** nano < 10k, micro < 100k, medio < 1M, grande ≥ 1M.
-- **Priorità:**
-  - A = iscritti < `tier-a-max` e lingua prioritaria
-  - B = (iscritti < `tier-b-max` e lingua prioritaria) oppure iscritti < `tier-a-max`
-  - C = il resto
-- **Righe social senza follower:** A se la lingua è prioritaria, altrimenti B.
-- **`--ref-date`:** la data in cui hai fatto la ricerca. Serve a convertire "2w ago" in una data.
+- **Language:** `config.lang`, then the channel country, then `--default-lang`.
+- **Segment:** nano < 10k, micro < 100k, medio < 1M, grande ≥ 1M.
+- **Priority:** A = subscribers < `tier-a-max` and priority language; B = (subscribers < `tier-b-max` and priority language) or subscribers < `tier-a-max`; C = the rest. Social rows without follower counts: A if the language is a priority, otherwise B.
+- **`--ref-date`:** the day the search ran; converts "2w ago" into a date.
+- YouTube channels with unknown subscriber counts are skipped with a warning (the count is logged).
 
 ---
 
-## Pipeline tipica (circa 15 minuti)
+## Typical pipeline
 
 ```bash
-python steam_comps.py --ids-file comps_ids.txt --gamalytic -o out/comps.csv
+python steam_discover.py tag Roguelike Cooking --enrich 40 -o out/discover.json
+python steam_comps.py --ids-file comps_ids.txt --steamspy --gamalytic -o out/comps.csv
+python steam_reviews.py --ids-file comps_ids.txt --type negative --limit 150 -o out/reviews_neg.json
+python roster.py --cohorts-a "..;..;.." --cohorts-b "..;..;.." --seed mygame -o out/roster.json --md out/roster.md
 python yt_research.py search --topics-json topics.json --within month --within year --dedupe -o out/yt_raw.json
 python yt_research.py channels out/yt_raw.json --max-days 120 -o out/yt_channels.json
 python yt_research.py subs out/yt_channels.json --max-subs 2000000 -o out/yt_shortlist.json
@@ -142,39 +305,12 @@ python reddit_rules.py --subs-file subs.txt -o out/reddit_rules.md
 python build_creators.py --youtube out/yt_shortlist.json --social out/social.json --config curation.json --priority-langs IT,EN -o out/creators.csv
 ```
 
-## Smoke test (2026-10-06, rete reale)
+## Test status
 
-| Comando | Esito |
+| Tool | Status |
 |---|---|
-| `steam_comps.py 1599600 --steamspy --gamalytic --headers-dir` | OK: PlateUp! 27.376 recensioni (94,7%), demo trovata, SteamSpy 1–2M, Gamalytic 2,39M copie (87 copie per recensione), header scaricato |
-| `yt_research.py search/channels/subs` (backend html) | OK: 20 video, 14 canali, iscritti letti 3 su 3 |
-| `yt_research.py verify` | OK |
-| `social_verify.py` | OK: 2 TikTok verificati (autore e data dall'ID) e 1 YouTube Short; Twitch e Instagram saltati come previsto (senza chiavi) |
-| `reddit_rules.py` (anonimo) | **403 Blocked** (atteso): serve OAuth |
-| `build_creators.py` | OK. Rigenerato da `_raw/yt_shortlist.json`: 230 righe YouTube |
-| `yt_research.py --backend api` | **non testato** (nessuna `YOUTUBE_API_KEY`) |
-
----
-
-## Come integrarli nella skill `game-launch-strategist`
-
-1. Copia la cartella nella skill: `~/.claude/skills/game-launch-strategist/scripts/research/`, con tutti i `.py` (`common.py` compreso) più `requirements.txt` e questo `README.md`.
-2. Nel `SKILL.md` aggiungi una sezione come questa:
-
-```markdown
-## Strumenti di ricerca (non riscriverli: usa scripts/research/)
-Esegui sempre da `scripts/research/` e scrivi gli output in `<progetto>/launch/_raw/`.
-- Comparabili Steam: `python scripts/research/steam_comps.py <appid...> --gamalytic -o <raw>/comps.json`
-  -> usa reviews_total, pct_positive, boxleiter_x30/x60, gamalytic_copies per la tabella comps.
-- Creator YouTube: `yt_research.py search --topics-json <raw>/topics.json --within month --dedupe`
-  -> `channels --max-days 90` -> `subs --max-subs 1000000`. Prima scrivi topics.json
-  ({"Comparabile": ["query", "query ita"]}). Se manca YOUTUBE_API_KEY usa il backend html con --rate 2.
-- Video TikTok/Shorts/Twitch trovati via web search: verificali SEMPRE con `social_verify.py`
-  prima di citarli. I follower TikTok/IG vanno segnati "da verificare a mano".
-- Regole subreddit: `reddit_rules.py ... -o <raw>/reddit_rules.md`. Se esce 403, leggi la sidebar a mano.
-- CSV finale: `build_creators.py --youtube ... --social ... --config <raw>/curation.json --priority-langs IT,EN`.
-  Le scelte manuali (esclusioni, lingue, note) vanno in curation.json, non nel codice.
-Non aggirare login, CAPTCHA o paywall. Le chiavi si passano solo da variabili d'ambiente.
-```
-
-3. Variabili d'ambiente opzionali: `YOUTUBE_API_KEY`, `REDDIT_CLIENT_ID`, `REDDIT_CLIENT_SECRET`, `REDDIT_USER_AGENT`, `TWITCH_CLIENT_ID`, `TWITCH_CLIENT_SECRET`, `IG_OEMBED_TOKEN`. Impostale nel profilo della shell o in `settings.json` (`env`), mai nei file della skill.
+| `steam_comps.py`, `yt_research.py` (html backend: search, channels, subs, verify), `social_verify.py` (TikTok, YouTube), `build_creators.py` | Run against the live services on 2026-10-06 (PlateUp! 27,376 reviews at 94.7%, SteamSpy 1–2M owners, Gamalytic 2.39M copies = 87 copies/review; 20 videos, 14 channels, 3/3 subscriber counts; 2 TikToks and 1 Short verified). Re-checked offline after the date-handling changes. |
+| `reddit_rules.py` anonymous | `403 Blocked` (expected: OAuth needed). |
+| `yt_research.py --backend api` | Not tested (no `YOUTUBE_API_KEY`). |
+| `review_corpus.py`, `store_bench.py`, `genre_bench.py`, `watchlist.py`, `plan_steps.py`, `store_kit.py`, `metrics_track.py`, `calc_econ.py`, `wl_track.py`, `status_page.py` | Tested offline in `tests/` (canned API-shaped answers; a generated MP4 served with HTTP Range support for the duration and cut analysis, run with real `ffmpeg`; arithmetic of the economic plan checked independently; the status page rendered in Chromium at desktop and 390 px width: no horizontal overflow, no script errors, hostile text stays inert). `plan_steps.py` was also checked on a real step list written by the project owner (30 steps, 6 phases). **Not yet run against the live Steam services.** |
+| `steam_reviews.py`, `steam_discover.py`, `roster.py`, `fg_waves.py` | Tested **offline** against canned responses shaped like the documented APIs (paging, duplicate and cursor handling, filters, day-range cap, early stop on recent sort, theme tally, CSV output, tag ranking, roster determinism, stable jury and append-only behaviour, wave validation, metrics, delta and timeline on synthetic waves). **Not yet run against the live Steam endpoints**: do a first run with one app id and check the output before relying on it. |
