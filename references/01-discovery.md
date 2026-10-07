@@ -6,7 +6,7 @@ Percorsi: `launch/` è nella radice del progetto del gioco. Date, etichette e re
 
 ## FASE 0: scoperta, fase del progetto e obiettivo
 
-Leggi README, GDD, note, TODO, file di configurazione dell'engine, cartelle di asset, plugin, build script, file Steam, screenshot e trailer presenti. Segnali utili per riconoscere l'engine:
+**Parti dal Context Pack** della Fase B (`launch/00-contesto.md`, `00a-bootstrap.md`): motore, versione, documenti, strumenti e lacune sono già lì; qui li approfondisci e li verifichi, non li ricostruisci. Se manca (chat nuova senza Fase B), falla adesso. Poi leggi README, GDD, note, TODO, file di configurazione dell'engine, cartelle di asset, plugin, build script, file Steam, screenshot e trailer presenti. Segnali utili per riconoscere l'engine:
 
 | Engine | Segnali |
 |---|---|
