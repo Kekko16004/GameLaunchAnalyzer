@@ -6,7 +6,7 @@ Si esegue **dopo** la lettura del progetto (Fase 0, `01-discovery.md`) e **prima
 
 ## Principi
 
-1. **Non chiedere ciò che puoi leggere.** Prima ispeziona repo, README, GDD, store page, build. Chiedi solo ciò che sa soltanto l'utente: intenzioni, preferenze, rischio, limiti personali.
+1. **Non chiedere ciò che puoi leggere.** Parti da `launch/00-contesto.md` (Fase B): ciò che il progetto, un GDD `locked`, `GAME_TASKS.md` o `CLAUDE.md` già dicono lo proponi come risposta dedotta ("dal GDD: pubblico cozy co-op, è giusto?") e chiedi solo conferma; le **lacune** del Context Pack sono le domande vere. Poi ispeziona repo, README, GDD, store page, build. Chiedi solo ciò che sa soltanto l'utente: intenzioni, preferenze, rischio, limiti personali.
 2. **Ogni domanda dice perché la fai** (una riga) **e cosa cambierà nel piano.** Niente domande retoriche, nessuna ripetizione.
 3. **Dopo ogni round dai consigli** (formato sotto), non solo raccogli. L'utente risponde "ok" per accettare un default.
 4. **Segnala le tensioni** tra risposte ("vuoi vivere di questo ma hai 5 ore a settimana e 100 € di budget") con gentilezza e con numeri, senza giudicare.

@@ -37,12 +37,12 @@ Costruisci in `REPORT.md` la sezione che massimizza davvero le probabilità di s
 
 In `launch/`:
 
-- `00-brief.md`, `01-dev.md`, `01b-positioning.md`, `01c-full-game.md` (solo se beta con piano del gioco completo), `02-platform.md`, `03-pricing.md`, `04-clips.md`, `04b-store-copy.md`
+- `00-contesto.md` (Context Pack della Fase B), `00-brief.md`, `01-dev.md`, `01b-positioning.md`, `01c-full-game.md` (solo se beta con piano del gioco completo), `02-platform.md`, `03-pricing.md`, `04-clips.md`, `04b-store-copy.md`
 - `05-focusgroup.md`, `05a-critiche-simulate.md`, `05b-critiche-reali.md`, `05c-premortem.md`
 - `06-creators.md`, `07-community.md`, `08-brand-legal.md`
 - `fg/roster.md`, `fg/roster.json` (tester con ID stabili e giuria), `fg/waves/` (una serie di file per ondata: evidenze, gruppi A e B, dati JSON, dibattito, report, delta), `fg/timeline.md`, `fg/timeline.csv`
 - `comps.csv`, `sources.md`, `creators.csv`, `window.csv`, `window.md`, `calendar.md` (con i passi 👤/🤖), `03-pricing-calc.md`, `00-intenzioni.md`, `05d-contingenze.md`, `store_kit.json`, `store_kit.md`, `store_kit/`, `wishlists.csv`, `wishlist-status.md`, `metrics.csv`, `metrics-status.md`, `watchlist.csv`, `watchlist-report.md`, `status.json`, `STATUS.html`, `REPORT.html`, `charts/` (grafici `.svg`)
-- `_raw/`: dati grezzi degli script (`comps.json`, `corpus.json`/`corpus.md`, `store_pages.json`/`store_bench.md`, `hooks/`, `econ.json`, `wl_plan.json`, `window.json`, `contingencies.json`, `genre_bench.json`, `my_features.json`, `reviews_*.json`, `yt_*.json`, `social_verified.json`, `reddit_rules.md`, `curation.json`, `topics.json`)
+- `_raw/`: dati grezzi degli script (`comps.json`, `corpus.json`/`corpus.md`, `store_pages.json`/`store_bench.md`, `hooks/`, `econ.json`, `wl_plan.json`, `window.json`, `project_scan.json`, `contingencies.json`, `genre_bench.json`, `my_features.json`, `reviews_*.json`, `yt_*.json`, `social_verified.json`, `reddit_rules.md`, `curation.json`, `topics.json`)
 - `playbook-usato.md` (solo se ad hoc), `ricerche-manuali.md` (solo se serve), `history/` (in Aggiornamento)
 - `REPORT.md`, `TODO.md`, `STATUS.md`
 
@@ -224,6 +224,7 @@ In **Rapida** e **Mirata** il debriefing si accorcia alle sole righe delle fasi 
 ## Controllo di qualità prima di consegnare
 
 - [ ] Genere riconosciuto con confidenza dichiarata; pilastri, coorti, hook, creator e prezzo derivano dal playbook.
+- [ ] **Fase B eseguita**: `00-contesto.md` con motore e versione, documenti letti con il loro nome come fonte, tabella degli strumenti (disponibile, usato per, se manca come collegarlo); niente "non posso vedere il gioco" senza aver controllato strumenti e disco; se un MCP del motore era collegato, le evidenze (schermate, log) vengono dalla build vera.
 - [ ] La domanda "beta o gioco completo?" è stata fatta per prima e la risposta è in `00-brief.md`, `status.json` (`product`) e nel report; pilastri, focus group e verdetto usano il metro giusto.
 - [ ] Se la beta è gratuita: pilastro "Spinta all'acquisto" votato, `would_buy` chiesto ai tester e riportato, punto di conversione e leve indicati.
 - [ ] Se è una beta con piano del gioco completo: analisi completa come beta, poi domande sul gioco completo, poi `01c-full-game.md` (gap, capacità, durata/prezzo, rischio recensioni, cosa migliorare); il verdetto sulla beta non è mescolato con quello, provvisorio, sul gioco completo.
