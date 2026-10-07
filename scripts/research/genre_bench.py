@@ -112,7 +112,7 @@ def md(res: dict, tags: list[str], today: str) -> str:
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--tag", action="append", required=True, help="Steam tag (repeatable), case-sensitive on SteamSpy, e.g. Roguelike")
-    ap.add_argument("--require-all", action="store_true"); ap.add_argument("--min-reviews", type=int, default=50)
+    ap.add_argument("--require-all", action="store_true"); ap.add_argument("--exact-tags", action="store_true", help="use tag names exactly as typed"); ap.add_argument("--no-validate-tags", action="store_true"); ap.add_argument("--min-reviews", type=int, default=50)
     ap.add_argument("--top", type=int, default=100, help="games kept after filters (default 100)")
     ap.add_argument("--enrich", type=int, default=80, help="games enriched with release date, price, demo (1 request each; default 80)")
     ap.add_argument("--mine", action="append", help="key=value of YOUR game: reviews_total, reviews_per_year, price, pct_positive")
@@ -120,7 +120,7 @@ def main():
     ap.add_argument("--md"); ap.add_argument("-o", "--out")
     a = ap.parse_args()
     set_rate(a.rate)
-    rows = sd.candidates(a.tag, a.require_all, a.min_reviews, None, a.top)
+    rows = sd.candidates(a.tag, a.require_all, a.min_reviews, None, a.top, variants=not a.exact_tags, validate=not a.no_validate_tags)
     for i, r in enumerate(rows[:a.enrich], 1):
         sd.enrich(r, a.cc, a.lang)
         if i % 20 == 0:

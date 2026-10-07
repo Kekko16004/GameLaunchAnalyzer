@@ -14,6 +14,12 @@ The skill itself is written in **Italian** (instructions and generated reports);
 | **Ondata** | `launch/fg/` already exists: runs the next focus-group wave with the **same testers** on the current state of the game, then delta and timeline. |
 | **Aggiornamento** | `launch/` already exists: re-runs the affected phases (including a new wave, with your OK) and reports what changed. |
 
+### Beta or full game: always asked first
+
+The very first question, in every mode, is whether you are showing a **beta / demo / vertical slice** or a **full game**, because it changes how everything is judged. If it is a beta and you already have the TODO or plan of the full game, the skill first analyses it **as a beta** (planned content that is not there yet is a gap, not a defect), then asks questions about the full game, then runs a quick full-game analysis (gaps per pillar, scope against capacity, length and price, review risk, what to improve now). The two verdicts stay separate and the full-game one is always provisional.
+
+A free beta is judged on one more thing: **does it make you want to pay when the full game comes out?** The panel is asked whether they would pay the planned launch price (`would_buy`), and the report names the conversion point and the levers to raise it.
+
 ### Interview first
 
 Before any number, the skill **interviews you about your intentions in several rounds** (goals and what success means, capacity, money and risk, channels and style, what is non-negotiable, "what if it goes badly" scenarios, then a confirmation), gives advice with trade-offs after each round, flags tensions between your answers, and keeps a decision log. Thresholds, calendar, channels and contingency plans follow **your** decisions; when the data contradicts them it asks again instead of changing them silently.
@@ -23,6 +29,8 @@ Before any number, the skill **interviews you about your intentions in several r
 Beyond the phases, the skill ships tools that turn guesses into reproducible numbers and keep the plan alive:
 
 - **Real benchmarks.** `genre_bench.py` (how the most reviewed games of your tag do, by year, price and demo, built from public data at run time), `store_bench.py` (store page and trailer of the comparables: description, GIFs, trailer duration, cuts, hook frames, and how they relate to performance), `review_corpus.py` (thousands of real reviews of the comparables **and** of the genre, and what they say about the features of your game).
+- **Charts everywhere they help.** `report_html.py` turns `REPORT.md` into an illustrated page (pillars, tester verdicts per wave, criticisms, genre and price benchmarks, real-review themes, economics against break-even, crowding per launch week, steps by phase, creators), `status_page.py` has a chart overview, and `charts_export.py` writes each chart as an SVG for the Markdown reports. Light and dark, phone-friendly, every chart with a table view.
+- **Launch window.** `launch_window.py` scores each week by the competitors, big releases, festivals and sales around it, lists the quietest weeks and says where your date falls.
 - **Step-by-step calendar.** `calendar.md` lists the steps in order, split into phases, each marked 👤 (you) or 🤖 (Claude) with a due date; `plan_steps.py` tells you what is next and ticks what is done.
 - **Copy-ready store pages.** `store_kit.json` holds the Steam and itch.io pages (fields, long description with the exact places for photos and GIFs, ordered tags, screenshots, capsules, settings, checklist); `store_kit.py` checks and exports them.
 - **"If... then" plans.** `metrics_track.py` follows the numbers you record (itch views and downloads, demo, Discord...) against scenarios with thresholds, diagnosis and actions, for example "one week on itch went badly". `wl_track.py` does the same for wishlists and the pre-mortem tripwires; `watchlist.py` follows comparables and competitors and warns when one releases in your launch window.

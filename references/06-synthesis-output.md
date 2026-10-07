@@ -1,4 +1,23 @@
-# Fase 11 e output finale: sintesi, report, TODO, stato, debriefing, controllo qualità
+# Fasi 10B e 11 e output finale: gioco completo, sintesi, report, TODO, stato, debriefing, controllo qualità
+
+---
+
+## FASE 10B: gioco completo (solo se il prodotto analizzato è una beta, demo o vertical slice)
+
+Si esegue **dopo** l'analisi completa fatta con il metro "beta" (Fasi 3-10) e dopo le domande sul gioco completo (Round R-D in `00-intervista.md`). Non sostituisce nulla: il verdetto sulla beta resta com'è.
+
+**Ingressi**: TODO, GDD, roadmap o elenco di contenuti del gioco completo (se l'utente non li ha, chiedi una pagina di piano: contenuti, durata, feature, data di uscita sperata), più le risposte del Round R-D. Se non esiste alcun piano, la Fase 10B si riduce a "cosa serve scrivere" e lo dici.
+
+**Analisi rapida** (una pagina, niente nuove ondate del focus group):
+1. **Tabella dei gap**: `Pilastro | Beta oggi | Gioco completo pianificato | Gap | Azione (ore)`. I pilastri sono quelli della Fase 3; il gap è ciò che manca per portare ogni pilastro a PASS *nel prodotto che si venderà*.
+2. **Scope contro capacità**: ore del piano completo (dalle TODO) contro ore settimanali del team fino alla data di uscita. Se non ci stanno, proponi i tagli e il rinvio.
+3. **Durata e prezzo**: la durata prevista regge il prezzo che emerge da `calc_econ.py` e dai comparabili? (Il prezzo della beta, se c'è, non è quello del gioco completo.)
+4. **Rischio recensioni**: i temi negativi ricorrenti del genere (`review_corpus.py`, `genre_bench.py`) applicati al piano: quali il piano previene, quali no, quali la beta nasconde (ripetitività, fine contenuti, bilanciamento a lungo termine).
+5. **Spinta all'acquisto** (se la beta è gratuita, e lo è spesso): la beta invoglia a spendere all'uscita? Metti la percentuale `would_buy` dell'ultima ondata, il pilastro "Spinta all'acquisto" (Fase 3), il punto di conversione (fine beta, invito alla wishlist) e due o tre leve concrete per aumentarla: un finale che lascia voglia di continuare, il momento migliore mostrato per ultimo, una promessa chiara di ciò che arriva, wishlist al picco di entusiasmo, un vantaggio per chi ha giocato la beta. Dichiara cosa **non** regalare.
+6. **Cosa migliorare adesso**: da 3 a 5 azioni ordinate per impatto, divise tra "migliora la beta (serve ai test e alla wishlist)" e "prepara il gioco completo (serve all'uscita)".
+7. **Verdetto sul gioco completo**: sempre **provvisorio** (si basa su un piano, non su una build). Una riga, con ciò che lo renderebbe definitivo.
+
+Output: **`launch/01c-full-game.md`**, e in `status.json` il campo `full_game` (vedi sotto). Se l'utente ha già il gioco completo, la Fase 10B si salta.
 
 ---
 
@@ -18,12 +37,12 @@ Costruisci in `REPORT.md` la sezione che massimizza davvero le probabilità di s
 
 In `launch/`:
 
-- `00-brief.md`, `01-dev.md`, `01b-positioning.md`, `02-platform.md`, `03-pricing.md`, `04-clips.md`, `04b-store-copy.md`
+- `00-brief.md`, `01-dev.md`, `01b-positioning.md`, `01c-full-game.md` (solo se beta con piano del gioco completo), `02-platform.md`, `03-pricing.md`, `04-clips.md`, `04b-store-copy.md`
 - `05-focusgroup.md`, `05a-critiche-simulate.md`, `05b-critiche-reali.md`, `05c-premortem.md`
 - `06-creators.md`, `07-community.md`, `08-brand-legal.md`
 - `fg/roster.md`, `fg/roster.json` (tester con ID stabili e giuria), `fg/waves/` (una serie di file per ondata: evidenze, gruppi A e B, dati JSON, dibattito, report, delta), `fg/timeline.md`, `fg/timeline.csv`
-- `comps.csv`, `sources.md`, `creators.csv`, `calendar.md` (con i passi 👤/🤖), `03-pricing-calc.md`, `00-intenzioni.md`, `05d-contingenze.md`, `store_kit.json`, `store_kit.md`, `store_kit/`, `wishlists.csv`, `wishlist-status.md`, `metrics.csv`, `metrics-status.md`, `watchlist.csv`, `watchlist-report.md`, `status.json`, `STATUS.html`
-- `_raw/`: dati grezzi degli script (`comps.json`, `corpus.json`/`corpus.md`, `store_pages.json`/`store_bench.md`, `hooks/`, `econ.json`, `wl_plan.json`, `contingencies.json`, `genre_bench.json`, `my_features.json`, `reviews_*.json`, `yt_*.json`, `social_verified.json`, `reddit_rules.md`, `curation.json`, `topics.json`)
+- `comps.csv`, `sources.md`, `creators.csv`, `window.csv`, `window.md`, `calendar.md` (con i passi 👤/🤖), `03-pricing-calc.md`, `00-intenzioni.md`, `05d-contingenze.md`, `store_kit.json`, `store_kit.md`, `store_kit/`, `wishlists.csv`, `wishlist-status.md`, `metrics.csv`, `metrics-status.md`, `watchlist.csv`, `watchlist-report.md`, `status.json`, `STATUS.html`, `REPORT.html`, `charts/` (grafici `.svg`)
+- `_raw/`: dati grezzi degli script (`comps.json`, `corpus.json`/`corpus.md`, `store_pages.json`/`store_bench.md`, `hooks/`, `econ.json`, `wl_plan.json`, `window.json`, `contingencies.json`, `genre_bench.json`, `my_features.json`, `reviews_*.json`, `yt_*.json`, `social_verified.json`, `reddit_rules.md`, `curation.json`, `topics.json`)
 - `playbook-usato.md` (solo se ad hoc), `ricerche-manuali.md` (solo se serve), `history/` (in Aggiornamento)
 - `REPORT.md`, `TODO.md`, `STATUS.md`
 
@@ -69,15 +88,29 @@ Alla ripresa ("continua") leggi `STATUS.md` e riparti dalla prima fase non compl
   "gates": {"0": {"state": "pass|fail|pending", "note": "..."}, "A": {}, "B": {}, "C": {}},
   "key_numbers": [{"label": "Comparabili analizzati", "value": "18", "note": "con dati verificati"}],
   "intentions": {"summary": "obiettivo, capacità, budget, canali, regole di stop in 2-3 frasi",
-                 "decisions": [{"topic": "Budget", "choice": "solo Steam Direct", "why": "nessuna ads prima dei gate"}]}
+                 "decisions": [{"topic": "Budget", "choice": "solo Steam Direct", "why": "nessuna ads prima dei gate"}]},
+  "product": {"kind": "beta|demo|vertical_slice|full|post_launch", "label": "Beta (Atto I)", "has_full_plan": true},
+  "full_game": {"summary": "verdetto provvisorio sul gioco completo in 1-2 frasi",
+                "gaps": [{"area": "Contenuto", "today": "1 biome", "target": "4 biomi", "action": "3 biomi nuovi", "hours": 120}]}
 }
 ```
+`product` va scritto sempre (la pagina lo mostra in testa: "valutato come: Beta"); `full_game` solo se la Fase 10B è stata eseguita. La pagina ha un indice fisso delle sezioni, il verdetto con i cancelli a colpo d'occhio, il riquadro "Adesso" (tocca a te / tocca a Claude), la tabella della finestra di lancio, i numeri di SteamDB registrati, i report di ogni ondata del focus group e i documenti principali (critiche simulate e reali, clip, calcolo economico). Mostra anche una sezione collassabile con **tutti i creator** di `creators.csv` (ordinati A, B, C; per il pubblico `publisher` è nascosta).
 Genera la pagina:
 
 ```bash
-python3 <skill>/scripts/research/status_page.py --launch-dir launch --audience partner     # private | partner | publisher
+python3 <skill>/scripts/research/status_page.py --launch-dir launch --audience private     # predefinito: private | partner | publisher
 ```
-È un unico file HTML autonomo (nessuna richiesta di rete, tema chiaro e scuro, utilizzabile da telefono, grafici con vista tabella). **Non pubblicarla né inviarla**: dì all'utente dov'è il file e offri la pubblicazione in una riga (es. come artifact privato, se l'ambiente lo permette), e chiedi per chi è: `publisher` esclude economia interna, TODO e pre-mortem, `partner` li include, `private` aggiunge creator, community e fiscale. Controlla che nessun dato personale o riservato finisca nei documenti inclusi.
+È un unico file HTML autonomo (nessuna richiesta di rete, tema chiaro e scuro, utilizzabile da telefono, grafici con vista tabella e un "Quadro d'insieme" con i grafici di pilastri, ondate, mercato, economia, finestra di lancio e creator, filtrato per pubblico). **Non pubblicarla né inviarla**: dì all'utente dov'è il file e offri la pubblicazione in una riga (es. come artifact privato, se l'ambiente lo permette), e **genera `private`, senza chiedere il pubblico** (è il default: tutto, per il proprietario). Chiedi per chi è solo se l'utente dice che la pagina andrà ad altri: `publisher` esclude economia interna, TODO e pre-mortem, `partner` li include, `private` aggiunge creator, community e fiscale. Controlla che nessun dato personale o riservato finisca nei documenti inclusi.
+
+## Grafici nel report (`REPORT.html` e `charts/`)
+
+Il report si guarda, non solo si legge. Dopo aver scritto `REPORT.md` e aggiornato `status.json`:
+
+```bash
+python3 <skill>/scripts/research/report_html.py --launch-dir launch            # launch/REPORT.html: testo + grafici accanto a ogni sezione
+python3 <skill>/scripts/research/charts_export.py --launch-dir launch          # launch/charts/*.svg + index.md, per incorporarli nei Markdown
+```
+I grafici nascono dai file già prodotti (`01-dev.md`, `fg/timeline.csv`, `_raw/genre_bench.json`, `corpus.json`, `econ.json`, `window.json`, `calendar.md`, `creators.csv`, `comps.csv`, `store_pages.json`, `status.json`); quello che manca non viene disegnato. Per avere più grafici, produci quei file con gli script. Nel `REPORT.md` incorpora gli `.svg` più utili dove servono (`![Pilastri](charts/product-1.svg)`) e scrivi sotto una riga di lettura. Regole: una sola scala per grafico, legenda sempre con due o più serie, il numero resta in tabella, nessun grafico con due punti dati. Dì all'utente dove sono `REPORT.html` e `charts/`; sono file locali.
 
 ## Routine settimanale (dopo l'apertura della pagina Steam, e durante la beta su itch.io)
 
@@ -97,7 +130,7 @@ Per ogni ricerca che non hai potuto fare: obiettivo, query o URL suggeriti, a co
 ## `REPORT.md` (struttura rigida)
 
 1. **Verdetto esecutivo (max 15 righe)**: semaforo verde/giallo/rosso secondo i criteri in `SKILL.md`, probabilità stimata di recuperare i costi (intervallo), 3 rischi killer. Se il posizionamento non è PASS il verdetto non può essere verde.
-2. **Genere, playbook, fase e confidenza per sezione.** In testa al report: il **profilo decisionale** (da `00-intenzioni.md`): cosa vuole il proprietario e quali decisioni guidano il piano.
+2. **Genere, playbook, fase e confidenza per sezione.** Dichiara qui il **tipo di prodotto valutato** (beta, demo, completo…) e il metro usato. In testa al report: il **profilo decisionale** (da `00-intenzioni.md`): cosa vuole il proprietario e quali decisioni guidano il piano.
 3. **Posizionamento e differenziazione**: pitch, 3 differenziatori, esito del test contro i comparabili.
 4. **Audit dev e pilastri di genere.**
 5. **Critiche e ondate**: top critiche simulate (A) dell'ultima ondata, temi reali del genere (B), matrice di convergenza, 3 dealbreaker, metriche del panel con calibrazione dichiarata e **timeline delle ondate** (`fg/timeline.md`) se ce n'è più d'una.
@@ -105,10 +138,11 @@ Per ogni ricerca che non hai potuto fare: obiettivo, query o URL suggeriti, a co
 7. **Mercato, comparabili e prezzo**: scenari con "cosa deve essere vero".
 8. **Capsule, hook, testi dello store e trailer**, con la **scheda copiabile delle pagine Steam e itch.io** (`store_kit.md`): ogni campo, la descrizione lunga con le posizioni di foto e GIF, tag in ordine, screenshot, capsule, impostazioni e checklist.
 9. **Piano piattaforme, Next Fest e gate** con date, e il **calendario a passi** (`calendar.md`): fasi, chi fa cosa (👤/🤖), scadenze, prossimi 5 passi per l'utente.
-10. **Creator e community**, kit del test reale.
-11. **Success Maximizer**: 5 leve, 3 "non fare", criteri di stop e pivot, verifica di capacità. Seguito da **"Se… allora"**: la matrice dei piani di contingenza (`05d-contingenze.md`) con segnali, soglie, diagnosi, azioni e decisioni per ogni scenario (itch, Steam, demo, Next Fest, lancio, esterni, persone).
-12. **Legale e fiscale**: cose da fare prima di incassare.
-13. **Fonti verificate** con data di consultazione.
+10. **Creator e community**, kit del test reale. Includi un riepilogo di `creators.csv` (numero totale, tabella dei creator di priorità A con piattaforma, lingua e perché, e il rimando al file completo; la tabella intera è collassabile in `STATUS.html`).
+11. **Beta oggi e gioco completo** (solo se il prodotto è una beta con un piano del gioco completo): sintesi della Fase 10B, tabella dei gap, scope contro capacità, "cosa migliorare adesso" e verdetto provvisorio sul gioco completo.
+12. **Success Maximizer**: 5 leve, 3 "non fare", criteri di stop e pivot, verifica di capacità. Seguito da **"Se… allora"**: la matrice dei piani di contingenza (`05d-contingenze.md`) con segnali, soglie, diagnosi, azioni e decisioni per ogni scenario (itch, Steam, demo, Next Fest, lancio, esterni, persone).
+13. **Legale e fiscale**: cose da fare prima di incassare.
+14. **Fonti verificate** con data di consultazione.
 
 ## `TODO.md`
 
@@ -135,9 +169,11 @@ Una volta scritti i file, rispondi in chat con un debriefing diretto, numerico e
 
 Intenzioni confermate: [obiettivo, capacità, budget e rischio, canali, regola di stop, in 3 righe]. Decisioni ancora aperte: [elenco o "nessuna"].
 
-Genere e fase: [genere primario/secondario, confidenza, fase, playbook usato].
+Genere e fase: [genere primario/secondario, confidenza, fase, playbook usato]. Prodotto valutato come: [beta / demo / completo, e con quale metro].
 
 Posizionamento: [pitch in una frase]. Differenziatori: [3]. Test contro [comparabile più vicino]: [PASS / MARGINAL / FAIL, perché]. [Se non PASS: le proiezioni sotto sono condizionate].
+
+[Solo per una beta con piano del gioco completo] Gioco completo (analisi rapida, verdetto provvisorio): [gap principali, ore contro capacità, 2-3 cose da migliorare adesso].
 
 Verdetto onesto: [semaforo; oggi il gioco è / non è pronto per essere venduto, perché; gancio contro divertimento reale nei primi minuti].
 
@@ -188,6 +224,9 @@ In **Rapida** e **Mirata** il debriefing si accorcia alle sole righe delle fasi 
 ## Controllo di qualità prima di consegnare
 
 - [ ] Genere riconosciuto con confidenza dichiarata; pilastri, coorti, hook, creator e prezzo derivano dal playbook.
+- [ ] La domanda "beta o gioco completo?" è stata fatta per prima e la risposta è in `00-brief.md`, `status.json` (`product`) e nel report; pilastri, focus group e verdetto usano il metro giusto.
+- [ ] Se la beta è gratuita: pilastro "Spinta all'acquisto" votato, `would_buy` chiesto ai tester e riportato, punto di conversione e leve indicati.
+- [ ] Se è una beta con piano del gioco completo: analisi completa come beta, poi domande sul gioco completo, poi `01c-full-game.md` (gap, capacità, durata/prezzo, rischio recensioni, cosa migliorare); il verdetto sulla beta non è mescolato con quello, provvisorio, sul gioco completo.
 - [ ] La fase del progetto ha determinato la profondità dell'audit.
 - [ ] Il posizionamento è stato valutato contro i comparabili, e un eventuale FAIL/MARGINAL ha cambiato verdetto, scenari e TODO n. 1.
 - [ ] Critiche **simulate** e **reali** in due file separati; le reali hanno fonte e sono parafrasate; nessuna critica "reale" è inventata.
@@ -203,6 +242,9 @@ In **Rapida** e **Mirata** il debriefing si accorcia alle sole righe delle fasi 
 - [ ] `calendar.md` ha ancore, piano a ritroso, **passi in ordine con proprietario 👤/🤖 e scadenze** (`plan_steps.py check` senza errori) e piano B.
 - [ ] `store_kit.json` passa `store_kit.py check` per Steam e itch.io; ogni slot media dice cosa mostra; i limiti hanno la data di verifica.
 - [ ] `contingencies.json` passa `metrics_track.py check`; ogni soglia ha un'origine; le soglie rispecchiano le risposte del Round 6.
+- [ ] `creators.csv` riepilogato nel report e incluso (collassabile) in `STATUS.html`.
+- [ ] `REPORT.html` e `charts/` generati; ogni sezione con numeri ha il suo grafico; i grafici si leggono (una riga che dice cosa guardare) e la vista tabella c'è.
+- [ ] Finestra di lancio valutata con `launch_window.py` (`window.csv` con fonte e data di lettura); se la settimana è affollata la scelta della data è stata riaperta con l'utente.
 - [ ] `STATUS.html` generata per il pubblico scelto dall'utente e **non pubblicata** senza il suo ok.
 - [ ] Ogni numero ha **[FATTO]**, **[STIMA]**, **[OPINIONE]** o **[DA VERIFICARE]**; nessun URL, email o creator inventato; ogni dato "da verificare sempre" ha data di consultazione.
 - [ ] Cancelli con date assolute e soglie adattate al genere; TODO con azione, scadenza, ore, dipendenze, metrica; ore totali entro la capacità del team.

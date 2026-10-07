@@ -6,10 +6,10 @@ reproducible and never computed by hand. A wave is one run of the (same) roster 
 
 Wave file (launch/fg/waves/w01-YYYY-MM-DD.json), written after the panel has judged:
   {
-    "wave": 1, "date": "2026-10-06", "build": "v0.3 / commit abc123", "label": "baseline",
+    "wave": 1, "date": "2026-10-06", "build": "v0.3 / commit abc123", "label": "baseline", "stage": "beta",   # stage: beta | full (what the panel is asked to judge)
     "evidence": "capsule v1, pitch v1, build 0.3",
     "controls": {"success": 41.2, "weak": 6.0},            # optional: scores the panel gave to control capsules
-    "testers": [{"id": "A-01", "verdict": "WISHLIST", "click": true, "pitch_ok": true,
+    "testers": [{"id": "A-01", "verdict": "WISHLIST", "click": true, "pitch_ok": true, "would_buy": true,   # would_buy (optional): would pay the planned launch price
                  "issues": ["slow-opening", "tutorial-text"]}, ...],   # first issue = main criticism
     "issues":  [{"key": "slow-opening", "label": "Apertura lenta", "severity": "alta",
                  "recommendation": "..."}, ...],
@@ -110,6 +110,7 @@ def metrics(w: dict, gate: float | None = None) -> dict:
     cnt = Counter(t["verdict"] for t in ts)
     clicks = [t["click"] for t in ts if isinstance(t.get("click"), bool)]
     pitch = [t["pitch_ok"] for t in ts if isinstance(t.get("pitch_ok"), bool)]
+    buy = [t["would_buy"] for t in ts if isinstance(t.get("would_buy"), bool)]
     A, B = [t for t in ts if t["id"][0] == "A"], [t for t in ts if t["id"][0] == "B"]
     sa, sb = score(A), score(B)
     issues = []
@@ -124,12 +125,13 @@ def metrics(w: dict, gate: float | None = None) -> dict:
     issues.sort(key=lambda i: (-i["weighted"], -i["freq"], i["key"]))
     thr, how = gate_of(w, gate)
     sc = score(ts)
-    return dict(wave=w["wave"], date=w["date"], build=w.get("build"), label=w.get("label"), evidence=w.get("evidence"),
+    return dict(wave=w["wave"], date=w["date"], build=w.get("build"), label=w.get("label"), stage=w.get("stage"), evidence=w.get("evidence"),
                 n=n, counts={k: cnt.get(k, 0) for k in W_}, pct={k: pct(cnt.get(k, 0), n) for k in W_}, score=sc,
                 score_a=sa, score_b=sb, n_a=len(A), n_b=len(B),
                 gap=None if sa is None or sb is None else round(abs(sa - sb), 1),
                 click=dict(n=len(clicks), yes=sum(clicks), pct=pct(sum(clicks), len(clicks))),
                 pitch=dict(n=len(pitch), yes=sum(pitch), pct=pct(sum(pitch), len(pitch))),
+                buy=dict(n=len(buy), yes=sum(buy), pct=pct(sum(buy), len(buy))),
                 issues=issues, controls=w.get("controls"), gate=dict(threshold=thr, basis=how, passed=sc is not None and sc >= thr))
 
 
@@ -142,12 +144,14 @@ def table(headers: list[str], rows: list[list]) -> str:
 def md_metrics(m: dict) -> str:
     c, p = m["counts"], m["pct"]
     gap = f"{m['gap']} points" + (" **> 15: explain it (core vs wide audience)**" if m["gap"] and m["gap"] > GAP_FLAG else "")
-    s = [f"## Wave {m['wave']} ({m['date']}) {m['label'] or ''}", f"Build: {m['build']} | Evidence: {m['evidence']} | N = {m['n']} (A {m['n_a']}, B {m['n_b']})", "",
+    s = [f"## Wave {m['wave']} ({m['date']}) {m['label'] or ''}", f"Build: {m['build']} | Evidence: {m['evidence']} | N = {m['n']} (A {m['n_a']}, B {m['n_b']})" + (f" | Judged as: {m['stage']}" if m.get("stage") else ""), "",
          f"**Wishlist score: {m['score']}** (gate {m['gate']['threshold']}, {m['gate']['basis']}: "
          f"{'PASS' if m['gate']['passed'] else 'BELOW'}) | A {m['score_a']} vs B {m['score_b']}, gap {gap}", "",
          table(["Verdict", "Count", "%"], [[k, c[k], p[k]] for k in W_]), "",
          f"First-glance click: {m['click']['yes']}/{m['click']['n']} ({m['click']['pct']}%) | "
          f"Pitch understood: {m['pitch']['yes']}/{m['pitch']['n']} ({m['pitch']['pct']}%)"]
+    if m.get("buy", {}).get("n"):
+        s.append(f"Would pay the planned launch price: {m['buy']['yes']}/{m['buy']['n']} ({m['buy']['pct']}%) (free beta: the panel judges how much it makes them want to buy the full game)")
     if m.get("controls"):
         s.append(f"Controls (panel score of reference capsules): {m['controls']}")
     s += ["", "### Issues (frequency x severity)", table(
@@ -245,7 +249,7 @@ def cmd_timeline(a):
                      f"{'PASS' if m['gate']['passed'] else 'below'} ({m['gate']['threshold']})"])
         csv_rows.append(dict(wave=m["wave"], date=m["date"], build=m["build"], n=m["n"], score=m["score"], delta=d,
                              wishlist_pct=m["pct"]["WISHLIST"], saldi_pct=m["pct"]["SALDI"], ignoro_pct=m["pct"]["IGNORO"],
-                             refund_pct=m["pct"]["REFUND"], click_pct=m["click"]["pct"], pitch_pct=m["pitch"]["pct"],
+                             refund_pct=m["pct"]["REFUND"], click_pct=m["click"]["pct"], pitch_pct=m["pitch"]["pct"], buy_pct=m["buy"]["pct"],
                              score_a=m["score_a"], score_b=m["score_b"], high_severity_issues=open_high, top_issue=top,
                              gate=m["gate"]["threshold"], gate_passed=m["gate"]["passed"]))
         prev = m

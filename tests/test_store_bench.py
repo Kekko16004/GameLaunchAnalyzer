@@ -46,4 +46,22 @@ res = sb.analyze(rows); f = {x["feature"]: x for x in res["features"]}
 assert f["short_desc_chars"]["rho_reviews_per_year"] == 1.0 and f["short_desc_chars"]["median_top"] > f["short_desc_chars"]["median_rest"] and res["top_group"]["size"] == 4
 assert "gifs" in f and "time_to_first_cut_s" not in f
 txt = sb.md(res, rows, "2026-10-06"); assert "forte" in txt and "Spearman" in txt; print("analyze ok: short_desc rho", f["short_desc_chars"]["rho_reviews_per_year"], f["short_desc_chars"]["strength_reviews"])
+# ---- Steam no longer serves MP4 trailers: adaptive streams only (HLS .m3u8 / DASH .mpd)
+os.makedirs(os.path.join(WWW, "hls")); os.makedirs(os.path.join(WWW, "dash"))
+subprocess.run(["ffmpeg", "-hide_banner", "-loglevel", "error", "-y", "-i", os.path.join(WWW, "moov_end.mp4"), "-c", "copy", "-f", "hls", "-hls_time", "3", "-hls_playlist_type", "vod", os.path.join(WWW, "hls", "index.m3u8")], check=True)
+shutil.copy(os.path.join(WWW, "hls", "index.m3u8"), os.path.join(WWW, "hls", "index_hi.m3u8"))
+open(os.path.join(WWW, "hls", "master.m3u8"), "w").write("#EXTM3U\n#EXT-X-STREAM-INF:BANDWIDTH=900000,RESOLUTION=640x360\nindex_hi.m3u8\n#EXT-X-STREAM-INF:BANDWIDTH=200000,RESOLUTION=320x180\nindex.m3u8\n")
+subprocess.run(["ffmpeg", "-hide_banner", "-loglevel", "error", "-y", "-i", os.path.join(WWW, "moov_end.mp4"), "-c", "copy", "-f", "dash", "-seg_duration", "3", os.path.join(WWW, "dash", "manifest.mpd")], check=True)
+B = f"http://127.0.0.1:{port}"
+assert abs(sb.hls_duration(f"{B}/hls/master.m3u8?t=1") - 12.0) < 0.3, "master playlist must be followed to a media playlist"
+assert abs(sb.hls_duration(f"{B}/hls/index.m3u8") - 12.0) < 0.3 and abs(sb.mpd_duration(f"{B}/dash/manifest.mpd") - 12.0) < 0.3
+steam_movie = {"id": 1, "name": "Trailer", "highlight": True, "hls_h264": f"{B}/hls/master.m3u8?t=1", "dash_h264": f"{B}/dash/manifest.mpd?t=1", "dash_av1": f"{B}/dash/manifest.mpd", "thumbnail": f"{B}/t.jpg"}
+srcs = sb.movie_sources(steam_movie); assert [k for k, _ in srcs] == ["hls", "dash", "dash"], srcs
+o = dict(appid=9, _movies=srcs); sb.trailer_features(o, os.path.join(WWW, "hooks"))
+assert o["trailer_kind"] == "hls" and abs(o["trailer_s"] - 12.0) < 0.3 and o["trailer_formats"] == ["hls", "dash", "dash"], o
+assert abs(o["time_to_first_cut_s"] - 2.0) < 0.3 and o["cuts_first_5s"] == 2 and len(o["hook_frames"]) == 6, o
+o = dict(appid=10, _movies=[("dash", f"{B}/dash/manifest.mpd")]); sb.trailer_features(o, None); assert o["trailer_kind"] == "dash" and abs(o["trailer_s"] - 12.0) < 0.3
+o = dict(appid=11, _movies=sb.movie_sources({"id": 2, "thumbnail": f"{B}/t.jpg"})); sb.trailer_features(o, None); assert o["trailer_s"] is None and o["trailer_kind"] is None and o["trailer_formats"] == []
+assert sb.parse_iso_duration("PT1M32.5S") == 92.5 and sb.parse_iso_duration("PT90S") == 90.0 and sb.parse_iso_duration("nonsense") is None
+print("HLS and DASH trailers ok: duration", o and "12 s", "| first cut", 2.0, "| formats ranked mp4 > hls > dash > webm")
 print("ALL STORE_BENCH TESTS PASSED")

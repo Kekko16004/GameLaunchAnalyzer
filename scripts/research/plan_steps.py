@@ -28,6 +28,8 @@ import json
 import re
 import sys
 
+import common  # noqa: F401  (side effect: UTF-8 stdout, so emoji do not crash on Windows)
+
 STEP = re.compile(r"^(\s*)(\d+)\.\s+\[( |x|X)\]\s*(.*)$")
 DUE = re.compile(r"[·\-–]?\s*📅\s*(\d{4}-\d{2}-\d{2})")
 SECTION = re.compile(r"^##\s+.*Passi in ordine", re.I)

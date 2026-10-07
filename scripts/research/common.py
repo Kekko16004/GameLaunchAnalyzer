@@ -16,6 +16,17 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
+def setup_stdio() -> None:
+    """Force UTF-8 on stdout/stderr: on Windows a redirected or legacy console uses cp1252 and crashes on emoji or arrows."""
+    for stream in (sys.stdout, sys.stderr):
+        try:
+            stream.reconfigure(encoding="utf-8", errors="replace")
+        except (AttributeError, ValueError, OSError):  # not a text stream that can be reconfigured (e.g. a test buffer)
+            pass
+
+
+setup_stdio()
+
 DEFAULT_UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) research-scrapers/1.0"
 
 

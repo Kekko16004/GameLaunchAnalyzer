@@ -33,12 +33,13 @@ def fetch(appid: int) -> dict:
     d = safe_json(f"https://store.steampowered.com/api/appdetails?appids={appid}&cc=us&l=english")
     d = (d.get(str(appid)) or {}).get("data") or {}
     r = safe_json(f"https://store.steampowered.com/appreviews/{appid}?json=1&language=all&purchase_type=all&num_per_page=0&filter=all").get("query_summary") or {}
-    p = safe_json(f"https://api.steampowered.com/ISteamUserStats/GetNumberOfCurrentPlayersForGame/v1/?appid={appid}").get("response") or {}
+    p = safe_json(f"https://api.steampowered.com/ISteamUserStats/GetNumberOfCurrentPlayers/v1/?appid={appid}").get("response") or {}
+    players = p.get("player_count") if p.get("result") == 1 else None   # result 1 = ok; anything else = Steam has no count for this app
     po, rd = d.get("price_overview") or {}, d.get("release_date") or {}
     total, pos = r.get("total_reviews"), r.get("total_positive")
     rel = parse_release(rd.get("date"))
     return dict(appid=appid, name=d.get("name"), reviews_total=total, reviews_positive=pos, pct_positive=round(100 * pos / total, 1) if total else None,
-                price_cents=po.get("initial"), discount_pct=po.get("discount_percent", 0), players=p.get("player_count"),
+                price_cents=po.get("initial"), discount_pct=po.get("discount_percent", 0), players=players,
                 coming_soon=1 if rd.get("coming_soon") else 0, release_date=rel.isoformat() if rel and (rel.month or rel.day) else (rd.get("date") or ""))
 
 

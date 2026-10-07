@@ -13,19 +13,25 @@ tracking: everything is inline, so the file can be attached to an email as is). 
   launch/fg/timeline.csv     focus-group waves (fg_waves.py timeline --csv)
   launch/wishlists.csv + launch/_raw/wl_plan.json        wishlist tracker (wl_track.py)
   launch/watchlist.csv       comparables and competitors over time (watchlist.py)
+  launch/creators.csv        creators found (build_creators.py), shown as a collapsible table
   launch/_raw/econ.json      economic plan (calc_econ.py);  launch/TODO.md and the reports in launch/
+  launch/_raw/window.json    launch window: competitor crowding per week (launch_window.py), shown as a table and a chart
+  launch/steamdb.csv         numbers read by hand on SteamDB (steamdb_assist.py)
+  launch/fg/waves/wNN-metrics.md, wNN-delta.md   per-wave reports of the focus group (fg_waves.py)
+On top: a sticky index of the sections, the verdict with the Go/No-Go gates at a glance, and an "Adesso" box (whose turn it is).
+Charts ("Quadro d'insieme") come from report_charts.py; the same charts next to the text of the report are in report_html.py.
 Anything missing is simply left out.
 
-Sharing: the page contains strategy. --audience picks what goes in (default partner):
+Sharing: the page contains strategy. --audience picks what goes in (default private):
   private    everything, including creators, community, legal/fiscal
   partner    everything except creators, community and legal/fiscal documents
   publisher  verdict, numbers, charts, gates, calendar dates, store pages, positioning, platform, focus group;
-             no steps, economics, TODO, contingencies, competitors or decision profile
+             no steps, economics, TODO, contingencies, competitors, creators, decision profile or full-game analysis
 Add/remove documents with --include / --exclude (file stems such as 03-pricing) and sections with
---hide economics,todo,calendar,steps,storekit,contingencies,watchlist,intentions.
+--hide economics,todo,calendar,steps,storekit,contingencies,watchlist,intentions,creators,fullgame,charts,steamdb,fgwaves,window.
 Publishing the page anywhere is YOUR decision: this tool only writes the local file.
 
-  python status_page.py [--launch-dir launch] [--audience partner] [-o launch/STATUS.html]
+  python status_page.py [--launch-dir launch] [--audience private] [-o launch/STATUS.html]
 """
 from __future__ import annotations
 
@@ -39,7 +45,10 @@ import os
 import re
 from common import load_json, log
 import metrics_track as mt
+import charts as ch
 import plan_steps as ps
+import report_charts as rc
+from launch_window import LABEL
 import store_kit as sk
 import watchlist as wlist
 import wl_track as wl
@@ -47,19 +56,20 @@ import wl_track as wl
 MONTHS = "gen feb mar apr mag giu lug ago set ott nov dic".split()
 DOCS = {  # stem -> title
     "REPORT": "Report completo", "00-intenzioni": "Intenzioni e decisioni", "04b-store-copy": "Testi dello store e trailer", "05d-contingenze": "Piani di contingenza (se… allora)", "00-brief": "Brief del progetto", "01b-positioning": "Posizionamento", "01-dev": "Audit del prodotto",
-    "02-platform": "Piattaforme, demo e gate", "03-pricing": "Prezzo ed economia", "05-focusgroup": "Focus group", "05c-premortem": "Pre-mortem",
+    "01c-full-game": "Gioco completo: analisi rapida", "02-platform": "Piattaforme, demo e gate", "03-pricing": "Prezzo ed economia", "05-focusgroup": "Focus group", "05c-premortem": "Pre-mortem",
+    "04-clips": "Hook e clip", "03-pricing-calc": "Calcolo economico", "05a-critiche-simulate": "Critiche simulate", "05b-critiche-reali": "Critiche reali (con fonti)", "window": "Finestra di lancio: concorrenti",
     "06-creators": "Creator", "07-community": "Community e test reale", "08-brand-legal": "Brand, legale e fiscale"}
 AUDIENCES = {
     "private": list(DOCS),
-    "partner": ["REPORT", "00-intenzioni", "01b-positioning", "02-platform", "03-pricing", "05-focusgroup", "05c-premortem", "05d-contingenze"],
+    "partner": ["REPORT", "00-intenzioni", "01b-positioning", "01c-full-game", "02-platform", "03-pricing", "03-pricing-calc", "04-clips", "05-focusgroup", "05a-critiche-simulate", "05b-critiche-reali", "05c-premortem", "05d-contingenze", "window"],
     "publisher": ["01b-positioning", "02-platform", "05-focusgroup"]}
-HIDE_BY_AUDIENCE = {"private": set(), "partner": set(), "publisher": {"economics", "todo", "contingencies", "steps", "watchlist", "intentions"}}
+HIDE_BY_AUDIENCE = {"private": set(), "partner": set(), "publisher": {"economics", "todo", "contingencies", "steps", "watchlist", "intentions", "creators", "fullgame", "steamdb", "fgwaves"}}
 
 CSS = """
 :root{color-scheme:light;--bg:#f9f9f7;--surface:#fcfcfb;--ink:#0b0b0b;--ink2:#52514e;--muted:#898781;--grid:#e1e0d9;--axis:#c3c2b7;--ring:rgba(11,11,11,.10);
---s1:#2a78d6;--good:#0ca30c;--warn:#fab219;--crit:#d03b3b;--goodtext:#006300}
-@media (prefers-color-scheme:dark){:root:where(:not([data-theme="light"])){color-scheme:dark;--bg:#0d0d0d;--surface:#1a1a19;--ink:#fff;--ink2:#c3c2b7;--grid:#2c2c2a;--axis:#383835;--ring:rgba(255,255,255,.10);--s1:#3987e5;--goodtext:#0ca30c}}
-:root[data-theme="dark"]{color-scheme:dark;--bg:#0d0d0d;--surface:#1a1a19;--ink:#fff;--ink2:#c3c2b7;--grid:#2c2c2a;--axis:#383835;--ring:rgba(255,255,255,.10);--s1:#3987e5;--goodtext:#0ca30c}
+--s1:#2a78d6;--s2:#eb6834;--s3:#1baf7a;--s4:#eda100;--good:#0ca30c;--warn:#fab219;--crit:#d03b3b;--goodtext:#006300}
+@media (prefers-color-scheme:dark){:root:where(:not([data-theme="light"])){color-scheme:dark;--bg:#0d0d0d;--surface:#1a1a19;--ink:#fff;--ink2:#c3c2b7;--grid:#2c2c2a;--axis:#383835;--ring:rgba(255,255,255,.10);--s1:#3987e5;--s2:#d95926;--s3:#199e70;--s4:#c98500;--goodtext:#0ca30c}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#0d0d0d;--surface:#1a1a19;--ink:#fff;--ink2:#c3c2b7;--grid:#2c2c2a;--axis:#383835;--ring:rgba(255,255,255,.10);--s1:#3987e5;--s2:#d95926;--s3:#199e70;--s4:#c98500;--goodtext:#0ca30c}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
 main{max-width:1040px;margin:0 auto;padding:24px 16px 64px;overflow-wrap:anywhere}.card{min-width:0}h1{font-size:1.6rem;margin:0 0 4px}h2{font-size:1.15rem;margin:36px 0 12px}h3{font-size:1rem;margin:20px 0 8px}
 .sub{color:var(--ink2);margin:0 0 4px}.note{color:var(--muted);font-size:.85rem}.top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
@@ -80,8 +90,8 @@ ol.steps{list-style:none;margin:8px 0 0;padding:0}.step{display:grid;grid-templa
 summary .count{color:var(--ink2);font-weight:400;margin-left:8px}.field{padding:10px 0;border-top:1px solid var(--grid)}.field:first-of-type{border-top:0}.fh{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap}
 pre.val{background:var(--grid);padding:10px;border-radius:8px;white-space:pre-wrap;overflow-wrap:anywhere;margin:6px 0;font:inherit;font-size:.9rem}.slot{border:2px dashed var(--axis);border-radius:8px;padding:12px;margin:6px 0;color:var(--ink2);font-size:.9rem}
 .chips{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0}.chip{border:1px solid var(--ring);border-radius:999px;padding:3px 10px;font-size:.85rem;background:var(--surface)}.chip.top5{border-color:var(--s1);font-weight:600}.chip b{color:var(--muted);margin-right:4px;font-weight:400}
-.over{color:var(--crit);font-weight:600}.legend{display:flex;gap:16px;flex-wrap:wrap;color:var(--ink2);font-size:.85rem;margin:6px 0}.legend i{display:inline-block;width:18px;height:0;border-top:2px solid;vertical-align:middle;margin-right:6px}
-"""
+.gh{font-size:1.05rem;margin:26px 0 2px}.toc{position:sticky;top:0;z-index:5;background:var(--bg);display:flex;gap:8px;overflow-x:auto;white-space:nowrap;padding:8px 0;margin:8px 0 0;border-bottom:1px solid var(--grid)}.toc+section{margin-top:12px}.toc a{flex:none;border:1px solid var(--ring);border-radius:999px;padding:3px 12px;font-size:.85rem;text-decoration:none;color:var(--ink2);background:var(--surface)}.toc a:hover,.toc a:focus{border-color:var(--s1);color:var(--ink)}h2{scroll-margin-top:56px}.gates{display:flex;gap:6px 16px;flex-wrap:wrap;margin:10px 0 2px;font-size:.9rem}@media print{.toc,.top button{display:none}body{background:#fff}}.over{color:var(--crit);font-weight:600}.legend{display:flex;gap:16px;flex-wrap:wrap;color:var(--ink2);font-size:.85rem;margin:6px 0}.legend i{display:inline-block;width:18px;height:0;border-top:2px solid;vertical-align:middle;margin-right:6px}
+""" + ch.CHART_CSS
 JS = """
 (function(){document.querySelectorAll('.copy').forEach(function(b){b.addEventListener('click',function(){var t=b.getAttribute('data-copy')||'';function ok(){var o=b.textContent;b.textContent='Copiato';b.classList.add('ok');setTimeout(function(){b.textContent=o;b.classList.remove('ok');},1500);}
 if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(ok,function(){fb(t,ok);});}else{fb(t,ok);}});});
@@ -326,17 +336,25 @@ def step_li(s: dict, today: dt.date) -> str:
             f'<div class="stext">{inline(s["text"])}</div>{notes}</li>')
 
 
-def steps_section(plan: dict, today: dt.date) -> str:
-    sm = ps.summary(plan, today)
-    pct = round(100 * sm["done"] / sm["total"]) if sm["total"] else 0
+GATE_NAMES = {"0": "Gate 0 · Posizionamento", "A": "Gate A · Qualità percepita", "B": "Gate B · Test reale", "C": "Gate C · Capsule"}
+
+
+def now_block(plan: dict, today: dt.date) -> str:
+    """The two boxes everybody reads first: what is the owner's turn now, and what is Claude's."""
     now_me, now_ai = ps.next_steps(plan, "me", 3, today), ps.next_steps(plan, "claude", 3, today)
     box = lambda title, items: (f'<div class="card"><h3>{title}</h3>' + ("<ul class=\"clean\">" + "".join(f'<li>{state(*STEP_STATE[ps.status_of(s, today)])}<span><strong>{s["n"]}.</strong> {inline(s["text"])}'
                                 + (f' <span class="note">(entro {fmt_date(s["due"])})</span>' if s.get("due") else "") + "</span></li>" for s in items) + "</ul>" if items else "<p class=\"note\">Niente in sospeso.</p>") + "</div>")
+    return '<h2>Adesso</h2><div class="grid g2">' + box("Tocca a te", now_me) + box("Tocca a Claude", now_ai) + "</div>"
+
+
+def steps_section(plan: dict, today: dt.date) -> str:
+    sm = ps.summary(plan, today)
+    pct = round(100 * sm["done"] / sm["total"]) if sm["total"] else 0
     out = ['<h2>Passi in ordine</h2><div class="card">', f'<p class="sub">{esc(plan.get("intro") or "👤 = li fai tu · 🤖 = li fa Claude · 👤+🤖 = insieme")}</p>',
            f'<div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{pct}" aria-label="Avanzamento dei passi"><span style="width:{pct}%"></span></div>',
            f'<p><strong>{sm["done"]} di {sm["total"]}</strong> fatti · {sm["overdue"]} in ritardo · ancora aperti: {sm["me_open"]} tuoi, {sm["claude_open"]} di Claude</p>',
            '<div class="filters" role="group" aria-label="Filtra i passi"><button type="button" data-f="all" aria-pressed="true">Tutti</button><button type="button" data-f="me" aria-pressed="false">Solo i miei</button>'
-           '<button type="button" data-f="claude" aria-pressed="false">Solo Claude</button></div></div>', '<div class="grid g2" style="margin-top:12px">' + box("Tocca a te adesso", now_me) + box("Tocca a Claude", now_ai) + "</div>"]
+           '<button type="button" data-f="claude" aria-pressed="false">Solo Claude</button></div></div>']
     first_open = next((k for k, p in enumerate(plan["phases"]) if any(not s["done"] for s in p["steps"])), 0)
     for k, p in enumerate(plan["phases"]):
         done = sum(s["done"] for s in p["steps"])
@@ -450,6 +468,113 @@ def watch_section(root: str, today: dt.date):
     return body, [(x["level"], f"{x['game']}: {x['text']}") for x in a["alerts"] if x["level"] != "INFO"]
 
 
+def safe_href(u: str) -> str | None:
+    u = (u or "").strip()
+    return u if re.match(r"https?://[^\s\"'<>]+$", u) else None
+
+
+def link(label: str, url: str) -> str:
+    h = safe_href(url)
+    return f'<a href="{esc(h)}" rel="noopener noreferrer">{esc(label)}</a>' if h else esc(label)
+
+
+def creators_section(root: str):
+    """creators.csv as a collapsible table: counts in the summary, every row inside. Only public data is shown (as written in the file)."""
+    path = os.path.join(root, "creators.csv")
+    if not os.path.exists(path):
+        return None
+    with open(path, encoding="utf-8-sig", newline="") as f:
+        rows = list(csv.DictReader(f))
+    if not rows:
+        return None
+    order = {"A": 0, "B": 1, "C": 2}
+    rows.sort(key=lambda r: (order.get((r.get("priorita") or "").strip().upper(), 3), -(int(r["iscritti_follower"]) if (r.get("iscritti_follower") or "").isdigit() else 0)))
+    pr = {k: sum(1 for r in rows if (r.get("priorita") or "").strip().upper() == k) for k in "ABC"}
+    plat = {}
+    for r in rows:
+        plat[r.get("piattaforma") or "?"] = plat.get(r.get("piattaforma") or "?", 0) + 1
+    cap = 500
+    body = "".join(
+        f'<tr><td>{esc(r.get("priorita"))}</td><td>{link(r.get("nome") or "", r.get("url") or "")}</td><td>{esc(r.get("piattaforma"))}</td><td>{esc(r.get("lingua"))}</td>'
+        f'<td class="n">{esc(r.get("iscritti_follower"))}</td><td>{esc(r.get("segmento"))}</td><td>{esc(r.get("gioco_coperto"))}</td><td>{esc(r.get("perche"))}</td>'
+        f'<td>{esc(r.get("contatto"))}</td><td>{link("video", r.get("url_video") or "") if safe_href(r.get("url_video") or "") else ""}</td></tr>' for r in rows[:cap])
+    more = f'<p class="note">Mostrate le prime {cap} righe su {len(rows)}: il file completo è <code>creators.csv</code>.</p>' if len(rows) > cap else ""
+    return (f'<h2>Creator</h2><details class="card"><summary><strong>{len(rows)} creator</strong><span class="count">priorità A {pr["A"]} · B {pr["B"]} · C {pr["C"]} · '
+            + " · ".join(f"{esc(k)} {v}" for k, v in sorted(plat.items(), key=lambda kv: -kv[1])) + "</span></summary>"
+            '<div class="wrap"><table><thead><tr><th>Pri.</th><th>Nome</th><th>Piattaforma</th><th>Lingua</th><th class="n">Follower</th><th>Segmento</th><th>Gioco coperto</th><th>Perché</th><th>Contatto</th><th>Video</th></tr></thead>'
+            f'<tbody>{body}</tbody></table></div>{more}<p class="note">Solo contatti professionali pubblici. I follower di TikTok e Instagram vanno verificati a mano.</p></details>')
+
+
+def full_game_section(fg: dict) -> str:
+    gaps = "".join(f'<tr><td>{esc(g.get("area"))}</td><td>{esc(g.get("today"))}</td><td>{esc(g.get("target"))}</td><td>{esc(g.get("action"))}</td><td class="n">{esc(g.get("hours", ""))}</td></tr>' for g in fg.get("gaps", []))
+    return (f'<h2>Beta oggi e gioco completo</h2><div class="card"><p>{esc(fg.get("summary", ""))}</p>'
+            + (f'<div class="wrap"><table><thead><tr><th>Area</th><th>Beta oggi</th><th>Gioco completo</th><th>Cosa fare</th><th class="n">Ore</th></tr></thead><tbody>{gaps}</tbody></table></div>' if gaps else "")
+            + '<p class="note">Analisi rapida del gioco completo sul piano, con confidenza bassa: serve a capire cosa migliorare adesso, non a prevederne l\'esito.</p></div>')
+
+
+def steamdb_section(root: str):
+    """What you read by hand on SteamDB (steamdb_assist.py add): latest values per game and the change since the previous record."""
+    import steamdb_assist as sd
+    rows = sd.read(os.path.join(root, "steamdb.csv"))
+    if not rows:
+        return None
+    names = {}
+    for fn, key in (("watchlist.csv", "appid"), ("comps.csv", "appid")):
+        try:
+            with open(os.path.join(root, fn), encoding="utf-8-sig", newline="") as f:
+                names.update({r[key]: r.get("name") for r in csv.DictReader(f) if r.get(key) and r.get("name")})
+        except OSError:
+            pass
+    by = {}
+    for r in rows:
+        by.setdefault(r["appid"], []).append(r)
+    num = lambda r, k: (int(r[k]) if (r.get(k) or "").strip().lstrip("-").isdigit() else None)
+    f = lambda v: "-" if v is None else fmt_n(v)
+    body = []
+    for aid, rs in sorted(by.items(), key=lambda kv: -(num(sorted(kv[1], key=lambda r: r["date"])[-1], "followers") or 0)):
+        rs.sort(key=lambda r: r["date"])
+        last, prev = rs[-1], rs[-2] if len(rs) > 1 else None
+        d = "-" if not prev or num(last, "followers") is None or num(prev, "followers") is None else f"{num(last, 'followers') - num(prev, 'followers'):+,}".replace(",", ".")
+        body.append(f'<tr><td>{esc(names.get(aid) or aid)}</td><td>{fmt_date(last["date"])}</td><td class="n">{f(num(last, "followers"))}</td><td class="n">{d}</td><td class="n">{f(num(last, "wishlist_rank"))}</td>'
+                    f'<td class="n">{f(num(last, "peak_24h"))}</td><td class="n">{f(num(last, "peak_all_time"))}</td><td class="n">{esc(last.get("lowest_price") or "-")}</td></tr>')
+    return ('<h2>SteamDB: numeri letti a mano</h2><div class="card wrap"><table><thead><tr><th>Gioco</th><th>Letto il</th><th class="n">Follower</th><th class="n">Variazione</th><th class="n">Posizione wishlist</th><th class="n">Picco 24 h</th>'
+            '<th class="n">Picco assoluto</th><th class="n">Prezzo minimo</th></tr></thead><tbody>' + "".join(body)
+            + '</tbody></table><p class="note">Registrati da una lettura manuale di SteamDB (nessuno scraping). La posizione tra i più desiderati non è il numero di wishlist: quello degli altri giochi non è pubblico.</p></div>')
+
+
+def window_section(root: str) -> str | None:
+    w = load_json(os.path.join(root, "_raw", "window.json")) if os.path.exists(os.path.join(root, "_raw", "window.json")) else None
+    if not w or not w.get("weeks"):
+        return None
+    ch = w["chosen"]
+    kind, word = {"libera": ("pass", "Settimana libera"), "nella media": ("warn", "Settimana nella media"), "affollata": ("fail", "Settimana affollata")}.get(ch["verdict"], ("info", ch["verdict"]))
+    byw = {k["week"]: k for k in w["weeks"]}
+    near = lambda wk: ", ".join(f'{esc(n["name"])} ({esc(n["date"])})' for n in byw[wk]["items"][:3]) or "niente in lista"
+    best = "".join(f'<tr><td>{fmt_date(b["week"])}</td><td class="n">{b["score"]:g}</td><td>{near(b["week"])}</td></tr>' for b in w["best"])
+    weigh = "".join(f'<li><span>{esc(n["name"])}: {esc(LABEL.get(n["kind"], n["kind"]))}, {fmt_date(n["date"])}, peso {n["weight"]:g} × {n["factor"]} = <strong>{n["points"]:g}</strong></span></li>' for n in byw[ch["week"]]["items"])
+    nc = "".join(f"<li>{esc(x)}</li>" for x in w.get("not_counted", []))
+    return (f'<h2>Finestra di lancio</h2><div class="card"><p>{state(kind, word)} <span class="sub">per il {fmt_date(w["launch"])} (punteggio {ch["score"]:g}; il {ch["quieter_weeks_pct"]}% delle settimane candidate è più tranquillo)</span></p>'
+            + (f'<h3>Cosa pesa sulla tua settimana</h3><ul class="clean">{weigh}</ul>' if weigh else "")
+            + f'<h3>Le 5 settimane più tranquille</h3><div class="wrap"><table><thead><tr><th>Settimana dal</th><th class="n">Punteggio</th><th>Cosa c\'è vicino</th></tr></thead><tbody>{best}</tbody></table></div>'
+            + (f'<details><summary>Voci non conteggiate</summary><ul>{nc}</ul></details>' if nc else "")
+            + f'<p class="note">Conta le {w.get("counted", 0)} voci in lista: una settimana libera qui non è libera nel mondo. Il punteggio confronta le settimane tra loro, non prevede le vendite.</p></div>')
+
+
+def waves_section(root: str) -> str | None:
+    """Per-wave reports written by fg_waves.py (metrics and delta), newest last, plus the timeline."""
+    d = os.path.join(root, "fg")
+    files = []
+    wd = os.path.join(d, "waves")
+    if os.path.isdir(wd):
+        files += sorted((f for f in os.listdir(wd) if re.match(r"w\d+-(metrics|delta)\.md$", f)), key=lambda f: (int(re.match(r"w(\d+)", f).group(1)), "delta" in f))
+    parts = []
+    for f in files:
+        m = re.match(r"w(\d+)-(metrics|delta)", f)
+        parts.append(f'<details class="card doc"><summary><strong>Ondata {int(m.group(1))}: {"metriche" if m.group(2) == "metrics" else "cosa è cambiato rispetto alla precedente"}</strong></summary>'
+                     f'{md_to_html(open(os.path.join(wd, f), encoding="utf-8").read())}</details>')
+    return ("<h2>Ondate del focus group</h2>" + "".join(parts)) if parts else None
+
+
 def build(root: str, audience: str, include: list[str], exclude: list[str], hide: set[str], today: dt.date) -> str:
     st = load_json(os.path.join(root, "status.json")) if os.path.exists(os.path.join(root, "status.json")) else {}
     hide = set(hide) | HIDE_BY_AUDIENCE[audience]
@@ -463,13 +588,18 @@ def build(root: str, audience: str, include: list[str], exclude: list[str], hide
     cont_html, cont_alerts = (None, []) if "contingencies" in hide else contingency_section(root, today)
     watch_html, watch_alerts = (None, []) if "watchlist" in hide else watch_section(root, today)
     sec = []
+    product = st.get("product") or {}
     v = st.get("verdict") or {}
     if v:
         kind, word = LIGHT.get(str(v.get("color", "")).lower(), ("info", str(v.get("color", "n/d"))))
         risks = "".join(f"<li>{state('warn', f'Rischio {k}')}<span>{esc(r)}</span></li>" for k, r in enumerate(v.get("risks", [])[:3], 1))
         sec.append(f'<section class="card verdict"><div>{ICONS[kind][0]}</div><div><div class="big">Verdetto: {esc(word)}{" (provvisorio)" if v.get("provisional") else ""}</div>'
                    f'<p>{esc(v.get("summary", ""))}</p>' + (f'<p class="sub">Probabilità stimata di recuperare i costi: {esc(v["probability"])}</p>' if v.get("probability") else "")
-                   + (f'<ul class="clean">{risks}</ul>' if risks else "") + "</div></section>")
+                   + (f'<ul class="clean">{risks}</ul>' if risks else "")
+                   + ('<div class="gates">' + "".join(f'<span>{state({"pass": "pass", "fail": "fail", "pending": "pending"}.get(g.get("state"), "na"), GATE_NAMES.get(k, "Gate " + k))}</span>' for k, g in (st.get("gates") or {}).items()) + "</div>" if st.get("gates") else "")
+                   + "</div></section>")
+    if plan["phases"] and "steps" not in hide:
+        sec.append(now_block(plan, today))
     it = st.get("intentions") or {}
     if it and "intentions" not in hide:
         rows = "".join(f'<tr><td>{esc(d.get("topic"))}</td><td>{esc(d.get("choice"))}</td><td>{esc(d.get("why", ""))}</td></tr>' for d in it.get("decisions", []))
@@ -509,8 +639,14 @@ def build(root: str, audience: str, include: list[str], exclude: list[str], hide
         if fg_svg:
             sec.append(f'<div class="card"><h3>Focus group simulato, per ondata</h3>{fg_svg}<p class="note">Panel simulato con gli stessi tester: ordina i problemi, non prevede le vendite.</p></div>')
         sec.append("</div>")
+    if "charts" not in hide:
+        gs = rc.groups(root, today)
+        if audience == "publisher":
+            gs = [g for g in gs if g["key"] in ("fg", "market", "reviews", "window")]
+        if gs:
+            sec.append("<h2>Quadro d'insieme</h2>" + rc.render(gs))
     if gates:
-        names = {"0": "Gate 0 · Posizionamento", "A": "Gate A · Qualità percepita", "B": "Gate B · Test reale", "C": "Gate C · Capsule"}
+        names = GATE_NAMES
         sec.append('<h2>Cancelli Go / No-Go</h2><div class="grid g4">' + "".join(
             f'<div class="card"><div>{state({"pass": "pass", "fail": "fail", "pending": "pending"}.get(g.get("state"), "na"))}</div><h3>{esc(names.get(k, "Gate " + k))}</h3><p class="note">{esc(g.get("note", ""))}</p></div>'
             for k, g in gates.items()) + "</div>")
@@ -520,10 +656,24 @@ def build(root: str, audience: str, include: list[str], exclude: list[str], hide
             sec.append(f'<h2>Date fisse e piano a ritroso</h2><details class="card doc" open><summary><strong>calendar.md</strong></summary>{md_to_html(rest)}</details>')
     if kit:
         sec.append(kit_section(kit))
+    if "window" not in hide:
+        wsec = window_section(root)
+        if wsec:
+            sec.append(wsec)
     if cont_html:
         sec.append(cont_html)
     if watch_html:
         sec.append(watch_html)
+    if "steamdb" not in hide:
+        sdb = steamdb_section(root)
+        if sdb:
+            sec.append(sdb)
+    if "creators" not in hide:
+        c = creators_section(root)
+        if c:
+            sec.append(c)
+    if st.get("full_game") and "fullgame" not in hide:
+        sec.append(full_game_section(st["full_game"]))
     todos, done, hours = read_todos(root)
     if todos and "todo" not in hide:
         sec.append(f'<h2>Prossime azioni</h2><div class="card"><p class="sub">{len(todos)} aperte, {done} chiuse, circa {hours:.0f} ore residue.</p><div class="wrap"><table><thead><tr><th>Azione</th><th>Scadenza</th><th class="n">Ore</th></tr></thead><tbody>'
@@ -532,6 +682,10 @@ def build(root: str, audience: str, include: list[str], exclude: list[str], hide
         sec.append('<h2>Economia</h2><div class="card wrap"><table><thead><tr><th>Scenario</th><th class="n">Wishlist</th><th class="n">Copie</th><th class="n">Netto</th><th class="n">Utile (cassa)</th></tr></thead><tbody>' + "".join(
             f'<tr><td>{esc(s["name"])}</td><td class="n">{fmt_n(s["wishlists"])}</td><td class="n">{fmt_n(s["copies"])}</td><td class="n">{fmt_n(s["net"])}</td><td class="n">{fmt_n(s["profit_cash"])}</td></tr>' for s in econ["scenarios"])
             + f'</tbody></table><p class="note">Netto per copia {econ["net_per_copy"]:.2f}; aliquote e conversioni sono ipotesi dichiarate nel piano, da verificare.</p></div>')
+    if "fgwaves" not in hide:
+        wv = waves_section(root)
+        if wv:
+            sec.append(wv)
     stems = [x for x in (include or AUDIENCES[audience]) if x not in exclude]
     docs = []
     for stem in stems:
@@ -540,18 +694,26 @@ def build(root: str, audience: str, include: list[str], exclude: list[str], hide
             docs.append(f'<details class="card doc"><summary><strong>{esc(DOCS.get(stem, stem))}</strong></summary>{md_to_html(open(p, encoding="utf-8").read())}</details>')
     if docs:
         sec.append("<h2>Documenti</h2>" + "".join(docs))
+    body_html, heads = [], []
+    for chunk in sec:   # every <h2> gets an anchor and a chip in the sticky index
+        def anchor(m):
+            heads.append(re.sub(r"<[^>]+>", "", m.group(1)))
+            return f'<h2 id="sec{len(heads)}">{m.group(1)}</h2>'
+        body_html.append(re.sub(r"<h2>(.*?)</h2>", anchor, chunk))
+    sec = body_html
+    toc = '<nav class="toc" aria-label="Sezioni">' + "".join(f'<a href="#sec{i}">{h}</a>' for i, h in enumerate(heads, 1)) + "</nav>" if len(heads) > 3 else ""
     name = st.get("game") or os.path.basename(os.path.dirname(os.path.abspath(root))) or "Progetto"
     label = {"private": "Uso interno", "partner": "Per i soci", "publisher": "Per il publisher"}[audience]
     return (f'<!doctype html><html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Stato del lancio, {esc(name)}</title>'
             f'<style>{CSS}</style></head><body><main><div class="top"><div><h1>{esc(name)}: stato del lancio</h1><p class="sub">Aggiornato il {fmt_date(st.get("updated") or today.isoformat())} · {esc(label)}'
-            f'{" · modalità " + esc(st["mode"]) if st.get("mode") else ""}</p></div><button class="theme" id="theme" type="button">Tema chiaro/scuro</button></div>'
-            + "".join(sec) + f'<footer class="note">Pagina generata da <code>status_page.py</code> il {today.isoformat()} da file locali, senza richieste di rete. Il focus group è simulato: non è un dato di mercato. '
+            f'{" · modalità " + esc(st["mode"]) if st.get("mode") else ""}{" · valutato come: " + esc(product.get("label") or product.get("kind")) if product.get("kind") or product.get("label") else ""}</p></div><button class="theme" id="theme" type="button">Tema chiaro/scuro</button></div>'
+            + toc + "".join(sec) + f'<footer class="note">Pagina generata da <code>status_page.py</code> il {today.isoformat()} da file locali, senza richieste di rete. Il focus group è simulato: non è un dato di mercato. '
             f'Cifre con fonte nei documenti; ciò che è etichettato [DA VERIFICARE] resta da verificare.</footer></main><script>{JS}</script></body></html>')
 
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--launch-dir", default="launch"); ap.add_argument("--audience", default="partner", choices=list(AUDIENCES))
+    ap.add_argument("--launch-dir", default="launch"); ap.add_argument("--audience", default="private", choices=list(AUDIENCES))
     ap.add_argument("--include", nargs="*", default=[], help=f"document stems to show instead of the audience default ({', '.join(DOCS)})")
     ap.add_argument("--exclude", nargs="*", default=[], help="document stems to leave out"); ap.add_argument("--hide", default="", help="comma list: economics,todo,calendar")
     ap.add_argument("--today", help="override today (YYYY-MM-DD)"); ap.add_argument("-o", "--out")

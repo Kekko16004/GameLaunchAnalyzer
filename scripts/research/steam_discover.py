@@ -10,7 +10,9 @@ Subcommands:
                    coming-soon from the Steam store for the top N rows (1 request each).
 
 Limits: SteamSpy lists only the top ~100 games per tag and is a third-party service; owners are ranges.
-Tag names are case-sensitive on SteamSpy ("Roguelike", "Cozy", "City Builder"). The result is a CANDIDATE
+Tag names are matched loosely and case-sensitively by SteamSpy ("Roguelite" returns another tag's list, the right
+spelling is "Rogue-lite"): tags are resolved first, with spelling variants, typo correction and a check of each list
+(steam_tags.py explains how; `python steam_tags.py Roguelite` shows what a name resolves to). The result is a CANDIDATE
 list: the final comparable set (successes, mid performers, instructive flops) is chosen by a human.
 
 Examples:
@@ -22,6 +24,7 @@ from __future__ import annotations
 import argparse
 import re
 from common import log, q, safe_json, set_rate, write_output
+import steam_tags
 
 
 def cmd_search(a):
@@ -55,13 +58,15 @@ def enrich(row: dict, cc: str, lang: str):
 
 
 def candidates(tags: list[str], require_all: bool = False, min_reviews: int | None = None,
-               max_reviews: int | None = None, top: int = 100) -> list[dict]:
-    """Games listed under the given tags (SteamSpy), ranked by tags matched then review count."""
+               max_reviews: int | None = None, top: int = 100, variants: bool = True, validate: bool = True) -> list[dict]:
+    """Games listed under the given tags (SteamSpy), ranked by tags matched then review count.
+
+    Each tag is resolved first (steam_tags.py): spelling variants ("Roguelite" -> "Rogue-lite"), typos, and a check that the
+    list SteamSpy returns really carries the tag. variants=False / validate=False restore the literal, unchecked behaviour.
+    """
     games: dict[str, dict] = {}
     for tag in tags:
-        d = safe_json(f"https://steamspy.com/api.php?request=tag&tag={q(tag)}")
-        if not d:
-            log(f"WARN tag {tag!r}: empty answer (unknown tag name, rate limit or service down)")
+        d, rep = steam_tags.collect(tag, variants=variants, validate=validate)
         for aid, g in d.items():
             r = games.setdefault(str(aid), dict(
                 appid=int(aid), name=g.get("name"), developer=g.get("developer"), matched_tags=[],
@@ -69,7 +74,7 @@ def candidates(tags: list[str], require_all: bool = False, min_reviews: int | No
                 avg_playtime_forever_min=g.get("average_forever"), price_cents=g.get("price"),
                 url=f"https://store.steampowered.com/app/{aid}/"))
             r["matched_tags"].append(tag)
-        log(f"tag {tag!r}: {len(d)} games")
+        log(f"tag {tag!r}: {len(d)} games from {rep['accepted'] or rep['unverified'] or 'no usable spelling'}")
     rows = list(games.values())
     for r in rows:
         pos, neg = r.get("positive") or 0, r.get("negative") or 0
@@ -85,7 +90,7 @@ def candidates(tags: list[str], require_all: bool = False, min_reviews: int | No
 
 
 def cmd_tag(a):
-    rows = candidates(a.tags, a.require_all, a.min_reviews, a.max_reviews, a.top)
+    rows = candidates(a.tags, a.require_all, a.min_reviews, a.max_reviews, a.top, variants=not a.exact_tags, validate=not a.no_validate_tags)
     if a.enrich:
         for r in rows[:a.enrich]:
             enrich(r, a.cc, a.lang)
@@ -115,6 +120,8 @@ def main():
     t.add_argument("--require-all", action="store_true", help="keep only games listed under every tag")
     t.add_argument("--min-reviews", type=int, help="drop games with fewer reviews")
     t.add_argument("--max-reviews", type=int, help="drop games with more reviews (skip the mega-hits)")
+    t.add_argument("--exact-tags", action="store_true", help="use the tag names exactly as typed (no spelling variants or typo correction)")
+    t.add_argument("--no-validate-tags", action="store_true", help="skip the check that each SteamSpy list really carries the tag (saves 3 requests per spelling)")
     t.add_argument("--top", type=int, default=100, help="keep the top N rows after filters (default 100)")
     t.add_argument("--enrich", type=int, default=0, help="add store data (release date, price, demo) to the top N rows")
     t.add_argument("--released-after", type=int, help="with --enrich: drop games released before this year")

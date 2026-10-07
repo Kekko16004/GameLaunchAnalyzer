@@ -74,6 +74,8 @@ Tu aggiungi a mano nella colonna *Scheda* di `roster.md` gusti, giochi di riferi
 ### Passo 1: pacchetto di evidenze (`wNN-evidence.md`)
 Raccogli in un unico blocco **tutto e solo** ciò che i tester vedono nello **stato attuale** del gioco: capsule e screenshot esistenti (o concept se non c'è nulla), pitch, tag, descrizione, clip, estratti di codice e GDD pertinenti, versione/commit della build. Elenca anche ciò che **manca** ("nessuna build giocabile", "nessun trailer"). Nessun tester usa informazioni fuori da questo blocco.
 
+**Tipo di prodotto (domanda zero)**: la prima riga del pacchetto dice cosa si sta giudicando: *beta / demo / vertical slice* oppure *gioco completo*. Per una beta aggiungi un riquadro "cosa c'è e cosa è previsto ma non c'è ancora" e istruisci i tester a **giudicare ciò che c'è come beta** (il contenuto non ancora fatto è un'assenza dichiarata, non un difetto) e a dire quanto la beta li convince a seguire il gioco finito. **Se la beta è gratuita** ogni tester risponde anche: *"pagheresti il prezzo previsto all'uscita? Cosa ti manca per dire sì?"* (campo `would_buy`, vero/falso, con il motivo nella critica principale). La percentuale di sì è il numero che conta per una beta gratuita; `fg_waves.py metrics` la riporta. Il tipo di prodotto resta lo stesso tra le ondate, finché la build non cambia natura (beta → completo): in quel caso è un'ondata nuova con un metro nuovo, dichiaralo nel delta.
+
 **Anti-ancoraggio (ondate > 1)**: il pacchetto descrive solo lo stato attuale. Non contiene le critiche delle ondate precedenti né l'elenco dei fix fatti: i tester non devono sapere cosa "dovrebbe" essere migliorato.
 
 ### Passo 2: impressioni indipendenti (Giro 1)
@@ -89,7 +91,7 @@ Una critica è accettata se è: specifica a questo gioco; ancorata a un'evidenza
 Scrivi `wNN-group-a.md` e `wNN-group-b.md` (impressioni della giuria incluse nel gruppo di appartenenza).
 
 ### Passo 3: dati dell'ondata e metriche (`fg_waves.py`)
-Trascrivi i giudizi nel file `fg/waves/wNN-AAAA-MM-GG.json` (schema in testa a `fg_waves.py`: per tester `verdict`, `click`, `pitch_ok`, `issues`; elenco `issues` con **chiavi stabili**, gravità e raccomandazione; `controls`; da N = 2 anche `fixes`). **Riusa le stesse chiavi dei problemi di ondata in ondata**, altrimenti il delta non li collega. Poi:
+Trascrivi i giudizi nel file `fg/waves/wNN-AAAA-MM-GG.json` (schema in testa a `fg_waves.py`; la chiave facoltativa `"stage": "beta"|"full"` dichiara il metro e compare nel file metriche: per tester `verdict`, `click`, `pitch_ok`, `issues`; elenco `issues` con **chiavi stabili**, gravità e raccomandazione; `controls`; da N = 2 anche `fixes`). **Riusa le stesse chiavi dei problemi di ondata in ondata**, altrimenti il delta non li collega. Poi:
 
 ```bash
 python3 <skill>/scripts/research/fg_waves.py metrics launch/fg/waves/wNN-AAAA-MM-GG.json --roster launch/fg/roster.json -o launch/fg/waves/wNN-metrics.md
