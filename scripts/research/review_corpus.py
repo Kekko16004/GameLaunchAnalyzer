@@ -145,7 +145,7 @@ def md(res: dict, games: list[dict], today: str, features: dict) -> str:
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--comps", nargs="*", default=[], help="app ids of the closest comparables")
-    ap.add_argument("--genre-tag", nargs="*", help="Steam tags: other games of the same type (SteamSpy)")
+    ap.add_argument("--genre-tag", nargs="*", help="Steam tags: other games of the same type (SteamSpy; spellings are resolved, see steam_tags.py)")
     ap.add_argument("--genre-ids", nargs="*", default=[], help="app ids, or a .json/.csv/.txt from steam_discover.py")
     ap.add_argument("--max-genre-games", type=int, default=20)
     ap.add_argument("--min-reviews", type=int, default=300, help="genre games need at least this many Steam reviews (default 300)")

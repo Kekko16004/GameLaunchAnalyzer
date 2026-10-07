@@ -10,7 +10,7 @@ def fake_safe_json(url, **kw):
     if "appdetails" in url:
         html = '<h2 class="bb_tag">Feat</h2><img class="bb_img" src="https://x/a.gif">' * (n % 4) + "<p>" + "word " * (50 + 20 * n) + "</p>"
         return {aid: {"data": dict(name=f"G{n}", short_description="s" * (100 + 10 * n), about_the_game=html, screenshots=[{}] * (4 + n), is_free=False,
-                 movies=[dict(name="Trailer", highlight=True, mp4={"480": None})], supported_languages="English<strong>*</strong>, French, German<br><strong>*</strong>languages with full audio support",
+                 movies=[dict(name="Trailer", highlight=True, hls_h264="https://v.x/t/hls_264_master.m3u8?t=1", dash_h264="https://v.x/t/dash_h264.mpd?t=1")], supported_languages="English<strong>*</strong>, French, German<br><strong>*</strong>languages with full audio support",
                  achievements={"total": 10 * n}, categories=[{"description": "Steam Cloud"}, {"description": "Single-player"}], genres=[{"description": "Action"}],
                  demos=[{"appid": 1}] if n % 2 else None, price_overview={"initial": 1499, "final": 1499}, release_date={"coming_soon": False, "date": rel.strftime("%b %d, %Y").replace(" 0", " ")})}}
     return {"query_summary": {"total_reviews": 200 * 2 ** n, "total_positive": int(200 * 2 ** n * .9)}}
@@ -18,6 +18,7 @@ sb.safe_json = fake_safe_json; sb.set_rate(0)
 o = sb.page_features(3, "us", "english")
 assert o["name"] == "G3" and o["short_desc_chars"] == 130 and o["screenshots"] == 7 and o["languages"] == 3 and o["achievements"] == 30 and o["gifs"] == 3 and o["has_demo"] == 1
 assert o["price"] == 14.99 and 1.9 < o["years_since_release"] < 2.1 and o["reviews_total"] == 1600 and o["pct_positive"] == 90.0 and abs(o["reviews_per_year"] - 1600 / o["years_since_release"]) < 1
+assert [k for k, _ in o["_movies"]] == ["hls", "dash"], o["_movies"]   # Steam trailers without any MP4 are found
 print("page_features ok:", {k: o[k] for k in ("short_desc_chars", "desc_words", "gifs", "screenshots", "languages", "reviews_per_year")})
 d = tempfile.mkdtemp(); out, md = os.path.join(d, "p.json"), os.path.join(d, "b.md")
 sys.argv = ["x", "--rate", "0", "run", "--no-trailer", "-o", out, "--md", md] + [str(i) for i in range(1, 11)]

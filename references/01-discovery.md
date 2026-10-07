@@ -22,7 +22,20 @@ Costruisci **`launch/00-brief.md`**:
 1. **Scheda tecnica**: engine e versione, render pipeline, piattaforme, Steam Deck, Steamworks, SteamPipe, Steam Input, localizzazione, cloud save, telemetria.
 2. **Genere e confidenza**: genere primario, sottogenere, eventuale secondario, confidenza in percentuale (Fase 1).
 3. **Pubblico e mood**: a chi parla, quando si gioca, cosa promette.
-4. **Fase del progetto** (determina la profondità di tutto il resto): *Idea/Concept* (si valuta il concept, non il game feel), *Prototipo*, *Vertical slice*, *Demo/Alpha*, *Pre-release/Beta*, *Post-lancio* (ci sono dati reali: recupero o rilancio).
+4. **Fase del progetto e tipo di prodotto da valutare** (determinano la profondità di tutto il resto): *Idea/Concept* (si valuta il concept, non il game feel), *Prototipo*, *Vertical slice*, *Demo/Alpha*, *Pre-release/Beta*, *Gioco completo*, *Post-lancio* (ci sono dati reali: recupero o rilancio). **Chiedi sempre se è una beta o un gioco completo** (`00-intervista.md`, domanda zero) e, per una beta, se esistono già le TODO o il design del gioco completo. La valutazione cambia così:
+
+   | Aspetto | Beta / demo / vertical slice | Gioco completo |
+   |---|---|---|
+   | Che cosa si giudica | il loop, il feel, i primi 10 minuti, l'identità, la chiarezza del pitch, la prontezza al test e alla demo | l'esperienza intera: durata, varietà, rigiocabilità, rischio recensioni al lancio |
+   | Pilastri del playbook | PASS se la beta **dimostra** il pilastro per ciò che contiene; "non ancora" non è FAIL se è nel piano e dichiarato | PASS solo se presente e rifinito |
+   | Contenuto mancante | non penalizzato, registrato come distanza dal gioco completo | penalizzato (è il tema "poco contenuto" delle recensioni) |
+   | Focus group | i tester sanno di giudicare una beta: valutano loop, feel e promessa, non il prezzo di vendita | giudicano il prodotto come acquisto |
+   | Cancelli | Gate A, B, C prima di Steam Direct; la beta può essere la demo del Next Fest | gli stessi, più il lancio |
+   | Economia | break-even sul gioco completo; la beta è gratis o a donazione | break-even sul gioco completo |
+   | Verdetto | riguarda la beta; sul gioco finale è **provvisorio** (Fase 10B) | definitivo |
+   | Pagina store | Coming Soon e demo costruite sulla beta | pagina completa |
+
+   Se è una beta con piano del gioco completo: prima l'analisi come beta, poi domande e analisi rapida del gioco completo (Fase 10B).
 5. **Obiettivo dichiarato**: vendite, community, portfolio, hobby con possibile ritorno. Cambia le soglie: un portfolio non ha bisogno di break-even.
 6. **Team e vincoli**: persone, ore a settimana, budget, **paese e inquadramento fiscale**, soci.
 7. **Stato dei contenuti**: cosa è giocabile, cosa manca, durata di run o sessione, volumi, bug noti.
@@ -56,6 +69,8 @@ Rende la skill adattiva: pilastri, coorti, hook, creator, demo, prezzo e rischi 
 Output: `launch/sources.md`, `launch/comps.csv`, dati grezzi in `launch/_raw/`. In Rapida bastano 8-10 comparabili; in Completa 15-25 (minimo 8).
 
 ### 2.0 Benchmark di genere (dati pubblici, a ogni esecuzione)
+
+I nomi dei tag vengono **risolti** prima di interrogare SteamSpy (`steam_tags.py`): varianti di scrittura ("Roguelite" → "Rogue-lite", "Rogue-like" e "Roguelike"), refusi ("rogueliek"), e verifica che ogni lista restituita contenga davvero quel tag, perché SteamSpy accetta nomi sbagliati e risponde con la lista di un altro tag. `python3 <skill>/scripts/research/steam_tags.py Roguelite` mostra come un nome viene interpretato.
 
 I giochi più recensiti del tag, con anno di uscita, prezzo e demo, dicono cosa serve per essere visibili e come vanno le uscite recenti. Si costruiscono a runtime, ogni volta che servono, da fonti pubbliche:
 

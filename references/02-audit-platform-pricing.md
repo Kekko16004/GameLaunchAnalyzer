@@ -14,6 +14,11 @@ Output: **`launch/01-dev.md`**. La profondità dipende dalla fase: per *Idea/Con
 - **Asimmetria del feedback**: cosa succede quando il giocatore fa bene rispetto a quando sbaglia? Se l'errore è spettacolare e il successo è muto, il gioco non gratifica.
 
 ### B. Matrice dei pilastri del genere (obbligatoria)
+**La domanda zero decide come si vota** (beta o gioco completo, vedi `00-intervista.md`; è scritta in `00-brief.md` e in `status.json` come `product`):
+- **Beta / demo / vertical slice**: un pilastro è **PASS** se la build lo dimostra già, anche con poco contenuto; è **MARGINAL** se lo si intravede ma regge solo con il contenuto previsto; è **FAIL** solo se manca o funziona male nella parte che c'è. Il contenuto che nel piano del gioco completo esiste ma nella beta no **non è un FAIL: è un gap** da elencare nella Fase 10B, con le ore per colmarlo.
+- **Gioco completo / post-lancio**: si vota quello che il giocatore compra. Contenuto mancante, bug e rifinitura contano per intero.
+- Scrivi sempre nella tabella a quale dei due metri è stato applicato.
+
 Prendi i pilastri dal playbook. Per ognuno: **[PASS]**, **[MARGINAL]** o **[FAIL]**, motivazione concreta, **evidenza** (file, scena, screenshot, riga di codice) e costo in ore per portarlo a PASS.
 
 | Pilastro | Voto | Evidenza | Ore per PASS |

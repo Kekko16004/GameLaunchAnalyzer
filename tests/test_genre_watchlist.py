@@ -1,9 +1,10 @@
 """genre_bench and watchlist with canned Steam/SteamSpy answers."""
-import os, sys, json, urllib.parse, datetime as dt, io, contextlib, tempfile
+import os, sys, json, urllib.parse, urllib.error, datetime as dt, io, contextlib, tempfile
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "scripts", "research"))
 import common
 today = dt.date.today()
 state = {"day": 0}
+def aid_of(qs): return int(qs.get("appid", [0])[0])
 def rel(years): d = today - dt.timedelta(days=int(365.25 * years)); return d.strftime("%b %d, %Y").replace(" 0", " ")
 def fake(url, **kw):
     u = urllib.parse.urlparse(url); qs = urllib.parse.parse_qs(u.query)
@@ -19,7 +20,11 @@ def fake(url, **kw):
     if "appreviews" in u.path:
         aid = int(u.path.split("/")[-1]); gain = 1000 * state["day"] // 7 * (5 if (aid == 7 and state["day"] >= 35) else 1)
         return json.dumps({"query_summary": {"total_reviews": 1000 * aid + gain, "total_positive": int((1000 * aid + gain) * (0.9 if state["day"] < 28 else 0.85))}}).encode()
-    if "GetNumberOfCurrentPlayers" in u.path:
+    if u.netloc == "api.steampowered.com":
+        if u.path != "/ISteamUserStats/GetNumberOfCurrentPlayers/v1/":   # any other method name is a 404, as on Steam
+            raise urllib.error.HTTPError(url, 404, "Not Found", {}, None)
+        if aid_of(qs) == 999:   # an app Steam has no count for
+            return json.dumps({"response": {"result": 42}}).encode()
         return json.dumps({"response": {"player_count": 100 + state["day"], "result": 1}}).encode()
     raise AssertionError(url)
 common.http_get = fake; common.set_rate(0)
@@ -35,6 +40,9 @@ assert {m["feature"] for m in a["mine"]} == {"price", "reviews_per_year"} and al
 txt = open(md, encoding="utf-8").read(); assert "coda alta" in txt and "non il gioco mediano" in txt and "Per anno di uscita" in txt
 print("genre_bench ok:", a["distributions"]["reviews_per_year"]["median"], "median reviews/year;", len(a["cohorts"]), "cohorts")
 
+# ---- current players: the right method name, and result != 1 means "no count" (not zero)
+snap = wl.fetch(7); assert snap["players"] is not None and snap["players"] >= 100, snap
+assert wl.fetch(999)["players"] is None
 # ---- watchlist over three weeks of snapshots
 csvp = os.path.join(d, "wl.csv")
 def run(argv):

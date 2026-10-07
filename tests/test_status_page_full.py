@@ -51,4 +51,22 @@ assert "Passi in ordine" not in pub and "Se… allora" not in pub and "Concorren
 # no steps section in calendar -> whole file rendered as markdown
 open(os.path.join(L, "calendar.md"), "w", encoding="utf-8").write("| Data | Evento |\n|---|---|\n| 2026-12-01 | Pagina |\n")
 assert "<td>Pagina</td>" in sp.build(L, "partner", [], [], set(), today)
+# ---- creators.csv: collapsible, escaped, safe links, hidden from the publisher page
+W("creators.csv", "piattaforma,nome,url,lingua,iscritti_follower,segmento,priorita,gioco_coperto,titolo_video,url_video,data_pubblicazione_circa,views,perche,contatto,data_verifica\n"
+  f"YouTube,Alice {HOSTILE},https://www.youtube.com/@alice,EN,5000,micro,A,PlateUp,t,https://www.youtube.com/watch?v=x,2026-10-01,100,hook {HOSTILE},alice@example.com,2026-10-06\n"
+  "TikTok,Bob,javascript:alert(1),IT,,da verificare,B,Overcooked,t,javascript:alert(2),,,why,,2026-10-06\n"
+  "YouTube,Carl,https://www.youtube.com/@carl,EN,900000,medio,C,x,t,,,,,,2026-10-06\n")
+pg = sp.build(L, "partner", [], [], set(), today)
+assert "<h2>Creator</h2>" in pg and "3 creator" in pg and "priorità A 1 · B 1 · C 1" in pg and "alice@example.com" in pg
+assert "javascript:alert" not in pg and "<img src=x" not in pg.replace("<script>" + sp.JS + "</script>", "")
+assert pg.index("Alice") < pg.index("Bob") < pg.index("Carl"), "rows must be sorted by priority"
+assert 'href="https://www.youtube.com/@alice"' in pg and 'href="https://www.youtube.com/watch?v=x"' in pg
+assert "<h2>Creator</h2>" not in sp.build(L, "publisher", [], [], set(), today) and "<h2>Creator</h2>" not in sp.build(L, "partner", [], [], {"creators"}, today)
+# ---- beta vs full game: product label in the header, quick analysis of the full game as a table
+st = json.load(open(os.path.join(L, "status.json"))); st["product"] = {"kind": "beta", "label": "Beta (Atto I)", "has_full_plan": True}
+st["full_game"] = {"summary": f"La beta mostra il loop; mancano Atti II-III {HOSTILE}", "gaps": [{"area": "Contenuto", "today": "1 Atto", "target": "3 Atti", "action": "tagliare le modalità extra", "hours": 120}]}
+json.dump(st, open(os.path.join(L, "status.json"), "w"))
+pg = sp.build(L, "partner", [], [], set(), today)
+assert "valutato come: Beta (Atto I)" in pg and "Beta oggi e gioco completo" in pg and "3 Atti" in pg and "<img src=x" not in pg.replace("<script>" + sp.JS + "</script>", "")
+assert "Beta oggi e gioco completo" not in sp.build(L, "publisher", [], [], set(), today)
 print("ALL STATUS_PAGE_FULL TESTS PASSED")

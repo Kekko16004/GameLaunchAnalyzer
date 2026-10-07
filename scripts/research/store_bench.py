@@ -4,7 +4,8 @@
 For each Steam app id it measures, automatically and from public data:
   page    : short description length, long description length/words, GIFs, other images, looping videos,
             headings, bullet items, screenshots, trailers, languages, achievements, categories, demo, price...
-  trailer : duration (read from the MP4 header with tiny HTTP Range requests, no download) and, when `ffmpeg`
+  trailer : duration (MP4 header with tiny HTTP Range reads, or the HLS / DASH playlist: Steam now serves trailers
+            as adaptive streams, usually without any MP4; no video is downloaded for this) and, when `ffmpeg`
             is installed, cut analysis of the first seconds: time to first cut, cuts in the first 5 s,
             average shot length. With --frames-dir it also saves frames at 0/2/5/10/20/30 s so the hook can be
             JUDGED by looking at them (the tool measures pacing, it cannot understand what the hook is).
@@ -36,7 +37,8 @@ import shutil
 import statistics
 import subprocess
 import struct
-from common import http_range, load_json, log, read_list, safe_json, set_rate, write_json, write_output
+import urllib.parse
+from common import get_text, http_range, load_json, log, read_list, safe_json, set_rate, write_json, write_output
 
 MONTHS = {m: i for i, m in enumerate("jan feb mar apr may jun jul aug sep oct nov dec".split(), 1)}
 FEATURES = ["short_desc_chars", "desc_chars", "desc_words", "gifs", "looping_videos", "images", "headings", "bullets", "screenshots",
@@ -89,12 +91,97 @@ def page_features(appid: int, cc: str, lang: str) -> dict:
              metacritic=(d.get("metacritic") or {}).get("score"), recommendations=(d.get("recommendations") or {}).get("total"),
              reviews_total=total, pct_positive=round(100 * pos / total, 1) if total else None,
              reviews_per_year=round(total / max(years, 0.25), 1) if total is not None and years else None,
-             _movie=(((main or {}).get("mp4") or {}).get("480") or ((main or {}).get("mp4") or {}).get("max")) if main else None)
+             _movies=movie_sources(main) if main else [])
     o.update(analyze_html(d.get("about_the_game") or d.get("detailed_description")))
     return o
 
 
 # ----------------------------------------------------------------------------- trailer
+# Steam used to serve trailers as MP4/WebM files; it now serves adaptive streams (HLS .m3u8 and DASH .mpd), often with no MP4 at all.
+# Every URL found in a `movies` entry is classified by its file extension, so the tool works with any of them.
+KIND_BY_EXT = {".mp4": "mp4", ".webm": "webm", ".m3u8": "hls", ".mpd": "dash"}
+DURATION_ORDER = ("mp4", "hls", "dash", "webm")   # cheapest and most reliable first
+
+
+def movie_sources(movie: dict) -> list[tuple[str, str]]:
+    """[(kind, url)] for a Steam `movies` entry: any key, any nesting, ordered mp4 > hls > dash > webm."""
+    found: list[tuple[str, str]] = []
+
+    def walk(v):
+        if isinstance(v, dict):
+            for x in v.values():
+                walk(x)
+        elif isinstance(v, list):
+            for x in v:
+                walk(x)
+        elif isinstance(v, str) and v.startswith("http"):
+            kind = KIND_BY_EXT.get(os.path.splitext(urllib.parse.urlparse(v).path.lower())[1])
+            if kind and (kind, v) not in found:
+                found.append((kind, v))
+    walk(movie)
+    return sorted(found, key=lambda kv: DURATION_ORDER.index(kv[0]))
+
+
+def parse_iso_duration(s: str) -> float | None:
+    """'PT1M32.5S' / 'PT90S' / 'PT1H2M3S' -> seconds."""
+    m = re.fullmatch(r"P(?:(\d+)D)?T?(?:(\d+(?:\.\d+)?)H)?(?:(\d+(?:\.\d+)?)M)?(?:(\d+(?:\.\d+)?)S)?", (s or "").strip())
+    if not m or not any(m.groups()):
+        return None
+    d, h, mi, sec = (float(x) if x else 0.0 for x in m.groups())
+    return round(d * 86400 + h * 3600 + mi * 60 + sec, 2)
+
+
+def mpd_duration(url: str) -> float | None:
+    """DASH: mediaPresentationDuration of the manifest, or the sum of the Period durations."""
+    try:
+        text = get_text(url)
+    except Exception as e:  # noqa: BLE001
+        log(f"WARN dash manifest {url[:60]}: {e}")
+        return None
+    m = re.search(r'mediaPresentationDuration="([^"]+)"', text)
+    if m:
+        return parse_iso_duration(m.group(1))
+    periods = [parse_iso_duration(x) for x in re.findall(r'<Period[^>]*\bduration="([^"]+)"', text)]
+    return round(sum(periods), 2) if periods and all(p is not None for p in periods) else None
+
+
+def hls_duration(url: str, depth: int = 0) -> float | None:
+    """HLS: sum of #EXTINF in the media playlist (a master playlist is followed to its lowest-bandwidth variant)."""
+    try:
+        text = get_text(url)
+    except Exception as e:  # noqa: BLE001
+        log(f"WARN hls playlist {url[:60]}: {e}")
+        return None
+    if "#EXT-X-STREAM-INF" in text and depth < 2:
+        lines = [ln.strip() for ln in text.splitlines()]
+        best = None
+        for i, ln in enumerate(lines):
+            if ln.startswith("#EXT-X-STREAM-INF"):
+                bw = re.search(r"BANDWIDTH=(\d+)", ln)
+                nxt = next((x for x in lines[i + 1:] if x and not x.startswith("#")), None)
+                if nxt and (best is None or int(bw.group(1) if bw else 10 ** 12) < best[0]):
+                    best = (int(bw.group(1) if bw else 10 ** 12), nxt)
+        return hls_duration(urllib.parse.urljoin(url, best[1]), depth + 1) if best else None
+    durations = re.findall(r"#EXTINF:([0-9.]+)", text)
+    return round(sum(float(x) for x in durations), 2) if durations else None
+
+
+def ffprobe_duration(src: str) -> float | None:
+    """Last resort for any format, if ffprobe is installed."""
+    if not shutil.which("ffprobe"):
+        return None
+    try:
+        p = subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", src], capture_output=True, text=True, timeout=120)
+        return round(float(p.stdout.strip().splitlines()[0]), 2)
+    except Exception:  # noqa: BLE001
+        return None
+
+
+def trailer_duration(kind: str, url: str) -> float | None:
+    d = {"mp4": mp4_duration, "hls": hls_duration, "dash": mpd_duration}.get(kind, lambda _u: None)(url)
+    return d if d is not None else ffprobe_duration(url)
+
+
 def mp4_duration(url: str, max_hops: int = 12) -> float | None:
     """Duration in seconds from the MP4 `moov/mvhd` box, walking top-level boxes with 16-byte Range reads."""
     off = 0
@@ -169,11 +256,21 @@ def save_frames(src: str, outdir: str, appid: int, times=(0, 2, 5, 10, 20, 30)) 
 
 
 def trailer_features(o: dict, frames_dir: str | None) -> None:
-    url = o.pop("_movie", None)
-    o.update(trailer_s=None, trailer_url=url, hook_frames=[], **pacing(None))
-    if not url:
+    """Trailer duration, pacing and hook frames from whichever video format Steam provides."""
+    sources = o.pop("_movies", None)
+    if sources is None and o.get("_movie"):   # older callers: a single MP4 URL
+        sources = [("mp4", o["_movie"])]
+    o.pop("_movie", None)
+    o.update(trailer_s=None, trailer_url=None, trailer_kind=None, trailer_formats=[k for k, _ in (sources or [])], hook_frames=[], **pacing(None))
+    if not sources:
         return
-    o["trailer_s"] = mp4_duration(url)
+    kind, url = sources[0]
+    for k, u in sources:                      # first format whose duration can be read
+        d = trailer_duration(k, u)
+        if d is not None:
+            kind, url, o["trailer_s"] = k, u, d
+            break
+    o.update(trailer_url=url, trailer_kind=kind)
     cuts = scene_cuts(url)
     o.update(pacing(cuts, int(min(30, o["trailer_s"] or 30))))
     o["ffmpeg"] = cuts is not None
@@ -276,6 +373,7 @@ def do_fetch(a) -> list[dict]:
     for i in ids:
         o = page_features(i, a.cc, a.lang)
         if a.no_trailer:
+            o.pop("_movies", None)
             o.pop("_movie", None)
         else:
             trailer_features(o, a.frames_dir)

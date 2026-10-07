@@ -6,7 +6,7 @@ reproducible and never computed by hand. A wave is one run of the (same) roster 
 
 Wave file (launch/fg/waves/w01-YYYY-MM-DD.json), written after the panel has judged:
   {
-    "wave": 1, "date": "2026-10-06", "build": "v0.3 / commit abc123", "label": "baseline",
+    "wave": 1, "date": "2026-10-06", "build": "v0.3 / commit abc123", "label": "baseline", "stage": "beta",   # stage: beta | full (what the panel is asked to judge)
     "evidence": "capsule v1, pitch v1, build 0.3",
     "controls": {"success": 41.2, "weak": 6.0},            # optional: scores the panel gave to control capsules
     "testers": [{"id": "A-01", "verdict": "WISHLIST", "click": true, "pitch_ok": true,
@@ -124,7 +124,7 @@ def metrics(w: dict, gate: float | None = None) -> dict:
     issues.sort(key=lambda i: (-i["weighted"], -i["freq"], i["key"]))
     thr, how = gate_of(w, gate)
     sc = score(ts)
-    return dict(wave=w["wave"], date=w["date"], build=w.get("build"), label=w.get("label"), evidence=w.get("evidence"),
+    return dict(wave=w["wave"], date=w["date"], build=w.get("build"), label=w.get("label"), stage=w.get("stage"), evidence=w.get("evidence"),
                 n=n, counts={k: cnt.get(k, 0) for k in W_}, pct={k: pct(cnt.get(k, 0), n) for k in W_}, score=sc,
                 score_a=sa, score_b=sb, n_a=len(A), n_b=len(B),
                 gap=None if sa is None or sb is None else round(abs(sa - sb), 1),
@@ -142,7 +142,7 @@ def table(headers: list[str], rows: list[list]) -> str:
 def md_metrics(m: dict) -> str:
     c, p = m["counts"], m["pct"]
     gap = f"{m['gap']} points" + (" **> 15: explain it (core vs wide audience)**" if m["gap"] and m["gap"] > GAP_FLAG else "")
-    s = [f"## Wave {m['wave']} ({m['date']}) {m['label'] or ''}", f"Build: {m['build']} | Evidence: {m['evidence']} | N = {m['n']} (A {m['n_a']}, B {m['n_b']})", "",
+    s = [f"## Wave {m['wave']} ({m['date']}) {m['label'] or ''}", f"Build: {m['build']} | Evidence: {m['evidence']} | N = {m['n']} (A {m['n_a']}, B {m['n_b']})" + (f" | Judged as: {m['stage']}" if m.get("stage") else ""), "",
          f"**Wishlist score: {m['score']}** (gate {m['gate']['threshold']}, {m['gate']['basis']}: "
          f"{'PASS' if m['gate']['passed'] else 'BELOW'}) | A {m['score_a']} vs B {m['score_b']}, gap {gap}", "",
          table(["Verdict", "Count", "%"], [[k, c[k], p[k]] for k in W_]), "",

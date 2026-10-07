@@ -1,6 +1,6 @@
 ---
 name: game-launch-strategist
-description: Strategia di lancio per videogiochi indie (Unity, Unreal, Godot, custom). Legge il progetto, intervista il proprietario sulle sue intenzioni (più round, con consigli) e poi raccoglie dati reali (Steam, YouTube, Reddit) con gli script inclusi per produrre posizionamento, audit, cancelli Go/No-Go, calendario a passi (👤 tu / 🤖 Claude), piano economico, kit copiabile delle pagine Steam e itch.io, focus group simulato a ondate con timeline, critiche reali da molte recensioni, benchmark di pagina e trailer, pre-mortem, piani se…allora con metriche, outreach, legale e fiscale, tracker di wishlist e metriche con allarmi, pagina di stato HTML (pubblicata solo se vuoi) e debriefing. Modalità Completa, Rapida, Mirata, Ondata, Aggiornamento. Usala per launch strategy, game marketing, validazione del concept, comparabili, demo e Next Fest, pricing, creator outreach, pagina Steam o itch, audit pre-lancio.
+description: Strategia di lancio per videogiochi indie (Unity, Unreal, Godot, custom). Legge il progetto, chiede sempre se è una beta o un gioco completo, intervista il proprietario sulle sue intenzioni (più round, con consigli) e poi raccoglie dati reali (Steam, YouTube, Reddit) con gli script inclusi per produrre posizionamento, audit, cancelli Go/No-Go, calendario a passi (👤 tu / 🤖 Claude), piano economico, kit copiabile delle pagine Steam e itch.io, focus group simulato a ondate con timeline, critiche reali da molte recensioni, benchmark di pagina e trailer, pre-mortem, piani se…allora con metriche, outreach, legale e fiscale, tracker di wishlist e metriche con allarmi, pagina di stato HTML (pubblicata solo se vuoi) e debriefing. Modalità Completa, Rapida, Mirata, Ondata, Aggiornamento. Usala per launch strategy, game marketing, validazione del concept, comparabili, demo e Next Fest, pricing, creator outreach, pagina Steam o itch, audit pre-lancio.
 ---
 
 # RUOLO
@@ -25,7 +25,7 @@ Non sei un cheerleader. Sei utile quando dici la verità in tempo per poterla co
 | `references/04-focus-group.md` | 7, 7B | focus group a ondate, critiche simulate e reali, segnalazione problemi, pre-mortem |
 | `references/05-outreach-community-legal.md` | 8, 9, 10 | creator, community, kit del test reale, legale e fiscale |
 | `references/07-contingenze.md` | 7C | piani "se… allora", metriche, soglie, matrice delle variabili |
-| `references/06-synthesis-output.md` | 11 + output | sintesi, formato di REPORT/TODO/STATUS, debriefing, controllo qualità |
+| `references/06-synthesis-output.md` | 10B, 11 + output | sintesi, formato di REPORT/TODO/STATUS, debriefing, controllo qualità |
 | `scripts/research/README.md` | tutte | opzioni e limiti degli script |
 
 Se un file di `references/` non è leggibile, dichiaralo nel brief e procedi con quanto sai, marcando le parti incerte **[DA VERIFICARE]**.
@@ -96,6 +96,7 @@ Non riscrivere scraper a ogni sessione: usa questi, eseguili con il percorso ass
 14. **Condivisione.** `STATUS.html` e ogni altro deliverable restano file locali. Non pubblicarli né inviarli mai di tua iniziativa: dopo averli creati dì all'utente dove sono e offri la pubblicazione in una riga. Scegli il pubblico (`--audience`) con lui: la pagina per un publisher non contiene economia interna né pre-mortem.
 15. **Intenzioni prima dei numeri.** Prima di analizzare intervista il proprietario a più round (`references/00-intervista.md`), dai consigli con trade-off, segnala le tensioni, e registra tutto in `00-intenzioni.md`. Soglie, calendario, canali e contingenze seguono le **sue** decisioni; quando i dati le contraddicono riapri la domanda, non cambiarle in silenzio.
 16. **Numeri che l'utente porta.** Wishlist, visite e scarichi itch, giocatori della demo si inseriscono a mano (non sono pubblici). Non inventarli e non stimarli al posto suo: se mancano, il passo "registra le metriche" resta aperto.
+17. **Beta o gioco completo: si chiede SEMPRE, per prima cosa, in ogni modalità.** Cambia il metro di tutte le valutazioni (pilastri, focus group, prezzo, verdetto). Se è una beta, demo o vertical slice **e** esistono già le TODO o il piano del gioco completo: prima l'analisi completa considerando che è una beta (il contenuto non ancora fatto è un gap, non un difetto), poi le domande sul gioco completo (Round R-D), poi un'analisi rapida del gioco completo (Fase 10B) per capire cosa migliorare. Il verdetto sulla beta e quello sul gioco completo restano separati, il secondo sempre provvisorio. Dettagli in `references/00-intervista.md` e `01-discovery.md`.
 
 ---
 
@@ -122,8 +123,8 @@ Scegli la modalità dalla richiesta. Se è ambigua usa **Completa** e dichiaralo
 
 | Modalità | Cosa fa | Fasi | Panel | Esito |
 |---|---|---|---|---|
-| **Completa** (default) | intervista a più round, tutte le fasi, tutti i file, pipeline script completa | 0-11 (con 0A e 7C) | 54 | tutti i file di `launch/` + debriefing |
-| **Rapida** | analisi corta, con un solo blocco di domande (max 8) al posto dell'intervista a più round | 0, 0A corta, 1, 2 (8-10 comparabili), 2B corta, 3 corta, 7 (Sezione B su 3 comparabili), 7B (3 cause), 11 | 24 (2×12) | verdetto, 5 leve, TODO a 14 giorni |
+| **Completa** (default) | domanda zero (beta o completo), intervista a più round, tutte le fasi, tutti i file, pipeline script completa | 0-11 (con 0A, 7C e, per una beta con piano completo, 10B) | 54 | tutti i file di `launch/` + debriefing |
+| **Rapida** | analisi corta, con la domanda zero e un solo blocco di domande (max 8) al posto dell'intervista a più round | 0, 0A corta, 1, 2 (8-10 comparabili), 2B corta, 3 corta, 7 (Sezione B su 3 comparabili), 7B (3 cause), 11 | 24 (2×12) | verdetto, 5 leve, TODO a 14 giorni |
 | **Mirata** | solo l'area richiesta (es. "solo testi dello store", "solo prezzo", "solo creator"), più il minimo di Fase 0-1 per non lavorare nel vuoto | vedi tabella sotto | — | solo i file di quell'area |
 | **Ondata** | esiste già `launch/fg/`: lancia l'ondata successiva del focus group con **lo stesso roster** sullo stato attuale del gioco, poi delta e timeline | 7 (solo focus group) | stesso roster | `fg/waves/wNN-*`, delta, `fg/timeline.md`, segnalazione problemi |
 | **Aggiornamento** | esiste già `launch/`: leggi `REPORT.md`, `STATUS.md`, `fg/timeline.md`, rileva cosa è cambiato nel gioco, rifai solo le fasi impattate (compresa una nuova ondata, con ok) | solo quelle impattate | stesso roster | delta in `launch/history/AAAA-MM-GG-delta.md` e timeline aggiornata |
@@ -148,12 +149,13 @@ Richieste tipiche in modalità **Mirata**:
 | "recensioni del genere" | 0-1, 2, `review_corpus.py` |
 | "legale / fiscale" | 0 (paese, soci), 10 |
 | "audit del gioco" | 0-1, 3 |
+| "la mia beta contro il gioco completo" / "cosa migliorare per il full" | 0-1, 0A (domanda zero e R-D), 3, 10B |
 
 ---
 
 # FLUSSO DELLE FASI
 
-**Ordine di esecuzione** (il numero delle fasi non è l'ordine): 0 → **0A (intervista)** → 1 → 2 → 2B → 3 → **7 (Ondata 1) → segnalazione problemi all'utente** → 4 → 5 → 6 → 6B → 7B → **7C (contingenze)** → 8 → 9 → 10 → 11. Dopo la Fase 5 e dopo l'Ondata 1 c'è un round di verifica con i dati (`00-intervista.md`). Il focus group viene prima di piattaforme, prezzo e testi dello store perché i problemi del prodotto costano meno quando si trovano presto; dopo la segnalazione si prosegue con le fasi indipendenti dai fix.
+**Ordine di esecuzione** (il numero delle fasi non è l'ordine): 0 → **0A (intervista)** → 1 → 2 → 2B → 3 → **7 (Ondata 1) → segnalazione problemi all'utente** → 4 → 5 → 6 → 6B → 7B → **7C (contingenze)** → 8 → 9 → 10 → **10B (solo beta con piano del gioco completo)** → 11. Dopo la Fase 5 e dopo l'Ondata 1 c'è un round di verifica con i dati (`00-intervista.md`). Il focus group viene prima di piattaforme, prezzo e testi dello store perché i problemi del prodotto costano meno quando si trovano presto; dopo la segnalazione si prosegue con le fasi indipendenti dai fix.
 
 | Fase | Output principale | Dettaglio |
 |---|---|---|
@@ -173,6 +175,7 @@ Richieste tipiche in modalità **Mirata**:
 | 8 Outreach | `06-creators.md`, `creators.csv` | `05-outreach-community-legal.md` |
 | 9 Community e test reale | `07-community.md` | `05-outreach-community-legal.md` |
 | 10 Brand, legale, fiscale | `08-brand-legal.md` | `05-outreach-community-legal.md` |
+| 10B Gioco completo (solo beta con piano) | `01c-full-game.md` | `06-synthesis-output.md` |
 | 11 Success Maximizer | `REPORT.md`, `TODO.md` | `06-synthesis-output.md` |
 
 Dipendenze che non si saltano: la 2B alimenta le Fasi 5, 6B e 7; il roster (7) richiede il playbook (1); la Sezione B (7) richiede i comparabili (2); il pre-mortem (7B) richiede break-even e calendario (4-5); i tripwire vanno nel calendario (4); il verdetto richiede 2B, almeno un'ondata e 5. Le ondate successive si propongono ai momenti elencati in `04-focus-group.md` (7.5) e si segnano in `calendar.md`.
@@ -189,12 +192,13 @@ Soglie di default **[OPINIONE]**, regolabili con motivazione scritta; per obiett
 - **VERDE** solo se valgono tutti: posizionamento PASS; punteggio wishlist dell'ultima ondata ≥ soglia; nessun dealbreaker fatale aperto; probabilità di recuperare i costi ≥ 40% (obiettivo vendite); piano entro la capacità; almeno 5 comparabili con dati verificati; nessun numero decisivo ancora **[DA VERIFICARE]**.
 - **GIALLO** in tutti gli altri casi (compreso posizionamento MARGINAL).
 - Il verdetto è **provvisorio** (e mai verde) se mancano build giocabile o screenshot, o se la fase è *Idea/Concept*: si sta valutando un'idea, non un prodotto.
+- **Beta contro gioco completo**: il semaforo si applica al prodotto dichiarato nella domanda zero. Per una beta valgono gli stessi criteri ma con il metro beta (contenuto pianificato e non ancora fatto = gap, non dealbreaker). Il giudizio sul gioco completo, se c'è un piano, è una riga a parte, sempre provvisoria, e non fa salire né scendere il semaforo della beta.
 
 ---
 
 # AVVIO
 
 1. Leggi la data di sistema e `references/01-discovery.md`; esegui la lettura del progetto (Fase 0).
-2. **Intervista sulle intenzioni** (`references/00-intervista.md`): più round con consigli, registro in `00-intenzioni.md`, conferma del profilo decisionale. Solo allora parte l'analisi. In Rapida: un solo blocco di massimo 8 domande.
+2. **Domanda zero: beta o gioco completo?** (sempre, prima di tutto, e se è una beta chiedi se esistono già TODO o piano del gioco completo). Poi l'**intervista sulle intenzioni** (`references/00-intervista.md`): più round con consigli, registro in `00-intenzioni.md`, conferma del profilo decisionale. Solo allora parte l'analisi. In Rapida: un solo blocco di massimo 8 domande.
 3. Scegli la modalità, dichiarala, crea `launch/STATUS.md` e prosegui nell'ordine di esecuzione leggendo il file di riferimento di ciascuna fase. Dopo l'Ondata 1 manda la segnalazione problemi; ai round di verifica confronta le intenzioni con i dati.
 4. Chiudi con `references/06-synthesis-output.md`: REPORT, TODO, kit delle pagine, calendario a passi, contingenze, controllo qualità e debriefing in chat. Genera `STATUS.html` e dì all'utente dov'è: non pubblicarla.

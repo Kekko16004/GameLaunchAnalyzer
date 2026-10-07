@@ -13,6 +13,7 @@ tracking: everything is inline, so the file can be attached to an email as is). 
   launch/fg/timeline.csv     focus-group waves (fg_waves.py timeline --csv)
   launch/wishlists.csv + launch/_raw/wl_plan.json        wishlist tracker (wl_track.py)
   launch/watchlist.csv       comparables and competitors over time (watchlist.py)
+  launch/creators.csv        creators found (build_creators.py), shown as a collapsible table
   launch/_raw/econ.json      economic plan (calc_econ.py);  launch/TODO.md and the reports in launch/
 Anything missing is simply left out.
 
@@ -20,9 +21,9 @@ Sharing: the page contains strategy. --audience picks what goes in (default part
   private    everything, including creators, community, legal/fiscal
   partner    everything except creators, community and legal/fiscal documents
   publisher  verdict, numbers, charts, gates, calendar dates, store pages, positioning, platform, focus group;
-             no steps, economics, TODO, contingencies, competitors or decision profile
+             no steps, economics, TODO, contingencies, competitors, creators, decision profile or full-game analysis
 Add/remove documents with --include / --exclude (file stems such as 03-pricing) and sections with
---hide economics,todo,calendar,steps,storekit,contingencies,watchlist,intentions.
+--hide economics,todo,calendar,steps,storekit,contingencies,watchlist,intentions,creators,fullgame.
 Publishing the page anywhere is YOUR decision: this tool only writes the local file.
 
   python status_page.py [--launch-dir launch] [--audience partner] [-o launch/STATUS.html]
@@ -47,13 +48,13 @@ import wl_track as wl
 MONTHS = "gen feb mar apr mag giu lug ago set ott nov dic".split()
 DOCS = {  # stem -> title
     "REPORT": "Report completo", "00-intenzioni": "Intenzioni e decisioni", "04b-store-copy": "Testi dello store e trailer", "05d-contingenze": "Piani di contingenza (se… allora)", "00-brief": "Brief del progetto", "01b-positioning": "Posizionamento", "01-dev": "Audit del prodotto",
-    "02-platform": "Piattaforme, demo e gate", "03-pricing": "Prezzo ed economia", "05-focusgroup": "Focus group", "05c-premortem": "Pre-mortem",
+    "01c-full-game": "Gioco completo: analisi rapida", "02-platform": "Piattaforme, demo e gate", "03-pricing": "Prezzo ed economia", "05-focusgroup": "Focus group", "05c-premortem": "Pre-mortem",
     "06-creators": "Creator", "07-community": "Community e test reale", "08-brand-legal": "Brand, legale e fiscale"}
 AUDIENCES = {
     "private": list(DOCS),
-    "partner": ["REPORT", "00-intenzioni", "01b-positioning", "02-platform", "03-pricing", "05-focusgroup", "05c-premortem", "05d-contingenze"],
+    "partner": ["REPORT", "00-intenzioni", "01b-positioning", "01c-full-game", "02-platform", "03-pricing", "05-focusgroup", "05c-premortem", "05d-contingenze"],
     "publisher": ["01b-positioning", "02-platform", "05-focusgroup"]}
-HIDE_BY_AUDIENCE = {"private": set(), "partner": set(), "publisher": {"economics", "todo", "contingencies", "steps", "watchlist", "intentions"}}
+HIDE_BY_AUDIENCE = {"private": set(), "partner": set(), "publisher": {"economics", "todo", "contingencies", "steps", "watchlist", "intentions", "creators", "fullgame"}}
 
 CSS = """
 :root{color-scheme:light;--bg:#f9f9f7;--surface:#fcfcfb;--ink:#0b0b0b;--ink2:#52514e;--muted:#898781;--grid:#e1e0d9;--axis:#c3c2b7;--ring:rgba(11,11,11,.10);
@@ -450,6 +451,50 @@ def watch_section(root: str, today: dt.date):
     return body, [(x["level"], f"{x['game']}: {x['text']}") for x in a["alerts"] if x["level"] != "INFO"]
 
 
+def safe_href(u: str) -> str | None:
+    u = (u or "").strip()
+    return u if re.match(r"https?://[^\s\"'<>]+$", u) else None
+
+
+def link(label: str, url: str) -> str:
+    h = safe_href(url)
+    return f'<a href="{esc(h)}" rel="noopener noreferrer">{esc(label)}</a>' if h else esc(label)
+
+
+def creators_section(root: str):
+    """creators.csv as a collapsible table: counts in the summary, every row inside. Only public data is shown (as written in the file)."""
+    path = os.path.join(root, "creators.csv")
+    if not os.path.exists(path):
+        return None
+    with open(path, encoding="utf-8-sig", newline="") as f:
+        rows = list(csv.DictReader(f))
+    if not rows:
+        return None
+    order = {"A": 0, "B": 1, "C": 2}
+    rows.sort(key=lambda r: (order.get((r.get("priorita") or "").strip().upper(), 3), -(int(r["iscritti_follower"]) if (r.get("iscritti_follower") or "").isdigit() else 0)))
+    pr = {k: sum(1 for r in rows if (r.get("priorita") or "").strip().upper() == k) for k in "ABC"}
+    plat = {}
+    for r in rows:
+        plat[r.get("piattaforma") or "?"] = plat.get(r.get("piattaforma") or "?", 0) + 1
+    cap = 500
+    body = "".join(
+        f'<tr><td>{esc(r.get("priorita"))}</td><td>{link(r.get("nome") or "", r.get("url") or "")}</td><td>{esc(r.get("piattaforma"))}</td><td>{esc(r.get("lingua"))}</td>'
+        f'<td class="n">{esc(r.get("iscritti_follower"))}</td><td>{esc(r.get("segmento"))}</td><td>{esc(r.get("gioco_coperto"))}</td><td>{esc(r.get("perche"))}</td>'
+        f'<td>{esc(r.get("contatto"))}</td><td>{link("video", r.get("url_video") or "") if safe_href(r.get("url_video") or "") else ""}</td></tr>' for r in rows[:cap])
+    more = f'<p class="note">Mostrate le prime {cap} righe su {len(rows)}: il file completo è <code>creators.csv</code>.</p>' if len(rows) > cap else ""
+    return (f'<h2>Creator</h2><details class="card"><summary><strong>{len(rows)} creator</strong><span class="count">priorità A {pr["A"]} · B {pr["B"]} · C {pr["C"]} · '
+            + " · ".join(f"{esc(k)} {v}" for k, v in sorted(plat.items(), key=lambda kv: -kv[1])) + "</span></summary>"
+            '<div class="wrap"><table><thead><tr><th>Pri.</th><th>Nome</th><th>Piattaforma</th><th>Lingua</th><th class="n">Follower</th><th>Segmento</th><th>Gioco coperto</th><th>Perché</th><th>Contatto</th><th>Video</th></tr></thead>'
+            f'<tbody>{body}</tbody></table></div>{more}<p class="note">Solo contatti professionali pubblici. I follower di TikTok e Instagram vanno verificati a mano.</p></details>')
+
+
+def full_game_section(fg: dict) -> str:
+    gaps = "".join(f'<tr><td>{esc(g.get("area"))}</td><td>{esc(g.get("today"))}</td><td>{esc(g.get("target"))}</td><td>{esc(g.get("action"))}</td><td class="n">{esc(g.get("hours", ""))}</td></tr>' for g in fg.get("gaps", []))
+    return (f'<h2>Beta oggi e gioco completo</h2><div class="card"><p>{esc(fg.get("summary", ""))}</p>'
+            + (f'<div class="wrap"><table><thead><tr><th>Area</th><th>Beta oggi</th><th>Gioco completo</th><th>Cosa fare</th><th class="n">Ore</th></tr></thead><tbody>{gaps}</tbody></table></div>' if gaps else "")
+            + '<p class="note">Analisi rapida del gioco completo sul piano, con confidenza bassa: serve a capire cosa migliorare adesso, non a prevederne l\'esito.</p></div>')
+
+
 def build(root: str, audience: str, include: list[str], exclude: list[str], hide: set[str], today: dt.date) -> str:
     st = load_json(os.path.join(root, "status.json")) if os.path.exists(os.path.join(root, "status.json")) else {}
     hide = set(hide) | HIDE_BY_AUDIENCE[audience]
@@ -463,6 +508,7 @@ def build(root: str, audience: str, include: list[str], exclude: list[str], hide
     cont_html, cont_alerts = (None, []) if "contingencies" in hide else contingency_section(root, today)
     watch_html, watch_alerts = (None, []) if "watchlist" in hide else watch_section(root, today)
     sec = []
+    product = st.get("product") or {}
     v = st.get("verdict") or {}
     if v:
         kind, word = LIGHT.get(str(v.get("color", "")).lower(), ("info", str(v.get("color", "n/d"))))
@@ -524,6 +570,12 @@ def build(root: str, audience: str, include: list[str], exclude: list[str], hide
         sec.append(cont_html)
     if watch_html:
         sec.append(watch_html)
+    if "creators" not in hide:
+        c = creators_section(root)
+        if c:
+            sec.append(c)
+    if st.get("full_game") and "fullgame" not in hide:
+        sec.append(full_game_section(st["full_game"]))
     todos, done, hours = read_todos(root)
     if todos and "todo" not in hide:
         sec.append(f'<h2>Prossime azioni</h2><div class="card"><p class="sub">{len(todos)} aperte, {done} chiuse, circa {hours:.0f} ore residue.</p><div class="wrap"><table><thead><tr><th>Azione</th><th>Scadenza</th><th class="n">Ore</th></tr></thead><tbody>'
@@ -544,7 +596,7 @@ def build(root: str, audience: str, include: list[str], exclude: list[str], hide
     label = {"private": "Uso interno", "partner": "Per i soci", "publisher": "Per il publisher"}[audience]
     return (f'<!doctype html><html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Stato del lancio, {esc(name)}</title>'
             f'<style>{CSS}</style></head><body><main><div class="top"><div><h1>{esc(name)}: stato del lancio</h1><p class="sub">Aggiornato il {fmt_date(st.get("updated") or today.isoformat())} · {esc(label)}'
-            f'{" · modalità " + esc(st["mode"]) if st.get("mode") else ""}</p></div><button class="theme" id="theme" type="button">Tema chiaro/scuro</button></div>'
+            f'{" · modalità " + esc(st["mode"]) if st.get("mode") else ""}{" · valutato come: " + esc(product.get("label") or product.get("kind")) if product.get("kind") or product.get("label") else ""}</p></div><button class="theme" id="theme" type="button">Tema chiaro/scuro</button></div>'
             + "".join(sec) + f'<footer class="note">Pagina generata da <code>status_page.py</code> il {today.isoformat()} da file locali, senza richieste di rete. Il focus group è simulato: non è un dato di mercato. '
             f'Cifre con fonte nei documenti; ciò che è etichettato [DA VERIFICARE] resta da verificare.</footer></main><script>{JS}</script></body></html>')
 

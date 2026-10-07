@@ -41,6 +41,8 @@ import os
 import re
 import sys
 
+import common  # noqa: F401  (side effect: UTF-8 stdout, so emoji and arrows do not crash on Windows)
+
 PLATFORMS = ("steam", "itch")
 PLACEHOLDER = re.compile(r"<<<.*?>>>")
 REQUIRED = {"steam": ["title", "short_description"], "itch": ["title", "tagline"]}
