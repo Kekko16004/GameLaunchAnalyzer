@@ -34,6 +34,10 @@ m1, m2 = fg_waves.metrics(w1), fg_waves.metrics(w2)
 exp = round((sum(1 for t in w1["testers"] if t["verdict"] == "WISHLIST") * 1 + sum(1 for t in w1["testers"] if t["verdict"] == "SALDI") * .4
              - sum(1 for t in w1["testers"] if t["verdict"] == "IGNORO") * .2 - sum(1 for t in w1["testers"] if t["verdict"] == "REFUND") * .8) / 24 * 100, 1)
 assert m1["score"] == exp and m1["gate"]["threshold"] == 35.0
+assert m1["buy"]["n"] == 0 and "Would pay" not in fg_waves.md_metrics(m1)   # optional field: absent unless the panel was asked
+wb = dict(w1, testers=[dict(t, would_buy=(i % 4 == 0)) for i, t in enumerate(w1["testers"])], stage="beta")
+mb = fg_waves.metrics(wb); assert mb["buy"] == dict(n=24, yes=6, pct=25.0), mb["buy"]
+assert "Would pay the planned launch price: 6/24 (25.0%)" in fg_waves.md_metrics(mb) and "Judged as: beta" in fg_waves.md_metrics(mb)
 txt = fg_waves.md_delta(w1, w2, m1, m2, 10.0); assert "RESOLVED" in txt and "shorter tutorial" in txt
 bad = dict(w1); bad["testers"] = [dict(t) for t in w1["testers"]]; bad["testers"][0]["verdict"] = "boh"; json.dump(bad, open(os.path.join(d, "bad.json"), "w"))
 try: fg_waves.load_wave(os.path.join(d, "bad.json")); raise AssertionError("invalid verdict accepted")

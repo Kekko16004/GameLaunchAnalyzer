@@ -29,9 +29,9 @@ Costruisci **`launch/00-brief.md`**:
    | Che cosa si giudica | il loop, il feel, i primi 10 minuti, l'identità, la chiarezza del pitch, la prontezza al test e alla demo | l'esperienza intera: durata, varietà, rigiocabilità, rischio recensioni al lancio |
    | Pilastri del playbook | PASS se la beta **dimostra** il pilastro per ciò che contiene; "non ancora" non è FAIL se è nel piano e dichiarato | PASS solo se presente e rifinito |
    | Contenuto mancante | non penalizzato, registrato come distanza dal gioco completo | penalizzato (è il tema "poco contenuto" delle recensioni) |
-   | Focus group | i tester sanno di giudicare una beta: valutano loop, feel e promessa, non il prezzo di vendita | giudicano il prodotto come acquisto |
+   | Focus group | i tester sanno di giudicare una beta: valutano loop, feel e promessa; se la beta è gratuita si chiede anche **se pagherebbero il prezzo previsto all'uscita** (`would_buy`) | giudicano il prodotto come acquisto |
    | Cancelli | Gate A, B, C prima di Steam Direct; la beta può essere la demo del Next Fest | gli stessi, più il lancio |
-   | Economia | break-even sul gioco completo; la beta è gratis o a donazione | break-even sul gioco completo |
+   | Economia | break-even sul gioco completo; la beta gratuita non si prezza ma **si giudica da quanto converte**: wishlist, voglia di comprare, ritorno dei giocatori | break-even sul gioco completo |
    | Verdetto | riguarda la beta; sul gioco finale è **provvisorio** (Fase 10B) | definitivo |
    | Pagina store | Coming Soon e demo costruite sulla beta | pagina completa |
 
@@ -81,6 +81,8 @@ python3 <skill>/scripts/research/genre_bench.py --tag Roguelike --tag Cooking --
 Distribuzioni (p25 / mediana / p75 / p90), coorti per anno di uscita, fasce di prezzo, demo contro senza demo, soglia di visibilità e la posizione dei tuoi numeri. **Limite da ripetere sempre:** la lista contiene i giochi *più recensiti* del tag, cioè la coda alta di successo, non il gioco mediano: le cifre dicono cosa serve per emergere, non cosa aspettarsi. Cita tag, n e data di lettura.
 
 Poi metti sotto osservazione i comparabili più vicini e i possibili concorrenti della tua finestra: `watchlist.py add <appid...> --role comp|competitor`; ogni controllo successivo con `watchlist.py snap` e `report --launch <data>` (segnala impennate, saldi, uscite, cali di % positive e collisioni con la tua data).
+
+**SteamDB (solo a mano)**: per ciò che le API pubbliche non danno (follower, posizione tra i più desiderati, picchi di giocatori con storico, prezzo minimo, uscite in arrivo) non fare scraping: SteamDB non ha API e lo vieta. Genera i link con `steamdb_assist.py links <appid...> --md launch/_raw/steamdb_links.md`, chiedi all'utente di aprirli e leggere i numeri (o, se puoi aprire pagine, leggili tu e citane la data), e registrali con `steamdb_assist.py add`. Sono **[FATTO]** con data di lettura. Per i concorrenti nella tua finestra aggiungi anche la lista delle uscite in arrivo.
 
 ### 2.1 Trova i comparabili
 

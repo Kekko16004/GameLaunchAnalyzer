@@ -13,8 +13,9 @@ Si esegue **dopo** l'analisi completa fatta con il metro "beta" (Fasi 3-10) e do
 2. **Scope contro capacità**: ore del piano completo (dalle TODO) contro ore settimanali del team fino alla data di uscita. Se non ci stanno, proponi i tagli e il rinvio.
 3. **Durata e prezzo**: la durata prevista regge il prezzo che emerge da `calc_econ.py` e dai comparabili? (Il prezzo della beta, se c'è, non è quello del gioco completo.)
 4. **Rischio recensioni**: i temi negativi ricorrenti del genere (`review_corpus.py`, `genre_bench.py`) applicati al piano: quali il piano previene, quali no, quali la beta nasconde (ripetitività, fine contenuti, bilanciamento a lungo termine).
-5. **Cosa migliorare adesso**: da 3 a 5 azioni ordinate per impatto, divise tra "migliora la beta (serve ai test e alla wishlist)" e "prepara il gioco completo (serve all'uscita)".
-6. **Verdetto sul gioco completo**: sempre **provvisorio** (si basa su un piano, non su una build). Una riga, con ciò che lo renderebbe definitivo.
+5. **Spinta all'acquisto** (se la beta è gratuita, e lo è spesso): la beta invoglia a spendere all'uscita? Metti la percentuale `would_buy` dell'ultima ondata, il pilastro "Spinta all'acquisto" (Fase 3), il punto di conversione (fine beta, invito alla wishlist) e due o tre leve concrete per aumentarla: un finale che lascia voglia di continuare, il momento migliore mostrato per ultimo, una promessa chiara di ciò che arriva, wishlist al picco di entusiasmo, un vantaggio per chi ha giocato la beta. Dichiara cosa **non** regalare.
+6. **Cosa migliorare adesso**: da 3 a 5 azioni ordinate per impatto, divise tra "migliora la beta (serve ai test e alla wishlist)" e "prepara il gioco completo (serve all'uscita)".
+7. **Verdetto sul gioco completo**: sempre **provvisorio** (si basa su un piano, non su una build). Una riga, con ciò che lo renderebbe definitivo.
 
 Output: **`launch/01c-full-game.md`**, e in `status.json` il campo `full_game` (vedi sotto). Se l'utente ha già il gioco completo, la Fase 10B si salta.
 
@@ -214,6 +215,7 @@ In **Rapida** e **Mirata** il debriefing si accorcia alle sole righe delle fasi 
 
 - [ ] Genere riconosciuto con confidenza dichiarata; pilastri, coorti, hook, creator e prezzo derivano dal playbook.
 - [ ] La domanda "beta o gioco completo?" è stata fatta per prima e la risposta è in `00-brief.md`, `status.json` (`product`) e nel report; pilastri, focus group e verdetto usano il metro giusto.
+- [ ] Se la beta è gratuita: pilastro "Spinta all'acquisto" votato, `would_buy` chiesto ai tester e riportato, punto di conversione e leve indicati.
 - [ ] Se è una beta con piano del gioco completo: analisi completa come beta, poi domande sul gioco completo, poi `01c-full-game.md` (gap, capacità, durata/prezzo, rischio recensioni, cosa migliorare); il verdetto sulla beta non è mescolato con quello, provvisorio, sul gioco completo.
 - [ ] La fase del progetto ha determinato la profondità dell'audit.
 - [ ] Il posizionamento è stato valutato contro i comparabili, e un eventuale FAIL/MARGINAL ha cambiato verdetto, scenari e TODO n. 1.

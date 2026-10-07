@@ -9,7 +9,7 @@ Wave file (launch/fg/waves/w01-YYYY-MM-DD.json), written after the panel has jud
     "wave": 1, "date": "2026-10-06", "build": "v0.3 / commit abc123", "label": "baseline", "stage": "beta",   # stage: beta | full (what the panel is asked to judge)
     "evidence": "capsule v1, pitch v1, build 0.3",
     "controls": {"success": 41.2, "weak": 6.0},            # optional: scores the panel gave to control capsules
-    "testers": [{"id": "A-01", "verdict": "WISHLIST", "click": true, "pitch_ok": true,
+    "testers": [{"id": "A-01", "verdict": "WISHLIST", "click": true, "pitch_ok": true, "would_buy": true,   # would_buy (optional): would pay the planned launch price
                  "issues": ["slow-opening", "tutorial-text"]}, ...],   # first issue = main criticism
     "issues":  [{"key": "slow-opening", "label": "Apertura lenta", "severity": "alta",
                  "recommendation": "..."}, ...],
@@ -110,6 +110,7 @@ def metrics(w: dict, gate: float | None = None) -> dict:
     cnt = Counter(t["verdict"] for t in ts)
     clicks = [t["click"] for t in ts if isinstance(t.get("click"), bool)]
     pitch = [t["pitch_ok"] for t in ts if isinstance(t.get("pitch_ok"), bool)]
+    buy = [t["would_buy"] for t in ts if isinstance(t.get("would_buy"), bool)]
     A, B = [t for t in ts if t["id"][0] == "A"], [t for t in ts if t["id"][0] == "B"]
     sa, sb = score(A), score(B)
     issues = []
@@ -130,6 +131,7 @@ def metrics(w: dict, gate: float | None = None) -> dict:
                 gap=None if sa is None or sb is None else round(abs(sa - sb), 1),
                 click=dict(n=len(clicks), yes=sum(clicks), pct=pct(sum(clicks), len(clicks))),
                 pitch=dict(n=len(pitch), yes=sum(pitch), pct=pct(sum(pitch), len(pitch))),
+                buy=dict(n=len(buy), yes=sum(buy), pct=pct(sum(buy), len(buy))),
                 issues=issues, controls=w.get("controls"), gate=dict(threshold=thr, basis=how, passed=sc is not None and sc >= thr))
 
 
@@ -148,6 +150,8 @@ def md_metrics(m: dict) -> str:
          table(["Verdict", "Count", "%"], [[k, c[k], p[k]] for k in W_]), "",
          f"First-glance click: {m['click']['yes']}/{m['click']['n']} ({m['click']['pct']}%) | "
          f"Pitch understood: {m['pitch']['yes']}/{m['pitch']['n']} ({m['pitch']['pct']}%)"]
+    if m.get("buy", {}).get("n"):
+        s.append(f"Would pay the planned launch price: {m['buy']['yes']}/{m['buy']['n']} ({m['buy']['pct']}%) (free beta: the panel judges how much it makes them want to buy the full game)")
     if m.get("controls"):
         s.append(f"Controls (panel score of reference capsules): {m['controls']}")
     s += ["", "### Issues (frequency x severity)", table(

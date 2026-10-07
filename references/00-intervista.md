@@ -34,6 +34,7 @@ Domande, una alla volta, con il default tra parentesi:
 1. **Che cosa valuto: una beta / demo / vertical slice, oppure un gioco completo?** (e se è già uscito: post-lancio)
 2. *Se beta:* **hai già le TODO o il design del gioco completo** (GDD, roadmap, Atti, elenco di ciò che manca)? Se sì, **dove li trovo?**
 3. *Se beta:* che cosa contiene rispetto al gioco completo (es. Atto I di 3)? A che cosa serve la beta: feedback, demo per Next Fest, itch, vendita in accesso anticipato?
+3b. *Se beta:* **è gratis?** Se sì (o a donazione) la regola è: **una beta gratuita deve invogliare a spendere quando esce il gioco completo**. Chiedi: prezzo previsto all'uscita (o forchetta), se i giocatori della beta riceveranno qualcosa (sconto, extra, nome nei crediti), dove nella beta compare il momento di conversione (fine dell'Atto, schermata finale, invito alla wishlist) e cosa è stato lasciato fuori apposta per far venire voglia del resto. Se il prezzo non è deciso, usa la forchetta di `calc_econ.py` e dichiaralo.
 4. *Se completo:* la build è feature-complete? Cosa manca? C'è una data di uscita già fissata?
 
 **Se è una beta e il piano del gioco completo esiste:** procedi in tre tempi.

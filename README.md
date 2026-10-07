@@ -18,6 +18,8 @@ The skill itself is written in **Italian** (instructions and generated reports);
 
 The very first question, in every mode, is whether you are showing a **beta / demo / vertical slice** or a **full game**, because it changes how everything is judged. If it is a beta and you already have the TODO or plan of the full game, the skill first analyses it **as a beta** (planned content that is not there yet is a gap, not a defect), then asks questions about the full game, then runs a quick full-game analysis (gaps per pillar, scope against capacity, length and price, review risk, what to improve now). The two verdicts stay separate and the full-game one is always provisional.
 
+A free beta is judged on one more thing: **does it make you want to pay when the full game comes out?** The panel is asked whether they would pay the planned launch price (`would_buy`), and the report names the conversion point and the levers to raise it.
+
 ### Interview first
 
 Before any number, the skill **interviews you about your intentions in several rounds** (goals and what success means, capacity, money and risk, channels and style, what is non-negotiable, "what if it goes badly" scenarios, then a confirmation), gives advice with trade-offs after each round, flags tensions between your answers, and keeps a decision log. Thresholds, calendar, channels and contingency plans follow **your** decisions; when the data contradicts them it asks again instead of changing them silently.

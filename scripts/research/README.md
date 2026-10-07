@@ -24,6 +24,7 @@ Reusable tools for launch market research: Steam comparables and reviews, creato
 | `review_corpus.py` | Many real reviews of the comparables AND of the genre: punished/rewarded themes, what they say about your game's features | 2, 7 |
 | `store_bench.py` | Store page and trailer analysis of the comparables (description, GIFs, trailer length, cuts, frames) vs how they performed | 2, 6, 6B |
 | `genre_bench.py` | Genre benchmarks at runtime from public data: distributions, cohorts by year, price bands, demo, visibility bar, your numbers | 2, 5 |
+| `steamdb_assist.py` | SteamDB as a manual lookup: links to open and an append-only record of followers, wishlist rank, player peaks, lowest price (no scraping) | 2, 7C |
 | `watchlist.py` | Comparables and competitors over time: snapshots, growth, discounts, releases, collision with your window | 2, 7C |
 | `plan_steps.py` | Step-by-step calendar: who does what (👤 / 🤖), due dates, ticking, summary, format check | 4 |
 | `store_kit.py` | Copy-ready Steam and itch.io pages from `store_kit.json`: check, written sheet, files to paste | 6B |
@@ -154,6 +155,15 @@ python watchlist.py snap                      # whenever you like, weekly is ple
 python watchlist.py report --launch 2027-03-01 --window-days 30 --md launch/watchlist-report.md
 ```
 Append-only snapshots in `launch/watchlist.csv` (store details, review summary, current players from `ISteamUserStats/GetNumberOfCurrentPlayers/v1/`: public endpoints; a missing value means the endpoint answered with `result` other than 1). The report gives reviews and growth over 7 and 30 days, and alerts: a game going viral (gain well above its own median), a discount (with the date it was first seen), a release, a drop in % positive, a player spike, and **a competitor releasing within N days of your launch date** (ALARM). Wishlists and sales of other games are not public.
+
+## 4f2. `steamdb_assist.py`: SteamDB without scraping
+
+```bash
+python steamdb_assist.py links 1599600 728880 --md launch/_raw/steamdb_links.md
+python steamdb_assist.py add 1599600 --followers 12,400 --wishlist-rank 850 --peak-24h 310 --peak-all 4,100 --lowest-price 8.99
+python steamdb_assist.py show --md launch/steamdb-status.md
+```
+SteamDB has no public API and does not allow automated scraping, so the tool never contacts it (a test fails if it tries). `links` lists the pages to open and what to read; `add` records what you read, one row per game and date in `launch/steamdb.csv` (append-only); `show` gives the latest values and the change in followers. Useful for what public Steam endpoints do not give: followers, the wishlist **rank** (never the wishlist count of other games), player peaks with history, price history. URL patterns are [DA VERIFICARE].
 
 ## 4g. `plan_steps.py`: the step-by-step calendar
 
@@ -317,5 +327,6 @@ python build_creators.py --youtube out/yt_shortlist.json --social out/social.jso
 | `reddit_rules.py` anonymous | `403 Blocked` (expected: OAuth needed). |
 | `yt_research.py --backend api` | Not tested (no `YOUTUBE_API_KEY`). |
 | `steam_tags.py` | Tested offline (the reported Roguelite / Rogue-lite case, hyphen variants, typos, built-in fallback, unverifiable lists). **Not run against live SteamSpy.** |
+| `steamdb_assist.py` | Tested offline (links, parsing of `12,400` / `12.9K`, append-only, delta, no network access). Never contacts steamdb.info by design. |
 | `review_corpus.py`, `store_bench.py`, `genre_bench.py`, `watchlist.py`, `plan_steps.py`, `store_kit.py`, `metrics_track.py`, `calc_econ.py`, `wl_track.py`, `status_page.py` | Tested offline in `tests/` (canned API-shaped answers; real HLS and DASH trailers generated with `ffmpeg` and served locally (duration, cuts, frames, no MP4 present); a console test under cp1252 for the emoji output; arithmetic of the economic plan checked independently; the status page rendered in Chromium at desktop and 390 px width: no horizontal overflow, no script errors, hostile text stays inert). `plan_steps.py` was also checked on a real step list written by the project owner (30 steps, 6 phases). **Not yet run against the live Steam services.** |
 | `steam_reviews.py`, `steam_discover.py`, `roster.py`, `fg_waves.py` | Tested **offline** against canned responses shaped like the documented APIs (paging, duplicate and cursor handling, filters, day-range cap, early stop on recent sort, theme tally, CSV output, tag ranking, roster determinism, stable jury and append-only behaviour, wave validation, metrics, delta and timeline on synthetic waves). **Not yet run against the live Steam endpoints**: do a first run with one app id and check the output before relying on it. |
