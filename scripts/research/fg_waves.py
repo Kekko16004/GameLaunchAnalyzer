@@ -249,7 +249,7 @@ def cmd_timeline(a):
                      f"{'PASS' if m['gate']['passed'] else 'below'} ({m['gate']['threshold']})"])
         csv_rows.append(dict(wave=m["wave"], date=m["date"], build=m["build"], n=m["n"], score=m["score"], delta=d,
                              wishlist_pct=m["pct"]["WISHLIST"], saldi_pct=m["pct"]["SALDI"], ignoro_pct=m["pct"]["IGNORO"],
-                             refund_pct=m["pct"]["REFUND"], click_pct=m["click"]["pct"], pitch_pct=m["pitch"]["pct"],
+                             refund_pct=m["pct"]["REFUND"], click_pct=m["click"]["pct"], pitch_pct=m["pitch"]["pct"], buy_pct=m["buy"]["pct"],
                              score_a=m["score_a"], score_b=m["score_b"], high_severity_issues=open_high, top_issue=top,
                              gate=m["gate"]["threshold"], gate_passed=m["gate"]["passed"]))
         prev = m

@@ -41,8 +41,8 @@ In `launch/`:
 - `05-focusgroup.md`, `05a-critiche-simulate.md`, `05b-critiche-reali.md`, `05c-premortem.md`
 - `06-creators.md`, `07-community.md`, `08-brand-legal.md`
 - `fg/roster.md`, `fg/roster.json` (tester con ID stabili e giuria), `fg/waves/` (una serie di file per ondata: evidenze, gruppi A e B, dati JSON, dibattito, report, delta), `fg/timeline.md`, `fg/timeline.csv`
-- `comps.csv`, `sources.md`, `creators.csv`, `calendar.md` (con i passi 👤/🤖), `03-pricing-calc.md`, `00-intenzioni.md`, `05d-contingenze.md`, `store_kit.json`, `store_kit.md`, `store_kit/`, `wishlists.csv`, `wishlist-status.md`, `metrics.csv`, `metrics-status.md`, `watchlist.csv`, `watchlist-report.md`, `status.json`, `STATUS.html`
-- `_raw/`: dati grezzi degli script (`comps.json`, `corpus.json`/`corpus.md`, `store_pages.json`/`store_bench.md`, `hooks/`, `econ.json`, `wl_plan.json`, `contingencies.json`, `genre_bench.json`, `my_features.json`, `reviews_*.json`, `yt_*.json`, `social_verified.json`, `reddit_rules.md`, `curation.json`, `topics.json`)
+- `comps.csv`, `sources.md`, `creators.csv`, `window.csv`, `window.md`, `calendar.md` (con i passi 👤/🤖), `03-pricing-calc.md`, `00-intenzioni.md`, `05d-contingenze.md`, `store_kit.json`, `store_kit.md`, `store_kit/`, `wishlists.csv`, `wishlist-status.md`, `metrics.csv`, `metrics-status.md`, `watchlist.csv`, `watchlist-report.md`, `status.json`, `STATUS.html`, `REPORT.html`, `charts/` (grafici `.svg`)
+- `_raw/`: dati grezzi degli script (`comps.json`, `corpus.json`/`corpus.md`, `store_pages.json`/`store_bench.md`, `hooks/`, `econ.json`, `wl_plan.json`, `window.json`, `contingencies.json`, `genre_bench.json`, `my_features.json`, `reviews_*.json`, `yt_*.json`, `social_verified.json`, `reddit_rules.md`, `curation.json`, `topics.json`)
 - `playbook-usato.md` (solo se ad hoc), `ricerche-manuali.md` (solo se serve), `history/` (in Aggiornamento)
 - `REPORT.md`, `TODO.md`, `STATUS.md`
 
@@ -100,7 +100,17 @@ Genera la pagina:
 ```bash
 python3 <skill>/scripts/research/status_page.py --launch-dir launch --audience partner     # private | partner | publisher
 ```
-È un unico file HTML autonomo (nessuna richiesta di rete, tema chiaro e scuro, utilizzabile da telefono, grafici con vista tabella). **Non pubblicarla né inviarla**: dì all'utente dov'è il file e offri la pubblicazione in una riga (es. come artifact privato, se l'ambiente lo permette), e chiedi per chi è: `publisher` esclude economia interna, TODO e pre-mortem, `partner` li include, `private` aggiunge creator, community e fiscale. Controlla che nessun dato personale o riservato finisca nei documenti inclusi.
+È un unico file HTML autonomo (nessuna richiesta di rete, tema chiaro e scuro, utilizzabile da telefono, grafici con vista tabella e un "Quadro d'insieme" con i grafici di pilastri, ondate, mercato, economia, finestra di lancio e creator, filtrato per pubblico). **Non pubblicarla né inviarla**: dì all'utente dov'è il file e offri la pubblicazione in una riga (es. come artifact privato, se l'ambiente lo permette), e chiedi per chi è: `publisher` esclude economia interna, TODO e pre-mortem, `partner` li include, `private` aggiunge creator, community e fiscale. Controlla che nessun dato personale o riservato finisca nei documenti inclusi.
+
+## Grafici nel report (`REPORT.html` e `charts/`)
+
+Il report si guarda, non solo si legge. Dopo aver scritto `REPORT.md` e aggiornato `status.json`:
+
+```bash
+python3 <skill>/scripts/research/report_html.py --launch-dir launch            # launch/REPORT.html: testo + grafici accanto a ogni sezione
+python3 <skill>/scripts/research/charts_export.py --launch-dir launch          # launch/charts/*.svg + index.md, per incorporarli nei Markdown
+```
+I grafici nascono dai file già prodotti (`01-dev.md`, `fg/timeline.csv`, `_raw/genre_bench.json`, `corpus.json`, `econ.json`, `window.json`, `calendar.md`, `creators.csv`, `comps.csv`, `store_pages.json`, `status.json`); quello che manca non viene disegnato. Per avere più grafici, produci quei file con gli script. Nel `REPORT.md` incorpora gli `.svg` più utili dove servono (`![Pilastri](charts/product-1.svg)`) e scrivi sotto una riga di lettura. Regole: una sola scala per grafico, legenda sempre con due o più serie, il numero resta in tabella, nessun grafico con due punti dati. Dì all'utente dove sono `REPORT.html` e `charts/`; sono file locali.
 
 ## Routine settimanale (dopo l'apertura della pagina Steam, e durante la beta su itch.io)
 
@@ -233,6 +243,8 @@ In **Rapida** e **Mirata** il debriefing si accorcia alle sole righe delle fasi 
 - [ ] `store_kit.json` passa `store_kit.py check` per Steam e itch.io; ogni slot media dice cosa mostra; i limiti hanno la data di verifica.
 - [ ] `contingencies.json` passa `metrics_track.py check`; ogni soglia ha un'origine; le soglie rispecchiano le risposte del Round 6.
 - [ ] `creators.csv` riepilogato nel report e incluso (collassabile) in `STATUS.html`.
+- [ ] `REPORT.html` e `charts/` generati; ogni sezione con numeri ha il suo grafico; i grafici si leggono (una riga che dice cosa guardare) e la vista tabella c'è.
+- [ ] Finestra di lancio valutata con `launch_window.py` (`window.csv` con fonte e data di lettura); se la settimana è affollata la scelta della data è stata riaperta con l'utente.
 - [ ] `STATUS.html` generata per il pubblico scelto dall'utente e **non pubblicata** senza il suo ok.
 - [ ] Ogni numero ha **[FATTO]**, **[STIMA]**, **[OPINIONE]** o **[DA VERIFICARE]**; nessun URL, email o creator inventato; ogni dato "da verificare sempre" ha data di consultazione.
 - [ ] Cancelli con date assolute e soglie adattate al genere; TODO con azione, scadenza, ore, dipendenze, metrica; ore totali entro la capacità del team.

@@ -1,6 +1,6 @@
 ---
 name: game-launch-strategist
-description: Strategia di lancio per videogiochi indie (Unity, Unreal, Godot, custom). Legge il progetto, chiede sempre se è una beta o un gioco completo, intervista il proprietario sulle sue intenzioni (più round, con consigli) e poi raccoglie dati reali (Steam, YouTube, Reddit) con gli script inclusi per produrre posizionamento, audit, cancelli Go/No-Go, calendario a passi (👤 tu / 🤖 Claude), piano economico, kit copiabile delle pagine Steam e itch.io, focus group simulato a ondate con timeline, critiche reali da molte recensioni, benchmark di pagina e trailer, pre-mortem, piani se…allora con metriche, outreach, legale e fiscale, tracker di wishlist e metriche con allarmi, pagina di stato HTML (pubblicata solo se vuoi) e debriefing. Modalità Completa, Rapida, Mirata, Ondata, Aggiornamento. Usala per launch strategy, game marketing, validazione del concept, comparabili, demo e Next Fest, pricing, creator outreach, pagina Steam o itch, audit pre-lancio.
+description: Strategia di lancio per videogiochi indie (Unity, Unreal, Godot, custom). Legge il progetto, chiede sempre se è una beta o un gioco completo, intervista il proprietario sulle sue intenzioni (più round, con consigli) e poi raccoglie dati reali (Steam, YouTube, Reddit) con gli script inclusi per produrre posizionamento, audit, cancelli Go/No-Go, calendario a passi (👤 tu / 🤖 Claude), piano economico, kit copiabile delle pagine Steam e itch.io, focus group simulato a ondate con timeline, critiche reali da molte recensioni, benchmark di pagina e trailer, pre-mortem, piani se…allora con metriche, outreach, legale e fiscale, tracker di wishlist e metriche con allarmi, report e pagina di stato HTML con grafici (pubblicati solo se vuoi) e debriefing. Modalità Completa, Rapida, Mirata, Ondata, Aggiornamento. Usala per launch strategy, game marketing, validazione del concept, comparabili, demo e Next Fest, pricing, creator outreach, pagina Steam o itch, audit pre-lancio.
 ---
 
 # RUOLO
@@ -67,7 +67,10 @@ Non riscrivere scraper a ogni sessione: usa questi, eseguili con il percorso ass
 | `steamdb_assist.py` | SteamDB **a mano** (nessuna API, scraping vietato): link da aprire per comparabili e concorrenti e registro append-only di follower, posizione tra i più desiderati, picchi di giocatori, prezzo minimo | 2, 7C | non scarica nulla; i numeri li legge l'utente |
 | `wl_track.py` | wishlist inserite a mano ogni settimana, confronto con scenari e tripwire, allarmi | 4, 7B, routine | exit code 2 se c'è un ALLARME |
 | `metrics_track.py` | metriche (itch, Steam, demo, social) e scenari "se… allora" con soglie, diagnosi e azioni | 7C, routine | exit code 2 se uno scenario ALARM è scattato |
-| `status_page.py` | pagina `launch/STATUS.html` per soci o publisher | 11 | **solo file locale: pubblicarla lo decide l'utente** |
+| `launch_window.py` | calendario dei concorrenti per la tua finestra: punteggio di affollamento per settimana (rivali dalla watchlist, grandi uscite, festival, saldi a mano), le settimane più tranquille e dove cade la tua data | 4, 7C | non scarica nulla: una settimana libera in lista non è libera nel mondo |
+| `status_page.py` | pagina `launch/STATUS.html` per soci o publisher, con "Quadro d'insieme" di grafici | 11 | **solo file locale: pubblicarla lo decide l'utente** |
+| `report_html.py` | `launch/REPORT.html`: il `REPORT.md` con i grafici accanto a ogni sezione (pilastri, ondate, mercato, economia, finestra di lancio…) | 11 | file locale, contiene strategia |
+| `charts_export.py` | ogni grafico come `.svg` in `launch/charts/` da incorporare nei Markdown (`![](charts/x.svg)`) | 11 | stessi dati di REPORT.html |
 | `yt_research.py` | cercare video, raggruppare per canale, iscritti, verifica | 8 | backend `api` se c'è `YOUTUBE_API_KEY`, altrimenti `html` lento |
 | `social_verify.py` | verificare URL TikTok, YouTube/Shorts, Instagram, Twitch | 8 | follower TikTok/IG: sempre "da verificare a mano" |
 | `reddit_rules.py` | regole dei subreddit e segnalazione delle regole di autopromozione | 9 | serve OAuth; senza, quasi sempre 403 |
@@ -98,6 +101,7 @@ Non riscrivere scraper a ogni sessione: usa questi, eseguili con il percorso ass
 15. **Intenzioni prima dei numeri.** Prima di analizzare intervista il proprietario a più round (`references/00-intervista.md`), dai consigli con trade-off, segnala le tensioni, e registra tutto in `00-intenzioni.md`. Soglie, calendario, canali e contingenze seguono le **sue** decisioni; quando i dati le contraddicono riapri la domanda, non cambiarle in silenzio.
 16. **Numeri che l'utente porta.** Wishlist, visite e scarichi itch, giocatori della demo si inseriscono a mano (non sono pubblici). Non inventarli e non stimarli al posto suo: se mancano, il passo "registra le metriche" resta aperto.
 17. **Beta o gioco completo: si chiede SEMPRE, per prima cosa, in ogni modalità.** Cambia il metro di tutte le valutazioni (pilastri, focus group, prezzo, verdetto). Se è una beta, demo o vertical slice **e** esistono già le TODO o il piano del gioco completo: prima l'analisi completa considerando che è una beta (il contenuto non ancora fatto è un gap, non un difetto), poi le domande sul gioco completo (Round R-D), poi un'analisi rapida del gioco completo (Fase 10B) per capire cosa migliorare. **Una beta gratuita deve invogliare a spendere quando esce il gioco**: valutala anche da questo (pilastro "Spinta all'acquisto", `would_buy` dei tester, punto di conversione), non solo da quanto è bella. Il verdetto sulla beta e quello sul gioco completo restano separati, il secondo sempre provvisorio. Dettagli in `references/00-intervista.md` e `01-discovery.md`.
+18. **Grafici dove possibile.** I report sono pensati per essere guardati, non solo letti: ovunque ci siano numeri (pilastri, ondate, critiche, mercato, prezzo ed economia, finestra di lancio, avanzamento, creator) il report ha un grafico semplice e leggibile, con una riga che dice cosa guardare. `report_html.py` li affianca al testo, `status_page.py` li raccoglie in "Quadro d'insieme", `charts_export.py` li esporta per il Markdown. Un grafico non sostituisce il numero: la vista tabella resta. Niente grafici dove i dati sono due punti o inventati.
 
 ---
 
@@ -145,6 +149,8 @@ Richieste tipiche in modalità **Mirata**:
 | "pagina Steam / pagina itch copiabile" | 0-1, 2B, 6B (`store_kit.json`) |
 | "piano economico / break-even" | 0-1, 2 (prezzi dei comparabili), 5 (`calc_econ.py`) |
 | "wishlist / tracker / allarmi" | `wl_track.py` (add, status); piano se manca |
+| "finestra di lancio / concorrenti / quando uscire" | 0-1, 2 (watchlist), 4 (`launch_window.py`) |
+| "report con grafici" | `report_html.py`, `charts_export.py` dopo aver aggiornato i file dati |
 | "pagina di stato / per soci o publisher" | `status_page.py` dopo aver aggiornato `status.json` |
 | "benchmark pagina store e trailer" | 0-1, 2, `store_bench.py`, `genre_bench.py` |
 | "recensioni del genere" | 0-1, 2, `review_corpus.py` |

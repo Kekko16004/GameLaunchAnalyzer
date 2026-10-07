@@ -23,7 +23,7 @@ Sharing: the page contains strategy. --audience picks what goes in (default part
   publisher  verdict, numbers, charts, gates, calendar dates, store pages, positioning, platform, focus group;
              no steps, economics, TODO, contingencies, competitors, creators, decision profile or full-game analysis
 Add/remove documents with --include / --exclude (file stems such as 03-pricing) and sections with
---hide economics,todo,calendar,steps,storekit,contingencies,watchlist,intentions,creators,fullgame.
+--hide economics,todo,calendar,steps,storekit,contingencies,watchlist,intentions,creators,fullgame,charts.
 Publishing the page anywhere is YOUR decision: this tool only writes the local file.
 
   python status_page.py [--launch-dir launch] [--audience partner] [-o launch/STATUS.html]
@@ -40,7 +40,9 @@ import os
 import re
 from common import load_json, log
 import metrics_track as mt
+import charts as ch
 import plan_steps as ps
+import report_charts as rc
 import store_kit as sk
 import watchlist as wlist
 import wl_track as wl
@@ -58,9 +60,9 @@ HIDE_BY_AUDIENCE = {"private": set(), "partner": set(), "publisher": {"economics
 
 CSS = """
 :root{color-scheme:light;--bg:#f9f9f7;--surface:#fcfcfb;--ink:#0b0b0b;--ink2:#52514e;--muted:#898781;--grid:#e1e0d9;--axis:#c3c2b7;--ring:rgba(11,11,11,.10);
---s1:#2a78d6;--good:#0ca30c;--warn:#fab219;--crit:#d03b3b;--goodtext:#006300}
-@media (prefers-color-scheme:dark){:root:where(:not([data-theme="light"])){color-scheme:dark;--bg:#0d0d0d;--surface:#1a1a19;--ink:#fff;--ink2:#c3c2b7;--grid:#2c2c2a;--axis:#383835;--ring:rgba(255,255,255,.10);--s1:#3987e5;--goodtext:#0ca30c}}
-:root[data-theme="dark"]{color-scheme:dark;--bg:#0d0d0d;--surface:#1a1a19;--ink:#fff;--ink2:#c3c2b7;--grid:#2c2c2a;--axis:#383835;--ring:rgba(255,255,255,.10);--s1:#3987e5;--goodtext:#0ca30c}
+--s1:#2a78d6;--s2:#eb6834;--s3:#1baf7a;--s4:#eda100;--good:#0ca30c;--warn:#fab219;--crit:#d03b3b;--goodtext:#006300}
+@media (prefers-color-scheme:dark){:root:where(:not([data-theme="light"])){color-scheme:dark;--bg:#0d0d0d;--surface:#1a1a19;--ink:#fff;--ink2:#c3c2b7;--grid:#2c2c2a;--axis:#383835;--ring:rgba(255,255,255,.10);--s1:#3987e5;--s2:#d95926;--s3:#199e70;--s4:#c98500;--goodtext:#0ca30c}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#0d0d0d;--surface:#1a1a19;--ink:#fff;--ink2:#c3c2b7;--grid:#2c2c2a;--axis:#383835;--ring:rgba(255,255,255,.10);--s1:#3987e5;--s2:#d95926;--s3:#199e70;--s4:#c98500;--goodtext:#0ca30c}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
 main{max-width:1040px;margin:0 auto;padding:24px 16px 64px;overflow-wrap:anywhere}.card{min-width:0}h1{font-size:1.6rem;margin:0 0 4px}h2{font-size:1.15rem;margin:36px 0 12px}h3{font-size:1rem;margin:20px 0 8px}
 .sub{color:var(--ink2);margin:0 0 4px}.note{color:var(--muted);font-size:.85rem}.top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
@@ -81,8 +83,8 @@ ol.steps{list-style:none;margin:8px 0 0;padding:0}.step{display:grid;grid-templa
 summary .count{color:var(--ink2);font-weight:400;margin-left:8px}.field{padding:10px 0;border-top:1px solid var(--grid)}.field:first-of-type{border-top:0}.fh{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap}
 pre.val{background:var(--grid);padding:10px;border-radius:8px;white-space:pre-wrap;overflow-wrap:anywhere;margin:6px 0;font:inherit;font-size:.9rem}.slot{border:2px dashed var(--axis);border-radius:8px;padding:12px;margin:6px 0;color:var(--ink2);font-size:.9rem}
 .chips{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0}.chip{border:1px solid var(--ring);border-radius:999px;padding:3px 10px;font-size:.85rem;background:var(--surface)}.chip.top5{border-color:var(--s1);font-weight:600}.chip b{color:var(--muted);margin-right:4px;font-weight:400}
-.over{color:var(--crit);font-weight:600}.legend{display:flex;gap:16px;flex-wrap:wrap;color:var(--ink2);font-size:.85rem;margin:6px 0}.legend i{display:inline-block;width:18px;height:0;border-top:2px solid;vertical-align:middle;margin-right:6px}
-"""
+.gh{font-size:1.05rem;margin:26px 0 2px}.over{color:var(--crit);font-weight:600}.legend{display:flex;gap:16px;flex-wrap:wrap;color:var(--ink2);font-size:.85rem;margin:6px 0}.legend i{display:inline-block;width:18px;height:0;border-top:2px solid;vertical-align:middle;margin-right:6px}
+""" + ch.CHART_CSS
 JS = """
 (function(){document.querySelectorAll('.copy').forEach(function(b){b.addEventListener('click',function(){var t=b.getAttribute('data-copy')||'';function ok(){var o=b.textContent;b.textContent='Copiato';b.classList.add('ok');setTimeout(function(){b.textContent=o;b.classList.remove('ok');},1500);}
 if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(ok,function(){fb(t,ok);});}else{fb(t,ok);}});});
@@ -555,6 +557,12 @@ def build(root: str, audience: str, include: list[str], exclude: list[str], hide
         if fg_svg:
             sec.append(f'<div class="card"><h3>Focus group simulato, per ondata</h3>{fg_svg}<p class="note">Panel simulato con gli stessi tester: ordina i problemi, non prevede le vendite.</p></div>')
         sec.append("</div>")
+    if "charts" not in hide:
+        gs = rc.groups(root, today)
+        if audience == "publisher":
+            gs = [g for g in gs if g["key"] in ("fg", "market", "reviews", "window")]
+        if gs:
+            sec.append("<h2>Quadro d'insieme</h2>" + rc.render(gs))
     if gates:
         names = {"0": "Gate 0 · Posizionamento", "A": "Gate A · Qualità percepita", "B": "Gate B · Test reale", "C": "Gate C · Capsule"}
         sec.append('<h2>Cancelli Go / No-Go</h2><div class="grid g4">' + "".join(

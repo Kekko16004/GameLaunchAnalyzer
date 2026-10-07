@@ -31,6 +31,10 @@ Reusable tools for launch market research: Steam comparables and reviews, creato
 | `metrics_track.py` | Metrics you record and "if... then" contingency scenarios with thresholds, diagnosis and actions | 7C |
 | `calc_econ.py` | Light economic plan: gross to net, break-even, three scenarios, sensitivity | 5 |
 | `wl_track.py` | Weekly wishlist records vs scenarios and pre-mortem tripwires, with alarms | 4, 7B |
+| `launch_window.py` | Competitor calendar for your launch window: weekly crowding score, quietest weeks, where your date stands | 4, 7C |
+| `charts.py`, `report_charts.py` | Inline SVG charts (bars, columns, stacked, bullets) and the chart groups built from the files in `launch/` | 11 |
+| `report_html.py` | `REPORT.md` as one illustrated HTML page: charts next to each section | 11 |
+| `charts_export.py` | Every report chart as a standalone `.svg` (for Markdown reports) | 11 |
 | `status_page.py` | One self-contained HTML status page for partners or a publisher | 11 |
 | `common.py` | Throttled HTTP with retries, JSON/CSV writers (used by all) | – |
 
@@ -165,6 +169,14 @@ python steamdb_assist.py show --md launch/steamdb-status.md
 ```
 SteamDB has no public API and does not allow automated scraping, so the tool never contacts it (a test fails if it tries). `links` lists the pages to open and what to read; `add` records what you read, one row per game and date in `launch/steamdb.csv` (append-only); `show` gives the latest values and the change in followers. Useful for what public Steam endpoints do not give: followers, the wishlist **rank** (never the wishlist count of other games), player peaks with history, price history. URL patterns are [DA VERIFICARE].
 
+## 4f3. `launch_window.py`: competitors around your launch date
+
+```bash
+python launch_window.py add --date 2027-03-09 --name "Big Co" --kind big_release --weight 5 --source "steamdb upcoming, read 2026-10-07"
+python launch_window.py plan --launch 2027-03-01 --from 2027-01-15 --to 2027-05-31 --md launch/window.md -o launch/_raw/window.json
+```
+Reads `launch/watchlist.csv` (competitors followed with `watchlist.py`, release date from the store) and `launch/window.csv` (what you add: `competitor`, `big_release`, `festival`, `sale`, `holiday`, with weight 1-5, source and note). Each week gets a crowding score: the weights of the items near it, discounted by distance (that week 1.0, one week away 0.5, two weeks 0.25). The report ranks the candidate weeks, lists the 5 quietest, and says whether your week is free, average or crowded and what weighs on it. Items without a usable date (for example "Q1 2027") are listed as not counted. **It only knows what is in the list**: public Steam data does not list every upcoming game, so a free week here is not a free week in the world, and the score is a heuristic for comparing weeks [OPINIONE], not a forecast.
+
 ## 4g. `plan_steps.py`: the step-by-step calendar
 
 Reads the `## ✅ Passi in ordine` section of `launch/calendar.md`: `### FASE n — title` headings and numbered steps `N. [ ] 👤 text · 📅 AAAA-MM-GG` (owner 👤 you, 🤖 Claude, 👤+🤖 together; indented lines are notes).
@@ -216,6 +228,14 @@ python wl_track.py plan --launch 2027-03-01 --start 2026-10-01 --econ launch/_ra
 python wl_track.py status --md launch/wishlist-status.md --json launch/_raw/wl_status.json
 ```
 `status` reports current total, 1-week and 4-week velocity, position against the linear path of each scenario, wishlists per week still needed, tripwires (OK / ALARM / PENDING / NO DATA), and alerts (slowdown, drops over two records, stale data, unexplained spikes). **Exit code 2 when a tripwire has fired.** Targets are interpolated linearly: a simplification, real curves are spiky.
+
+## 4k2. Charts: `report_html.py`, `charts_export.py`, `charts.py`, `report_charts.py`
+
+```bash
+python report_html.py --launch-dir launch            # launch/REPORT.html
+python charts_export.py --launch-dir launch          # launch/charts/*.svg and index.md
+```
+`report_charts.py` builds the charts from files already in `launch/` (pillars from `01-dev.md`; tester verdicts, latest-wave indicators incl. `would_buy`, criticisms from `fg/`; genre by year, price band, demo, your percentiles, comparables and trailer length from `_raw/genre_bench.json`, `comps.csv`, `_raw/store_pages.json`; complaint and praise themes and your features from `_raw/corpus.json`; price-to-net, scenarios against break-even, sensitivity from `_raw/econ.json`; crowding per week from `_raw/window.json`; steps by phase from `calendar.md`; creators from `creators.csv`; gaps from `status.json`). A group whose source is missing is not drawn. `report_html.py` places each group next to the report section it belongs to (groups that match nothing go to a block at the top), `status_page.py` shows them in "Quadro d'insieme" (the publisher audience gets only focus group, market, reviews and launch window), `charts_export.py` writes standalone light-theme SVGs. Every chart follows the light/dark theme, has a hover tooltip, a legend when there are two or more series, a one-line "what to read" and a table view. No network, no scripts from outside. Checked in Chromium at desktop and 390 px, light and dark, no horizontal overflow and no console errors.
 
 ## 4l. `status_page.py`: status page for partners or a publisher
 
@@ -327,6 +347,7 @@ python build_creators.py --youtube out/yt_shortlist.json --social out/social.jso
 | `reddit_rules.py` anonymous | `403 Blocked` (expected: OAuth needed). |
 | `yt_research.py --backend api` | Not tested (no `YOUTUBE_API_KEY`). |
 | `steam_tags.py` | Tested offline (the reported Roguelite / Rogue-lite case, hyphen variants, typos, built-in fallback, unverifiable lists). **Not run against live SteamSpy.** |
+| `launch_window.py`, `charts.py`, `report_charts.py`, `report_html.py`, `charts_export.py` | Tested offline (week scores checked by hand: same week 1.0, one week 0.5, two weeks 0.25; ranking, verdicts, bad rows, cp1252 console; every chart group from a synthetic `launch/` with hostile text, REPORT.html sections, standalone SVGs parsed as XML). Rendered and inspected in Chromium (desktop, phone, dark). |
 | `steamdb_assist.py` | Tested offline (links, parsing of `12,400` / `12.9K`, append-only, delta, no network access). Never contacts steamdb.info by design. |
 | `review_corpus.py`, `store_bench.py`, `genre_bench.py`, `watchlist.py`, `plan_steps.py`, `store_kit.py`, `metrics_track.py`, `calc_econ.py`, `wl_track.py`, `status_page.py` | Tested offline in `tests/` (canned API-shaped answers; real HLS and DASH trailers generated with `ffmpeg` and served locally (duration, cuts, frames, no MP4 present); a console test under cp1252 for the emoji output; arithmetic of the economic plan checked independently; the status page rendered in Chromium at desktop and 390 px width: no horizontal overflow, no script errors, hostile text stays inert). `plan_steps.py` was also checked on a real step list written by the project owner (30 steps, 6 phases). **Not yet run against the live Steam services.** |
 | `steam_reviews.py`, `steam_discover.py`, `roster.py`, `fg_waves.py` | Tested **offline** against canned responses shaped like the documented APIs (paging, duplicate and cursor handling, filters, day-range cap, early stop on recent sort, theme tally, CSV output, tag ranking, roster determinism, stable jury and append-only behaviour, wave validation, metrics, delta and timeline on synthetic waves). **Not yet run against the live Steam endpoints**: do a first run with one app id and check the output before relying on it. |
