@@ -94,7 +94,7 @@ Alla ripresa ("continua") leggi `STATUS.md` e riparti dalla prima fase non compl
                 "gaps": [{"area": "Contenuto", "today": "1 biome", "target": "4 biomi", "action": "3 biomi nuovi", "hours": 120}]}
 }
 ```
-`product` va scritto sempre (la pagina lo mostra in testa: "valutato come: Beta"); `full_game` solo se la Fase 10B è stata eseguita. La pagina mostra anche una sezione collassabile con **tutti i creator** di `creators.csv` (ordinati A, B, C; per il pubblico `publisher` è nascosta).
+`product` va scritto sempre (la pagina lo mostra in testa: "valutato come: Beta"); `full_game` solo se la Fase 10B è stata eseguita. La pagina ha un indice fisso delle sezioni, il verdetto con i cancelli a colpo d'occhio, il riquadro "Adesso" (tocca a te / tocca a Claude), la tabella della finestra di lancio, i numeri di SteamDB registrati, i report di ogni ondata del focus group e i documenti principali (critiche simulate e reali, clip, calcolo economico). Mostra anche una sezione collassabile con **tutti i creator** di `creators.csv` (ordinati A, B, C; per il pubblico `publisher` è nascosta).
 Genera la pagina:
 
 ```bash

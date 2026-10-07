@@ -16,7 +16,7 @@ def build_launch(d, full=True):
     if not full:
         return
     W("01-dev.md", "| Pilastro | Voto | Evidenza | Ore per PASS |\n|---|---|---|---|\n| Loop | [PASS] | scena | 0 |\n| Feedback del successo | [FAIL] | audio muto | 18 |\n| Onboarding | [MARGINAL] | tutorial lungo | 6 |\n| Leggibilità <b>x</b> | [MARGINAL] | UI | 10 |\n")
-    W("status.json", json.dumps(dict(game="Buffet Panic", verdict=dict(color="giallo", summary="ok", risks=["a"]), product=dict(kind="beta", label="Beta"), key_numbers=[dict(label="Comparabili", value="18")],
+    W("status.json", json.dumps(dict(game="Buffet Panic", verdict=dict(color="giallo", summary="ok", risks=["a"]), gates={"0": dict(state="pass", note="ok"), "A": dict(state="pending", note="")}, product=dict(kind="beta", label="Beta"), key_numbers=[dict(label="Comparabili", value="18")],
                                      full_game=dict(summary="s", gaps=[dict(area="Contenuto", today="1 bioma", target="4", action="3 biomi", hours=120), dict(area="Audio", today="-", target="-", action="x", hours=30)]))))
     with open(os.path.join(d, "fg", "timeline.csv"), "w", encoding="utf-8", newline="") as f:
         w = csv.writer(f); w.writerow("wave date score wishlist_pct saldi_pct ignoro_pct refund_pct click_pct pitch_pct buy_pct gate".split())
@@ -71,6 +71,29 @@ assert "Quadro d'insieme" in sp_page and "Dal prezzo a quanto resta" in sp_page 
 pub = sp.build(d, "publisher", [], [], set(), today)
 assert "Cosa farebbero i tester" in pub and "Dal prezzo a quanto resta" not in pub and "creator per piattaforma" not in pub and "Pilastri del genere" not in pub and "Dalla beta" not in pub
 assert "Quadro d'insieme" not in sp.build(d, "partner", [], [], {"charts"}, today)
+
+# STATUS.html "everything": SteamDB table, launch window table, per-wave reports, extra documents, sticky index, "Adesso" box
+dd = tempfile.mkdtemp(); build_launch(dd)
+W2 = lambda n, t: (os.makedirs(os.path.dirname(os.path.join(dd, n)), exist_ok=True), open(os.path.join(dd, n), "w", encoding="utf-8").write(t))
+W2("steamdb.csv", "date,appid,followers,wishlist_rank,peak_24h,peak_all_time,lowest_price,note\n2026-10-01,111,12400,850,310,,8.99,\n2026-10-08,111,12900,820,,4100,8.99,\n")
+W2("watchlist.csv", "date,appid,name,role,reviews_total,reviews_positive,pct_positive,price_cents,discount_pct,players,coming_soon,release_date\n2026-10-08,111,Rival <b>One</b>,competitor,100,90,90,1499,0,10,0,2027-03-02\n")
+W2("window.csv", "date,name,kind,weight,source,note\n2027-03-09,Big Co,big_release,5,steamdb,\nsoon,Vague,festival,3,,\n")
+subprocess.run([sys.executable, os.path.join(R, "launch_window.py"), "plan", "--launch", "2027-03-01", "--from", "2027-01-18", "--to", "2027-05-03", "--watchlist", os.path.join(dd, "watchlist.csv"), "--csv", os.path.join(dd, "window.csv"), "--today", "2026-10-25", "-o", os.path.join(dd, "_raw", "window.json")], check=True, capture_output=True)
+W2("fg/waves/w01-metrics.md", "## Wave 1\nPunteggio 22.5\n"); W2("fg/waves/w02-metrics.md", "## Wave 2\nPunteggio 41\n"); W2("fg/waves/w02-delta.md", "## Delta\nRisolto: slow-opening\n")
+W2("05a-critiche-simulate.md", "# Critiche simulate\nuna\n"); W2("05b-critiche-reali.md", "# Critiche reali\nfonte\n"); W2("04-clips.md", "# Clip\nhook\n"); W2("03-pricing-calc.md", "# Calcolo\nnetto\n"); W2("window.md", "# Finestra\ntesto\n")
+W2("06-creators.md", "# Creator\nsegreto\n")
+priv = sp.build(dd, "private", [], [], set(), today)
+for need in ("SteamDB: numeri letti a mano", "12.900", "+500", "Rival &lt;b&gt;One&lt;/b&gt;", "Finestra di lancio", "Le 5 settimane più tranquille", "Voci non conteggiate", "Vague (date",
+             "Ondata 1: metriche", "Ondata 2: cosa è cambiato", "Critiche simulate", "Critiche reali (con fonti)", "Hook e clip", "Calcolo economico", "Adesso", 'class="toc"', 'href="#sec1"', "Gate 0 · Posizionamento"):
+    assert need in priv, need
+assert "<b>One</b>" not in priv and priv.count("<h2 id=") == priv.count("<h2 ") and "Tocca a Claude" in priv
+part = sp.build(dd, "partner", [], [], set(), today)
+for need in ("SteamDB: numeri letti a mano", "Ondata 2: metriche", "Critiche simulate", "Critiche reali (con fonti)", "Finestra di lancio"):
+    assert need in part, need
+assert "<summary><strong>Creator</strong>" not in part
+pubp = sp.build(dd, "publisher", [], [], set(), today)
+assert "SteamDB: numeri" not in pubp and "Ondata 1: metriche" not in pubp and "Critiche simulate" not in pubp and "Finestra di lancio" in pubp and "Adesso" not in pubp
+assert "SteamDB: numeri" not in sp.build(dd, "private", [], [], {"steamdb"}, today) and "Ondata 1: metriche" not in sp.build(dd, "private", [], [], {"fgwaves"}, today)
 
 # empty launch dir / partial data: no crash, no empty groups
 d3 = tempfile.mkdtemp(); build_launch(d3, full=False)

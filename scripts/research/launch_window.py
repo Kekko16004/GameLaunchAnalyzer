@@ -171,6 +171,7 @@ def cmd_plan(a):
     i1, b1 = read_watchlist(a.watchlist)
     i2, b2 = read_window(a.csv)
     res = analyse(i1 + i2, launch, start, end)
+    res["not_counted"] = b1 + b2
     text = md(res, b1 + b2, today)
     if a.md:
         os.makedirs(os.path.dirname(os.path.abspath(a.md)), exist_ok=True)

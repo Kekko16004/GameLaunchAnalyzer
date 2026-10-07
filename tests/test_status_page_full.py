@@ -40,7 +40,7 @@ today = dt.date(2026, 11, 25)
 page = sp.build(L, "partner", [], [], set(), today)
 body = page.replace("<script>" + sp.JS + "</script>", "")
 assert "<img src=x" not in body and "onerror=alert" not in body.replace("&lt;img src=x onerror=alert(1)&gt;", ""), "hostile markup leaked"
-assert page.count('class="step"') == 4 and 'data-owner="both"' in page and "In ritardo" in page and "Tocca a te adesso" in page and "1 di 4" in page
+assert page.count('class="step"') == 4 and 'data-owner="both"' in page and "In ritardo" in page and "Tocca a te</h3>" in page and "<h2 id=\"sec" in page and "1 di 4" in page
 assert page.count("button type=\"button\" class=\"copy\"") >= 5 and "Oltre il limite" in page and "📷" in page and "il crollo" in page
 copy = re.findall(r'data-copy="([^"]*)"', page); assert any("&lt;&lt;&lt; GIF 1" in c or "<<< GIF 1" in html_unescaped for c in copy for html_unescaped in [__import__("html").unescape(c)])
 assert any('"' in __import__("html").unescape(c) and "</textarea>" in __import__("html").unescape(c) for c in copy), "quotes and tags must survive the copy attribute"
@@ -57,11 +57,11 @@ W("creators.csv", "piattaforma,nome,url,lingua,iscritti_follower,segmento,priori
   "TikTok,Bob,javascript:alert(1),IT,,da verificare,B,Overcooked,t,javascript:alert(2),,,why,,2026-10-06\n"
   "YouTube,Carl,https://www.youtube.com/@carl,EN,900000,medio,C,x,t,,,,,,2026-10-06\n")
 pg = sp.build(L, "partner", [], [], set(), today)
-assert "<h2>Creator</h2>" in pg and "3 creator" in pg and "priorità A 1 · B 1 · C 1" in pg and "alice@example.com" in pg
+assert re.search(r"<h2[^>]*>Creator</h2>", pg) and "3 creator" in pg and "priorità A 1 · B 1 · C 1" in pg and "alice@example.com" in pg
 assert "javascript:alert" not in pg and "<img src=x" not in pg.replace("<script>" + sp.JS + "</script>", "")
 assert pg.index("Alice") < pg.index("Bob") < pg.index("Carl"), "rows must be sorted by priority"
 assert 'href="https://www.youtube.com/@alice"' in pg and 'href="https://www.youtube.com/watch?v=x"' in pg
-assert "<h2>Creator</h2>" not in sp.build(L, "publisher", [], [], set(), today) and "<h2>Creator</h2>" not in sp.build(L, "partner", [], [], {"creators"}, today)
+assert not re.search(r"<h2[^>]*>Creator</h2>", sp.build(L, "publisher", [], [], set(), today)) and not re.search(r"<h2[^>]*>Creator</h2>", sp.build(L, "partner", [], [], {"creators"}, today))
 # ---- beta vs full game: product label in the header, quick analysis of the full game as a table
 st = json.load(open(os.path.join(L, "status.json"))); st["product"] = {"kind": "beta", "label": "Beta (Atto I)", "has_full_plan": True}
 st["full_game"] = {"summary": f"La beta mostra il loop; mancano Atti II-III {HOSTILE}", "gaps": [{"area": "Contenuto", "today": "1 Atto", "target": "3 Atti", "action": "tagliare le modalità extra", "hours": 120}]}
