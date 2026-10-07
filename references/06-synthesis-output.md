@@ -98,9 +98,9 @@ Alla ripresa ("continua") leggi `STATUS.md` e riparti dalla prima fase non compl
 Genera la pagina:
 
 ```bash
-python3 <skill>/scripts/research/status_page.py --launch-dir launch --audience partner     # private | partner | publisher
+python3 <skill>/scripts/research/status_page.py --launch-dir launch --audience private     # predefinito: private | partner | publisher
 ```
-È un unico file HTML autonomo (nessuna richiesta di rete, tema chiaro e scuro, utilizzabile da telefono, grafici con vista tabella e un "Quadro d'insieme" con i grafici di pilastri, ondate, mercato, economia, finestra di lancio e creator, filtrato per pubblico). **Non pubblicarla né inviarla**: dì all'utente dov'è il file e offri la pubblicazione in una riga (es. come artifact privato, se l'ambiente lo permette), e chiedi per chi è: `publisher` esclude economia interna, TODO e pre-mortem, `partner` li include, `private` aggiunge creator, community e fiscale. Controlla che nessun dato personale o riservato finisca nei documenti inclusi.
+È un unico file HTML autonomo (nessuna richiesta di rete, tema chiaro e scuro, utilizzabile da telefono, grafici con vista tabella e un "Quadro d'insieme" con i grafici di pilastri, ondate, mercato, economia, finestra di lancio e creator, filtrato per pubblico). **Non pubblicarla né inviarla**: dì all'utente dov'è il file e offri la pubblicazione in una riga (es. come artifact privato, se l'ambiente lo permette), e **genera `private`, senza chiedere il pubblico** (è il default: tutto, per il proprietario). Chiedi per chi è solo se l'utente dice che la pagina andrà ad altri: `publisher` esclude economia interna, TODO e pre-mortem, `partner` li include, `private` aggiunge creator, community e fiscale. Controlla che nessun dato personale o riservato finisca nei documenti inclusi.
 
 ## Grafici nel report (`REPORT.html` e `charts/`)
 

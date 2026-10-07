@@ -22,7 +22,7 @@ On top: a sticky index of the sections, the verdict with the Go/No-Go gates at a
 Charts ("Quadro d'insieme") come from report_charts.py; the same charts next to the text of the report are in report_html.py.
 Anything missing is simply left out.
 
-Sharing: the page contains strategy. --audience picks what goes in (default partner):
+Sharing: the page contains strategy. --audience picks what goes in (default private):
   private    everything, including creators, community, legal/fiscal
   partner    everything except creators, community and legal/fiscal documents
   publisher  verdict, numbers, charts, gates, calendar dates, store pages, positioning, platform, focus group;
@@ -31,7 +31,7 @@ Add/remove documents with --include / --exclude (file stems such as 03-pricing) 
 --hide economics,todo,calendar,steps,storekit,contingencies,watchlist,intentions,creators,fullgame,charts,steamdb,fgwaves,window.
 Publishing the page anywhere is YOUR decision: this tool only writes the local file.
 
-  python status_page.py [--launch-dir launch] [--audience partner] [-o launch/STATUS.html]
+  python status_page.py [--launch-dir launch] [--audience private] [-o launch/STATUS.html]
 """
 from __future__ import annotations
 
@@ -713,7 +713,7 @@ def build(root: str, audience: str, include: list[str], exclude: list[str], hide
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--launch-dir", default="launch"); ap.add_argument("--audience", default="partner", choices=list(AUDIENCES))
+    ap.add_argument("--launch-dir", default="launch"); ap.add_argument("--audience", default="private", choices=list(AUDIENCES))
     ap.add_argument("--include", nargs="*", default=[], help=f"document stems to show instead of the audience default ({', '.join(DOCS)})")
     ap.add_argument("--exclude", nargs="*", default=[], help="document stems to leave out"); ap.add_argument("--hide", default="", help="comma list: economics,todo,calendar")
     ap.add_argument("--today", help="override today (YYYY-MM-DD)"); ap.add_argument("-o", "--out")
