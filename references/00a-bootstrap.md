@@ -28,6 +28,13 @@ python3 <skill>/scripts/research/project_scan.py --root . -o launch/_raw/project
 Parte dalla cartella corrente e cerca anche nelle cartelle sopra. Riconosce **Unreal** (`.uproject`: versione, plugin attivi, MCP, Steam, mappe), **Unity** (`ProjectVersion.txt`: versione, render pipeline, pacchetti, MCP, scene, file di GameDeveloperSkill), **Godot**, GameMaker, Defold, Ren'Py, RPG Maker, Construct e framework web o nativi. Elenca **i documenti che spiegano il gioco, in ordine di importanza**, ciò che hanno lasciato altre skill, Steam e itch, screenshot e video, git (credenziali rimosse), eseguibili sul PC, **server MCP configurati nel progetto** (mai le chiavi) e se la porta dell'MCP Unreal risponde. Dà anche indizi di genere: sono ipotesi da confermare.
 Nessun motore riconosciuto → una sola domanda (percorso del progetto, oppure "è un progetto personalizzato") e si va avanti con i documenti.
 
+### Come si decide il motore (strumenti collegati + file)
+
+Il motore si deduce **incrociando due cose**, e quasi sempre basta:
+- **Strumenti collegati** a questa chat: un MCP o un tool con `unreal` nel nome → Unreal; `unity` o Unity CLI → Unity; `godot` → Godot; solo browser e terminale → probabile gioco web o personalizzato.
+- **File del progetto** (lo scan): `.uproject` → Unreal; `ProjectSettings/ProjectVersion.txt` → Unity; `project.godot` → Godot; altri marcatori per GameMaker, Defold, Ren'Py, RPG Maker, Construct; `package.json`, `Cargo.toml`, `CMakeLists.txt` per framework web e nativi; `index.html` con `<canvas>` o WebGL → gioco HTML5; `index.html` senza canvas → è un sito (la pagina del gioco, non il gioco).
+Se i due concordano, non chiedere nulla. Se uno solo dà un indizio (strumento collegato ma cartella sbagliata, o file senza strumento) usa quello e dì cosa manca. Se discordano (per esempio MCP Unreal ma progetto Unity) o ci sono più progetti, elencali e chiedi **una** domanda: quale è il gioco da lanciare.
+
 ## 3. Leggi i documenti giusti (non tutti)
 
 Nell'ordine che dà lo scan, fino a circa 15 file e le prime 200 righe di ciascuno: `CLAUDE.md`, `AGENTS.md`, `GDD`, `GAME_CONTEXT.md`, `GAME_TASKS.md`, `README`, pitch/visione, roadmap, TODO, note di design, `launch/STATUS.md` se esiste. Ogni fatto che ne ricavi porta il **nome del file** ("dal GDD: …"). Ciò che è scritto lì **non si richiede all'utente**: lo si propone come risposta e si chiede solo conferma.

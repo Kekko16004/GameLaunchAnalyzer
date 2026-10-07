@@ -145,6 +145,10 @@ def detect_other(root: str) -> list[dict]:
     for key, eng in (("phaser", "phaser"), ("three", "three.js"), ("babylonjs", "babylon.js"), ("pixi.js", "pixi.js"), ("excalibur", "excalibur"), ("kaboom", "kaboom")):
         if re.search(rf'"{re.escape(key)}"\s*:', pkg):
             out.append(dict(engine=eng, version=(re.search(rf'"{re.escape(key)}"\s*:\s*"([^"]+)"', pkg) or [None, None])[1], name=(re.search(r'"name"\s*:\s*"([^"]+)"', pkg) or [None, None])[1], project_file=os.path.join(root, "package.json")))
+    html = read(os.path.join(root, "index.html"), 20000)
+    if html and not any(o["engine"] in ("phaser", "three.js", "babylon.js", "pixi.js", "excalibur", "kaboom") for o in out):
+        kind = "html5-canvas" if re.search(r"<canvas|getContext\(|WebGL", html + read(os.path.join(root, "main.js"), 20000) + read(os.path.join(root, "game.js"), 20000), re.I) else "website"
+        out.append(dict(engine=kind, version=None, name=(re.search(r"(?is)<title>(.*?)</title>", html) or [None, None])[1], project_file=os.path.join(root, "index.html")))
     cargo = read(os.path.join(root, "Cargo.toml"))
     for key in ("bevy", "macroquad", "ggez", "fyrox"):
         if re.search(rf"(?m)^{key}\s*=", cargo):

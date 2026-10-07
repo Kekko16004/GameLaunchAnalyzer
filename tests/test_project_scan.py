@@ -63,6 +63,10 @@ go = tempfile.mkdtemp(); W(go, "project.godot", 'config/name="Dungeon Hop"\nconf
 eg = ps.scan(go, 10, probe=False)["engines"][0]; assert eg["engine"] == "godot" and eg["version"] == "4.3" and eg["name"] == "Dungeon Hop" and eg["mcp_addons"] == ["godot_mcp"] and eg["scenes"] == 1
 web = tempfile.mkdtemp(); W(web, "package.json", '{"name": "tiny-game", "dependencies": {"phaser": "^3.80.0"}}')
 assert ps.scan(web, 10, probe=False)["engines"][0]["engine"] == "phaser"
+cv = tempfile.mkdtemp(); W(cv, "index.html", "<html><title>Snake</title><canvas id=c></canvas><script src=game.js></script></html>"); W(cv, "game.js", "const g=c.getContext('2d')")
+ec = ps.scan(cv, 10, probe=False)["engines"][0]; assert ec["engine"] == "html5-canvas" and ec["name"] == "Snake"
+site = tempfile.mkdtemp(); W(site, "index.html", "<html><title>My Game Studio</title><h1>Hello</h1></html>")
+assert ps.scan(site, 10, probe=False)["engines"][0]["engine"] == "website"
 empty = tempfile.mkdtemp(); re_ = ps.scan(empty, 10, probe=False)
 assert re_["engines"] == [] and re_["primary_engine"] is None and re_["docs"] == [] and "Nessun progetto di motore riconosciuto" in ps.to_md(re_)
 
