@@ -23,11 +23,13 @@ import os
 import re
 
 from common import load_json, log
+import glossary as gl
 import report_charts as rc
 import status_page as sp
 
 MATCH = [  # chart group -> section titles it belongs next to (first matching section wins)
     ("product", r"audit|pilastr"),
+    ("criticita", r"critich|ondat|focus"),
     ("fg", r"critich|ondat|focus"),
     ("reviews", r"critich|recension"),
     ("market", r"mercato|comparabil"),
@@ -71,25 +73,36 @@ def build(root: str, today: dt.date, hide: set[str]) -> str:
         risks = "".join(f"<li>{sp.state('warn', f'Rischio {k}')}<span>{sp.esc(r)}</span></li>" for k, r in enumerate(v.get("risks", [])[:3], 1))
         top.append(f'<section class="card verdict"><div>{sp.ICONS[kind][0]}</div><div><div class="big">Verdetto: {sp.esc(word)}{" (provvisorio)" if v.get("provisional") else ""}</div><p>{sp.esc(v.get("summary", ""))}</p>'
                    + (f'<p class="sub">Probabilità stimata di recuperare i costi: {sp.esc(v["probability"])}</p>' if v.get("probability") else "") + (f'<ul class="clean">{risks}</ul>' if risks else "") + "</div></section>")
-    tiles = st.get("key_numbers") or []
-    if tiles:
-        top.append('<div class="grid g4" style="margin-top:12px">' + "".join(f'<div class="card tile"><div class="l">{sp.esc(k.get("label"))}</div><div class="v">{sp.esc(k.get("value"))}</div><div class="d">{sp.esc(k.get("note", ""))}</div></div>' for k in tiles) + "</div>")
     wl_a, wl_svg = sp.wishlist_section(root, today)
     fg_rows, fg_svg = sp.timeline_section(root)
+    econ_path = os.path.join(root, "_raw", "econ.json")
+    cal_path = os.path.join(root, "calendar.md")
+    plan = sp.ps.parse(open(cal_path, encoding="utf-8").read()) if os.path.exists(cal_path) else dict(phases=[])
+    tiles = sp.key_tiles(st, wl_a, fg_rows, plan, load_json(econ_path) if os.path.exists(econ_path) else None, today, set())
+    if tiles:
+        top.append('<div class="grid g4" style="margin-top:12px">' + "".join(f'<div class="card tile"><div class="l">{sp.esc(l)}</div><div class="v">{sp.esc(val)}</div><div class="d">{sp.esc(d)}</div></div>' for l, val, d in tiles) + "</div>")
     trend = ""
     if wl_svg:
         trend += f'<div class="card"><h3>Wishlist contro gli scenari</h3>{wl_svg}</div>'
     if fg_svg:
         trend += f'<div class="card"><h3>Punteggio del focus group, per ondata</h3>{fg_svg}</div>'
     if trend:
-        top.append(f'<h2>Andamento</h2><div class="cgrid">{trend}</div>')
+        top.append(f'<h2 id="trend">Andamento</h2><div class="cgrid">{trend}</div>')
     if groups:
-        top.append("<h2>Quadro d'insieme</h2>" + rc.render(list(groups.values())))
+        top.append("<h2 id=\"overview\">Quadro d'insieme</h2>" + rc.render(list(groups.values())))
     body = []
     for i, (title, text) in enumerate(secs):
         charts = rc.render(placed.get(i, []))
         body.append(f'<details class="card doc sec" id="s{i}" open><summary><strong>{sp.esc(title)}</strong></summary><div class="inner">{sp.md_to_html(text)}'
                     + (f'<div class="charts">{charts}</div>' if charts else "") + "</div></details>")
+    present = "".join(top)
+    heads = [(i, t) for i, t in (("trend", "Andamento"), ("overview", "Quadro d'insieme")) if f'id="{i}"' in present] + [(f"s{i}", t) for i, (t, _) in enumerate(secs)]
+    anchors = gl.anchors_for(heads)
+    used: set = set()
+    own_top = lambda c: {x for x in ("trend", "overview") if f'id="{x}"' in c}
+    top = [gl.enrich(c, anchors, own_top(c), used) for c in top]   # plain-Italian tooltips and links to the section that deals with the thing
+    body = [gl.enrich(c, anchors, {f"s{i}"}, used) for i, c in enumerate(body)]
+    glo = gl.glossary_html(used)
     title_line = re.search(r"(?m)^# (.+)$", head_md)
     name = st.get("game") or (title_line.group(1).strip() if title_line else "Report")
     strip_no = lambda t: re.sub(r"^\d+\.\s*", "", t)
@@ -97,11 +110,11 @@ def build(root: str, today: dt.date, hide: set[str]) -> str:
     product = st.get("product") or {}
     return (f'<!doctype html><html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Report di lancio, {sp.esc(name)}</title>'
             f'<style>{sp.CSS}{EXTRA_CSS}</style></head><body><main><div class="top"><div><h1>{sp.esc(name)}: report di lancio</h1><p class="sub">Generato il {sp.fmt_date(today.isoformat())}'
-            f'{" · valutato come: " + sp.esc(product.get("label") or product.get("kind")) if product.get("kind") or product.get("label") else ""}</p></div>'
+            f'{" · valutato come: " + sp.esc(product.get("label") or product.get("kind")) if product.get("kind") or product.get("label") else ""}</p><p class="sub">Questo è il <strong>report completo</strong>, da leggere. Per cosa fare adesso, i passi, le pagine da copiare e i piani usa il cruscotto <a href="STATUS.html">STATUS.html</a>.</p></div>'
             f'<button class="theme" id="theme" type="button">Tema chiaro / scuro</button></div>{toc}'
-            + "".join(top) + "<h2>Il report</h2>" + "".join(body)
+            + "".join(top) + "<h2>Il report</h2>" + "".join(body) + glo
             + f'<footer class="note">Pagina generata da <code>report_html.py</code> da <code>REPORT.md</code> e dai dati in <code>launch/</code>, senza richieste di rete. Il focus group è simulato: non è un dato di mercato. '
-              f'Contiene strategia: non condividerla senza averla letta. Ciò che è etichettato [DA VERIFICARE] resta da verificare.</footer></main><script>{sp.JS}</script></body></html>')
+              f'Contiene strategia: non condividerla senza averla letta. Ciò che è etichettato [DA VERIFICARE] resta da verificare.</footer></main><script>{sp.JS}{gl.JS}</script></body></html>')
 
 
 def main():

@@ -34,6 +34,10 @@ Reusable tools for launch market research: Steam comparables and reviews, creato
 | `wl_track.py` | Weekly wishlist records vs scenarios and pre-mortem tripwires, with alarms | 4, 7B |
 | `launch_window.py` | Competitor calendar for your launch window: weekly crowding score, quietest weeks, where your date stands | 4, 7C |
 | `charts.py`, `report_charts.py` | Inline SVG charts (bars, columns, stacked, bullets) and the chart groups built from the files in `launch/` | 11 |
+| `criticita.py` | Criticalities wave by wave, per gate and as an evolution matrix (status new / persistent / rising / falling / resolved / back), plus a register for other sources (`add`, `close`, `list`) | 7, 11 |
+| `qa.py` | Questions and answers section: the owner's saved questions, answers computed from today's data, suggested questions; log CLI (`add`, `list`, `rm`) | 11 |
+| `glossary.py` | Plain-Italian tooltips, links to the section that deals with the thing mentioned, and a glossary, for the HTML pages | 11 |
+| `md_enrich.py` | Links between the Markdown documents of `launch/` and a plain-Italian glossary at the end of `REPORT.md` | 11 |
 | `report_html.py` | `REPORT.md` as one illustrated HTML page: charts next to each section | 11 |
 | `charts_export.py` | Every report chart as a standalone `.svg` (for Markdown reports) | 11 |
 | `status_page.py` | One self-contained HTML status page for partners or a publisher | 11 |
@@ -237,6 +241,25 @@ python wl_track.py status --md launch/wishlist-status.md --json launch/_raw/wl_s
 ```
 `status` reports current total, 1-week and 4-week velocity, position against the linear path of each scenario, wishlists per week still needed, tripwires (OK / ALARM / PENDING / NO DATA), and alerts (slowdown, drops over two records, stale data, unexplained spikes). **Exit code 2 when a tripwire has fired.** Targets are interpolated linearly: a simplification, real curves are spiky.
 
+## 4k0. Criticalities and Q&A: `criticita.py`, `qa.py`
+
+`status_page.py` (section "Criticità, ondata per ondata") and `report_html.py` (inside "Critiche e ondate") rebuild the criticalities at every run from `launch/fg/waves/wNN-*.json` (the files `fg_waves.py` reads). Waves of the two stages (`stage`: beta / full) are kept apart. Buttons: **one per wave** (every issue with severity, share of testers, change against the previous wave, status, gate, what to do; then the issues resolved in that wave with the fix from `fixes`), **Per cancello** (which issues belong to which gate 0/A/B/C, born in which wave, open or resolved) and **Evoluzione** (stacked chart already present / new / resolved, and an issue × wave heat table with sparklines). Status against the previous wave: new, persistent, rising or falling (more than 10 points, the noise level of `fg_waves.py delta`), back, resolved. Add optional `"gate"` and `"area"` to each issue of the wave file. Criticalities from other sources go in `launch/criticita.csv`:
+
+```bash
+python criticita.py add --key tester-lost --label "External testers get lost at the menu" --severity alta --source playtest --gate B --opened 2027-01-10 --note "5 of 20"
+python criticita.py close tester-lost --date 2027-01-20     # list shows them all
+```
+`status.json` → `critiques_by_wave` (hand-written waves) is still read, for waves without a file. The section "Domande e risposte" has the owner's questions (`qa.py add --q … --a … --topic Cancelli --wave 2 --gate B`, or `status.json` → `qa`; the same question is updated, not duplicated), frequent questions answered from today's data (verdict and why, what to do now, what changed since the last wave, worst open criticalities, can I pay Steam Direct, when to launch, copies to break even, wishlists, what if it goes badly, does the full game hold) and suggested questions drawn from the state of the project, with a search box and topic filter. Neither section appears for the `publisher` audience.
+
+## 4k1. Plain words and links: `glossary.py`, `md_enrich.py`
+
+HTML pages (`status_page.py`, `report_html.py`) pass every section through `glossary.py`: the first time a technical term appears in a section (wishlist, gate, ICE, tripwire, break-even, percentile, median, hook, capsule, Next Fest, comparables, pre-mortem, focus group, wave, creator, refund… about 40 terms) it gets a one-sentence explanation in simple Italian, shown on hover, keyboard focus or tap; a mention of something that has its own section (creators, economy, gates, window, SteamDB, steps, store pages, full game, TODO…) links to that section, once per section and never to the section you are in; the page ends with a glossary of only the terms used. Code, links, buttons, headings, summaries and charts are left alone, text stays escaped. The explanations carry no figures that go out of date.
+
+```bash
+python md_enrich.py --launch-dir launch          # --dry-run to preview, --no-glossary to skip the glossary
+```
+Markdown documents in `launch/` (and `launch/history/`): the first mention of a topic that has its own file becomes a relative link (creator → `06-creators.md`, calendar → `calendar.md`, pages → `store_kit.md`, pre-mortem → `05c-premortem.md`, window → `window.md`…), a back-ticked file name becomes a link, and `REPORT.md` ends with a glossary between markers (replaced at each run). Nothing is changed in code blocks, inline code, headings, existing links, URLs or HTML; running it twice changes nothing more.
+
 ## 4k2. Charts: `report_html.py`, `charts_export.py`, `charts.py`, `report_charts.py`
 
 ```bash
@@ -356,6 +379,8 @@ python build_creators.py --youtube out/yt_shortlist.json --social out/social.jso
 | `yt_research.py --backend api` | Not tested (no `YOUTUBE_API_KEY`). |
 | `steam_tags.py` | Tested offline (the reported Roguelite / Rogue-lite case, hyphen variants, typos, built-in fallback, unverifiable lists). **Not run against live SteamSpy.** |
 | `launch_window.py`, `charts.py`, `report_charts.py`, `report_html.py`, `charts_export.py` | Tested offline (week scores checked by hand: same week 1.0, one week 0.5, two weeks 0.25; ranking, verdicts, bad rows, cp1252 console; every chart group from a synthetic `launch/` with hostile text, REPORT.html sections, standalone SVGs parsed as XML). Rendered and inspected in Chromium (desktop, phone, dark). |
+| `criticita.py`, `qa.py` | Tested offline on a three-wave life cycle (new, falling, resolved with its fix, back, rising), gates, evolution matrix, the register CLI, the owner's `status.json` formats, Q&A CLI (same question updated), answers computed from data, links that all land on an existing id, tags balanced, publisher audience, escaping. Rendered and checked in Chromium. |
+| `glossary.py`, `md_enrich.py` | Tested offline: tooltip once per section, skipped zones (code, links, headings, summaries, SVG), entities and hostile text kept escaped, no link to the section you are in, every internal link lands on an existing id, tags stay balanced, explanations short and without figures; Markdown links relative from subfolders, idempotent, glossary replaced not duplicated, cp1252 console. Checked in Chromium: tooltip on hover and focus, clamped inside a 390 px screen, link jumps to the section. |
 | `project_scan.py` | Tested offline on synthetic Unreal, Unity (GameDeveloperSkill), Godot and web projects: version and name extraction, document ranking, build folders skipped, artifacts of other skills, parent-folder lookup, **secrets in MCP configs and credentials in the git remote never reach the output**, cp1252 console. Also run on a real skill repository (no engine found, as it should). Not run on a real Unreal or Unity project. |
 | `steamdb_assist.py` | Tested offline (links, parsing of `12,400` / `12.9K`, append-only, delta, no network access). Never contacts steamdb.info by design. |
 | `review_corpus.py`, `store_bench.py`, `genre_bench.py`, `watchlist.py`, `plan_steps.py`, `store_kit.py`, `metrics_track.py`, `calc_econ.py`, `wl_track.py`, `status_page.py` | Tested offline in `tests/` (canned API-shaped answers; real HLS and DASH trailers generated with `ffmpeg` and served locally (duration, cuts, frames, no MP4 present); a console test under cp1252 for the emoji output; arithmetic of the economic plan checked independently; the status page rendered in Chromium at desktop and 390 px width: no horizontal overflow, no script errors, hostile text stays inert). `plan_steps.py` was also checked on a real step list written by the project owner (30 steps, 6 phases). **Not yet run against the live Steam services.** |

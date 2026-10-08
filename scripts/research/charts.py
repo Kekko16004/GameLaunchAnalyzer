@@ -124,7 +124,7 @@ def hbar(items: list[dict], *, aria: str, fmt=fmt_n, unit: str = "", ref: tuple[
 
 def stacked(rows: list[dict], series: list[tuple[str, str, str]], *, aria: str, percent: bool = True, label_w: int = 100) -> tuple[str, str]:
     """rows: {label, values:{key: number}, tip?}. series: (key, label, color). 100% stacked bars with a 2px gap between segments;
-    the share of each segment >= 6% is written under the bar in muted ink (never inside, never in the series color)."""
+    the share (100% bars) or the count (percent=False) of each segment is written under the bar in muted ink (never inside, never in the series color)."""
     rh, T = 48, 6
     n = len(rows)
     H = T + n * rh + 4
@@ -148,8 +148,8 @@ def stacked(rows: list[dict], series: list[tuple[str, str, str]], *, aria: str, 
             trow.append(f"{fmt_n(v)} ({share:.0f}%)")
             if w > 0.5:
                 g.append(f'<rect x="{x:.1f}" y="{y + 4}" width="{max(w - 2, 0.5):.1f}" height="22" rx="2" fill="{col}"/>')
-                if share >= 6:
-                    g.append(f'<text x="{x + w / 2 - 1:.1f}" y="{y + 40}" text-anchor="middle" font-size="11" fill="var(--ink2)" style="font-variant-numeric:tabular-nums">{share:.0f}%</text>')
+                if share >= 6 or (not percent and v):   # counts when the bars are counts, shares when they are 100% bars
+                    g.append(f'<text x="{x + w / 2 - 1:.1f}" y="{y + 40}" text-anchor="middle" font-size="11" fill="var(--ink2)" style="font-variant-numeric:tabular-nums">{f"{share:.0f}%" if percent else f"{v:g}"}</text>')
             x += w
         g.append(f'<rect class="hit" tabindex="0" x="{px0}" y="{y}" width="{px1 - px0}" height="{rh}" fill="transparent" data-x="{px0 + 10}" data-tip="{esc(r.get("tip") or chr(10).join(tip))}"/>')
         table.append(trow)

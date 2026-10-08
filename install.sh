@@ -4,10 +4,11 @@
 #
 #   ./install.sh                 interactive menu
 #   ./install.sh --all           every supported environment
-#   ./install.sh --claude        Claude Code only (also --antigravity --kilo --agents)
+#   ./install.sh --claude        Claude Code only (also --antigravity --kilo --agents --codex)
 #   ./install.sh --all --mode copy      copy files instead of symlinking (default: link)
 #   ./install.sh --uninstall     remove from every environment
 #
+# Codex: skill in ${CODEX_HOME:-~/.codex}/skills and the slash prompt in .../prompts (/prompts:game-launch-strategist) [DA VERIFICARE on your Codex version].
 # Only the skill itself is installed (SKILL.md, references/, scripts/) plus the slash command;
 # .git, installers and the README are left out.
 set -euo pipefail
@@ -25,7 +26,7 @@ SELECTED=""
 label() {
   case "$1" in
     claude) echo "Claude Code" ;; antigravity) echo "Antigravity IDE" ;;
-    kilo) echo "Kilo / Kilocode" ;; agents) echo "Agents Hub" ;;
+    kilo) echo "Kilo / Kilocode" ;; agents) echo "Agents Hub" ;; codex) echo "Codex (OpenAI)" ;;
   esac
 }
 
@@ -35,6 +36,7 @@ skill_paths() {
     antigravity) echo "$HOME/.gemini/config/skills/$SKILL" ;;
     kilo) echo "$HOME/.kilo/skills/$SKILL"; echo "$HOME/.config/kilo/skills/$SKILL"; echo "$HOME/.kilocode/skills/$SKILL" ;;
     agents) echo "$HOME/.agents/skills/$SKILL" ;;
+    codex) echo "${CODEX_HOME:-$HOME/.codex}/skills/$SKILL" ;;
   esac
 }
 
@@ -47,6 +49,7 @@ command_paths() {
         echo "$d/commands/$SKILL.md"; echo "$d/command/$SKILL.md"
       done ;;
     agents) : ;;
+    codex) echo "${CODEX_HOME:-$HOME/.codex}/prompts/$SKILL.md" ;;
   esac
 }
 
@@ -97,14 +100,15 @@ uninstall_target() {
 
 while [ $# -gt 0 ]; do
   case "$1" in
-    --all) SELECTED="claude antigravity kilo agents" ;;
+    --all) SELECTED="claude antigravity kilo agents codex" ;;
     --claude) SELECTED="$SELECTED claude" ;;
     --antigravity) SELECTED="$SELECTED antigravity" ;;
     --kilo) SELECTED="$SELECTED kilo" ;;
     --agents) SELECTED="$SELECTED agents" ;;
+    --codex) SELECTED="$SELECTED codex" ;;
     --uninstall) UNINSTALL=1 ;;
     --mode) shift; MODE="${1:-}" ;;
-    -h|--help) sed -n '2,12p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+    -h|--help) sed -n '2,13p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
     *) echo "Unknown option: $1" >&2; exit 2 ;;
   esac
   shift
@@ -113,7 +117,7 @@ case "$MODE" in link|copy) ;; *) echo "--mode must be link or copy" >&2; exit 2 
 [ -f "$SRC/SKILL.md" ] || { echo "SKILL.md not found in $SRC" >&2; exit 1; }
 
 if [ "$UNINSTALL" = 1 ]; then
-  for k in claude antigravity kilo agents; do uninstall_target "$k"; done
+  for k in claude antigravity kilo agents codex; do uninstall_target "$k"; done
   echo; echo "Uninstallation completed."; exit 0
 fi
 
@@ -123,14 +127,15 @@ if [ -z "${SELECTED// /}" ]; then
   echo "  [2] Antigravity IDE   (~/.gemini/config)"
   echo "  [3] Kilo / Kilocode   (~/.kilo, ~/.config/kilo, ~/.kilocode)"
   echo "  [4] Agents Hub        (~/.agents)"
-  echo "  [5] All environments (recommended)"
-  echo "  [6] Uninstall from all environments"
+  echo "  [5] Codex             (~/.codex)"
+  echo "  [6] All environments (recommended)"
+  echo "  [7] Uninstall from all environments"
   echo "  [0] Exit"
-  read -r -p "Choice [0-6]: " choice
+  read -r -p "Choice [0-7]: " choice
   case "$choice" in
-    1) SELECTED="claude" ;; 2) SELECTED="antigravity" ;; 3) SELECTED="kilo" ;; 4) SELECTED="agents" ;;
-    5) SELECTED="claude antigravity kilo agents" ;;
-    6) for k in claude antigravity kilo agents; do uninstall_target "$k"; done; echo "Uninstallation completed."; exit 0 ;;
+    1) SELECTED="claude" ;; 2) SELECTED="antigravity" ;; 3) SELECTED="kilo" ;; 4) SELECTED="agents" ;; 5) SELECTED="codex" ;;
+    6) SELECTED="claude antigravity kilo agents codex" ;;
+    7) for k in claude antigravity kilo agents codex; do uninstall_target "$k"; done; echo "Uninstallation completed."; exit 0 ;;
     0) echo "Operation cancelled."; exit 0 ;;
     *) echo "Invalid choice." >&2; exit 1 ;;
   esac
@@ -140,3 +145,4 @@ echo
 for k in $SELECTED; do install_target "$k"; done
 echo
 echo "Installation completed. Command available: /$SKILL"
+case " $SELECTED " in *" codex "*) echo "Codex: use /prompts:$SKILL (or just ask for the skill by name). Restart Codex to load it." ;; esac
