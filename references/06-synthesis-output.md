@@ -112,7 +112,7 @@ python3 <skill>/scripts/research/charts_export.py --launch-dir launch          #
 ```
 I grafici nascono dai file già prodotti (`01-dev.md`, `fg/timeline.csv`, `_raw/genre_bench.json`, `corpus.json`, `econ.json`, `window.json`, `calendar.md`, `creators.csv`, `comps.csv`, `store_pages.json`, `status.json`); quello che manca non viene disegnato. Per avere più grafici, produci quei file con gli script. Nel `REPORT.md` incorpora gli `.svg` più utili dove servono (`![Pilastri](charts/product-1.svg)`) e scrivi sotto una riga di lettura. Regole: una sola scala per grafico, legenda sempre con due o più serie, il numero resta in tabella, nessun grafico con due punti dati. Dì all'utente dove sono `REPORT.html` e `charts/`; sono file locali.
 
-"## Spiegazioni semplici e collegamenti (Markdown e HTML)
+## Spiegazioni semplici e collegamenti (Markdown e HTML)
 
 Chi legge i report può non conoscere i termini (wishlist, gate, ICE, tripwire, break-even, percentile, hook, capsule…) né sapere dove sta ogni cosa. Dopo aver scritto i file:
 
