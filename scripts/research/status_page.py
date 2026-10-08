@@ -28,7 +28,7 @@ Sharing: the page contains strategy. --audience picks what goes in (default priv
   publisher  verdict, numbers, charts, gates, calendar dates, store pages, positioning, platform, focus group;
              no steps, economics, TODO, contingencies, competitors, creators, decision profile or full-game analysis
 Add/remove documents with --include / --exclude (file stems such as 03-pricing) and sections with
---hide economics,todo,calendar,steps,storekit,contingencies,watchlist,intentions,creators,fullgame,charts,steamdb,fgwaves,window.
+--hide economics,todo,calendar,steps,storekit,contingencies,watchlist,intentions,creators,fullgame,charts,steamdb,fgwaves,window,critiques,qa.
 Publishing the page anywhere is YOUR decision: this tool only writes the local file.
 
   python status_page.py [--launch-dir launch] [--audience private] [-o launch/STATUS.html]
@@ -505,6 +505,29 @@ def creators_section(root: str):
             f'<tbody>{body}</tbody></table></div>{more}<p class="note">Solo contatti professionali pubblici. I follower di TikTok e Instagram vanno verificati a mano.</p></details>')
 
 
+def critiques_section(waves: list) -> str:
+    """Criticalities per focus-group wave (status.json -> critiques_by_wave), newest first, so you can compare waves."""
+    parts = []
+    for i, w in enumerate(reversed(waves)):
+        items = "".join(f'<tr><td>{esc(c.get("issue"))}</td><td>{esc(c.get("severity", ""))}</td><td class="n">{esc(c.get("seen_by", ""))}</td><td>{esc(c.get("status", ""))}</td><td>{esc(c.get("action", ""))}</td></tr>' for c in w.get("items", []))
+        body = (f'<p class="sub">{esc(w.get("note", ""))}</p>' if w.get("note") else "") + (f'<div class="wrap"><table><thead><tr><th>Criticità</th><th>Gravità</th><th class="n">Visto da</th><th>Stato</th><th>Cosa si fa</th></tr></thead><tbody>{items}</tbody></table></div>' if items else "")
+        parts.append(f'<details class="card doc"{" open" if i == 0 else ""}><summary><strong>{esc(w.get("wave", ""))}</strong> <span class="sub">{esc(w.get("score", ""))}</span></summary>{body}</details>')
+    return "<h2>Criticità per ondata</h2>" + "".join(parts)
+
+
+def qa_section(qa: list) -> str:
+    """Questions and answers (status.json -> qa): the owner's own questions and generic ones, grouped by topic."""
+    groups = {}
+    for x in qa:
+        groups.setdefault(x.get("topic") or "Generale", []).append(x)
+    parts = []
+    for topic, xs in groups.items():
+        mine = ' <span class="sub">(tua domanda)</span>'
+        items = "".join(f'<details class="doc"><summary><strong>{esc(x.get("q"))}</strong>{mine if x.get("custom") else ""}</summary><p>{esc(x.get("a"))}</p>' + (f'<p class="note">{esc(x["source"])}</p>' if x.get("source") else "") + '</details>' for x in xs)
+        parts.append(f'<div class="card"><h3>{esc(topic)}</h3>{items}</div>')
+    return "<h2>Domande e risposte</h2>" + "".join(parts)
+
+
 def full_game_section(fg: dict) -> str:
     gaps = "".join(f'<tr><td>{esc(g.get("area"))}</td><td>{esc(g.get("today"))}</td><td>{esc(g.get("target"))}</td><td>{esc(g.get("action"))}</td><td class="n">{esc(g.get("hours", ""))}</td></tr>' for g in fg.get("gaps", []))
     return (f'<h2>Beta oggi e gioco completo</h2><div class="card"><p>{esc(fg.get("summary", ""))}</p>'
@@ -566,11 +589,12 @@ def waves_section(root: str) -> str | None:
     files = []
     wd = os.path.join(d, "waves")
     if os.path.isdir(wd):
-        files += sorted((f for f in os.listdir(wd) if re.match(r"w\d+-(metrics|delta)\.md$", f)), key=lambda f: (int(re.match(r"w(\d+)", f).group(1)), "delta" in f))
+        files += sorted((f for f in os.listdir(wd) if re.match(r"w\d+-(metrics|delta)(-[a-z0-9]+)?\.md$", f)), key=lambda f: (int(re.match(r"w(\d+)", f).group(1)), "delta" in f, f))
     parts = []
     for f in files:
-        m = re.match(r"w(\d+)-(metrics|delta)", f)
-        parts.append(f'<details class="card doc"><summary><strong>Ondata {int(m.group(1))}: {"metriche" if m.group(2) == "metrics" else "cosa è cambiato rispetto alla precedente"}</strong></summary>'
+        m = re.match(r"w(\d+)-(metrics|delta)(?:-([a-z0-9]+))?", f)
+        variant = {"beta": " · beta gratuita", "full": " · gioco completo"}.get(m.group(3) or "", f" · {m.group(3)}" if m.group(3) else "")
+        parts.append(f'<details class="card doc"><summary><strong>Ondata {int(m.group(1))}{variant}: {"metriche e criticità" if m.group(2) == "metrics" else "cosa è cambiato rispetto alla precedente"}</strong></summary>'
                      f'{md_to_html(open(os.path.join(wd, f), encoding="utf-8").read())}</details>')
     return ("<h2>Ondate del focus group</h2>" + "".join(parts)) if parts else None
 
@@ -617,7 +641,11 @@ def build(root: str, audience: str, include: list[str], exclude: list[str], hide
         sm = ps.summary(plan, today)
         tiles.append(("Passi fatti", f"{sm['done']}/{sm['total']}", f"{sm['overdue']} in ritardo" if sm["overdue"] else "nessuno in ritardo"))
     if econ:
-        tiles.append(("Break-even", fmt_n(econ["breakeven"]["copies_with_time"]), f"copie (netto per copia {econ['net_per_copy']:.2f})"))
+        be = econ["breakeven"]
+        if str(st.get("breakeven_basis", "")).lower() == "cash" and "copies_cash" in be:
+            tiles.append(("Break-even (soldi spesi)", fmt_n(be["copies_cash"]), f"copie (netto per copia {econ['net_per_copy']:.2f}; contando le ore {fmt_n(be.get('copies_with_time'))})"))
+        else:
+            tiles.append(("Break-even", fmt_n(be["copies_with_time"]), f"copie (netto per copia {econ['net_per_copy']:.2f})"))
     gates = st.get("gates") or {}
     if gates:
         tiles.append(("Gate superati", f"{sum(1 for g in gates.values() if g.get('state') == 'pass')}/{len(gates)}", "Go/No-Go prima di Steam Direct"))
@@ -674,6 +702,10 @@ def build(root: str, audience: str, include: list[str], exclude: list[str], hide
             sec.append(c)
     if st.get("full_game") and "fullgame" not in hide:
         sec.append(full_game_section(st["full_game"]))
+    if st.get("critiques_by_wave") and "critiques" not in hide:
+        sec.append(critiques_section(st["critiques_by_wave"]))
+    if st.get("qa") and "qa" not in hide:
+        sec.append(qa_section(st["qa"]))
     todos, done, hours = read_todos(root)
     if todos and "todo" not in hide:
         sec.append(f'<h2>Prossime azioni</h2><div class="card"><p class="sub">{len(todos)} aperte, {done} chiuse, circa {hours:.0f} ore residue.</p><div class="wrap"><table><thead><tr><th>Azione</th><th>Scadenza</th><th class="n">Ore</th></tr></thead><tbody>'
