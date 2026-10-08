@@ -576,6 +576,30 @@ def waves_section(root: str) -> str | None:
     return ("<h2>Ondate del focus group</h2>" + "".join(parts)) if parts else None
 
 
+def key_tiles(st: dict, wl_a, fg_rows, plan: dict, econ, today: dt.date, hide: set) -> list:
+    """The key numbers shown on top of STATUS.html and REPORT.html: (label, value, note)."""
+    tiles = []
+    if wl_a and "current" in wl_a:
+        vel = wl_a.get("velocity_4w")
+        tiles.append(("Wishlist", fmt_n(wl_a["current"]), f"{'+' if vel and vel > 0 else ''}{fmt_n(vel)} a settimana (ultime 4)" if vel is not None else f"dato del {fmt_date(wl_a['last_record'])}"))
+        if "days_to_launch" in wl_a:
+            tiles.append(("Giorni al lancio", fmt_n(wl_a["days_to_launch"]), fmt_date(wl_a["launch"])))
+    if fg_rows:
+        last, prev = fg_rows[-1], fg_rows[-2] if len(fg_rows) > 1 else None
+        tiles.append(("Punteggio focus group", last["score"], f"ondata {last['wave']}" + (f", {float(last['score']) - float(prev['score']):+.1f} rispetto alla precedente" if prev else "")))
+    if plan["phases"] and "steps" not in hide:
+        sm = ps.summary(plan, today)
+        tiles.append(("Passi fatti", f"{sm['done']}/{sm['total']}", f"{sm['overdue']} in ritardo" if sm["overdue"] else "nessuno in ritardo"))
+    if econ:
+        tiles.append(("Break-even", fmt_n(econ["breakeven"]["copies_with_time"]), f"copie (netto per copia {econ['net_per_copy']:.2f})"))
+    gates = st.get("gates") or {}
+    if gates:
+        tiles.append(("Gate superati", f"{sum(1 for g in gates.values() if g.get('state') == 'pass')}/{len(gates)}", "Go/No-Go prima di Steam Direct"))
+    for k in st.get("key_numbers", []):
+        tiles.append((k.get("label", ""), k.get("value", ""), k.get("note", "")))
+    return tiles
+
+
 def build(root: str, audience: str, include: list[str], exclude: list[str], hide: set[str], today: dt.date) -> str:
     st = load_json(os.path.join(root, "status.json")) if os.path.exists(os.path.join(root, "status.json")) else {}
     hide = set(hide) | HIDE_BY_AUDIENCE[audience]
@@ -605,25 +629,8 @@ def build(root: str, audience: str, include: list[str], exclude: list[str], hide
     if it and "intentions" not in hide:
         rows = "".join(f'<tr><td>{esc(d.get("topic"))}</td><td>{esc(d.get("choice"))}</td><td>{esc(d.get("why", ""))}</td></tr>' for d in it.get("decisions", []))
         sec.append(f'<h2>Profilo decisionale</h2><div class="card"><p>{esc(it.get("summary", ""))}</p>' + (f'<div class="wrap"><table><thead><tr><th>Tema</th><th>Scelta</th><th>Perché</th></tr></thead><tbody>{rows}</tbody></table></div>' if rows else "") + "</div>")
-    tiles = []
-    if wl_a and "current" in wl_a:
-        vel = wl_a.get("velocity_4w")
-        tiles.append(("Wishlist", fmt_n(wl_a["current"]), f"{'+' if vel and vel > 0 else ''}{fmt_n(vel)} a settimana (ultime 4)" if vel is not None else f"dato del {fmt_date(wl_a['last_record'])}"))
-        if "days_to_launch" in wl_a:
-            tiles.append(("Giorni al lancio", fmt_n(wl_a["days_to_launch"]), fmt_date(wl_a["launch"])))
-    if fg_rows:
-        last, prev = fg_rows[-1], fg_rows[-2] if len(fg_rows) > 1 else None
-        tiles.append(("Punteggio focus group", last["score"], f"ondata {last['wave']}" + (f", {float(last['score']) - float(prev['score']):+.1f} rispetto alla precedente" if prev else "")))
-    if plan["phases"] and "steps" not in hide:
-        sm = ps.summary(plan, today)
-        tiles.append(("Passi fatti", f"{sm['done']}/{sm['total']}", f"{sm['overdue']} in ritardo" if sm["overdue"] else "nessuno in ritardo"))
-    if econ:
-        tiles.append(("Break-even", fmt_n(econ["breakeven"]["copies_with_time"]), f"copie (netto per copia {econ['net_per_copy']:.2f})"))
+    tiles = key_tiles(st, wl_a, fg_rows, plan, econ, today, hide)
     gates = st.get("gates") or {}
-    if gates:
-        tiles.append(("Gate superati", f"{sum(1 for g in gates.values() if g.get('state') == 'pass')}/{len(gates)}", "Go/No-Go prima di Steam Direct"))
-    for k in st.get("key_numbers", []):
-        tiles.append((k.get("label", ""), k.get("value", ""), k.get("note", "")))
     if tiles:
         sec.append('<h2>Numeri chiave</h2><div class="grid g4">' + "".join(f'<div class="card tile"><div class="l">{esc(l)}</div><div class="v">{esc(val)}</div><div class="d">{esc(d)}</div></div>' for l, val, d in tiles) + "</div>")
     alerts = [(x["level"], x["text"]) for x in (wl_a or {}).get("alerts", [])] + cont_alerts + watch_alerts
@@ -714,7 +721,7 @@ def build(root: str, audience: str, include: list[str], exclude: list[str], hide
     label = {"private": "Uso interno", "partner": "Per i soci", "publisher": "Per il publisher"}[audience]
     return (f'<!doctype html><html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Stato del lancio, {esc(name)}</title>'
             f'<style>{CSS}</style></head><body><main><div class="top"><div><h1>{esc(name)}: stato del lancio</h1><p class="sub">Aggiornato il {fmt_date(st.get("updated") or today.isoformat())} · {esc(label)}'
-            f'{" · modalità " + esc(st["mode"]) if st.get("mode") else ""}{" · valutato come: " + esc(product.get("label") or product.get("kind")) if product.get("kind") or product.get("label") else ""}</p></div><button class="theme" id="theme" type="button">Tema chiaro/scuro</button></div>'
+            f'{" · modalità " + esc(st["mode"]) if st.get("mode") else ""}{" · valutato come: " + esc(product.get("label") or product.get("kind")) if product.get("kind") or product.get("label") else ""}</p><p class="sub">Questo è il <strong>cruscotto</strong>: cosa fare, numeri, pagine da copiare, piani. Il testo completo del report, con i grafici accanto a ogni sezione, è in <a href="REPORT.html">REPORT.html</a>.</p></div><button class="theme" id="theme" type="button">Tema chiaro/scuro</button></div>'
             + toc + "".join(sec) + glo + f'<footer class="note">Pagina generata da <code>status_page.py</code> il {today.isoformat()} da file locali, senza richieste di rete. Il focus group è simulato: non è un dato di mercato. '
             f'Cifre con fonte nei documenti; ciò che è etichettato [DA VERIFICARE] resta da verificare.</footer></main><script>{JS}{gl.JS}</script></body></html>')
 

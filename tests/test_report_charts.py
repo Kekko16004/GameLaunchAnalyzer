@@ -154,5 +154,9 @@ check_page(rh.build(dd, today, set()), "report")
 pg = sp.build(dd, "private", [], [], set(), today)
 assert "wishlist" in pg.lower() and 'abbr.g' in pg and "gl" not in re.findall(r"<abbr[^>]*>(\w+)</abbr>", pg)[:0]
 assert "<b>One</b>" not in pg and "&lt;b&gt;One&lt;/b&gt;" in pg
+rep_page = rh.build(dd, today, set())
+plain = re.sub(r"<[^>]+>", "", rep_page)
+assert all(k in plain for k in ("Punteggio focus group", "Break-even", "Gate superati", "Passi fatti"))   # same key numbers on top of both pages
+assert 'href="REPORT.html"' in pg and 'href="STATUS.html"' in rh.build(dd, today, set())    # each page points to the other
 
 print("ALL REPORT_CHARTS TESTS PASSED")

@@ -73,6 +73,16 @@ def read_watchlist(path: str) -> tuple[list[dict], list[str]]:
     return items, bad
 
 
+def dedupe(items: list[dict]) -> list[dict]:
+    """The same rival can be in watchlist.csv and in window.csv: count it once (same name and date), keeping the higher weight."""
+    best: dict = {}
+    for it in items:
+        k = (it["name"].strip().lower(), it["date"])
+        if k not in best or it["weight"] > best[k]["weight"]:
+            best[k] = it
+    return list(best.values())
+
+
 def week_start(d: dt.date) -> dt.date:
     return d - dt.timedelta(days=d.weekday())
 
@@ -170,7 +180,7 @@ def cmd_plan(a):
         raise SystemExit("--to is before --from")
     i1, b1 = read_watchlist(a.watchlist)
     i2, b2 = read_window(a.csv)
-    res = analyse(i1 + i2, launch, start, end)
+    res = analyse(dedupe(i1 + i2), launch, start, end)
     res["not_counted"] = b1 + b2
     text = md(res, b1 + b2, today)
     if a.md:

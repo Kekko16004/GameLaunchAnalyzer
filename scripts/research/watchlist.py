@@ -125,7 +125,7 @@ def analyse(rows: list[dict], today: dt.date, launch: dt.date | None, window: in
             try:
                 rd = D(last["release_date"])
                 if abs((rd - launch).days) <= window:
-                    out["alerts"].append(dict(level="ALARM", game=label, text=f"COLLISIONE CON LA TUA FINESTRA: esce il {last['release_date']}, a {abs((rd - launch).days)} giorni dal tuo lancio ({launch}). Valuta di spostare la data."))
+                    out["alerts"].append(dict(level="ALARM", game=label, text=f"COLLISIONE CON LA TUA FINESTRA: esce il {last['release_date']}, a {abs((rd - launch).days)} {'giorno' if abs((rd - launch).days) == 1 else 'giorni'} dal tuo lancio ({launch}). Valuta di spostare la data."))
             except ValueError:
                 pass
         out["games"].append(g)

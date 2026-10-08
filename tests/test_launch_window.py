@@ -37,6 +37,10 @@ with open(os.path.join(d, "window.csv"), "w", encoding="utf-8", newline="") as f
 wi, bad2 = lw.read_window(os.path.join(d, "window.csv"))
 assert [i["name"] for i in wi] == ["Big Co", "Spring sale", "Heavy"] and wi[1]["weight"] == 2.0 and wi[2]["weight"] == 5.0 and len(bad2) == 2, (wi, bad2)
 
+# the same rival in watchlist.csv and window.csv counts once, with the higher weight
+dup = lw.dedupe([dict(date=D(2027, 3, 2), name="Rival One", kind="competitor", weight=3.0), dict(date=D(2027, 3, 2), name="rival one", kind="competitor", weight=4.0), dict(date=D(2027, 3, 3), name="Rival One", kind="competitor", weight=3.0)])
+assert len(dup) == 2 and max(i["weight"] for i in dup) == 4.0
+
 # ---- CLI under a cp1252 console (the report uses ◀ and ★)
 def run(*a):
     return subprocess.run([sys.executable, os.path.join(R, "launch_window.py")] + list(a), capture_output=True, env=dict(os.environ, PYTHONIOENCODING="cp1252"))
