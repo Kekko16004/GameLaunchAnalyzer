@@ -56,6 +56,7 @@ TERMS: dict = {
     "window": (r"finestra di lancio", "Il periodo attorno alla data di uscita: contano i concorrenti, i festival e i saldi che ci cadono vicino.", "window"),
     "storekit": (r"pagin[ae] steam|pagin[ae] itch|kit pagine|store kit", "I testi, i tag e le immagini delle pagine dei negozi, pronti da copiare.", "storekit"),
     "fullgame": (r"gioco completo", "La versione finale del gioco, non la beta.", "fullgame"),
+    "criticita": (r"criticit[àa]|critiche", "Un problema trovato nel gioco o nella pagina: dai tester simulati, dal test con persone vere o dalle recensioni. Ha una gravità (alta, media, bassa) e uno stato (aperta, in corso, risolta).", "critiche"),
     "todo": (r"\bTODO\b|prossime azioni", "L'elenco delle cose da fare, con scadenza e ore stimate.", "todo"),
     "intentions": (r"profilo decisionale|intenzioni", "Ciò che vuoi davvero (obiettivo, tempo, budget, rischio): guida le soglie e il piano.", "intentions"),
 }
@@ -64,8 +65,9 @@ LABEL = {"wishlist": "Wishlist", "gate": "Gate (cancello)", "ice": "ICE", "premo
          "steamdirect": "Steam Direct", "comparabili": "Comparabili", "posizionamento": "Posizionamento", "benchmark": "Benchmark", "dealbreaker": "Dealbreaker", "boxleiter": "Boxleiter", "steamspy": "SteamSpy",
          "steamdb": "SteamDB", "verticalslice": "Vertical slice", "build": "Build", "playtest": "Playtest", "rimborso": "Rimborso", "roster": "Roster", "convergenza": "Convergenza", "puntwl": "Punteggio wishlist",
          "netto": "Netto per copia", "contingenza": "Piani se… allora", "creator": "Creator e outreach", "proxy": "Proxy", "euristica": "Euristica", "pilastri": "Pilastri", "calendario": "Calendario a passi",
-         "window": "Finestra di lancio", "storekit": "Pagine dei negozi", "fullgame": "Gioco completo", "todo": "TODO", "intentions": "Profilo decisionale"}
-SECTION_RX = {  # link target -> regex on the section heading
+         "window": "Finestra di lancio", "storekit": "Pagine dei negozi", "fullgame": "Gioco completo", "todo": "TODO", "criticita": "Criticità", "intentions": "Profilo decisionale"}
+SECTION_RX = {
+    "critiche": r"criticit|critiche e ondate",  # link target -> regex on the section heading
     "trend": r"andamento|wishlist", "gates": r"cancelli|gate", "premortem": r"pre-?mortem", "economy": r"economia|prezz|economi", "waves": r"ondate del focus|critiche e ondate|focus group",
     "steamdb": r"steamdb", "creators": r"^creator|creator e community", "contingencies": r"se… allora|se\.\.\. allora|contingenz|piani", "product": r"audit|pilastr|quadro d'insieme",
     "steps": r"passi in ordine|piattaforme|calendario", "window": r"finestra di lancio", "storekit": r"pagine store|pagina steam|testi dello store|kit", "fullgame": r"beta oggi|gioco completo",

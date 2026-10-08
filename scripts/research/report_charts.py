@@ -15,6 +15,7 @@ import os
 import re
 
 import charts as C
+import criticita as cr
 import plan_steps as ps
 
 STATUS = {"PASS": "var(--good)", "MARGINAL": "var(--warn)", "FAIL": "var(--crit)"}
@@ -261,9 +262,16 @@ def full_game(root: str) -> list[str]:
     return [_chart(C.hbar(items, aria="Ore per colmare i gap verso il gioco completo", unit=" h"), title="Dalla beta al gioco completo", why=f"Ore stimate per colmare ogni gap: in tutto circa {tot:.0f} ore.", note="Stime dal piano del gioco completo.")]
 
 
+def criticita_charts(root: str) -> list[str]:
+    """The whole criticalities card (one panel per wave, per gate, evolution) as a single wide block."""
+    card, _ = cr.build(root, _json(os.path.join(root, "status.json")) or {}, bare=True)
+    return [card] if card else []
+
+
 def groups(root: str, today: dt.date | None = None) -> list[dict]:
     today = today or dt.date.today()
     spec = [("product", "Prodotto", "Dove regge il gioco e cosa costa sistemarlo.", lambda: pillars(root)),
+            ("criticita", "Criticità", "I problemi trovati, ondata per ondata e per cancello.", lambda: criticita_charts(root)),
             ("fg", "Focus group", "Come reagiscono i tester simulati, ondata dopo ondata.", lambda: focus_group(root)),
             ("market", "Mercato e comparabili", "Il genere in numeri, da dati pubblici.", lambda: market(root)),
             ("window", "Finestra di lancio", "Concorrenti, festival e saldi attorno alla tua data.", lambda: window(root)),
@@ -279,11 +287,11 @@ def groups(root: str, today: dt.date | None = None) -> list[dict]:
         except Exception as e:   # a malformed source file must not break the report: say so in the group instead
             ch = [f'<p class="note">Grafici di «{C.esc(title)}» non disponibili: {C.esc(type(e).__name__)}: {C.esc(e)}</p>']
         if ch:
-            out.append(dict(key=key, title=title, intro=intro, charts=ch))
+            out.append(dict(key=key, title=title, intro=intro, charts=ch, wide=key == "criticita"))
     return out
 
 
 def render(gs: list[dict], hide: set[str] = frozenset()) -> str:
     """HTML of the groups: a heading per group and a responsive grid of chart cards."""
-    return "".join(f'<h3 class="gh">{C.esc(g["title"])}</h3><p class="sub">{C.esc(g["intro"])}</p><div class="cgrid">' + "".join(f'<div class="card">{c}</div>' for c in g["charts"]) + "</div>"
+    return "".join(f'<h3 class="gh">{C.esc(g["title"])}</h3><p class="sub">{C.esc(g["intro"])}</p><div class="cgrid">' + "".join(f'<div class="card"{" style=\"grid-column:1/-1\"" if g.get("wide") else ""}>{c}</div>' for c in g["charts"]) + "</div>"
                    for g in gs if g["key"] not in hide)

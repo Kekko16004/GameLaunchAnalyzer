@@ -91,7 +91,7 @@ Una critica è accettata se è: specifica a questo gioco; ancorata a un'evidenza
 Scrivi `wNN-group-a.md` e `wNN-group-b.md` (impressioni della giuria incluse nel gruppo di appartenenza).
 
 ### Passo 3: dati dell'ondata e metriche (`fg_waves.py`)
-Trascrivi i giudizi nel file `fg/waves/wNN-AAAA-MM-GG.json` (schema in testa a `fg_waves.py`; la chiave facoltativa `"stage": "beta"|"full"` dichiara il metro e compare nel file metriche: per tester `verdict`, `click`, `pitch_ok`, `issues`; elenco `issues` con **chiavi stabili**, gravità e raccomandazione; `controls`; da N = 2 anche `fixes`). **Riusa le stesse chiavi dei problemi di ondata in ondata**, altrimenti il delta non li collega. Poi:
+Trascrivi i giudizi nel file `fg/waves/wNN-AAAA-MM-GG.json` (schema in testa a `fg_waves.py`; la chiave facoltativa `"stage": "beta"|"full"` dichiara il metro e compare nel file metriche: per tester `verdict`, `click`, `pitch_ok`, `issues`; elenco `issues` con **chiavi stabili**, gravità e raccomandazione; `controls`; da N = 2 anche `fixes`). **Riusa le stesse chiavi dei problemi di ondata in ondata**, altrimenti il delta non li collega. Accanto a ogni problema scrivi anche `"gate"` (0, A, B o C: quale cancello blocca) e `"area"` (pilastro o zona del gioco): servono a `STATUS.html` per mostrare le **criticità ondata per ondata, per cancello e nella loro evoluzione** (nuova, persistente, in calo, risolta, ricomparsa). Le correzioni fatte prima dell'ondata vanno in `fixes`: compaiono accanto alla criticità risolta. Poi:
 
 ```bash
 python3 <skill>/scripts/research/fg_waves.py metrics launch/fg/waves/wNN-AAAA-MM-GG.json --roster launch/fg/roster.json -o launch/fg/waves/wNN-metrics.md

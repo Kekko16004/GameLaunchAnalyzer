@@ -29,6 +29,7 @@ import status_page as sp
 
 MATCH = [  # chart group -> section titles it belongs next to (first matching section wins)
     ("product", r"audit|pilastr"),
+    ("criticita", r"critich|ondat|focus"),
     ("fg", r"critich|ondat|focus"),
     ("reviews", r"critich|recension"),
     ("market", r"mercato|comparabil"),

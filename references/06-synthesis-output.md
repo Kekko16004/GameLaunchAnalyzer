@@ -112,6 +112,15 @@ python3 <skill>/scripts/research/charts_export.py --launch-dir launch          #
 ```
 I grafici nascono dai file già prodotti (`01-dev.md`, `fg/timeline.csv`, `_raw/genre_bench.json`, `corpus.json`, `econ.json`, `window.json`, `calendar.md`, `creators.csv`, `comps.csv`, `store_pages.json`, `status.json`); quello che manca non viene disegnato. Per avere più grafici, produci quei file con gli script. Nel `REPORT.md` incorpora gli `.svg` più utili dove servono (`![Pilastri](charts/product-1.svg)`) e scrivi sotto una riga di lettura. Regole: una sola scala per grafico, legenda sempre con due o più serie, il numero resta in tabella, nessun grafico con due punti dati. Dì all'utente dove sono `REPORT.html` e `charts/`; sono file locali.
 
+## Criticità ordinate e domande e risposte (STATUS.html)
+
+**Criticità, ondata per ondata.** La sezione si ricostruisce da sola dai file delle ondate (`fg/waves/wNN-*.json`) a ogni rigenerazione: **dopo ogni ondata rilancia `status_page.py`** (e `report_html.py`). Ha un bottone per ogni ondata (le beta e le "gioco completo" restano separate), uno **Per cancello** (a quale Gate 0/A/B/C appartiene ogni criticità, in quale ondata è nata e se è aperta o risolta) e uno **Evoluzione** (tabella criticità × ondata con andamento e grafico: già presenti, nuove, risolte). Ogni riga ha gravità, quota di tester, variazione rispetto all'ondata prima, stato, cancello e cosa fare; sotto, le criticità **risolte in quell'ondata** con la correzione. Per questo ogni problema nel file dell'ondata porta `gate` e `area`.
+- **Altre fonti** (test reale del Gate B, recensioni reali, pre-mortem, consigli): `criticita.py add --key … --label … --severity alta --source playtest --gate B --opened AAAA-MM-GG` (e `criticita.py close <chiave>` quando è risolta); finiscono nell'ondata del loro periodo e nella vista per cancello.
+- Il formato a mano in `status.json` → `critiques_by_wave` (`wave`, `score`, `note`, `items` con `issue`, `severity`, `seen_by`, `status`, `action`, `gate`) resta valido per le ondate che non hanno un file.
+
+**Domande e risposte.** Tre gruppi con ricerca e filtro per argomento: **le tue domande** (con ondata e cancello a cui si riferiscono), **domande frequenti con le risposte di oggi** (si ricalcolano dai dati: perché il verdetto, cosa fare adesso, cosa è cambiato, criticità più gravi, posso pagare Steam, quando uscire, quante copie servono, a che punto sono le wishlist, cosa succede se va male…) e **domande che conviene farti adesso** (dedotte dallo stato del progetto). **Regola: ogni domanda sostanziale che l'utente ti fa mentre lavorate la salvi** con `qa.py add --q "…" --a "…" --topic Cancelli [--wave 2] [--gate B]` (la stessa domanda si aggiorna, non si duplica); lo stesso vale per `status.json` → `qa` (`custom: true` per le sue). Campo facoltativo `breakeven_basis: "cash"` in `status.json` per mostrare il break-even sui soli soldi spesi.
+Per il pubblico `publisher` le due sezioni non compaiono (`--hide critiques,qa` per toglierle agli altri).
+
 ## Spiegazioni semplici e collegamenti (Markdown e HTML)
 
 Chi legge i report può non conoscere i termini (wishlist, gate, ICE, tripwire, break-even, percentile, hook, capsule…) né sapere dove sta ogni cosa. Dopo aver scritto i file:
@@ -256,6 +265,7 @@ In **Rapida** e **Mirata** il debriefing si accorcia alle sole righe delle fasi 
 - [ ] `contingencies.json` passa `metrics_track.py check`; ogni soglia ha un'origine; le soglie rispecchiano le risposte del Round 6.
 - [ ] `creators.csv` riepilogato nel report e incluso (collassabile) in `STATUS.html`.
 - [ ] Termini tecnici spiegati la prima volta; `md_enrich.py` eseguito (link tra i documenti, glossario in `REPORT.md`) prima di generare `REPORT.html` e `STATUS.html`.
+- [ ] Le criticità di ogni ondata portano `gate` e `area`; le altre fonti sono in `criticita.csv`; `STATUS.html` rigenerato dopo l'ultima ondata mostra ondata per ondata, per cancello ed evoluzione; le domande dell'utente sono salvate con `qa.py`.
 - [ ] `REPORT.html` e `charts/` generati; ogni sezione con numeri ha il suo grafico; i grafici si leggono (una riga che dice cosa guardare) e la vista tabella c'è.
 - [ ] Finestra di lancio valutata con `launch_window.py` (`window.csv` con fonte e data di lettura); se la settimana è affollata la scelta della data è stata riaperta con l'utente.
 - [ ] `STATUS.html` generata per il pubblico scelto dall'utente e **non pubblicata** senza il suo ok.

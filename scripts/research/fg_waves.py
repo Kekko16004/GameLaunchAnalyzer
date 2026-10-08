@@ -12,7 +12,7 @@ Wave file (launch/fg/waves/w01-YYYY-MM-DD.json), written after the panel has jud
     "testers": [{"id": "A-01", "verdict": "WISHLIST", "click": true, "pitch_ok": true, "would_buy": true,   # would_buy (optional): would pay the planned launch price
                  "issues": ["slow-opening", "tutorial-text"]}, ...],   # first issue = main criticism
     "issues":  [{"key": "slow-opening", "label": "Apertura lenta", "severity": "alta",
-                 "recommendation": "..."}, ...],
+                 "recommendation": "...", "gate": "A", "area": "Primi minuti"}, ...],   # gate (0|A|B|C) and area: optional, used to group the criticalities in STATUS.html
     "fixes":   [{"issue": "slow-opening", "what": "tutorial shortened"}]   # waves > 1: fixes since the previous wave
   }
 verdict: WISHLIST | SALDI | IGNORO | REFUND.  severity: alta | media | bassa.  Reuse the SAME issue keys across waves.
