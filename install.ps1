@@ -7,6 +7,7 @@ param(
     [switch]$Antigravity,
     [switch]$Kilo,
     [switch]$Agents,
+    [switch]$Codex,
     [switch]$Uninstall,
     [ValidateSet("link", "copy")]
     [string]$Mode = "link"
@@ -16,6 +17,7 @@ $ErrorActionPreference = "Stop"
 $SkillName = "game-launch-strategist"
 $SourceDir = $PSScriptRoot
 $User = $env:USERPROFILE
+$CodexHome = if ($env:CODEX_HOME) { $env:CODEX_HOME } else { "$User\.codex" }   # Codex: skills and /prompts:game-launch-strategist [DA VERIFICARE on your Codex version]
 $CmdSource = Join-Path $SourceDir "commands\game-launch-strategist.md"
 $SkillFile = Join-Path $SourceDir "SKILL.md"
 # Only these items are part of the skill (no .git, installers, README, command file)
@@ -57,6 +59,11 @@ $Targets = [ordered]@{
         Label = "Agents Hub"
         Skills = @("$User\.agents\skills\$SkillName")
         Commands = @()
+    }
+    codex = @{
+        Label = "Codex (OpenAI)"
+        Skills = @("$CodexHome\skills\$SkillName")
+        Commands = @("$CodexHome\prompts\$SkillName.md")
     }
 }
 
@@ -185,12 +192,13 @@ if ($Uninstall) {
 
 $selected = @()
 if ($All) {
-    $selected = @("claude", "antigravity", "kilo", "agents")
+    $selected = @("claude", "antigravity", "kilo", "agents", "codex")
 } else {
     if ($Claude) { $selected += "claude" }
     if ($Antigravity) { $selected += "antigravity" }
     if ($Kilo) { $selected += "kilo" }
     if ($Agents) { $selected += "agents" }
+    if ($Codex) { $selected += "codex" }
 }
 
 if ($selected.Count -eq 0) {
@@ -203,19 +211,21 @@ if ($selected.Count -eq 0) {
     Write-Host "  [2] Antigravity IDE   (~/.gemini/config)"
     Write-Host "  [3] Kilo / Kilocode   (~/.kilo, ~/.config/kilo, ~/.kilocode)"
     Write-Host "  [4] Agents Hub        (~/.agents)"
-    Write-Host "  [5] All environments (Recommended)"
-    Write-Host "  [6] Uninstall from all environments"
+    Write-Host "  [5] Codex             (~/.codex)"
+    Write-Host "  [6] All environments (Recommended)"
+    Write-Host "  [7] Uninstall from all environments"
     Write-Host "  [0] Exit"
     Write-Host "============================================================"
-    $choice = Read-Host "Choice [0-6]"
+    $choice = Read-Host "Choice [0-7]"
 
     switch ($choice) {
         "1" { $selected = @("claude") }
         "2" { $selected = @("antigravity") }
         "3" { $selected = @("kilo") }
         "4" { $selected = @("agents") }
-        "5" { $selected = @("claude", "antigravity", "kilo", "agents") }
-        "6" {
+        "5" { $selected = @("codex") }
+        "6" { $selected = @("claude", "antigravity", "kilo", "agents", "codex") }
+        "7" {
             foreach ($k in $Targets.Keys) { Uninstall-Target $k }
             Write-Host "`nUninstallation completed."
             exit 0
@@ -238,3 +248,4 @@ foreach ($key in $selected) {
 
 Write-Host "`nInstallation completed successfully."
 Write-Host "Command available: /game-launch-strategist"
+if ($selected -contains "codex") { Write-Host "Codex: use /prompts:game-launch-strategist (or ask for the skill by name). Restart Codex to load it." }

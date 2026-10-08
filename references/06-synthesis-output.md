@@ -112,6 +112,17 @@ python3 <skill>/scripts/research/charts_export.py --launch-dir launch          #
 ```
 I grafici nascono dai file già prodotti (`01-dev.md`, `fg/timeline.csv`, `_raw/genre_bench.json`, `corpus.json`, `econ.json`, `window.json`, `calendar.md`, `creators.csv`, `comps.csv`, `store_pages.json`, `status.json`); quello che manca non viene disegnato. Per avere più grafici, produci quei file con gli script. Nel `REPORT.md` incorpora gli `.svg` più utili dove servono (`![Pilastri](charts/product-1.svg)`) e scrivi sotto una riga di lettura. Regole: una sola scala per grafico, legenda sempre con due o più serie, il numero resta in tabella, nessun grafico con due punti dati. Dì all'utente dove sono `REPORT.html` e `charts/`; sono file locali.
 
+"## Spiegazioni semplici e collegamenti (Markdown e HTML)
+
+Chi legge i report può non conoscere i termini (wishlist, gate, ICE, tripwire, break-even, percentile, hook, capsule…) né sapere dove sta ogni cosa. Dopo aver scritto i file:
+
+```bash
+python3 <skill>/scripts/research/md_enrich.py --launch-dir launch     # link tra i .md + glossario in fondo a REPORT.md (si può rilanciare)
+```
+- **Nei Markdown**: la prima menzione di creator, community, calendario, pagine Steam e itch, prezzo e piano economico, focus group, critiche, pre-mortem, contingenze, posizionamento, audit, gioco completo, finestra di lancio, legale, testi dello store, hook e clip, TODO diventa un link al file giusto; un nome di file tra apici (`calendar.md`) diventa un link; `REPORT.md` chiude con un glossario dei soli termini usati.
+- **Nelle pagine HTML** (`STATUS.html`, `REPORT.html`) lo fa già `glossary.py`: ogni termine tecnico ha una spiegazione che compare al passaggio del mouse, al tocco o con la tastiera; la menzione di una cosa che ha una sua sezione porta a quella sezione (mai alla sezione in cui sei già); in fondo c'è il glossario con le sole parole usate.
+- **Scrivendo**: la prima volta che un termine tecnico compare nel testo, spiegalo in mezza riga con parole semplici. Niente gergo senza spiegazione, niente sigle senza dire cosa sono.
+
 ## Routine settimanale (dopo l'apertura della pagina Steam, e durante la beta su itch.io)
 
 L'utente porta i numeri, tu fai il resto. Una volta a settimana:
@@ -244,6 +255,7 @@ In **Rapida** e **Mirata** il debriefing si accorcia alle sole righe delle fasi 
 - [ ] `store_kit.json` passa `store_kit.py check` per Steam e itch.io; ogni slot media dice cosa mostra; i limiti hanno la data di verifica.
 - [ ] `contingencies.json` passa `metrics_track.py check`; ogni soglia ha un'origine; le soglie rispecchiano le risposte del Round 6.
 - [ ] `creators.csv` riepilogato nel report e incluso (collassabile) in `STATUS.html`.
+- [ ] Termini tecnici spiegati la prima volta; `md_enrich.py` eseguito (link tra i documenti, glossario in `REPORT.md`) prima di generare `REPORT.html` e `STATUS.html`.
 - [ ] `REPORT.html` e `charts/` generati; ogni sezione con numeri ha il suo grafico; i grafici si leggono (una riga che dice cosa guardare) e la vista tabella c'è.
 - [ ] Finestra di lancio valutata con `launch_window.py` (`window.csv` con fonte e data di lettura); se la settimana è affollata la scelta della data è stata riaperta con l'utente.
 - [ ] `STATUS.html` generata per il pubblico scelto dall'utente e **non pubblicata** senza il suo ok.

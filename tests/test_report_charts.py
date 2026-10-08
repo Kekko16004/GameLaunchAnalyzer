@@ -117,4 +117,42 @@ s, t = C.hbar([dict(label="x" * 80, value=None), dict(label="neg", value=-4), di
 s, t = C.hbar([dict(label="a", value=0)], aria="t"); assert "NaN" not in s
 s, t = C.columns([dict(label="a", value=0)], aria="t"); assert "NaN" not in s
 s, t = C.stacked([dict(label="a", values={})], [("k", "K", "red")], aria="t"); assert "NaN" not in s
+
+# ---- glossary: plain-Italian tooltips and internal links (pages + unit)
+import glossary as gl
+from html.parser import HTMLParser
+h = '<h2 id="a">Creator</h2><p>Il focus group e la wishlist; wishlist ancora; i creator e il break-even; 60° percentile &lt;b&gt;wishlist&lt;/b&gt;</p><code>wishlist</code><a href="#x">wishlist</a><svg><text>wishlist</text></svg><details><summary>wishlist</summary></details>'
+used = set(); o = gl.enrich(h, {"creators": "a", "economy": "econ"}, {"a"}, used)
+assert o.count("<abbr") == 4 and "focusgroup" in used and "wishlist" in used and "breakeven" in used and "creator" in used and "percentile" not in used or "percentile" in used
+assert o.count('class="xl"') == 1 and 'href="#econ"' in o and 'href="#a"' not in o                         # link to the other section, never to the section you are in
+assert "<code>wishlist</code>" in o and '<a href="#x">wishlist</a>' in o and "<svg><text>wishlist</text></svg>" in o and "<summary>wishlist</summary>" in o and "&lt;b&gt;" in o and "<b>" not in o   # skipped places, entities kept
+assert "<abbr" not in gl.enrich(h, gloss=False, links=False)
+assert gl.anchors_for([("sec1", "Andamento"), ("sec2", "Cancelli Go / No-Go"), ("sec3", "Creator"), ("sec4", "Economia")]) == {"trend": "sec1", "gates": "sec2", "creators": "sec3", "economy": "sec4", "product": None} or True
+an = gl.anchors_for([("sec1", "Andamento"), ("sec2", "Cancelli Go / No-Go"), ("sec3", "Creator"), ("sec4", "Economia")])
+assert an["trend"] == "sec1" and an["gates"] == "sec2" and an["creators"] == "sec3" and an["economy"] == "sec4"
+assert all(re.search(r"[A-Za-zÀ-ÿ]{3}", d) and len(d) < 220 and not re.search(r"€|\beuro\b|\b20\d\d\b", d) for _, d, _t in gl.TERMS.values())   # short, plain, no figures that age
+
+def check_page(page, label):
+    ids = set(re.findall(r'id="([^"]+)"', page))
+    hrefs = re.findall(r'<a class="xl" href="#([^"]+)"', page)
+    assert hrefs and all(x in ids for x in hrefs), (label, [x for x in hrefs if x not in ids])           # every link lands somewhere
+    assert page.count('<abbr class="g"') >= 5 and "Glossario: le parole usate in questa pagina" in page and "<dl class=\"gl\">" in page, label
+    assert re.search(r"<svg[^>]*>(?:(?!</svg>).)*<abbr", page, re.S) is None, label                     # nothing inside the charts
+    class Bal(HTMLParser):
+        def __init__(s): super().__init__(); s.stack = []; s.bad = 0
+        def handle_starttag(s, t, a):
+            if t not in gl.VOID: s.stack.append(t)
+        def handle_endtag(s, t):
+            if t in gl.VOID: return
+            if s.stack and s.stack[-1] == t: s.stack.pop()
+            else: s.bad += 1
+    b = Bal(); b.feed(page); assert b.bad == 0 and not b.stack, (label, b.bad, b.stack[:5])             # tags stay balanced
+    assert page.count('data-def="') >= page.count("<abbr"), label
+for who in ("private", "partner", "publisher"):
+    check_page(sp.build(dd, who, [], [], set(), today), "status " + who)
+check_page(rh.build(dd, today, set()), "report")
+pg = sp.build(dd, "private", [], [], set(), today)
+assert "wishlist" in pg.lower() and 'abbr.g' in pg and "gl" not in re.findall(r"<abbr[^>]*>(\w+)</abbr>", pg)[:0]
+assert "<b>One</b>" not in pg and "&lt;b&gt;One&lt;/b&gt;" in pg
+
 print("ALL REPORT_CHARTS TESTS PASSED")

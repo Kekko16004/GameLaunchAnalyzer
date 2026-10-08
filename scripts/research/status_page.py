@@ -46,6 +46,7 @@ import re
 from common import load_json, log
 import metrics_track as mt
 import charts as ch
+import glossary as gl
 import plan_steps as ps
 import report_charts as rc
 from launch_window import LABEL
@@ -91,7 +92,7 @@ summary .count{color:var(--ink2);font-weight:400;margin-left:8px}.field{padding:
 pre.val{background:var(--grid);padding:10px;border-radius:8px;white-space:pre-wrap;overflow-wrap:anywhere;margin:6px 0;font:inherit;font-size:.9rem}.slot{border:2px dashed var(--axis);border-radius:8px;padding:12px;margin:6px 0;color:var(--ink2);font-size:.9rem}
 .chips{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0}.chip{border:1px solid var(--ring);border-radius:999px;padding:3px 10px;font-size:.85rem;background:var(--surface)}.chip.top5{border-color:var(--s1);font-weight:600}.chip b{color:var(--muted);margin-right:4px;font-weight:400}
 .gh{font-size:1.05rem;margin:26px 0 2px}.toc{position:sticky;top:0;z-index:5;background:var(--bg);display:flex;gap:8px;overflow-x:auto;white-space:nowrap;padding:8px 0;margin:8px 0 0;border-bottom:1px solid var(--grid)}.toc+section{margin-top:12px}.toc a{flex:none;border:1px solid var(--ring);border-radius:999px;padding:3px 12px;font-size:.85rem;text-decoration:none;color:var(--ink2);background:var(--surface)}.toc a:hover,.toc a:focus{border-color:var(--s1);color:var(--ink)}h2{scroll-margin-top:56px}.gates{display:flex;gap:6px 16px;flex-wrap:wrap;margin:10px 0 2px;font-size:.9rem}@media print{.toc,.top button{display:none}body{background:#fff}}.over{color:var(--crit);font-weight:600}.legend{display:flex;gap:16px;flex-wrap:wrap;color:var(--ink2);font-size:.85rem;margin:6px 0}.legend i{display:inline-block;width:18px;height:0;border-top:2px solid;vertical-align:middle;margin-right:6px}
-""" + ch.CHART_CSS
+""" + ch.CHART_CSS + gl.CSS
 JS = """
 (function(){document.querySelectorAll('.copy').forEach(function(b){b.addEventListener('click',function(){var t=b.getAttribute('data-copy')||'';function ok(){var o=b.textContent;b.textContent='Copiato';b.classList.add('ok');setTimeout(function(){b.textContent=o;b.classList.remove('ok');},1500);}
 if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(ok,function(){fb(t,ok);});}else{fb(t,ok);}});});
@@ -694,21 +695,28 @@ def build(root: str, audience: str, include: list[str], exclude: list[str], hide
             docs.append(f'<details class="card doc"><summary><strong>{esc(DOCS.get(stem, stem))}</strong></summary>{md_to_html(open(p, encoding="utf-8").read())}</details>')
     if docs:
         sec.append("<h2>Documenti</h2>" + "".join(docs))
-    body_html, heads = [], []
+    body_html, heads, own_ids = [], [], []
     for chunk in sec:   # every <h2> gets an anchor and a chip in the sticky index
+        mine = set()
+
         def anchor(m):
             heads.append(re.sub(r"<[^>]+>", "", m.group(1)))
+            mine.add(f"sec{len(heads)}")
             return f'<h2 id="sec{len(heads)}">{m.group(1)}</h2>'
         body_html.append(re.sub(r"<h2>(.*?)</h2>", anchor, chunk))
-    sec = body_html
+        own_ids.append(mine)
+    anchors = gl.anchors_for([(f"sec{i}", h) for i, h in enumerate(heads, 1)])
+    used: set = set()
+    sec = [gl.enrich(c, anchors, own, used) for c, own in zip(body_html, own_ids)]   # plain-Italian tooltips and links to the section that deals with the thing
+    glo = gl.glossary_html(used)
     toc = '<nav class="toc" aria-label="Sezioni">' + "".join(f'<a href="#sec{i}">{h}</a>' for i, h in enumerate(heads, 1)) + "</nav>" if len(heads) > 3 else ""
     name = st.get("game") or os.path.basename(os.path.dirname(os.path.abspath(root))) or "Progetto"
     label = {"private": "Uso interno", "partner": "Per i soci", "publisher": "Per il publisher"}[audience]
     return (f'<!doctype html><html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Stato del lancio, {esc(name)}</title>'
             f'<style>{CSS}</style></head><body><main><div class="top"><div><h1>{esc(name)}: stato del lancio</h1><p class="sub">Aggiornato il {fmt_date(st.get("updated") or today.isoformat())} · {esc(label)}'
             f'{" · modalità " + esc(st["mode"]) if st.get("mode") else ""}{" · valutato come: " + esc(product.get("label") or product.get("kind")) if product.get("kind") or product.get("label") else ""}</p></div><button class="theme" id="theme" type="button">Tema chiaro/scuro</button></div>'
-            + toc + "".join(sec) + f'<footer class="note">Pagina generata da <code>status_page.py</code> il {today.isoformat()} da file locali, senza richieste di rete. Il focus group è simulato: non è un dato di mercato. '
-            f'Cifre con fonte nei documenti; ciò che è etichettato [DA VERIFICARE] resta da verificare.</footer></main><script>{JS}</script></body></html>')
+            + toc + "".join(sec) + glo + f'<footer class="note">Pagina generata da <code>status_page.py</code> il {today.isoformat()} da file locali, senza richieste di rete. Il focus group è simulato: non è un dato di mercato. '
+            f'Cifre con fonte nei documenti; ciò che è etichettato [DA VERIFICARE] resta da verificare.</footer></main><script>{JS}{gl.JS}</script></body></html>')
 
 
 def main():

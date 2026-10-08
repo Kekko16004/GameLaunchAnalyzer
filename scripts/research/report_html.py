@@ -23,6 +23,7 @@ import os
 import re
 
 from common import load_json, log
+import glossary as gl
 import report_charts as rc
 import status_page as sp
 
@@ -82,14 +83,22 @@ def build(root: str, today: dt.date, hide: set[str]) -> str:
     if fg_svg:
         trend += f'<div class="card"><h3>Punteggio del focus group, per ondata</h3>{fg_svg}</div>'
     if trend:
-        top.append(f'<h2>Andamento</h2><div class="cgrid">{trend}</div>')
+        top.append(f'<h2 id="trend">Andamento</h2><div class="cgrid">{trend}</div>')
     if groups:
-        top.append("<h2>Quadro d'insieme</h2>" + rc.render(list(groups.values())))
+        top.append("<h2 id=\"overview\">Quadro d'insieme</h2>" + rc.render(list(groups.values())))
     body = []
     for i, (title, text) in enumerate(secs):
         charts = rc.render(placed.get(i, []))
         body.append(f'<details class="card doc sec" id="s{i}" open><summary><strong>{sp.esc(title)}</strong></summary><div class="inner">{sp.md_to_html(text)}'
                     + (f'<div class="charts">{charts}</div>' if charts else "") + "</div></details>")
+    present = "".join(top)
+    heads = [(i, t) for i, t in (("trend", "Andamento"), ("overview", "Quadro d'insieme")) if f'id="{i}"' in present] + [(f"s{i}", t) for i, (t, _) in enumerate(secs)]
+    anchors = gl.anchors_for(heads)
+    used: set = set()
+    own_top = lambda c: {x for x in ("trend", "overview") if f'id="{x}"' in c}
+    top = [gl.enrich(c, anchors, own_top(c), used) for c in top]   # plain-Italian tooltips and links to the section that deals with the thing
+    body = [gl.enrich(c, anchors, {f"s{i}"}, used) for i, c in enumerate(body)]
+    glo = gl.glossary_html(used)
     title_line = re.search(r"(?m)^# (.+)$", head_md)
     name = st.get("game") or (title_line.group(1).strip() if title_line else "Report")
     strip_no = lambda t: re.sub(r"^\d+\.\s*", "", t)
@@ -99,9 +108,9 @@ def build(root: str, today: dt.date, hide: set[str]) -> str:
             f'<style>{sp.CSS}{EXTRA_CSS}</style></head><body><main><div class="top"><div><h1>{sp.esc(name)}: report di lancio</h1><p class="sub">Generato il {sp.fmt_date(today.isoformat())}'
             f'{" · valutato come: " + sp.esc(product.get("label") or product.get("kind")) if product.get("kind") or product.get("label") else ""}</p></div>'
             f'<button class="theme" id="theme" type="button">Tema chiaro / scuro</button></div>{toc}'
-            + "".join(top) + "<h2>Il report</h2>" + "".join(body)
+            + "".join(top) + "<h2>Il report</h2>" + "".join(body) + glo
             + f'<footer class="note">Pagina generata da <code>report_html.py</code> da <code>REPORT.md</code> e dai dati in <code>launch/</code>, senza richieste di rete. Il focus group è simulato: non è un dato di mercato. '
-              f'Contiene strategia: non condividerla senza averla letta. Ciò che è etichettato [DA VERIFICARE] resta da verificare.</footer></main><script>{sp.JS}</script></body></html>')
+              f'Contiene strategia: non condividerla senza averla letta. Ciò che è etichettato [DA VERIFICARE] resta da verificare.</footer></main><script>{sp.JS}{gl.JS}</script></body></html>')
 
 
 def main():

@@ -29,6 +29,7 @@ Before any number, the skill **interviews you about your intentions in several r
 Beyond the phases, the skill ships tools that turn guesses into reproducible numbers and keep the plan alive:
 
 - **Real benchmarks.** `genre_bench.py` (how the most reviewed games of your tag do, by year, price and demo, built from public data at run time), `store_bench.py` (store page and trailer of the comparables: description, GIFs, trailer duration, cuts, hook frames, and how they relate to performance), `review_corpus.py` (thousands of real reviews of the comparables **and** of the genre, and what they say about the features of your game).
+- **Plain words, everywhere.** Every technical term (wishlist, gate, ICE, break-even, percentile…) has a one-sentence explanation in simple Italian: as a tooltip in the HTML pages (hover, focus or tap) and in a glossary at the end of each page and of `REPORT.md`. Mentions of things that have their own section or file are links (creators → the creators section, the calendar → `calendar.md`). `md_enrich.py` does this for the Markdown documents.
 - **Cold start in any chat.** A new chat knows nothing, so the skill first rebuilds the context: it inventories the tools of the session (engine-editor MCP, terminal, browser, image reading), scans the project (`project_scan.py`: Unreal, Unity, Godot and more, with version, plugins and configured MCP servers), reads the right documents (`CLAUDE.md`, GDD, `GAME_CONTEXT.md`, `GAME_TASKS.md`, README…), reuses what other skills such as `game-developer` already produced, and writes a Context Pack (`00-contesto.md`). If an Unreal editor MCP is connected it looks at the real build (read-only); if not, it says how to connect it and goes on. It asks only what no file says.
 - **Charts everywhere they help.** `report_html.py` turns `REPORT.md` into an illustrated page (pillars, tester verdicts per wave, criticisms, genre and price benchmarks, real-review themes, economics against break-even, crowding per launch week, steps by phase, creators), `status_page.py` has a chart overview, and `charts_export.py` writes each chart as an SVG for the Markdown reports. Light and dark, phone-friendly, every chart with a table view.
 - **Launch window.** `launch_window.py` scores each week by the competitors, big releases, festivals and sales around it, lists the quietest weeks and says where your date falls.
@@ -58,7 +59,7 @@ Requirements: Python ≥ 3.9 (standard library only) for the research scripts.
 
 ```bash
 # Linux / macOS
-./install.sh                 # interactive; or --all, --claude, --antigravity, --kilo, --agents
+./install.sh                 # interactive; or --all, --claude, --antigravity, --kilo, --agents, --codex
 ./install.sh --all --mode copy   # copy instead of symlink
 ./install.sh --uninstall
 ```
@@ -68,6 +69,8 @@ Requirements: Python ≥ 3.9 (standard library only) for the research scripts.
 installer.bat
 :: or: powershell -ExecutionPolicy Bypass -File install.ps1 -All
 ```
+
+**Codex**: `--codex` (PowerShell: `-Codex`) installs the skill in `$CODEX_HOME/skills` (default `~/.codex/skills`) and the command as a prompt in `~/.codex/prompts`, used as `/prompts:game-launch-strategist` [verify the paths against your Codex version]. Where an environment lacks a tool the skill uses (structured questions, sub-agents, tool search), `SKILL.md` says what to do instead.
 
 Only `SKILL.md`, `references/` and `scripts/` are installed, plus the `/game-launch-strategist` slash command. In `link` mode (default) edits to this repository are picked up immediately.
 
