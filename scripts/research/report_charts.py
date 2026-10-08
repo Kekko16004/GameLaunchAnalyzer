@@ -169,30 +169,55 @@ def window(root: str) -> list[str]:
     return out
 
 
+def _explain(headers: list[str], rows: list[list], summary: str) -> str:
+    """Like charts.table_view but with a clear summary line: the table explains what each bar means."""
+    head = "".join(f"<th>{C.esc(h)}</th>" for h in headers)
+    body = "".join("<tr>" + "".join(f"<td>{C.esc(c)}</td>" for c in r) + "</tr>" for r in rows)
+    return f'<details><summary>{C.esc(summary)}</summary><div class="wrap"><table><thead><tr>{head}</tr></thead><tbody>{body}</tbody></table></div></details>'
+
+
 def reviews(root: str) -> list[str]:
+    import theme_labels as TL
     res = _json(os.path.join(root, "_raw", "corpus.json"))
     g = (res or {}).get("groups") or {}
     out = []
-    for key, title, why in (("punished", "Di cosa si lamentano", "Quota media di recensioni negative che citano il tema."), ("rewarded", "Cosa premiano", "Quota media di recensioni positive che citano il tema.")):
+    for key, title, why in (("punished", "Di cosa si lamentano i giocatori",
+                             "Su 100 recensioni negative dei giochi simili, quante parlano di ciascun problema. Barra lunga = lamentela frequente."),
+                            ("rewarded", "Cosa piace ai giocatori",
+                             "Su 100 recensioni positive dei giochi simili, quante lodano ciascuna cosa. Barra lunga = motivo di gradimento frequente.")):
         c, n = {r["theme"]: r for r in (g.get("comps") or {}).get(key, [])}, {r["theme"]: r for r in (g.get("genre") or {}).get(key, [])}
         themes = sorted(set(c) | set(n), key=lambda t: -max((c.get(t) or {}).get("macro_pct", 0), (n.get(t) or {}).get("macro_pct", 0)))[:7]
         if not themes:
             continue
-        items = []
+        items, rows = [], []
         for t in themes:
-            items.append(dict(label=t, value=(c.get(t) or {}).get("macro_pct"), color="var(--s1)", tip=f"{t}, comparabili: {(c.get(t) or {}).get('macro_pct', 'n/d')}% (in {(c.get(t) or {}).get('breadth', '-')} giochi)"))
+            lb = TL.label(t)
+            cv, nv = (c.get(t) or {}).get("macro_pct"), (n.get(t) or {}).get("macro_pct")
+            items.append(dict(label=lb, value=cv, color="var(--s1)", tip=f"{lb} — giochi più simili al tuo: {cv if cv is not None else 'n/d'}% (in {(c.get(t) or {}).get('breadth', '-')} giochi)"))
             if n:
-                items.append(dict(label="", value=(n.get(t) or {}).get("macro_pct"), color="var(--s2)", tip=f"{t}, genere: {(n.get(t) or {}).get('macro_pct', 'n/d')}%"))
-        leg = C.legend([("Comparabili", "var(--s1)")] + ([("Stesso genere", "var(--s2)")] if n else []))
-        out.append(_chart(C.hbar(items, aria=title, unit="%"), title=title, why=why, leg=leg, note="Temi per parola chiave in inglese: euristica da verificare leggendo gli esempi."))
+                items.append(dict(label="", value=nv, color="var(--s2)", tip=f"{lb} — giochi dello stesso genere: {nv if nv is not None else 'n/d'}%"))
+            rows.append([lb, TL.means(t), f"{cv}%" if cv is not None else "n/d", f"{nv}%" if nv is not None else "n/d"])
+        leg = C.legend([("Giochi più simili al tuo", "var(--s1)")] + ([("Giochi dello stesso genere", "var(--s2)")] if n else []))
+        svg, _ = C.hbar(items, aria=title, unit="%", label_w=230)
+        table = _explain(["Voce", "Cosa conta (parole cercate nelle recensioni)", "Simili", "Genere"], rows, "Cosa vuol dire ogni voce")
+        out.append(_chart((svg, table), title=title, why=why, leg=leg,
+                          note="Conteggio automatico per parole chiave nelle recensioni in inglese: indica la tendenza, non è una lettura recensione per recensione."))
     feats = ((res or {}).get("features") or {}).get("all") or []
     feats = [f for f in feats if f.get("neg_share") is not None and f.get("pos_share") is not None]
     if feats:
-        items = [dict(label=f["feature"], value=round(f["pos_share"] - f["neg_share"], 1), color="var(--s1)" if f["pos_share"] >= f["neg_share"] else "var(--s2)",
-                      tip=f"{f['feature']}: nominata nel {f['pos_share']}% delle positive e nel {f['neg_share']}% delle negative ({f.get('verdict')})") for f in feats]
-        out.append(_chart(C.hbar(items, aria="Feature del tuo gioco: premiate o punite", unit=" pt"), title="Le feature del tuo gioco nelle recensioni reali",
-                          why="Differenza tra quota nelle recensioni positive e nelle negative: a destra premiata, a sinistra punita.",
-                          leg=C.legend([("Premiata", "var(--s1)"), ("Punita", "var(--s2)")])))
+        fl = TL.feature_labels(root)
+        items, rows = [], []
+        for f in feats:
+            lb, mn = TL.feature_label(f["feature"], fl)
+            diff = round(f["pos_share"] - f["neg_share"], 1)
+            items.append(dict(label=lb, value=diff, color="var(--s1)" if diff >= 0 else "var(--s2)",
+                              tip=f"{lb}: nelle positive {f['pos_share']}%, nelle negative {f['neg_share']}% — {TL.verdict_it(f.get('verdict'))}"))
+            rows.append([lb, mn, f"{f['pos_share']}%", f"{f['neg_share']}%", TL.verdict_it(f.get("verdict"))])
+        svg, _ = C.hbar(items, aria="Le caratteristiche del tuo gioco: piacciono o no?", unit=" punti", label_w=230)
+        table = _explain(["Caratteristica", "Cosa vuol dire", "Citata nelle positive", "Citata nelle negative", "In parole semplici"], rows, "Leggi i numeri e cosa vuol dire")
+        out.append(_chart((svg, table), title="Le caratteristiche del tuo gioco: ai giocatori piacciono o no?",
+                          why="Nelle recensioni dei giochi simili, quanto se ne parla bene meno quanto se ne parla male. Barra verde a destra = piace; barra rossa a sinistra = dà fastidio; vicino a zero = divide o se ne parla poco.",
+                          leg=C.legend([("Piace", "var(--s1)"), ("Dà fastidio", "var(--s2)")])))
     return out
 
 
@@ -293,5 +318,6 @@ def groups(root: str, today: dt.date | None = None) -> list[dict]:
 
 def render(gs: list[dict], hide: set[str] = frozenset()) -> str:
     """HTML of the groups: a heading per group and a responsive grid of chart cards."""
-    return "".join(f'<h3 class="gh">{C.esc(g["title"])}</h3><p class="sub">{C.esc(g["intro"])}</p><div class="cgrid">' + "".join(f'<div class="card"{" style=\"grid-column:1/-1\"" if g.get("wide") else ""}>{c}</div>' for c in g["charts"]) + "</div>"
+    wide = ' style="grid-column:1/-1"'
+    return "".join(f'<h3 class="gh">{C.esc(g["title"])}</h3><p class="sub">{C.esc(g["intro"])}</p><div class="cgrid">' + "".join(f'<div class="card"{wide if g.get("wide") else ""}>{c}</div>' for c in g["charts"]) + "</div>"
                    for g in gs if g["key"] not in hide)
