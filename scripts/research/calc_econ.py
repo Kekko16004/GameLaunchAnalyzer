@@ -16,6 +16,12 @@ Examples:
       --wishlists 3000,8000,20000 --conv 0.10,0.20,0.30 --md launch/03-pricing-calc.md -o launch/_raw/econ.json
   python calc_econ.py --config launch/_raw/econ_inputs.json         # same flags, as a JSON object
 
+Early Access (optional): --ea-price P turns on an EA scenario. The scenario copies are then sold in EA at P; the EA launch
+month makes --ea-first-month of them (default 0.35 [OPINIONE]); the 1.0 launch month earns --full-vs-ea of the EA launch month
+(default 0.40: median found by GameDiscoverCo, Dec 2025, on 225 EA graduates [DA VERIFICARE]) at --full-price (default --price).
+The point: the EA release IS the launch; 1.0 is a smaller second push, not a second launch.
+  python calc_econ.py --price 9.99 --ea-price 7.99 --full-price 9.99 --wishlists 1000,3000,8000 --conv 0.1,0.2,0.3 ...
+
 Defaults (all adjustable): steam-cut 0.30, vat-share 0.10 (blended average of prices that include VAT and
 prices that do not), refund 0.06, avg-discount 0.15 (launch discount and sales over year 1), local-tax 0.
 """
@@ -26,7 +32,8 @@ import math
 from common import load_json, log, write_json
 
 DEFAULTS = dict(steam_cut=0.30, vat_share=0.10, refund=0.06, avg_discount=0.15, local_tax=0.0, costs=0.0,
-                hours=0.0, hourly=0.0, partners=1, conv=[0.10, 0.20, 0.30], wishlists=[], currency="EUR")
+                hours=0.0, hourly=0.0, partners=1, conv=[0.10, 0.20, 0.30], wishlists=[], currency="EUR",
+                ea_price=None, full_price=None, ea_first_month=0.35, full_vs_ea=0.40)
 NAMES = ["pessimistico", "base", "ottimistico"]
 
 
@@ -80,7 +87,29 @@ def compute(c: dict) -> dict:
         n = price * mult_price * (1 - r["avg_discount"]) * (1 - r["vat_share"]) * (1 - (refund if refund is not None else r["refund"])) \
             * (1 - r["steam_cut"]) * (1 - r["local_tax"])
         out["sensitivity"].append(dict(case=label, net_per_copy=round(n, 2), breakeven_copies=math.ceil(total / n) if total > 0 else 0))
+    if c.get("ea_price"):
+        out["early_access"] = early_access(c, r, out)
     return out
+
+
+def early_access(c: dict, r: dict, out: dict) -> dict:
+    """EA scenario: per scenario, net of the EA launch month and of the 1.0 launch month (a share of the EA month)."""
+    ea_p, full_p = float(c["ea_price"]), float(c.get("full_price") or c["price"])
+    if ea_p <= 0 or full_p <= 0:
+        raise SystemExit("ea_price and full_price must be > 0")
+    first, ratio = rate(c.get("ea_first_month", 0.35), "ea_first_month"), float(c.get("full_vs_ea", 0.40))
+    ratio = ratio / 100 if ratio > 1.5 else ratio
+    net_at = lambda p: p * (1 - r["avg_discount"]) * (1 - r["vat_share"]) * (1 - r["refund"]) * (1 - r["steam_cut"]) * (1 - r["local_tax"])
+    ne, nf = net_at(ea_p), net_at(full_p)
+    rows = []
+    for s_ in out["scenarios"]:
+        m_copies = round(s_["copies"] * first)
+        m_net = m_copies * ne
+        f_net = m_net * ratio
+        rows.append(dict(name=s_["name"], ea_year_net=round(s_["copies"] * ne, 2), ea_month_copies=m_copies, ea_month_net=round(m_net, 2),
+                         full_month_net=round(f_net, 2), full_month_copies=round(f_net / nf) if nf else 0))
+    return dict(ea_price=ea_p, full_price=full_p, net_per_copy_ea=round(ne, 2), net_per_copy_full=round(nf, 2), ea_first_month=first, full_vs_ea=ratio,
+                breakeven_copies_ea=math.ceil(out["costs"]["total"] / ne) if out["costs"]["total"] > 0 else 0, scenarios=rows)
 
 
 def md(o: dict) -> str:
@@ -103,6 +132,16 @@ def md(o: dict) -> str:
               f"{s['profit_cash']:.0f} | {s['profit_with_time']:.0f} | {s['per_partner']:.0f} | {s['times_breakeven']} |" for s in o["scenarios"]]
     L += ["", "## Sensibilità", "", "| Caso | Netto per copia | Copie break-even |", "|---|---|---|"]
     L += [f"| {s['case']} | {s['net_per_copy']:.2f} | {s['breakeven_copies']} |" for s in o["sensitivity"]]
+    ea = o.get("early_access")
+    if ea:
+        L += ["", "## Accesso anticipato (Early Access) e poi 1.0", "",
+              f"Prezzo in EA {ea['ea_price']:.2f} (netto per copia {ea['net_per_copy_ea']:.2f}), prezzo alla 1.0 {ea['full_price']:.2f} (netto {ea['net_per_copy_full']:.2f}). "
+              f"Break-even con il prezzo EA: **{ea['breakeven_copies_ea']}** copie.",
+              f"Ipotesi: il mese di uscita in EA fa il {ea['ea_first_month']:.0%} delle copie dell'anno [OPINIONE]; il mese della 1.0 incassa il {ea['full_vs_ea']:.0%} del mese di uscita in EA "
+              "(mediana GameDiscoverCo, dicembre 2025, 225 giochi usciti dall'EA [DA VERIFICARE]).", "",
+              "| Scenario | Netto anno in EA | Copie mese EA | Netto mese EA | Netto mese 1.0 | Copie mese 1.0 |", "|---|---|---|---|---|---|"]
+        L += [f"| {x['name']} | {x['ea_year_net']:.0f} | {x['ea_month_copies']} | {x['ea_month_net']:.0f} | {x['full_month_net']:.0f} | {x['full_month_copies']} |" for x in ea["scenarios"]]
+        L += ["", "**L'uscita in EA è il lancio vero**: la 1.0 di solito porta meno del primo mese in EA, quindi l'EA va preparato come un lancio completo (pagina, wishlist, creator, prezzo)."]
     L += ["", "_Le conversioni wishlist -> acquisto sono un'ipotesi [DA VERIFICARE] sui comparabili; il modello non include vendite non passate dalla wishlist, DLC, bundle né ricavi di altri store._"]
     return "\n".join(L) + "\n"
 
@@ -118,6 +157,10 @@ def main():
     ap.add_argument("--partners", type=int, help="people sharing the profit"); ap.add_argument("--currency")
     ap.add_argument("--wishlists", help="comma list for the 3 scenarios (pessimistic,base,optimistic)")
     ap.add_argument("--conv", help="year-1 conversion per scenario, e.g. 0.10,0.20,0.30")
+    ap.add_argument("--ea-price", dest="ea_price", type=float, help="Early Access price: turns on the EA scenario")
+    ap.add_argument("--full-price", dest="full_price", type=float, help="price at 1.0 (default --price)")
+    ap.add_argument("--ea-first-month", dest="ea_first_month", help="share of year-1 copies sold in the EA launch month (default 0.35)")
+    ap.add_argument("--full-vs-ea", dest="full_vs_ea", help="1.0 launch month revenue as a share of the EA launch month (default 0.40)")
     ap.add_argument("-o", "--out", help="JSON output (also read by wl_track.py and status_page.py)"); ap.add_argument("--md", help="Markdown output file")
     a = ap.parse_args()
     c = dict(DEFAULTS)

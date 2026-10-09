@@ -18,10 +18,18 @@ tracking: everything is inline, so the file can be attached to an email as is). 
   launch/_raw/window.json    launch window: competitor crowding per week (launch_window.py), shown as a table and a chart
   launch/steamdb.csv         numbers read by hand on SteamDB (steamdb_assist.py)
   launch/fg/waves/wNN-metrics.md, wNN-delta.md   per-wave reports of the focus group (fg_waves.py)
-On top: a sticky index of the sections, the verdict with the Go/No-Go gates at a glance, and an "Adesso" box (whose turn it is).
+Layout: a sticky bar with FIVE TABS (Riepilogo · Gioco e test · Marketing e store · Piano e soldi · Documenti; pure CSS + a few lines
+of inline JS, the last tab is remembered in localStorage), a wide page (up to 1400 px) that still works at 390 px. Riepilogo holds
+the verdict with the Go/No-Go gates at a glance, the "Adesso" box (whose turn it is), key numbers, alerts and trends.
+Live state: launch/issue_status.json (the owner's decision on every focus-group issue, see criticita.py) is shown as a badge with its
+note wherever issues appear (criticalities per wave and per gate, evolution matrix, top-issues chart, convergence table of the
+documents, verdict risks, real-review themes) and splits "Da fare adesso" from "Già deciso". TODO.md is read live (todo_track.py
+marks lines done): open / done per section, and a warning when it was not updated after the latest wave or decision.
 Charts ("Quadro d'insieme") come from report_charts.py; the same charts next to the text of the report are in report_html.py.
   launch/criticita.csv       criticalities from other sources (real test, reviews, pre-mortem): criticita.py add
   launch/qa.json             your questions and the answers given (qa.py add); status.json -> qa and critiques_by_wave are read too
+  launch/issue_status.json   the owner's decisions on the issues (aperto, in_lavorazione, da_verificare, risolto, pianificato, accettato, non_problema)
+  status.json -> issue_aliases {issue key: [regex]}   lets a verdict risk or a row of a document table point to an issue key
 Anything missing is simply left out.
 
 Sharing: the page contains strategy. --audience picks what goes in (default private):
@@ -44,6 +52,7 @@ import html
 import json
 import math
 import os
+import glob
 import re
 from common import load_json, log
 import metrics_track as mt
@@ -53,6 +62,7 @@ import glossary as gl
 import qa as qamod
 import plan_steps as ps
 import report_charts as rc
+import todo_track as tt
 from launch_window import LABEL
 import store_kit as sk
 import watchlist as wlist
@@ -76,13 +86,15 @@ CSS = """
 @media (prefers-color-scheme:dark){:root:where(:not([data-theme="light"])){color-scheme:dark;--bg:#0d0d0d;--surface:#1a1a19;--ink:#fff;--ink2:#c3c2b7;--grid:#2c2c2a;--axis:#383835;--ring:rgba(255,255,255,.10);--s1:#3987e5;--s2:#d95926;--s3:#199e70;--s4:#c98500;--goodtext:#0ca30c}}
 :root[data-theme="dark"]{color-scheme:dark;--bg:#0d0d0d;--surface:#1a1a19;--ink:#fff;--ink2:#c3c2b7;--grid:#2c2c2a;--axis:#383835;--ring:rgba(255,255,255,.10);--s1:#3987e5;--s2:#d95926;--s3:#199e70;--s4:#c98500;--goodtext:#0ca30c}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
-main{max-width:1040px;margin:0 auto;padding:24px 16px 64px;overflow-wrap:anywhere}.card{min-width:0}h1{font-size:1.6rem;margin:0 0 4px}h2{font-size:1.15rem;margin:36px 0 12px}h3{font-size:1rem;margin:20px 0 8px}
+main{max-width:1400px;margin:0 auto;padding:24px clamp(16px,3vw,40px) 64px;overflow-wrap:break-word}.card{min-width:0}h1{font-size:1.6rem;margin:0 0 4px}h2{font-size:1.15rem;margin:36px 0 12px}h3{font-size:1rem;margin:20px 0 8px}
 .sub{color:var(--ink2);margin:0 0 4px}.note{color:var(--muted);font-size:.85rem}.top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
 button.theme{background:var(--surface);color:var(--ink2);border:1px solid var(--ring);border-radius:8px;padding:6px 10px;cursor:pointer;font:inherit;font-size:.85rem}
 .card{background:var(--surface);border:1px solid var(--ring);border-radius:12px;padding:16px}.grid{display:grid;gap:12px}.g4{grid-template-columns:repeat(auto-fit,minmax(min(200px,100%),1fr))}
 .verdict{display:flex;gap:16px;align-items:flex-start}.verdict>div:first-child svg{width:40px;height:40px}.verdict>div:last-child{min-width:0}.verdict .big{font-size:1.25rem;font-weight:600}.tile .v{font-size:1.9rem;font-weight:600;line-height:1.1}.tile .l{color:var(--ink2);font-size:.85rem}.tile .d{color:var(--ink2);font-size:.85rem;margin-top:4px}
 .state{display:inline-flex;align-items:center;gap:6px;font-weight:600;white-space:nowrap;flex:none}.state svg{flex:none}.g2{grid-template-columns:repeat(auto-fit,minmax(min(380px,100%),1fr))}ul.clean{list-style:none;margin:0;padding:0}ul.clean li{display:flex;gap:8px;align-items:flex-start;padding:6px 0;border-top:1px solid var(--grid)}ul.clean li:first-child{border-top:0}
-table{border-collapse:collapse;width:100%;font-size:.9rem}th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--grid);vertical-align:top}th{color:var(--ink2);font-weight:600}td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+table{border-collapse:collapse;width:100%;font-size:.9rem}th,td{text-align:left;padding:6px 10px;border-bottom:1px solid var(--grid);vertical-align:top;overflow-wrap:normal;word-break:normal}th{color:var(--ink2);font-weight:600}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}td.nw,th.nw{white-space:nowrap}.doc td{min-width:8em}.doc td:first-child{min-width:11em}.doc td a{overflow-wrap:anywhere}
+.ptab td:first-child{min-width:12em}.ptab td:nth-child(3),.ptab td:nth-child(4){min-width:16em}table.ours td:first-child{min-width:12em}table.ours td:nth-child(2){min-width:18em}
 .wrap{overflow-x:auto}tr.past td{color:var(--muted)}details{margin-top:8px}summary{cursor:pointer;color:var(--ink2)}
 .chart{position:relative}.chart svg{width:100%;height:auto;display:block}.tip{position:absolute;pointer-events:none;background:var(--surface);color:var(--ink);border:1px solid var(--ring);border-radius:8px;padding:8px 10px;font-size:.85rem;white-space:pre-line;box-shadow:0 2px 10px rgba(0,0,0,.15);display:none;max-width:260px;z-index:2}
 .doc{margin-top:12px}.doc h3{font-size:1rem}.doc h4,.doc h5{font-size:.95rem;margin:14px 0 6px}.doc code{background:var(--grid);padding:1px 4px;border-radius:4px;font-size:.85em}.doc pre{background:var(--grid);padding:10px;border-radius:8px;overflow-x:auto}.doc blockquote{margin:8px 0;padding-left:12px;border-left:3px solid var(--axis);color:var(--ink2)}
@@ -95,7 +107,16 @@ ol.steps{list-style:none;margin:8px 0 0;padding:0}.step{display:grid;grid-templa
 summary .count{color:var(--ink2);font-weight:400;margin-left:8px}.field{padding:10px 0;border-top:1px solid var(--grid)}.field:first-of-type{border-top:0}.fh{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap}
 pre.val{background:var(--grid);padding:10px;border-radius:8px;white-space:pre-wrap;overflow-wrap:anywhere;margin:6px 0;font:inherit;font-size:.9rem}.slot{border:2px dashed var(--axis);border-radius:8px;padding:12px;margin:6px 0;color:var(--ink2);font-size:.9rem}
 .chips{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0}.chip{border:1px solid var(--ring);border-radius:999px;padding:3px 10px;font-size:.85rem;background:var(--surface)}.chip.top5{border-color:var(--s1);font-weight:600}.chip b{color:var(--muted);margin-right:4px;font-weight:400}
-.gh{font-size:1.05rem;margin:26px 0 2px}.toc{position:sticky;top:0;z-index:5;background:var(--bg);display:flex;gap:8px;overflow-x:auto;white-space:nowrap;padding:8px 0;margin:8px 0 0;border-bottom:1px solid var(--grid)}.toc+section{margin-top:12px}.toc a{flex:none;border:1px solid var(--ring);border-radius:999px;padding:3px 12px;font-size:.85rem;text-decoration:none;color:var(--ink2);background:var(--surface)}.toc a:hover,.toc a:focus{border-color:var(--s1);color:var(--ink)}h2{scroll-margin-top:56px}.gates{display:flex;gap:6px 16px;flex-wrap:wrap;margin:10px 0 2px;font-size:.9rem}@media print{.toc,.top button{display:none}body{background:#fff}}.over{color:var(--crit);font-weight:600}.legend{display:flex;gap:16px;flex-wrap:wrap;color:var(--ink2);font-size:.85rem;margin:6px 0}.legend i{display:inline-block;width:18px;height:0;border-top:2px solid;vertical-align:middle;margin-right:6px}
+.gh{font-size:1.05rem;margin:26px 0 2px}.toc{display:flex;gap:8px;flex-wrap:wrap;padding:4px 0 8px;margin:4px 0 0}.toc a{flex:none;border:1px solid var(--ring);border-radius:999px;padding:3px 12px;font-size:.85rem;text-decoration:none;color:var(--ink2);background:var(--surface)}.toc a:hover,.toc a:focus{border-color:var(--s1);color:var(--ink)}
+h2{scroll-margin-top:72px}.gates{display:flex;gap:6px 16px;flex-wrap:wrap;margin:10px 0 2px;font-size:.9rem}
+.tabs{position:sticky;top:0;z-index:5;background:var(--bg);display:flex;gap:4px;overflow-x:auto;padding:10px 0 0;margin:14px 0 0;border-bottom:1px solid var(--axis);scrollbar-width:thin}
+.tabs button{flex:none;display:inline-flex;align-items:center;gap:6px;background:transparent;color:var(--ink2);border:1px solid transparent;border-bottom:0;border-radius:10px 10px 0 0;padding:8px 14px;cursor:pointer;font:inherit;font-size:.95rem;margin-bottom:-1px}
+.tabs button[aria-selected="true"]{background:var(--surface);color:var(--ink);border-color:var(--axis);font-weight:600;border-bottom:1px solid var(--surface)}.tabs button:focus-visible{outline:2px solid var(--s1);outline-offset:-2px}.tabs svg{flex:none}
+.tabs .cnt{font-size:.75rem;font-weight:600;border-radius:999px;padding:0 7px;border:1px solid var(--warn);color:var(--ink)}[role=tabpanel]{padding-top:4px}[role=tabpanel][hidden]{display:none}
+.risk-own{display:inline-flex;gap:6px;flex-wrap:wrap;margin-left:6px}.todo-sec{margin-top:10px}.todo-sec summary{font-weight:600}.todo-l{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;padding:8px 0;border-top:1px solid var(--grid)}.todo-l .meta{grid-column:2;color:var(--ink2);font-size:.85rem;display:flex;gap:12px;flex-wrap:wrap}
+.todo-l.done .txt{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--axis)}.wgrid{display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(min(150px,100%),1fr));margin:8px 0}.wgrid .tile .v{font-size:1.4rem}
+.chart svg{max-width:860px}.stage{display:inline-block;border-radius:6px;padding:1px 8px;font-size:.8rem;font-weight:600;border:1px solid var(--s1);color:var(--ink)}.stage.full{border-color:var(--s2)}
+@media print{.tabs,.top button{display:none}body{background:#fff}[role=tabpanel][hidden]{display:block}}.over{color:var(--crit);font-weight:600}.legend{display:flex;gap:16px;flex-wrap:wrap;color:var(--ink2);font-size:.85rem;margin:6px 0}.legend i{display:inline-block;width:18px;height:0;border-top:2px solid;vertical-align:middle;margin-right:6px}
 """ + ch.CHART_CSS + gl.CSS + cr.CSS + qamod.CSS
 JS = """
 (function(){document.querySelectorAll('.copy').forEach(function(b){b.addEventListener('click',function(){var t=b.getAttribute('data-copy')||'';function ok(){var o=b.textContent;b.textContent='Copiato';b.classList.add('ok');setTimeout(function(){b.textContent=o;b.classList.remove('ok');},1500);}
@@ -109,6 +130,14 @@ c.querySelectorAll('.hit').forEach(function(h){function show(){var x=h.getAttrib
 tip.textContent=h.getAttribute('data-tip');tip.style.display='block';var svg=c.querySelector('svg'),k=svg.getBoundingClientRect().width/svg.viewBox.baseVal.width;tip.style.left=Math.min(x*k+12,c.clientWidth-270)+'px';tip.style.top='8px';}
 function hide(){tip.style.display='none';if(cross)cross.style.display='none';}
 h.addEventListener('pointerenter',show);h.addEventListener('focus',show);h.addEventListener('pointerleave',hide);h.addEventListener('blur',hide);});});})();
+(function(){var tabs=[].slice.call(document.querySelectorAll('.tabs [role=tab]'));if(!tabs.length)return;var KEY='status-tab:'+document.title;
+function show(id,focus){var ok=false;tabs.forEach(function(t){var on=t.getAttribute('aria-controls')===id;if(on)ok=true;t.setAttribute('aria-selected',on?'true':'false');t.tabIndex=on?0:-1;if(on&&focus)t.focus();if(on){var bar=t.parentNode;bar.scrollLeft=Math.max(0,t.offsetLeft-(bar.clientWidth-t.offsetWidth)/2);}});
+if(!ok)return false;document.querySelectorAll('[role=tabpanel]').forEach(function(p){p.hidden=p.id!==id;});try{localStorage.setItem(KEY,id);}catch(e){}return true;}
+tabs.forEach(function(t,i){t.addEventListener('click',function(){show(t.getAttribute('aria-controls'));});
+t.addEventListener('keydown',function(e){var k=e.key,j=k==='ArrowRight'?i+1:k==='ArrowLeft'?i-1:k==='Home'?0:k==='End'?tabs.length-1:-9;if(j===-9)return;e.preventDefault();j=(j+tabs.length)%tabs.length;show(tabs[j].getAttribute('aria-controls'),true);});});
+function reveal(h){var el=h&&document.getElementById(h);if(!el)return false;var p=el.closest('[role=tabpanel]');if(p&&p.hidden)show(p.id);if(el.tagName==='DETAILS')el.open=true;el.scrollIntoView();return true;}
+document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a[href^="#"]');if(!a)return;var h=a.getAttribute('href').slice(1);if(h&&reveal(h)){e.preventDefault();try{history.replaceState(null,'','#'+h);}catch(x){}}});
+var start=null;try{start=localStorage.getItem(KEY);}catch(e){}if(location.hash&&reveal(location.hash.slice(1)))return;if(!(start&&show(start)))show(tabs[0].getAttribute('aria-controls'));})();
 """
 
 
@@ -156,7 +185,8 @@ def inline(t: str) -> str:
     return re.sub(r"\[([^\]]+)\]\(([^)]+)\)", link, t)
 
 
-def md_to_html(md: str) -> str:
+def md_to_html(md: str, row_hook=None) -> str:
+    """Small Markdown renderer. row_hook(cells) -> extra html appended to the first cell of a table row (owner's decision badges)."""
     out, lines, i = [], md.replace("\r", "").split("\n"), 0
     while i < len(lines):
         ln = lines[i]
@@ -174,7 +204,7 @@ def md_to_html(md: str) -> str:
                 rows.append(cells(lines[j]))
                 j += 1
             out.append('<div class="wrap"><table><thead><tr>' + "".join(f"<th>{inline(c)}</th>" for c in head) + "</tr></thead><tbody>"
-                       + "".join("<tr>" + "".join(f"<td>{inline(c)}</td>" for c in r) + "</tr>" for r in rows) + "</tbody></table></div>")
+                       + "".join("<tr>" + "".join(f"<td>{inline(c)}{(row_hook(r) or '') if (row_hook and k == 0) else ''}</td>" for k, c in enumerate(r)) + "</tr>" for r in rows) + "</tbody></table></div>")
             i = j
             continue
         m = re.match(r"^(#{1,6})\s+(.*)", ln)
@@ -289,6 +319,7 @@ def wishlist_section(root: str, today: dt.date):
 
 
 def timeline_section(root: str):
+    """Focus-group score per wave: the beta waves as the main line, the full-game waves as a grey line with diamonds (never mixed)."""
     path = os.path.join(root, "fg", "timeline.csv")
     if not os.path.exists(path):
         return None, None
@@ -296,36 +327,91 @@ def timeline_section(root: str):
         rows = list(csv.DictReader(f))
     if not rows:
         return None, None
-    pts = [(k, float(r["score"]), f"Ondata {r['wave']} ({fmt_date(r['date'])})\nPunteggio {r['score']}\nBuild {r.get('build') or '-'}\nClick {r.get('click_pct')}% · pitch {r.get('pitch_pct')}%") for k, r in enumerate(rows)]
-    gate = float(rows[-1]["gate"]) if rows[-1].get("gate") else None
-    lo, hi = min([p[1] for p in pts] + ([gate] if gate is not None else []) + [0]), max([p[1] for p in pts] + ([gate] if gate is not None else []) + [40])
-    refs = [(f"Gate A: {fmt_n(gate)}", [(0, gate), (max(len(pts) - 1, 1), gate)], True)] if gate is not None else []
-    ay = nice_axis(min(lo - 5, 0), hi + 10)
-    svg = line_chart("Punteggio wishlist del focus group per ondata", pts, xlabels=[(k, f"Ondata {r['wave']}") for k, r in enumerate(rows)], ymin=ay[0], ymax=ay[1], ystep=ay[2], refs=refs,
-                     xmax_pad=0.0 if len(pts) > 1 else 1)
-    svg += table_view(["Ondata", "Data", "Punteggio", "Variazione", "Click %", "Pitch %", "A / B"], [[r["wave"], r["date"], r["score"], r.get("delta") or "", r.get("click_pct"), r.get("pitch_pct"), f"{r.get('score_a')} / {r.get('score_b')}"] for r in rows])
+    stg = rc.stage_of(root)
+    for r in rows:
+        r["_stage"] = (r.get("stage") or stg.get(str(r.get("wave")), "")).strip()
+    num = lambda v: float(str(v).replace(",", ".")) if str(v or "").strip() not in ("", "-") else None
+    xs = {r["wave"]: k for k, r in enumerate(rows)}
+    tip = lambda r: (f"Ondata {r['wave']} · {'gioco completo' if r['_stage'] == 'full' else 'beta' if r['_stage'] == 'beta' else 'senza tipo'} ({fmt_date(r['date'])})\nPunteggio {r['score']}"
+                     + (f"\nTetto di questa versione {r['ceiling']} (margine {r.get('headroom')})" if num(r.get("ceiling")) is not None else f"\nTetto di questa versione: non misurato, stima {r['ceiling_estimate']} [STIMA]" if r.get("ceiling_estimate") else "")
+                     + (f"\nTetto del gioco completo {r['ceiling_full']}" if num(r.get("ceiling_full")) is not None else "") + f"\nClick {r.get('click_pct') or '-'}% · pitch {r.get('pitch_pct') or '-'}%")
+    beta = [r for r in rows if r["_stage"] != "full"]
+    full = [r for r in rows if r["_stage"] == "full"]
+    pts = [(xs[r["wave"]], float(r["score"]), tip(r)) for r in beta]
+    refs, markers = [], []
+    if full:
+        refs.append(("Gioco completo", [(xs[r["wave"]], float(r["score"])) for r in full], True))
+        markers += [(xs[r["wave"]], float(r["score"]), tip(r), "muted") for r in full]
+    gate = num(rows[-1].get("gate"))
+    if gate is not None:
+        refs.append((f"Gate A: {fmt_n(gate)}", [(0, gate), (max(len(rows) - 1, 1), gate)], True))
+    ceils = [(xs[r["wave"]], num(r["ceiling"]), f"Tetto di questa versione, ondata {r['wave']}: {r['ceiling']}", "good") for r in rows if num(r.get("ceiling")) is not None]
+    markers += ceils
+    vals = [float(r["score"]) for r in rows] + ([gate] if gate is not None else []) + [c[1] for c in ceils]
+    ay = nice_axis(min(min(vals) - 5, 0), max(vals + [40]) + 10)
+    svg = line_chart("Punteggio wishlist del focus group per ondata", pts or [(0, 0.0, "")], xlabels=[(k, f"{r['wave']}") for k, r in enumerate(rows)], ymin=ay[0], ymax=ay[1], ystep=ay[2], refs=refs, markers=markers,
+                     xmax_pad=0.0 if len(rows) > 1 else 1)
+    svg += table_view(["Ondata", "Tipo", "Data", "Punteggio", "Variazione", "Tetto di questa versione", "Margine", "Tetto del gioco completo", "Click %", "Pitch %", "A / B"],
+                      [[r["wave"], {"full": "gioco completo", "beta": "beta"}.get(r["_stage"], "-"), r["date"], r["score"], r.get("delta") or "", r.get("ceiling") or (f"~{r['ceiling_estimate']} [STIMA]" if r.get("ceiling_estimate") else ""),
+                        r.get("headroom") or "", r.get("ceiling_full") or "", r.get("click_pct"), r.get("pitch_pct"), f"{r.get('score_a')} / {r.get('score_b')}"] for r in rows])
     return rows, svg
 
 
 # ----------------------------------------------------------------------------- other sources
 def read_todos(root: str):
-    p = os.path.join(root, "TODO.md")
-    if not os.path.exists(p):
+    """(open items, done count, open hours) from TODO.md: kept for report_html / qa. The full live view is todo_section()."""
+    t = tt.parse(os.path.join(root, "TODO.md"))
+    if not t:
         return [], 0, 0.0
-    open_, done = [], 0
-    for ln in open(p, encoding="utf-8").read().splitlines():
-        m = re.match(r"^\s*(?:[-*]\s*)?\[( |x|X)\]\s*(.+)", ln)
-        if not m:
+    open_ = [dict(action=x["action"], due=x["due"], hours=x["hours"], metric=x["metric"], h=x["h"]) for x in t["items"] if not x["done"] and not x.get("dropped")]
+    open_.sort(key=lambda x: x["due"] if re.match(r"\d{4}-\d{2}-\d{2}", x["due"]) else "9999")
+    return open_, sum(1 for x in t["items"] if x["done"]), sum(x["h"] for x in open_)
+
+
+def todo_section(root: str, today: dt.date) -> str | None:
+    """TODO.md, live: progress, open vs done per section (done collapsed), overdue flagged, and a warning when the file was not
+    touched after the latest wave or decision (Claude updates it after every gate, wave and decision: todo_track.py done/add)."""
+    path = os.path.join(root, "TODO.md")
+    t = tt.parse(path)
+    if not t or not t["items"]:
+        return None
+    gone = [x for x in t["items"] if x.get("dropped")]
+    items = [x for x in t["items"] if not x.get("dropped")]
+    n_done = sum(1 for x in items if x["done"])
+    pct = round(100 * n_done / len(items))
+    overdue = [x for x in items if not x["done"] and x["due_date"] and x["due_date"] < today]
+    newer = []
+    mt_todo = os.path.getmtime(path)
+    for label, f in (("l'ultima ondata del focus group", sorted(glob.glob(os.path.join(root, "fg", "waves", "w[0-9]*.json")))[-1:] or [None]), ("le tue decisioni (issue_status.json)", [os.path.join(root, "issue_status.json")]),
+                     ("il calendario a passi", [os.path.join(root, "calendar.md")])):
+        f = f[0]
+        if f and os.path.exists(f) and os.path.getmtime(f) > mt_todo + 60:
+            newer.append(f"{label} ({dt.date.fromtimestamp(os.path.getmtime(f)).isoformat()})")
+    stale = (f'<p>{state("warn", "Da aggiornare")} <span>TODO.md è del {dt.date.fromtimestamp(mt_todo).isoformat()}, più vecchio di {esc(", ".join(newer))}. '
+             'Claude deve spuntare le voci fatte e aggiungere le nuove (<code>todo_track.py done</code> / <code>add</code>).</span></p>') if newer else ""
+
+    def line(x):
+        who = {"me": "👤 Tu", "claude": "🤖 Claude", "both": "👤+🤖 Insieme"}.get(x["owner"], "")
+        st = ("pass", "Fatto") if x["done"] else ("warn", "In ritardo") if x in overdue else ("pending", "Da fare")
+        meta = [m for m in (who, f"entro {x['due']}" if x["due"] else "", f"{x['hours']}" if x["hours"] else "", f"misura: {x['metric']}" if x["metric"] else "", x["done_note"]) if m]
+        return (f'<div class="todo-l{" done" if x["done"] else ""}"><span>{state(*st)}</span><span class="txt">{inline(x["action"])}</span>'
+                + (f'<div class="meta">{"".join(f"<span>{inline(m)}</span>" for m in meta)}</div>' if meta else "") + "</div>")
+    out = [f'<h2>Cose da fare (TODO)</h2><div class="card"><p class="sub">Dal file <code>TODO.md</code> (aggiornato: {esc(t.get("updated") or "n/d")}). '
+           f'<strong>{len(items) - n_done} aperte</strong>, {n_done} fatte su {len(items)}' + (f' · <span class="over">{len(overdue)} in ritardo</span>' if overdue else "") + "</p>"
+           f'<div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{pct}" aria-label="Voci della TODO fatte"><span style="width:{pct}%"></span></div>{stale}</div>']
+    for sec in t["sections"]:
+        its = [x for x in items if x["section"] == sec]
+        if not its:
             continue
-        if m.group(1) != " ":
-            done += 1
-            continue
-        parts = [x.strip() for x in m.group(2).split("|")]
-        hours = re.search(r"[\d.,]+", parts[2]) if len(parts) > 2 else None
-        open_.append(dict(action=parts[0], due=parts[1] if len(parts) > 1 else "", hours=parts[2] if len(parts) > 2 else "", metric=parts[-1] if len(parts) > 4 else "",
-                          h=float(hours.group(0).replace(",", ".")) if hours else 0.0))
-    open_.sort(key=lambda t: t["due"] if re.match(r"\d{4}-\d{2}-\d{2}", t["due"]) else "9999")
-    return open_, done, sum(t["h"] for t in open_)
+        op, dn = [x for x in its if not x["done"]], [x for x in its if x["done"]]
+        out.append(f'<details class="card todo-sec"{" open" if op and sec == next((s2 for s2 in t["sections"] if any(not x["done"] and x["section"] == s2 for x in items)), None) else ""}>'
+                   f'<summary>{inline(sec)}<span class="count">{len(op)} da fare · {len(dn)} fatte</span></summary>'
+                   + "".join(line(x) for x in op)
+                   + (f'<details class="decided"><summary>Fatte ({len(dn)})</summary>{"".join(line(x) for x in dn)}</details>' if dn else "") + "</details>")
+    if gone:
+        out.append(f'<details class="card todo-sec"><summary>Superate dalle tue decisioni<span class="count">{len(gone)}</span></summary>'
+                   + "".join(f'<div class="todo-l done"><span>{state("na", "Superata")}</span><span class="txt">{inline(x["action"])}</span><div class="meta"><span>{inline(x["done_note"])}</span></div></div>' for x in gone) + "</details>")
+    return "".join(out)
 
 
 # ----------------------------------------------------------------------------- page
@@ -399,6 +485,21 @@ def kit_platform(pf: str, title: str, p: dict, verified: str) -> str:
     def tbl(title: str, head: list[str], rows: list[list]) -> str:
         return (f'<div class="field"><strong>{esc(title)}</strong><div class="wrap"><table><thead><tr>{"".join(f"<th>{esc(h)}</th>" for h in head)}</tr></thead><tbody>'
                 + "".join("<tr>" + "".join(f"<td>{esc(c)}</td>" for c in r) + "</tr>" for r in rows) + "</tbody></table></div></div>")
+    if p.get("early_access"):
+        ea = p["early_access"]
+        elim = ea.get("limits") or {}
+        o.append(f'<div class="field"><strong>Early Access: le domande di Steam</strong><p class="note">Compaiono sulla pagina del gioco. Domande lette su {esc(ea.get("source") or "partner.steamgames.com/doc/store/earlyaccess")} il {esc(ea.get("verified_on") or "[DA VERIFICARE]")}. '
+                 'Valve chiede di non promettere date o funzioni future.</p>')
+        for k, (label, value, note) in zip([q.get("key") for q in ea.get("questions", []) if q.get("key") in dict(sk.EA_QUESTIONS)], sk.ea_rows(p)):
+            lim = elim.get(k) or sk.EA_SOFT_LIMIT
+            over = f' {state("warn", "Lungo da leggere")}' if len(value) > lim else ""
+            o.append(f'<div class="field"><div class="fh"><strong>{esc(label)}</strong><span><span class="note">{len(value)} caratteri</span>{over} {copy_btn(value)}</span></div><pre class="val">{esc(value)}</pre>' + (f'<p class="note">{esc(note)}</p>' if note else "") + "</div>")
+        o.append("</div>")
+    if p.get("accessibility"):
+        txt = sk.accessibility_text(p, "bbcode" if pf == "steam" else "md")
+        o.append(f'<div class="field"><div class="fh"><strong>Accessibilità</strong><span><span class="note">{len(p["accessibility"].get("features") or [])} opzioni</span> {copy_btn(txt)}</span></div>'
+                 + "<ul class=\"clean\">" + "".join(f'<li>{state("pass", "Nel gioco")}<span><strong>{esc(f.get("label"))}</strong>: {esc(f.get("value"))}</span></li>' for f in p["accessibility"].get("features") or []) + "</ul>"
+                 + (f'<p class="note">{esc(p["accessibility"]["note"])}</p>' if p["accessibility"].get("note") else "") + "</div>")
     if p.get("screenshots"):
         o.append(tbl("Screenshot, in ordine", ["#", "Cosa mostra", "Didascalia", "File"], [[x.get("order"), x.get("what", ""), x.get("caption", ""), x.get("file") or "da produrre"] for x in sorted(p["screenshots"], key=lambda x: x.get("order") or 0)]))
     if p.get("capsules"):
@@ -414,8 +515,14 @@ def kit_platform(pf: str, title: str, p: dict, verified: str) -> str:
     return "".join(o)
 
 
-def kit_section(kit: dict) -> str:
-    out = ['<h2>Pagine store: scheda copiabile</h2><p class="note">Ogni campo ha il suo pulsante Copia. I testi vengono da <code>store_kit.json</code>; i limiti di caratteri sono quelli dichiarati nel file con la data di verifica.</p>']
+def kit_section(kit: dict, root: str | None = None) -> str:
+    fr = sk.freshness(root) if root else {}
+    fresh = ""
+    if fr:
+        fresh = (f'<p>{state("pass", "Pagine store aggiornate")} <span>al {fmt_date(fr["kit_date"])}: nessuna decisione, ondata o gate più recente.</span></p>' if not fr["stale"] else
+                 f'<p>{state("warn", "Pagine store da aggiornare")} <span>Il kit è del {fmt_date(fr["kit_date"])}; dopo sono arrivati: ' + "; ".join(f"{esc(w)} ({fmt_date(d)})" for w, d in fr["newer"])
+                 + '. Claude aggiorna <code>store_kit.json</code> e rilancia <code>store_kit.py</code>.</span></p>')
+    out = [f'<h2>Pagine store: scheda copiabile</h2><div class="card">{fresh}<p class="note">Ogni campo ha il suo pulsante Copia. I testi vengono da <code>store_kit.json</code>; i limiti di caratteri sono quelli dichiarati nel file con la data di verifica.</p></div>']
     for pf, title in (("steam", "Pagina Steam"), ("itch", "Pagina itch.io")):
         if kit.get(pf):
             out.append(kit_platform(pf, title, kit[pf], kit.get("verified_on", "")))
@@ -565,8 +672,8 @@ def window_section(root: str) -> str | None:
             + f'<p class="note">Conta le {w.get("counted", 0)} voci in lista: una settimana libera qui non è libera nel mondo. Il punteggio confronta le settimane tra loro, non prevede le vendite.</p></div>')
 
 
-def waves_section(root: str) -> str | None:
-    """Per-wave reports written by fg_waves.py (metrics and delta), newest last, plus the timeline."""
+def waves_md_section(root: str) -> str | None:
+    """Fallback when there are no wave .json files: the per-wave reports written by fg_waves.py (metrics and delta), as Markdown."""
     d = os.path.join(root, "fg")
     files = []
     wd = os.path.join(d, "waves")
@@ -581,6 +688,78 @@ def waves_section(root: str) -> str | None:
     return ("<h2>Ondate del focus group</h2>" + "".join(parts)) if parts else None
 
 
+def waves_section(root: str) -> str | None:
+    """One card per wave, newest first, built from the wave files (not from the English .md): beta or full game in clear,
+    score against the threshold, change against the previous wave OF THE SAME KIND, ceiling and headroom, what testers would do,
+    and the issues still to do with the owner's decision."""
+    import fg_waves
+    ws = rc.wave_files(root)
+    if not ws:
+        return waves_md_section(root)
+    owner = cr.load_owner(root)
+    f = lambda v: "n/d" if v is None else f"{v:g}".replace(".", ",")
+    parts, prev_by = [], {}
+    cards = []
+    for w in ws:
+        try:
+            m = fg_waves.metrics(w)
+        except (SystemExit, Exception):
+            continue
+        g = "full" if w.get("stage") == "full" else "beta"
+        prev = prev_by.get(g)
+        prev_by[g] = m
+        cards.append((w, m, prev))
+    for k, (w, m, prev) in enumerate(reversed(cards)):
+        stg = w.get("stage") or ""
+        badge = {"beta": '<span class="stage">Beta gratuita</span>', "full": '<span class="stage full">Gioco completo (proiezione)</span>'}.get(stg, '<span class="stage">Tipo non indicato</span>')
+        delta = "" if not prev else f" ({'+' if m['score'] - prev['score'] >= 0 else ''}{f(round(m['score'] - prev['score'], 1))} rispetto all'ondata {prev['wave']})"
+        ok = m["gate"]["passed"]
+        tiles = [("Punteggio", f(m["score"]), f"soglia {f(m['gate']['threshold'])}: {'superata' if ok else 'non superata'}")]
+        c, cf, ce = m.get("ceiling"), m.get("ceiling_full"), m.get("ceiling_estimate")
+        if c:
+            tiles.append(("Tetto di questa versione", f(c["score"]), f"margine {f(c['headroom'])} punti · oggi al {f(c['share'])}% del tetto"))
+        elif ce:
+            tiles.append(("Tetto di questa versione", "~" + str(ce["value"]).replace(".", ","), "non misurato [STIMA]"))
+        if cf:
+            tiles.append(("Tetto del gioco completo", f(cf["score"]), "con i contenuti pianificati: non è margine di oggi"))
+        tiles += [("Wishlist subito", f(m["pct"]["WISHLIST"]) + "%", ""), ("Aspetta i saldi", f(m["pct"]["SALDI"]) + "%", ""), ("Scorre oltre", f(m["pct"]["IGNORO"]) + "%", ""), ("Compra e rimborsa", f(m["pct"]["REFUND"]) + "%", "")]
+        if m["click"]["n"]:
+            tiles.append(("Clicca al primo sguardo", f(m["click"]["pct"]) + "%", ""))
+        if m["pitch"]["n"]:
+            tiles.append(("Capisce il gioco", f(m["pitch"]["pct"]) + "%", ""))
+        if m["buy"]["n"]:
+            tiles.append(("Pagherebbe il prezzo", f(m["buy"]["pct"]) + "%", ""))
+        body = [f'<p class="meta">{badge} · {fmt_date(m["date"])} · {m["n"]} tester' + (f' · versione {esc(m["build"])}' if m.get("build") else "") + "</p>",
+                '<div class="wgrid">' + "".join(f'<div class="card tile"><div class="l">{esc(l)}</div><div class="v">{esc(v)}</div>' + (f'<div class="d">{esc(d)}</div>' if d else "") + "</div>" for l, v, d in tiles) + "</div>"]
+        if c:
+            reasons = ", ".join(f"{esc(r)} {n}" for r, n in c["reasons"].items())
+            near_badge = state("pass", "Vicino al tetto") if c["near"] else state("info", "C'è ancora margine")
+            body.append(f'<p>{near_badge} '
+                        + ("<span>Il gioco è vicino al massimo che questo panel gli darebbe: smettere di aggiungere idee e passare ai test con persone vere.</span>" if c["near"] else
+                           f"<span>Mancano {f(c['headroom'])} punti al tetto di questa versione: lavorare solo sui problemi risolvibili, non su idee nuove. {c['stuck']} tester su {c['n']} non metterebbero il gioco in wishlist nemmeno sistemato" + (f" (motivi: {reasons})" if reasons else "") + ": non è il loro gioco.</span>") + "</p>")
+        elif ce:
+            body.append(f'<p>{state("info", "Tetto di questa versione non misurato")} <span>Stima ~{esc(ce["value"])} [STIMA]' + (f": {esc(ce['note'])}" if ce.get("note") else "") + ". Nella prossima ondata chiedi le due domande del tetto (questa versione / gioco completo).</span></p>")
+        elif stg != "full":
+            body.append('<p class="note">In questa ondata non è stata fatta la domanda del tetto di questa versione (cosa farebbero i tester se si sistemasse solo ciò che si può sistemare adesso).</p>')
+        if cf:
+            body.append(f'<p class="note">Tetto del gioco completo {f(cf["score"])}: è il punteggio immaginato con i contenuti pianificati. Non è margine raggiungibile con questa versione.</p>')
+        now = [i for i in m["issues"] if cr.is_now(i["key"], owner)]
+        dec = len(m["issues"]) - len(now)
+        if now:
+            body.append(f"<h3>Da fare adesso ({len(now)})</h3><ul class=\"clean\">" + "".join(f'<li><span><strong>{esc(i["label"])}</strong> <span class="note">{f(i["pct"])}% dei tester · gravità {esc(i["severity"])}</span> {cr.owner_badge(i["key"], owner, with_note=False)}</span></li>' for i in now[:8]) + "</ul>")
+        if dec:
+            body.append(f'<p class="note">Altre {dec} critiche di questa ondata hanno già una decisione: sono nella sezione Criticità, sotto «Già deciso».</p>')
+        if w.get("evidence"):
+            body.append(f'<p class="note">Cosa hanno visto i tester: {esc(w["evidence"])}</p>')
+        title = f"Ondata {m['wave']} · {'gioco completo' if stg == 'full' else 'beta' if stg == 'beta' else 'senza tipo'} · {fmt_date(m['date'])}: punteggio {f(m['score'])}{delta}"
+        parts.append(f'<details class="card doc"{" open" if k < 2 else ""}><summary><strong>{esc(title)}</strong></summary>{"".join(body)}</details>')
+    intro = ('<p class="sub">Ogni ondata è lo stesso gruppo di tester simulati sullo stato del gioco di quel giorno. Le ondate <strong>beta</strong> giudicano la beta gratuita; '
+             'quelle <strong>gioco completo</strong> giudicano il gioco finito come da piano (sono una proiezione). Si confrontano solo con ondate dello stesso tipo. '
+             'Il <strong>tetto di questa versione</strong> è il punteggio che il panel darebbe se si sistemasse solo ciò che si può sistemare adesso (bug, chiarezza, rifinitura, niente contenuti nuovi); il <strong>margine</strong> è quanto manca. '
+             'Il <strong>tetto del gioco completo</strong> conta anche i contenuti pianificati: dice dove può arrivare il gioco finito, non quanto si guadagna oggi.</p>')
+    return ("<h2>Ondate del focus group</h2>" + intro + "".join(parts)) if parts else None
+
+
 def key_tiles(st: dict, wl_a, fg_rows, plan: dict, econ, today: dt.date, hide: set) -> list:
     """The key numbers shown on top of STATUS.html and REPORT.html: (label, value, note)."""
     tiles = []
@@ -590,8 +769,20 @@ def key_tiles(st: dict, wl_a, fg_rows, plan: dict, econ, today: dt.date, hide: s
         if "days_to_launch" in wl_a:
             tiles.append(("Giorni al lancio", fmt_n(wl_a["days_to_launch"]), fmt_date(wl_a["launch"])))
     if fg_rows:
-        last, prev = fg_rows[-1], fg_rows[-2] if len(fg_rows) > 1 else None
-        tiles.append(("Punteggio focus group", last["score"], f"ondata {last['wave']}" + (f", {float(last['score']) - float(prev['score']):+.1f} rispetto alla precedente" if prev else "")))
+        typed = any(r.get("_stage") for r in fg_rows)
+        for kind, name in (("beta", "Punteggio focus group" + (" · beta" if typed else "")), ("full", "Punteggio focus group · gioco completo")):
+            rs = [r for r in fg_rows if (r.get("_stage") == "full") == (kind == "full")]
+            if not rs:
+                continue
+            last, prev = rs[-1], rs[-2] if len(rs) > 1 else None
+            tiles.append((name, str(last["score"]).replace(".", ","), f"ondata {last['wave']}" + (f", {float(last['score']) - float(prev['score']):+.1f} rispetto all'ondata {prev['wave']}".replace(".", ",") if prev else "")))
+            name_v = "Tetto di questa versione" + (" (beta)" if kind == "beta" and typed else "" if kind == "beta" else " (gioco completo)")
+            if str(last.get("ceiling") or "").strip():
+                tiles.append((name_v, str(last["ceiling"]).replace(".", ","), f"margine {str(last.get('headroom')).replace('.', ',')} punti: quanto si può ancora guadagnare con le sole correzioni possibili adesso"))
+            elif str(last.get("ceiling_estimate") or "").strip():
+                tiles.append((name_v, "~" + str(last["ceiling_estimate"]).replace(".", ","), "non misurato [STIMA]: chiedere la domanda del tetto di questa versione alla prossima ondata"))
+            if kind == "beta" and str(last.get("ceiling_full") or "").strip():
+                tiles.append(("Tetto del gioco completo", str(last["ceiling_full"]).replace(".", ","), "con i contenuti pianificati: non è margine di oggi"))
     if plan["phases"] and "steps" not in hide:
         sm = ps.summary(plan, today)
         tiles.append(("Passi fatti", f"{sm['done']}/{sm['total']}", f"{sm['overdue']} in ritardo" if sm["overdue"] else "nessuno in ritardo"))
@@ -609,9 +800,73 @@ def key_tiles(st: dict, wl_a, fg_rows, plan: dict, econ, today: dt.date, hide: s
     return tiles
 
 
+TABS = [("riepilogo", "Riepilogo", '<path d="M3 3h5v5H3zM10 3h5v5h-5zM3 10h5v5H3zM10 10h5v5h-5z"/>'),
+        ("gioco", "Gioco e test", '<path d="M4 6h10a2 2 0 012 2v3a2 2 0 01-2 2h-1.5L11 11H7l-1.5 2H4a2 2 0 01-2-2V8a2 2 0 012-2zM6 8v2M5 9h2M12 9h.5"/>'),
+        ("marketing", "Marketing e store", '<path d="M3 7v4h2l5 3V4L5 7zM13 6.5a3 3 0 010 5"/>'),
+        ("piano", "Piano e soldi", '<path d="M3 4h12v11H3zM3 7h12M6 2v3M12 2v3M6 10h2M10 10h2M6 12.5h2"/>'),
+        ("docs", "Documenti", '<path d="M5 2h6l3 3v11H5zM11 2v3h3M7 8h5M7 10.5h5M7 13h3"/>')]
+TAB_INTRO = {"riepilogo": "Il punto della situazione: verdetto, cosa tocca adesso, numeri chiave e andamento.",
+             "gioco": "Il gioco e i test: pilastri, criticità ondata per ondata con le tue decisioni, focus group, recensioni reali dei giochi simili.",
+             "marketing": "Come si presenta il gioco: posizionamento, pagine store da copiare, clip, creator, community.",
+             "piano": "Quando e quanto: passi in ordine, TODO, cancelli, date, economia, piani se… allora, concorrenti e finestra di lancio.",
+             "docs": "I documenti completi, le domande e risposte e il glossario."}
+DOC_TAB = {"01-dev": "gioco", "05-focusgroup": "gioco", "05a-critiche-simulate": "gioco", "05b-critiche-reali": "gioco", "01c-full-game": "gioco",
+           "01b-positioning": "marketing", "04-clips": "marketing", "04b-store-copy": "marketing", "06-creators": "marketing", "07-community": "marketing",
+           "02-platform": "piano", "03-pricing": "piano", "03-pricing-calc": "piano", "05c-premortem": "piano", "05d-contingenze": "piano", "window": "piano"}
+GROUP_TAB = {"product": "gioco", "fg": "gioco", "reviews": "gioco", "fullgame": "gioco", "creators": "marketing", "market": "piano", "window": "piano", "econ": "piano", "plan": "piano"}
+
+
+def issue_matcher(root: str, st: dict, owner: dict):
+    """f(text) -> [issue keys] by the issue labels of the wave files (same text) and the aliases (issue_status.json, status.json issue_aliases)."""
+    labels = {}
+    for w in rc.wave_files(root):
+        for k, d in (w.get("_defined") or {}).items():
+            if d.get("label"):
+                labels[re.sub(r"\W+", " ", d["label"]).strip().lower()] = k
+    al = cr.aliases(owner, st)
+
+    def f(text: str) -> list:
+        t = re.sub(r"[*_`]", "", text or "")
+        norm = re.sub(r"\W+", " ", t).strip().lower()
+        keys = []
+        if norm in labels:
+            keys.append(labels[norm])
+        for k, rx in al:
+            if rx.search(t) and k not in keys:
+                keys.append(k)
+        return keys[:4]
+    return f
+
+
+def badges_for(keys: list, owner: dict, root_labels: dict | None = None) -> str:
+    """Owner's decisions for a list of issue keys, deduplicated by status; the issue name and the note are in the tooltip."""
+    if not keys:
+        return ""
+    seen, out = {}, []
+    for k in keys:
+        txt = cr.owner_text(k, owner)
+        st_ = (owner.get(k) or {}).get("status", "da decidere")
+        name = (root_labels or {}).get(k, k)
+        seen.setdefault(st_, []).append(f"{name}: {txt}")
+    for st_, tips in seen.items():
+        k = next(k for k in keys if (owner.get(k) or {}).get("status", "da decidere") == st_)
+        out.append(cr.owner_badge(k, owner, with_note=False, tip=" · ".join(tips)))
+    return '<span class="risk-own">' + "".join(out) + "</span>"
+
+
+def render_group(g: dict) -> str:
+    wide = ' style="grid-column:1/-1"'
+    full = g["key"] in ("product", "reviews")
+    return (f'<h2>{esc(g["title"])}</h2><p class="sub">{esc(g["intro"])}</p><div class="cgrid">'
+            + "".join(f'<div class="card"{wide if (g.get("wide") or full) else ""}>{c}</div>' for c in g["charts"]) + "</div>")
+
+
 def build(root: str, audience: str, include: list[str], exclude: list[str], hide: set[str], today: dt.date) -> str:
     st = load_json(os.path.join(root, "status.json")) if os.path.exists(os.path.join(root, "status.json")) else {}
     hide = set(hide) | HIDE_BY_AUDIENCE[audience]
+    owner = cr.load_owner(root)
+    match = issue_matcher(root, st, owner)
+    labels = {k: d.get("label", k) for w in rc.wave_files(root) for k, d in (w.get("_defined") or {}).items()}
     wl_a, wl_svg = wishlist_section(root, today)
     fg_rows, fg_svg = timeline_section(root)
     econ = load_json(os.path.join(root, "_raw", "econ.json")) if os.path.exists(os.path.join(root, "_raw", "econ.json")) and "economics" not in hide else None
@@ -621,129 +876,171 @@ def build(root: str, audience: str, include: list[str], exclude: list[str], hide
     kit = load_json(os.path.join(root, "store_kit.json")) if os.path.exists(os.path.join(root, "store_kit.json")) and "storekit" not in hide else None
     cont_html, cont_alerts = (None, []) if "contingencies" in hide else contingency_section(root, today)
     watch_html, watch_alerts = (None, []) if "watchlist" in hide else watch_section(root, today)
-    sec = []
+    sec = []   # (tab, html chunk)
+    add = lambda tab, chunk: chunk and sec.append((tab, chunk))
     product = st.get("product") or {}
     v = st.get("verdict") or {}
     if v:
         kind, word = LIGHT.get(str(v.get("color", "")).lower(), ("info", str(v.get("color", "n/d"))))
-        risks = "".join(f"<li>{state('warn', f'Rischio {k}')}<span>{esc(r)}</span></li>" for k, r in enumerate(v.get("risks", [])[:3], 1))
-        sec.append(f'<section class="card verdict"><div>{ICONS[kind][0]}</div><div><div class="big">Verdetto: {esc(word)}{" (provvisorio)" if v.get("provisional") else ""}</div>'
-                   f'<p>{esc(v.get("summary", ""))}</p>' + (f'<p class="sub">Probabilità stimata di recuperare i costi: {esc(v["probability"])}</p>' if v.get("probability") else "")
-                   + (f'<ul class="clean">{risks}</ul>' if risks else "")
-                   + ('<div class="gates">' + "".join(f'<span>{state({"pass": "pass", "fail": "fail", "pending": "pending"}.get(g.get("state"), "na"), GATE_NAMES.get(k, "Gate " + k))}</span>' for k, g in (st.get("gates") or {}).items()) + "</div>" if st.get("gates") else "")
-                   + "</div></section>")
+        risks = []
+        for k, r in enumerate(v.get("risks", [])[:3], 1):
+            text, keys = (r.get("text", ""), r.get("issues") or []) if isinstance(r, dict) else (r, [])
+            keys = keys or match(text)
+            risks.append(f"<li>{state('warn', f'Rischio {k}')}<span>{esc(text)}{badges_for(keys, owner, labels)}</span></li>")
+        add("riepilogo", f'<section class="card verdict"><div>{ICONS[kind][0]}</div><div><div class="big">Verdetto: {esc(word)}{" (provvisorio)" if v.get("provisional") else ""}</div>'
+            f'<p>{esc(v.get("summary", ""))}</p>' + (f'<p class="sub">Probabilità stimata di recuperare i costi: {esc(v["probability"])}</p>' if v.get("probability") else "")
+            + (f'<ul class="clean">{"".join(risks)}</ul>' if risks else "")
+            + ('<div class="gates">' + "".join(f'<span>{state({"pass": "pass", "fail": "fail", "pending": "pending"}.get(g.get("state"), "na"), GATE_NAMES.get(k, "Gate " + k))}</span>' for k, g in (st.get("gates") or {}).items()) + "</div>" if st.get("gates") else "")
+            + "</div></section>")
     if plan["phases"] and "steps" not in hide:
-        sec.append(now_block(plan, today))
-    it = st.get("intentions") or {}
-    if it and "intentions" not in hide:
-        rows = "".join(f'<tr><td>{esc(d.get("topic"))}</td><td>{esc(d.get("choice"))}</td><td>{esc(d.get("why", ""))}</td></tr>' for d in it.get("decisions", []))
-        sec.append(f'<h2>Profilo decisionale</h2><div class="card"><p>{esc(it.get("summary", ""))}</p>' + (f'<div class="wrap"><table><thead><tr><th>Tema</th><th>Scelta</th><th>Perché</th></tr></thead><tbody>{rows}</tbody></table></div>' if rows else "") + "</div>")
+        add("riepilogo", now_block(plan, today))
     tiles = key_tiles(st, wl_a, fg_rows, plan, econ, today, hide)
     gates = st.get("gates") or {}
     if tiles:
-        sec.append('<h2>Numeri chiave</h2><div class="grid g4">' + "".join(f'<div class="card tile"><div class="l">{esc(l)}</div><div class="v">{esc(val)}</div><div class="d">{esc(d)}</div></div>' for l, val, d in tiles) + "</div>")
+        add("riepilogo", '<h2>Numeri chiave</h2><div class="grid g4">' + "".join(f'<div class="card tile"><div class="l">{esc(l)}</div><div class="v">{esc(val)}</div><div class="d">{esc(d)}</div></div>' for l, val, d in tiles) + "</div>")
     alerts = [(x["level"], x["text"]) for x in (wl_a or {}).get("alerts", [])] + cont_alerts + watch_alerts
+    fr = sk.freshness(root) if kit else {}
+    if fr.get("stale"):
+        alerts.append(("ATTENZIONE", f"Pagine store da aggiornare: il kit è del {fr['kit_date']}, dopo sono arrivati " + "; ".join(f"{w} ({d})" for w, d in fr["newer"])))
     if alerts:
         icon = {"ALARM": ("fail", "Allarme"), "ATTENZIONE": ("warn", "Attenzione"), "INFO": ("info", "Info")}
-        sec.append('<h2>Alert</h2><div class="card"><ul class="clean">' + "".join(f"<li>{state(*icon[lv])}<span>{esc(t)}</span></li>" for lv, t in sorted(alerts, key=lambda x: ["ALARM", "ATTENZIONE", "INFO"].index(x[0]))) + "</ul></div>")
-    if plan["phases"] and "steps" not in hide:
-        sec.append(steps_section(plan, today))
+        add("riepilogo", '<h2>Alert</h2><div class="card"><ul class="clean">' + "".join(f"<li>{state(*icon[lv])}<span>{esc(t)}</span></li>" for lv, t in sorted(alerts, key=lambda x: ["ALARM", "ATTENZIONE", "INFO"].index(x[0]))) + "</ul></div>")
     if wl_svg or fg_svg:
-        sec.append("<h2>Andamento</h2><div class=\"grid\">")
+        chunk = ["<h2>Andamento</h2><div class=\"grid g2\">"]
         if wl_svg:
-            sec.append(f'<div class="card"><h3>Wishlist contro gli scenari</h3><div class="legend"><span><i style="border-color:var(--s1)"></i>Registrate</span><span><i style="border-color:var(--muted)"></i>Percorso degli scenari (lineare)</span></div>{wl_svg}'
-                       '<p class="note">Wishlist inserite a mano da Steamworks. I percorsi sono lineari: semplificazione, i picchi (festival, lancio) non sono previsti.</p></div>')
+            chunk.append(f'<div class="card"><h3>Wishlist contro gli scenari</h3><div class="legend"><span><i style="border-color:var(--s1)"></i>Registrate</span><span><i style="border-color:var(--muted)"></i>Percorso degli scenari (lineare)</span></div>{wl_svg}'
+                         '<p class="note">Wishlist inserite a mano da Steamworks. I percorsi sono lineari: semplificazione, i picchi (festival, lancio) non sono previsti.</p></div>')
         if fg_svg:
-            sec.append(f'<div class="card"><h3>Focus group simulato, per ondata</h3>{fg_svg}<p class="note">Panel simulato con gli stessi tester: ordina i problemi, non prevede le vendite.</p></div>')
-        sec.append("</div>")
-    crit_data = None
-    if "critiques" not in hide:
-        crit_html, crit_data = cr.build(root, st, GATE_NAMES)
-        if crit_html:
-            sec.append("<h2>Criticità, ondata per ondata</h2>" + crit_html)
+            chunk.append(f'<div class="card"><h3>Focus group simulato, per ondata</h3><div class="legend"><span><i style="border-color:var(--s1)"></i>Beta</span><span><i style="border-color:var(--muted)"></i>Gioco completo (rombi) e soglia</span><span><i style="border-color:var(--good)"></i>Tetto (rombo verde)</span></div>{fg_svg}<p class="note">Panel simulato con gli stessi tester: ordina i problemi, non prevede le vendite. Beta e gioco completo non si confrontano tra loro.</p></div>')
+        chunk.append("</div>")
+        add("riepilogo", "".join(chunk))
+    it = st.get("intentions") or {}
+    if it and "intentions" not in hide:
+        rows = "".join(f'<tr><td>{esc(d.get("topic"))}</td><td>{esc(d.get("choice"))}</td><td>{esc(d.get("why", ""))}</td></tr>' for d in it.get("decisions", []))
+        add("riepilogo", f'<h2>Profilo decisionale</h2><details class="card"><summary>{esc(it.get("summary", "") or "Le tue scelte")}</summary>' + (f'<div class="wrap"><table><thead><tr><th>Tema</th><th>Scelta</th><th>Perché</th></tr></thead><tbody>{rows}</tbody></table></div>' if rows else "") + "</details>")
+
+    # ---- charts by group, placed in their tab
+    gs = []
     if "charts" not in hide:
         gs = [g for g in rc.groups(root, today) if g["key"] != "criticita"]
         if audience == "publisher":
             gs = [g for g in gs if g["key"] in ("fg", "market", "reviews", "window")]
-        if gs:
-            sec.append("<h2>Quadro d'insieme</h2>" + rc.render(gs))
+    G = {g["key"]: g for g in gs}
+
+    # ---- Gioco e test
+    if "product" in G:
+        add("gioco", render_group(dict(G["product"], title="Pilastri: dove regge il gioco", intro="Pilastro per pilastro: come sta oggi, perché, e cosa fare dove non regge.")))
+    crit_data = None
+    if "critiques" not in hide:
+        crit_html, crit_data = cr.build(root, st, GATE_NAMES)
+        if crit_html:
+            add("gioco", "<h2>Criticità, ondata per ondata</h2>" + crit_html)
+    if "fg" in G:
+        add("gioco", render_group(G["fg"]))
+    if "fgwaves" not in hide:
+        add("gioco", waves_section(root))
+    if "reviews" in G:
+        add("gioco", render_group(G["reviews"]))
+    if st.get("full_game") and "fullgame" not in hide:
+        add("gioco", full_game_section(st["full_game"]) + ("".join(f'<div class="card" style="margin-top:12px">{c}</div>' for c in G["fullgame"]["charts"]) if "fullgame" in G else ""))
+
+    # ---- Marketing e store
+    if kit:
+        add("marketing", kit_section(kit, root))
+    if "creators" not in hide:
+        c = creators_section(root)
+        if c:
+            add("marketing", c + ("".join(f'<div class="card" style="margin-top:12px">{x}</div>' for x in G["creators"]["charts"]) if "creators" in G else ""))
+
+    # ---- Piano e soldi
+    if plan["phases"] and "steps" not in hide:
+        add("piano", steps_section(plan, today) + ("".join(f'<div class="card" style="margin-top:12px">{x}</div>' for x in G["plan"]["charts"]) if "plan" in G else ""))
+    if "todo" not in hide:
+        add("piano", todo_section(root, today))
     if gates:
-        names = GATE_NAMES
-        sec.append('<h2>Cancelli Go / No-Go</h2><div class="grid g4">' + "".join(
-            f'<div class="card"><div>{state({"pass": "pass", "fail": "fail", "pending": "pending"}.get(g.get("state"), "na"))}</div><h3>{esc(names.get(k, "Gate " + k))}</h3><p class="note">{esc(g.get("note", ""))}</p></div>'
+        add("piano", '<h2>Cancelli Go / No-Go</h2><div class="grid g4">' + "".join(
+            f'<div class="card"><div>{state({"pass": "pass", "fail": "fail", "pending": "pending"}.get(g.get("state"), "na"))}</div><h3>{esc(GATE_NAMES.get(k, "Gate " + k))}</h3><p class="note">{esc(g.get("note", ""))}</p></div>'
             for k, g in gates.items()) + "</div>")
     if cal_md and "calendar" not in hide:
         rest = (plan.get("before", "") + "\n" + plan.get("after", "")) if plan["phases"] else cal_md
         if rest.strip():
-            sec.append(f'<h2>Date fisse e piano a ritroso</h2><details class="card doc" open><summary><strong>calendar.md</strong></summary>{md_to_html(rest)}</details>')
-    if kit:
-        sec.append(kit_section(kit))
+            add("piano", f'<h2>Date fisse e piano a ritroso</h2><details class="card doc"><summary><strong>calendar.md</strong></summary>{md_to_html(rest)}</details>')
+    if econ:
+        add("piano", '<h2>Economia</h2><div class="card wrap"><table><thead><tr><th>Scenario</th><th class="n">Wishlist</th><th class="n">Copie</th><th class="n">Netto</th><th class="n">Utile (cassa)</th></tr></thead><tbody>' + "".join(
+            f'<tr><td>{esc(s_["name"])}</td><td class="n">{fmt_n(s_["wishlists"])}</td><td class="n">{fmt_n(s_["copies"])}</td><td class="n">{fmt_n(s_["net"])}</td><td class="n">{fmt_n(s_["profit_cash"])}</td></tr>' for s_ in econ["scenarios"])
+            + f'</tbody></table><p class="note">Netto per copia {econ["net_per_copy"]:.2f}; aliquote e conversioni sono ipotesi dichiarate nel piano, da verificare.</p></div>'
+            + ('<div class="cgrid" style="margin-top:12px">' + "".join(f'<div class="card">{x}</div>' for x in G["econ"]["charts"]) + "</div>" if "econ" in G else ""))
+    elif "econ" in G:
+        add("piano", render_group(G["econ"]))
+    add("piano", cont_html)
     if "window" not in hide:
         wsec = window_section(root)
-        if wsec:
-            sec.append(wsec)
-    if cont_html:
-        sec.append(cont_html)
-    if watch_html:
-        sec.append(watch_html)
+        add("piano", (wsec or "") + ('<div class="cgrid" style="margin-top:12px">' + "".join(f'<div class="card">{x}</div>' for x in G["window"]["charts"]) + "</div>" if "window" in G else "") if (wsec or "window" in G) else None)
+    add("piano", watch_html)
     if "steamdb" not in hide:
-        sdb = steamdb_section(root)
-        if sdb:
-            sec.append(sdb)
-    if "creators" not in hide:
-        c = creators_section(root)
-        if c:
-            sec.append(c)
-    if st.get("full_game") and "fullgame" not in hide:
-        sec.append(full_game_section(st["full_game"]))
-    todos, done, hours = read_todos(root)
-    if todos and "todo" not in hide:
-        sec.append(f'<h2>Prossime azioni</h2><div class="card"><p class="sub">{len(todos)} aperte, {done} chiuse, circa {hours:.0f} ore residue.</p><div class="wrap"><table><thead><tr><th>Azione</th><th>Scadenza</th><th class="n">Ore</th></tr></thead><tbody>'
-                   + "".join(f'<tr><td>{esc(t["action"])}</td><td>{esc(t["due"])}</td><td class="n">{esc(t["hours"])}</td></tr>' for t in todos[:10]) + "</tbody></table></div></div>")
-    if econ:
-        sec.append('<h2>Economia</h2><div class="card wrap"><table><thead><tr><th>Scenario</th><th class="n">Wishlist</th><th class="n">Copie</th><th class="n">Netto</th><th class="n">Utile (cassa)</th></tr></thead><tbody>' + "".join(
-            f'<tr><td>{esc(s["name"])}</td><td class="n">{fmt_n(s["wishlists"])}</td><td class="n">{fmt_n(s["copies"])}</td><td class="n">{fmt_n(s["net"])}</td><td class="n">{fmt_n(s["profit_cash"])}</td></tr>' for s in econ["scenarios"])
-            + f'</tbody></table><p class="note">Netto per copia {econ["net_per_copy"]:.2f}; aliquote e conversioni sono ipotesi dichiarate nel piano, da verificare.</p></div>')
-    if "fgwaves" not in hide:
-        wv = waves_section(root)
-        if wv:
-            sec.append(wv)
-    if "qa" not in hide:
-        jload = lambda *p: load_json(os.path.join(root, *p)) if os.path.exists(os.path.join(root, *p)) else None
-        qa_html = qamod.build(root, dict(st=st, wl_a=wl_a, econ=econ, window=jload("_raw", "window.json"), crit=crit_data, plan=plan, today=today, gate_names=GATE_NAMES,
-                                         contingencies=(jload("_raw", "contingencies.json") or {}).get("scenarios") if "contingencies" not in hide else None))
-        if qa_html:
-            sec.append(qa_html)
+        add("piano", steamdb_section(root))
+    if "market" in G:
+        add("piano", render_group(dict(G["market"], title="Mercato e comparabili")))
+
+    # ---- documents, each in the tab it belongs to; the rest + Q&A in Documenti
     stems = [x for x in (include or AUDIENCES[audience]) if x not in exclude]
-    docs = []
+
+    def hook(cells):
+        return badges_for(match(cells[0]) if cells else [], owner, labels)
+    per_tab: dict = {}
     for stem in stems:
-        p = os.path.join(root, f"{stem}.md")
-        if os.path.exists(p):
-            docs.append(f'<details class="card doc"><summary><strong>{esc(DOCS.get(stem, stem))}</strong></summary>{md_to_html(open(p, encoding="utf-8").read())}</details>')
-    if docs:
-        sec.append("<h2>Documenti</h2>" + "".join(docs))
-    body_html, heads, own_ids = [], [], []
-    for chunk in sec:   # every <h2> gets an anchor and a chip in the sticky index
+        pth = os.path.join(root, f"{stem}.md")
+        if os.path.exists(pth):
+            tab = DOC_TAB.get(stem, "docs")
+            per_tab.setdefault(tab, []).append(f'<details class="card doc"><summary><strong>{esc(DOCS.get(stem, stem))}</strong> <span class="note">{esc(stem)}.md</span></summary>{md_to_html(open(pth, encoding="utf-8").read(), hook)}</details>')
+    for tab in ("gioco", "marketing", "piano"):
+        if per_tab.get(tab):
+            add(tab, "<h2>Documenti di questa parte</h2>" + "".join(per_tab[tab]))
+    if per_tab.get("docs"):
+        add("docs", "<h2>Documenti</h2>" + "".join(per_tab["docs"]))
+    if "qa" not in hide:
+        jload = lambda *p_: load_json(os.path.join(root, *p_)) if os.path.exists(os.path.join(root, *p_)) else None
+        add("docs", qamod.build(root, dict(st=st, wl_a=wl_a, econ=econ, window=jload("_raw", "window.json"), crit=crit_data, plan=plan, today=today, gate_names=GATE_NAMES,
+                                           contingencies=(jload("_raw", "contingencies.json") or {}).get("scenarios") if "contingencies" not in hide else None)))
+
+    # ---- anchors, glossary, tabs
+    body_html, heads, own_ids, tabs_of = [], [], [], []
+    for tab, chunk in sec:   # every <h2> gets an anchor
         mine = set()
 
         def anchor(m):
-            heads.append(re.sub(r"<[^>]+>", "", m.group(1)))
+            heads.append((tab, re.sub(r"<[^>]+>", "", m.group(1))))
             mine.add(f"sec{len(heads)}")
             return f'<h2 id="sec{len(heads)}">{m.group(1)}</h2>'
         body_html.append(re.sub(r"<h2>(.*?)</h2>", anchor, chunk))
         own_ids.append(mine)
-    anchors = gl.anchors_for([(f"sec{i}", h) for i, h in enumerate(heads, 1)])
+        tabs_of.append(tab)
+    anchors = gl.anchors_for([(f"sec{i}", h) for i, (_, h) in enumerate(heads, 1)])
     used: set = set()
     body_html = [qamod.resolve_links(c, anchors) for c in body_html]
-    sec = [gl.enrich(c, anchors, own, used) for c, own in zip(body_html, own_ids)]   # plain-Italian tooltips and links to the section that deals with the thing
+    chunks = [gl.enrich(c, anchors, own, used) for c, own in zip(body_html, own_ids)]   # plain-Italian tooltips and links to the section that deals with the thing
     glo = gl.glossary_html(used)
-    toc = '<nav class="toc" aria-label="Sezioni">' + "".join(f'<a href="#sec{i}">{h}</a>' for i, h in enumerate(heads, 1)) + "</nav>" if len(heads) > 3 else ""
+    n_now = sum(1 for x in (crit_data or {}).get("issues", []) if x.get("now"))
+    panels, buttons = [], []
+    for tab, title, icon in TABS:
+        mine = [c for c, t in zip(chunks, tabs_of) if t == tab]
+        if tab == "docs" and glo:
+            mine.append(glo)
+        if not mine:
+            continue
+        hs = [(i, h) for i, (t, h) in enumerate(heads, 1) if t == tab]
+        idx = ('<nav class="toc" aria-label="In questa scheda">' + "".join(f'<a href="#sec{i}">{esc(h)}</a>' for i, h in hs) + "</nav>") if len(hs) > 2 else ""
+        cnt = f' <span class="cnt" title="Criticità da fare adesso">{n_now}</span>' if tab == "gioco" and n_now else ""
+        buttons.append(f'<button type="button" role="tab" id="tab-{tab}" aria-controls="p-{tab}" aria-selected="{"true" if not buttons else "false"}" tabindex="{0 if not buttons else -1}">'
+                       f'<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true">{icon}</svg><span>{esc(title)}</span>{cnt}</button>')
+        panels.append(f'<section role="tabpanel" id="p-{tab}" aria-labelledby="tab-{tab}"{"" if len(panels) == 0 else " hidden"}><p class="sub" style="margin-top:12px">{esc(TAB_INTRO[tab])}</p>{idx}{"".join(mine)}</section>')
+    nav = f'<div class="tabs" role="tablist" aria-label="Parti della pagina">{"".join(buttons)}</div>' if len(buttons) > 1 else ""
     name = st.get("game") or os.path.basename(os.path.dirname(os.path.abspath(root))) or "Progetto"
     label = {"private": "Uso interno", "partner": "Per i soci", "publisher": "Per il publisher"}[audience]
     return (f'<!doctype html><html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Stato del lancio, {esc(name)}</title>'
             f'<style>{CSS}</style></head><body><main><div class="top"><div><h1>{esc(name)}: stato del lancio</h1><p class="sub">Aggiornato il {fmt_date(st.get("updated") or today.isoformat())} · {esc(label)}'
             f'{" · modalità " + esc(st["mode"]) if st.get("mode") else ""}{" · valutato come: " + esc(product.get("label") or product.get("kind")) if product.get("kind") or product.get("label") else ""}</p><p class="sub">Questo è il <strong>cruscotto</strong>: cosa fare, numeri, pagine da copiare, piani. Il testo completo del report, con i grafici accanto a ogni sezione, è in <a href="REPORT.html">REPORT.html</a>.</p></div><button class="theme" id="theme" type="button">Tema chiaro/scuro</button></div>'
-            + toc + "".join(sec) + glo + f'<footer class="note">Pagina generata da <code>status_page.py</code> il {today.isoformat()} da file locali, senza richieste di rete. Il focus group è simulato: non è un dato di mercato. '
+            + nav + "".join(panels) + f'<footer class="note">Pagina generata da <code>status_page.py</code> il {today.isoformat()} da file locali, senza richieste di rete. Il focus group è simulato: non è un dato di mercato. '
             f'Cifre con fonte nei documenti; ciò che è etichettato [DA VERIFICARE] resta da verificare.</footer></main><script>{JS}{gl.JS}{cr.JS}{qamod.JS}</script></body></html>')
 
 

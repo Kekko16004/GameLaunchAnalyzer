@@ -34,16 +34,19 @@ m1, m2 = fg_waves.metrics(w1), fg_waves.metrics(w2)
 exp = round((sum(1 for t in w1["testers"] if t["verdict"] == "WISHLIST") * 1 + sum(1 for t in w1["testers"] if t["verdict"] == "SALDI") * .4
              - sum(1 for t in w1["testers"] if t["verdict"] == "IGNORO") * .2 - sum(1 for t in w1["testers"] if t["verdict"] == "REFUND") * .8) / 24 * 100, 1)
 assert m1["score"] == exp and m1["gate"]["threshold"] == 35.0
-assert m1["buy"]["n"] == 0 and "Would pay" not in fg_waves.md_metrics(m1)   # optional field: absent unless the panel was asked
+assert m1["buy"]["n"] == 0 and "Pagherebbe" not in fg_waves.md_metrics(m1)   # optional field: absent unless the panel was asked
 wb = dict(w1, testers=[dict(t, would_buy=(i % 4 == 0)) for i, t in enumerate(w1["testers"])], stage="beta")
 mb = fg_waves.metrics(wb); assert mb["buy"] == dict(n=24, yes=6, pct=25.0), mb["buy"]
-assert "Would pay the planned launch price: 6/24 (25.0%)" in fg_waves.md_metrics(mb) and "Judged as: beta" in fg_waves.md_metrics(mb)
-txt = fg_waves.md_delta(w1, w2, m1, m2, 10.0); assert "RESOLVED" in txt and "shorter tutorial" in txt
+assert "Pagherebbe il prezzo previsto: 6 su 24 (25%)" in fg_waves.md_metrics(mb) and "· beta" in fg_waves.md_metrics(mb).splitlines()[0]
+assert "Wishlist score" not in fg_waves.md_metrics(mb) and "Punteggio wishlist" in fg_waves.md_metrics(mb)   # plain Italian in what the owner reads
+# stage inferred from the file name (-beta / -full) or the label when the key is missing
+assert fg_waves.infer_stage({}, "w03-2026-10-07-full.json") == "full" and fg_waves.infer_stage({"label": "beta gratuita"}) == "beta" and fg_waves.infer_stage({"label": "proiezione gioco completo"}) == "full" and fg_waves.infer_stage({"label": "baseline"}) == ""
+txt = fg_waves.md_delta(w1, w2, m1, m2, 10.0); assert "RISOLTO" in txt and "shorter tutorial" in txt and "Cosa è cambiato" in txt
 bad = dict(w1); bad["testers"] = [dict(t) for t in w1["testers"]]; bad["testers"][0]["verdict"] = "boh"; json.dump(bad, open(os.path.join(d, "bad.json"), "w"))
 try: fg_waves.load_wave(os.path.join(d, "bad.json")); raise AssertionError("invalid verdict accepted")
 except SystemExit as e: assert "verdict" in str(e)
 sys.argv = ["x", "timeline", wd, "--roster", os.path.join(d, "roster.json"), "--csv", os.path.join(d, "tl.csv"), "-o", os.path.join(d, "tl.md")]; fg_waves.main()
-assert "Focus group timeline" in open(os.path.join(d, "tl.md"), encoding="utf-8").read(); print("waves ok: score", m1["score"], "->", m2["score"])
+assert "Focus group: andamento delle ondate" in open(os.path.join(d, "tl.md"), encoding="utf-8").read(); print("waves ok: score", m1["score"], "->", m2["score"])
 
 # ---- economics (independent arithmetic)
 o = calc_econ.compute({**calc_econ.DEFAULTS, "price": 14.99, "costs": 3500, "hours": 600, "hourly": 12, "partners": 2, "wishlists": "3000,8000,20000", "conv": "0.1,0.2,0.3"})

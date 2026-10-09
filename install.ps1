@@ -1,4 +1,4 @@
-# GameLaunchStrategist Skill Installer
+﻿# GameLaunchStrategist Skill Installer
 # Compatible with Windows PowerShell 5.1+ and PowerShell 7+
 [CmdletBinding()]
 param(
@@ -9,6 +9,7 @@ param(
     [switch]$Agents,
     [switch]$Codex,
     [switch]$Uninstall,
+    [switch]$Reuse,          # repeat the last install's choices (~/.game-launch-strategist/install.json), no questions
     [ValidateSet("link", "copy")]
     [string]$Mode = "link"
 )
@@ -67,6 +68,9 @@ $Targets = [ordered]@{
     }
 }
 
+$StateDir = if ($env:GLS_HOME) { $env:GLS_HOME } else { Join-Path $User ".game-launch-strategist" }
+$LastInstall = Join-Path $StateDir "install.json"
+
 $LegacyNames = @("game_launch_strategist", "launch-strategist", "gamelaunchstrategist")
 
 function Remove-ExistingPath([string]$Path) {
@@ -108,11 +112,10 @@ function Link-SkillPayload([string]$Dest) {
         if ((Get-Item -LiteralPath $src).PSIsContainer) {
             New-Item -ItemType Junction -Path $dst -Target $src | Out-Null
         } else {
+            # Symlink when allowed (Developer Mode / admin). Otherwise a plain copy, refreshed by every update.bat:
+            # a hard link would go stale silently, because git replaces files instead of rewriting them.
             try { New-Item -ItemType SymbolicLink -Path $dst -Target $src -ErrorAction Stop | Out-Null }
-            catch {
-                try { New-Item -ItemType HardLink -Path $dst -Target $src -ErrorAction Stop | Out-Null }
-                catch { Copy-Item -LiteralPath $src -Destination $dst -Force }
-            }
+            catch { Copy-Item -LiteralPath $src -Destination $dst -Force }
         }
     }
 }
@@ -191,7 +194,22 @@ if ($Uninstall) {
 }
 
 $selected = @()
-if ($All) {
+if ($Reuse) {
+    if (Test-Path -LiteralPath $LastInstall) {
+        $last = Get-Content -Raw -LiteralPath $LastInstall | ConvertFrom-Json
+        $selected = @($last.hosts | Where-Object { $Targets.Contains($_) })
+        if (-not $PSBoundParameters.ContainsKey("Mode") -and $last.mode) { $Mode = $last.mode }
+        Write-Host "Reusing last install: $($selected -join ', ') ($Mode)"
+    } else {
+        # No record yet: every environment already present on this PC (its home folder exists), plus Claude Code.
+        $probe = [ordered]@{ claude = "$User\.claude"; antigravity = "$User\.gemini"; kilo = "$User\.kilo"; agents = "$User\.agents"; codex = $CodexHome }
+        $selected = @($probe.Keys | Where-Object { $_ -eq "claude" -or (Test-Path -LiteralPath $probe[$_]) })
+        Write-Host "No previous install recorded: using the environments found on this PC ($($selected -join ', '))."
+    }
+}
+if ($selected.Count -gt 0) {
+    # chosen by -Reuse
+} elseif ($All) {
     $selected = @("claude", "antigravity", "kilo", "agents", "codex")
 } else {
     if ($Claude) { $selected += "claude" }
@@ -245,6 +263,10 @@ Write-Host "`nStarting installation...`n"
 foreach ($key in $selected) {
     Install-Target $key
 }
+
+New-Item -ItemType Directory -Force -Path $StateDir | Out-Null
+@{ hosts = $selected; mode = $Mode; source = $SourceDir; date = (Get-Date -Format "yyyy-MM-dd HH:mm") } |
+    ConvertTo-Json | Set-Content -LiteralPath $LastInstall -Encoding UTF8
 
 Write-Host "`nInstallation completed successfully."
 Write-Host "Command available: /game-launch-strategist"

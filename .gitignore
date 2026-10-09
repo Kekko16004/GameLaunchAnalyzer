@@ -2,3 +2,5 @@ __pycache__/
 *.pyc
 *.bak
 *.orig
+*.bak2
+*.m4s

@@ -40,7 +40,8 @@ Reusable tools for launch market research: Steam comparables and reviews, creato
 | `md_enrich.py` | Links between the Markdown documents of `launch/` and a plain-Italian glossary at the end of `REPORT.md` | 11 |
 | `report_html.py` | `REPORT.md` as one illustrated HTML page: charts next to each section | 11 |
 | `charts_export.py` | Every report chart as a standalone `.svg` (for Markdown reports) | 11 |
-| `status_page.py` | One self-contained HTML status page for partners or a publisher | 11 |
+| `status_page.py` | One self-contained HTML status page (five tabs, live issue decisions, live TODO) | 11 |
+| `todo_track.py` | Keep `TODO.md` alive: list, stats, mark done / reopen, add | 4, 11, routine |
 | `common.py` | Throttled HTTP with retries, JSON/CSV writers (used by all) | – |
 
 ---
@@ -211,6 +212,10 @@ python store_kit.py export launch/store_kit.json --dir launch/store_kit
 ```
 `check` verifies required fields, characters against the limits written in the file (with their verification date: limits are never hard-coded), tag count and duplicates, screenshot order, slots without a description, leftover placeholders. The HTML status page shows the same data with a Copy button on every field.
 
+- **Early Access** (`steam.early_access`): the six questions of Steam's EA questionnaire (keys `why`, `duration`, `full_vs_ea`, `current_state`, `pricing`, `community`; names read on partner.steamgames.com/doc/store/earlyaccess on 2026-10-09, re-check them and write `verified_on`). Empty answers are errors; above 1,200 characters (readability, Valve declares no limit) or a limit in `limits` is flagged; sentences that sound like promises of dates or features are warned (Valve rule); the long description must say "Early Access". Rendered, exported (`steam_early_access_<key>.txt`) and shown in STATUS.html with Copy buttons.
+- **Accessibility** (`accessibility`: `intro` + `features` [{label, value}], Steam and itch): a pasteable list (BBCode / Markdown), exported as `<platform>_accessibility.txt` and shown in STATUS.html.
+- **Live pages**: `freshness(launch_dir)` compares `store_kit.json` (`"updated"`, else the file date) with the latest decision heading in `00-intenzioni.md`, the latest wave and the latest `../docs/gates/*.md`; `check` prints "aggiornate al <date>" or "DA AGGIORNARE", STATUS.html shows it in the store tab and as an alert. Rule: Claude updates the kit after every decision, gate or wave that changes what the game is or promises.
+
 ## 4i. `metrics_track.py`: metrics and "if... then" plans
 
 ```bash
@@ -228,6 +233,8 @@ python calc_econ.py --price 14.99 --costs 3500 --hours 600 --hourly 12 --partner
     --wishlists 3000,8000,20000 --conv 0.10,0.20,0.30 --md launch/03-pricing-calc.md -o launch/_raw/econ.json
 ```
 `net per copy = price x (1 - avg_discount) x (1 - vat_share) x (1 - refund) x (1 - steam_cut) x (1 - local_tax)`; break-even copies = total costs / net (cash costs, and cash costs plus time x hourly rate); wishlists needed at each conversion; three scenarios (copies = wishlists x conversion) with gross, net, profit (cash and with time), per partner, multiple of break-even; sensitivity (price -20% / +20%, double refunds). Defaults (steam-cut 0.30, vat-share 0.10, refund 0.06, avg-discount 0.15, local-tax 0) are **inputs to verify**, not facts; percentages above 1 are read as percent. `--config file.json` takes the same keys.
+
+Early Access (optional): `--ea-price P [--full-price Q] [--ea-first-month 0.35] [--full-vs-ea 0.40]` adds a section "Accesso anticipato (Early Access) e poi 1.0": net per copy at the EA and 1.0 price, break-even at the EA price, and per scenario the net of the EA launch month and of the 1.0 launch month (default 40 % of the EA month, GameDiscoverCo Dec 2025 median, [DA VERIFICARE]). Off unless `--ea-price` is given. Rules and criteria in `references/02-audit-platform-pricing.md`.
 
 ## 4k. `wl_track.py`: wishlist tracker
 
@@ -266,11 +273,44 @@ Markdown documents in `launch/` (and `launch/history/`): the first mention of a 
 python report_html.py --launch-dir launch            # launch/REPORT.html
 python charts_export.py --launch-dir launch          # launch/charts/*.svg and index.md
 ```
-`report_charts.py` builds the charts from files already in `launch/` (pillars from `01-dev.md`; tester verdicts, latest-wave indicators incl. `would_buy`, criticisms from `fg/`; genre by year, price band, demo, your percentiles, comparables and trailer length from `_raw/genre_bench.json`, `comps.csv`, `_raw/store_pages.json`; complaint and praise themes and your features from `_raw/corpus.json`; price-to-net, scenarios against break-even, sensitivity from `_raw/econ.json`; crowding per week from `_raw/window.json`; steps by phase from `calendar.md`; creators from `creators.csv`; gaps from `status.json`). A group whose source is missing is not drawn. `report_html.py` places each group next to the report section it belongs to (groups that match nothing go to a block at the top), `status_page.py` shows them in "Quadro d'insieme" (the publisher audience gets only focus group, market, reviews and launch window), `charts_export.py` writes standalone light-theme SVGs. Every chart follows the light/dark theme, has a hover tooltip, a legend when there are two or more series, a one-line "what to read" and a table view. No network, no scripts from outside. Checked in Chromium at desktop and 390 px, light and dark, no horizontal overflow and no console errors.
+`report_charts.py` builds the charts from files already in `launch/` (pillars from `01-dev.md`, read by column header: name, grade with its qualifier, one-line reason, what to do, hours only when credible; tester verdicts, latest-wave indicators incl. `would_buy`, criticisms from `fg/`; genre by year, price band, demo, your percentiles, comparables and trailer length from `_raw/genre_bench.json`, `comps.csv`, `_raw/store_pages.json`; complaint and praise themes and your features from `_raw/corpus.json`, with "your game" from `05b-critiche-reali.md` and tester shares from the latest beta / full-game wave; price-to-net, scenarios against break-even, sensitivity from `_raw/econ.json`; crowding per week from `_raw/window.json`; steps by phase from `calendar.md`; creators from `creators.csv`; gaps from `status.json`). A group whose source is missing is not drawn. `report_html.py` places each group next to the report section it belongs to (groups that match nothing go to a block at the top), `status_page.py` puts each group in its tab (the publisher audience gets only focus group, market, reviews and launch window), `charts_export.py` writes standalone light-theme SVGs. Every chart follows the light/dark theme, has a hover tooltip, a legend when there are two or more series, a one-line "what to read" and a table view. No network, no scripts from outside. Checked in Chromium at desktop and 390 px, light and dark, no horizontal overflow and no console errors.
 
-## 4l. `status_page.py`: status page for partners or a publisher
+## 4l. `status_page.py`: status page for the owner, partners or a publisher
 
-Reads files already in `launch/` (`status.json`, `calendar.md` with its steps, `store_kit.json`, `_raw/contingencies.json` + `metrics.csv`, `fg/timeline.csv`, `wishlists.csv` + `_raw/wl_plan.json`, `watchlist.csv`, `_raw/econ.json`, `TODO.md`, the main reports) and writes one self-contained `launch/STATUS.html`: verdict, decision profile (with "valutato come: beta / completo"), key numbers, alerts, a collapsible **creators table** from `creators.csv` (sorted A/B/C, hidden for `publisher`), a "Beta today and the full game" table when `status.json` carries `full_game`, **step-by-step calendar** (progress bar, "your turn now" and "Claude's turn" boxes, filter by owner, overdue flagged), charts with hover tooltips and a table view, gates, **copy-ready store pages with a Copy button on every field and dashed boxes marking where photos and GIFs go**, **"if... then" scenarios with live status**, competitors, TODOs, documents. No network requests, no external scripts, light and dark theme, readable on a phone, status icons always paired with a label, all text escaped. `--audience private|partner|publisher` (default private) controls what is included; `--include`, `--exclude`, `--hide` refine it. Beyond the sections above the page has a sticky index, the verdict with the gates at a glance, an "Adesso" box (your turn / Claude's turn), the launch-window table, the SteamDB numbers you recorded, per-wave focus-group reports and the extra documents (simulated and real critiques, clips, economic calculation). The tool never publishes anything: sharing the page is the user's decision.
+Reads files already in `launch/` (`status.json`, `issue_status.json`, `calendar.md` with its steps, `TODO.md`, `store_kit.json`, `_raw/contingencies.json` + `metrics.csv`, `fg/timeline.csv` and the wave files, `05b-critiche-reali.md`, `_raw/corpus.json`, `wishlists.csv` + `_raw/wl_plan.json`, `watchlist.csv`, `_raw/econ.json`, `01-dev.md`, the main reports) and writes one self-contained `launch/STATUS.html`. No network requests, no external scripts, light and dark theme, status icons always paired with a word, all text escaped. Everything the owner reads is in plain Italian.
+
+**Layout.** A wide page (max 1400 px, side padding `clamp(16px,3vw,40px)`, still clean at 390 px with tables scrolling inside their card, never the page) with a sticky bar of **five tabs** (WAI-ARIA tablist, arrow keys, last tab remembered in `localStorage` inside try/catch, links to a section in another tab switch tab first, print shows every tab):
+
+| Tab | What is inside |
+|---|---|
+| Riepilogo | verdict with its 3 risks (each with the owner's decision) and the gates, "Adesso" (your turn / Claude's turn), key numbers (focus-group score for beta and full game kept apart, ceiling and headroom), alerts, wishlist and wave trends (beta line, full game as grey diamonds, ceiling as green diamonds), decision profile |
+| Gioco e test | pillars by NAME (grade badge, one-line reason, what to do, hours only when `01-dev.md` gives a credible per-pillar figure), criticalities wave by wave, focus-group charts, one card per wave (beta / full game labelled, score vs threshold, change vs the previous wave of the same kind, ceiling and headroom, issues still to do), real reviews with "your game", beta vs full game, the documents of this area |
+| Marketing e store | copy-ready Steam and itch.io pages (a Copy button on every field, dashed boxes where photos and GIFs go), creators table and chart, positioning / clips / store copy / creators / community documents |
+| Piano e soldi | step-by-step calendar (progress, filter by owner, overdue), **live TODO**, gates, fixed dates, economics, "if... then" scenarios with live status, launch window, competitors, SteamDB numbers, market and comparables, platform / pricing / pre-mortem / contingency documents |
+| Documenti | the full report and the remaining documents, Q&A, glossary of the words used |
+
+**Live issue state: `launch/issue_status.json`.** The owner's decision on every issue key of the waves: `{"key": {"status": "...", "note": "...", "aliases": ["regex"]}}`, keys starting with `_` are comments. `aperto`, `in_lavorazione`, `da_verificare` = still **to do now**; `risolto`, `pianificato`, `accettato`, `non_problema` = **already decided**. An issue the testers raise that is not in the file shows as "Da decidere" (to do now). Wherever issues appear (criticalities per wave, per gate, evolution matrix, the "issues to tackle now" chart, the wave cards, verdict risks, rows of document tables such as the convergence matrix, real-review themes, the Q&A) the page shows the decision as a badge with an icon and the note, and splits "Da fare adesso" from "Già deciso" (collapsed). `status.json` -> `issue_aliases` `{key: [regex]}` (or `aliases` in the owner's file) links texts that name an issue with other words; a verdict risk may also be `{"text": ..., "issues": [keys]}`. Claude updates the file after every owner decision and every wave (`references/06-synthesis-output.md`).
+
+**Waves.** Beta and full-game waves are never compared with each other: the kind comes from `"stage"`, else the file name (`-beta` / `-full`), else the label (`fg_waves.infer_stage`). The criticalities card opens on the latest beta wave.
+
+**Real reviews: "does your game have it?"** For each complaint / praise theme the chart tooltip and a visible table say what `05b-critiche-reali.md` concluded about OUR game (`[SÌ]`, `[A RISCHIO] (alto)`, `[NO] per la beta`, `[NON VALUTABILE]`, `[IN PARTE]`/`[PARZIALE]`), the share of simulated testers who raised the linked issues in the latest beta and full-game wave (`theme_labels.THEME_ISSUES`, extendable per project in `launch/_raw/theme_issues.json`), and the owner's decision on them; e.g. "Il tuo gioco: a rischio (alto) · lo pensano 13% dei tester (beta), 2% (completo)".
+
+**Live TODO.** `TODO.md` is parsed by `todo_track.py`: progress, open vs done per section (done collapsed), overdue, and a "Da aggiornare" warning when the file is older than the latest wave, `issue_status.json` or `calendar.md`.
+
+`--audience private|partner|publisher` (default private) controls what is included; `--include`, `--exclude`, `--hide` refine it (publisher: no steps, economics, TODO, contingencies, competitors, creators, decision profile, full-game analysis, criticalities or Q&A). When there are no wave `.json` files the per-wave Markdown reports are shown instead. The tool never publishes anything: sharing the page is the user's decision.
+
+## 4l1. `todo_track.py`: TODO.md kept alive
+
+Lines `- [ ] 👤 **Action** — 2026-10-20 — 2 h — dependencies — metric` (`|` also works), sections are `## ` headings, 👤 owner / 🤖 Claude / 👤+🤖 both.
+```
+todo_track.py --file launch/TODO.md list [--open|--done] [--section TEXT]
+todo_track.py --file launch/TODO.md stats
+todo_track.py --file launch/TODO.md done "words of the line" [--by me|claude|both] [--note "gate 48"]   # or "#12"
+todo_track.py --file launch/TODO.md reopen "words of the line"
+todo_track.py --file launch/TODO.md drop "words of the line" --why "owner decision ..."   # made obsolete: [-], kept, not counted, shown under "Superate"
+todo_track.py --file launch/TODO.md add --section "Dev e pilastri" --text "🤖 **Fix X** — 2026-10-20 — 2 h — nessuna — 0 errori"
+```
+`done` turns `[ ]` into `[x]`, appends "· fatto il DATE (da 🤖, note)" and refreshes `Aggiornato:`; a pattern matching zero or several lines changes nothing and prints the candidates. Rule of the skill: run it after every gate, wave and owner decision.
 
 ## 5. `yt_research.py`: YouTube creators
 

@@ -68,6 +68,38 @@ Output: **`launch/02-platform.md`** e **`launch/calendar.md`**.
    ```
    `status` confronta con i percorsi degli scenari e con i tripwire, segnala rallentamenti, cali, dati vecchi e picchi non annotati, e **esce con codice 2 se un tripwire è scattato**. Quando succede, riporta all'utente l'ALLARME con l'azione di emergenza del pre-mortem, senza minimizzare. I percorsi sono lineari: una semplificazione **[OPINIONE]**.
 
+### Early Access o lancio 1.0 (beta gratuita → Early Access a pagamento → 1.0)
+
+Da decidere **prima** di fissare calendario, prezzo e Next Fest, quando il proprietario pensa a un percorso "beta gratis, poi accesso anticipato a pagamento, poi 1.0". Le domande vengono dal Round R-D (`00-intervista.md`); qui ci sono i criteri, le regole e i numeri.
+
+**Criteri per scegliere** [OPINIONE, da pesare con il proprietario]:
+| Criterio | Va bene per l'EA se… | Meglio aspettare la 1.0 se… |
+|---|---|---|
+| Capacità contro lavoro che resta | il team ha ore a settimana stabili per 12-24 mesi di aggiornamenti | le ore bastano solo per finire, non per aggiornare in pubblico |
+| Contenuto all'uscita in EA | c'è già un gioco che vale il prezzo **oggi**: varie ore di contenuto, un ciclo completo, pochi bug | c'è una fetta (un atto, una mappa) che si "finisce" in meno di 2 ore |
+| Il motivo principale per comprare | è già dentro all'uscita in EA (es. la co-op, se il pubblico compra per giocare con gli amici) | arriva solo più avanti: chi compra per quello lo cerca subito e rimborsa |
+| Roadmap onesta | si può promettere poco e mantenere; le date sono larghe | il gioco "vero" esiste solo nella roadmap |
+| Community | qualcuno può rispondere ogni settimana a recensioni, Discord e segnalazioni | nessuno ha tempo per la community durante lo sviluppo |
+
+**Regole di Valve** (leggi le pagine ufficiali e scrivi la data di lettura; ultima verifica di questa skill: **[FATTO] letto 2026-10-09**; rileggile a ogni uso):
+- L'Early Access si vende **per quello che il gioco è adesso**: niente promesse di funzioni future come motivo d'acquisto. Fonte: https://partner.steamgames.com/doc/store/earlyaccess
+- Il **Next Fest** è per giochi **non ancora usciti**: un gioco uscito in Early Access non può più partecipare. Quindi il Next Fest va fatto **prima** dell'uscita in EA. Fonte: https://partner.steamgames.com/doc/marketing/upcoming_events/nextfest
+- Un gioco in EA **non ha di nuovo la visibilità del lancio** fino alla 1.0, e anche alla 1.0 la spinta è più piccola di quella dell'uscita in EA. Fonte: pagina Early Access sopra.
+
+**Numeri** (GameDiscoverCo, dicembre 2025, https://newsletter.gamediscover.co/p/the-state-of-steam-early-access-graduates, **[FATTO] letto 2026-10-09**; i rimborsi da GameDiscoverCo 2025-02-04):
+- dei 225 giochi usciti dall'EA che avevano venduto più di 5.000 copie in EA, **solo il 20 %** ha incassato di più nel mese della 1.0 che nel primo mese di EA;
+- **mediana: il mese della 1.0 incassa il 40 %** del primo mese di EA (è il default di `calc_econ.py --full-vs-ea`);
+- **durata mediana dell'EA: 437 giorni**;
+- **rimborsi**: circa 12 % in EA contro circa 8 % alla 1.0.
+
+**Conseguenza: l'uscita in EA è IL lancio.** Va preparata come una 1.0: pagina Coming Soon presto, wishlist, Next Fest prima, creator, trailer, prezzo. La 1.0 è una seconda spinta più piccola, non un secondo lancio.
+
+**Prezzo tipico**: più basso in EA, alzato alla 1.0, e **detto chiaramente sulla pagina** fin dall'inizio ("il prezzo salirà alla 1.0"); chi compra presto si sente premiato. Calcolalo con `calc_econ.py --ea-price <prezzo EA> --full-price <prezzo 1.0>` (sezione "Accesso anticipato" del piano economico).
+
+**Beta o demo gratuita + EA**: la beta gratuita (itch) o la demo Steam servono a raccogliere wishlist e a far provare il gioco; l'EA è il prodotto che si paga. Le due cose stanno insieme se la demo/beta è **una parte chiara** (es. il primo atto) e l'EA aggiunge abbastanza da valere il prezzo dal primo giorno. Ordine consigliato: beta/demo → Next Fest (con la demo) → uscita in EA → aggiornamenti → 1.0.
+
+**Calendario**: se si sceglie l'EA, in `calendar.md` compaiono questi passi (formato sotto): pagina Steam con la sezione "Early Access" compilata (perché EA, quanto dura, cosa c'è adesso, cosa arriverà, prezzo), **Next Fest prima dell'EA**, uscita in EA, roadmap pubblica, aggiornamenti periodici, annuncio del prezzo che sale, **1.0**.
+
 ### Il calendario: `launch/calendar.md` (dettagliato, a passi, con chi fa cosa)
 
 Non basta una tabella di date. Il calendario è il documento che l'utente segue giorno per giorno, quindi ha **quattro parti**:
@@ -98,6 +130,7 @@ Regole:
 - **Scadenza `· 📅 AAAA-MM-GG`** su ogni passo 👤 e sui passi con data fissa; derivata dalle ancore e dalla capacità del team (ore a settimana dall'intervista).
 - **Fasi con titolo e periodo** ("FASE 3 — Metà-fine novembre: Steam"), ordinate nel tempo; l'ultima può essere "Dopo (marzo 2027 →)".
 - **Copri l'intero percorso:** ricerca e decisioni (gate, soldi, accordo tra soci, commercialista), prodotto (🤖 con ok), materiali (capsule, trailer, pagine: vedi `store_kit.json`), community e creator, pagine itch e Steam, demo e Next Fest, metriche da registrare (`wl_track.py`, `metrics_track.py`), ondate del focus group (con ok), lancio e dopo.
+- **Se c'è l'Early Access**, i passi chiave hanno nomi chiari e una data: `**Pagina Steam con la sezione Early Access**`, `**Next Fest con la demo (prima dell'EA)**`, `**Uscita in Early Access**`, `**Roadmap pubblica**`, `**Annuncio: il prezzo sale alla 1.0**`, `**Uscita 1.0**`; i tripwire di wishlist si misurano prima dell'uscita in EA, non della 1.0.
 - **Controlla** con `plan_steps.py check`; durante il lavoro usa `plan_steps.py next --owner me` (cosa tocca all'utente), `done N` (spunta) e `summary`.
 
 ```bash

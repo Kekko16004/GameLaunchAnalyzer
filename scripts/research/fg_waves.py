@@ -13,7 +13,12 @@ Wave file (launch/fg/waves/w01-YYYY-MM-DD.json), written after the panel has jud
                  "issues": ["slow-opening", "tutorial-text"]}, ...],   # first issue = main criticism
     "issues":  [{"key": "slow-opening", "label": "Apertura lenta", "severity": "alta",
                  "recommendation": "...", "gate": "A", "area": "Primi minuti"}, ...],   # gate (0|A|B|C) and area: optional, used to group the criticalities in STATUS.html
-    "fixes":   [{"issue": "slow-opening", "what": "tutorial shortened"}]   # waves > 1: fixes since the previous wave
+    "fixes":   [{"issue": "slow-opening", "what": "tutorial shortened"}],   # waves > 1: fixes since the previous wave
+    "ceiling": {                                        # the two CEILING questions (04-focus-group.md, Passo 3b):
+      "version": {"testers": [{"id": "A-01", "verdict": "WISHLIST", "reason": "risolvibile: ..."}]},   # THIS version with only in-scope fixes
+                  # (bugs, clarity, polish; no new content or modes). If not asked: {"estimate": "55-58", "note": "..."} = [STIMA], not measured
+      "full":    {"testers": [...]}                     # the full game with the planned content
+    }   # reason "risolvibile: ..." or "gusto/genere: ...". Old files with a single {"testers": [...]} block are read as "full".
   }
 verdict: WISHLIST | SALDI | IGNORO | REFUND.  severity: alta | media | bassa.  Reuse the SAME issue keys across waves.
 
@@ -38,7 +43,9 @@ from common import load_json, log, write_csv, write_json
 
 W_ = {"WISHLIST": 1.0, "SALDI": 0.4, "IGNORO": -0.2, "REFUND": -0.8}
 SEV = {"alta": 3, "media": 2, "bassa": 1}
-GAP_FLAG = 15  # A/B score gap above which the skill requires an explanation
+GAP_FLAG = 15
+CEIL_NEAR_POINTS = 5     # ceiling minus score at or below this: close to the game's potential
+CEIL_NEAR_SHARE = 90     # or score at or above this % of the ceiling  # A/B score gap above which the skill requires an explanation
 
 
 def die(msgs):
@@ -85,7 +92,29 @@ def load_wave(path: str, roster: dict | None = None) -> dict:
     for m in warns:
         log("WARN", m)
     w["_defined"] = defined
+    w["stage"] = infer_stage(w, path)
     return w
+
+
+def infer_stage(w: dict, path: str = "") -> str:
+    """beta | full | "" : the "stage" key, else the file name suffix (-beta / -full), else the label ("beta", "completo", "full")."""
+    st = str(w.get("stage") or "").strip().lower()
+    if st in ("beta", "full"):
+        return st
+    m = re.search(r"-(beta|full)\.json$", os.path.basename(path or ""), re.I)
+    if m:
+        return m.group(1).lower()
+    lab = str(w.get("label") or "").lower()
+    if re.search(r"\b(gioco completo|completo|full)\b", lab):
+        return "full"
+    if re.search(r"\bbeta\b", lab):
+        return "beta"
+    return ""
+
+
+STAGE_IT = {"beta": "beta", "full": "gioco completo", "": ""}
+VERDICT_IT = {"WISHLIST": "Wishlist subito", "SALDI": "Aspetta i saldi", "IGNORO": "Scorre oltre", "REFUND": "Compra e rimborsa"}
+SEV_IT = {"alta": "alta", "media": "media", "bassa": "bassa"}
 
 
 def score(testers: list[dict]) -> float | None:
@@ -125,6 +154,10 @@ def metrics(w: dict, gate: float | None = None) -> dict:
     issues.sort(key=lambda i: (-i["weighted"], -i["freq"], i["key"]))
     thr, how = gate_of(w, gate)
     sc = score(ts)
+    blocks = ceiling_blocks(w)
+    ceil = ceiling_of(blocks.get("version"), sc)          # margin and "near the ceiling" use THIS version's ceiling
+    ceil_full = ceiling_of(blocks.get("full"), sc)
+    est = (blocks.get("version") or {}).get("estimate") if isinstance(blocks.get("version"), dict) else None
     return dict(wave=w["wave"], date=w["date"], build=w.get("build"), label=w.get("label"), stage=w.get("stage"), evidence=w.get("evidence"),
                 n=n, counts={k: cnt.get(k, 0) for k in W_}, pct={k: pct(cnt.get(k, 0), n) for k in W_}, score=sc,
                 score_a=sa, score_b=sb, n_a=len(A), n_b=len(B),
@@ -132,7 +165,34 @@ def metrics(w: dict, gate: float | None = None) -> dict:
                 click=dict(n=len(clicks), yes=sum(clicks), pct=pct(sum(clicks), len(clicks))),
                 pitch=dict(n=len(pitch), yes=sum(pitch), pct=pct(sum(pitch), len(pitch))),
                 buy=dict(n=len(buy), yes=sum(buy), pct=pct(sum(buy), len(buy))),
-                issues=issues, controls=w.get("controls"), gate=dict(threshold=thr, basis=how, passed=sc is not None and sc >= thr))
+                issues=issues, controls=w.get("controls"), gate=dict(threshold=thr, basis=how, passed=sc is not None and sc >= thr), ceiling=ceil,
+                ceiling_full=ceil_full, ceiling_estimate=None if ceil else (dict(value=str(est), note=str((blocks.get("version") or {}).get("note") or "")) if est else None))
+
+
+def ceiling_blocks(w: dict) -> dict:
+    """{"version": block, "full": block}. A legacy single block {"testers": [...]} is the FULL-game ceiling (testers imagined planned content)."""
+    c = w.get("ceiling") or {}
+    if not isinstance(c, dict):
+        return {}
+    if "version" in c or "full" in c:
+        return {k: c.get(k) for k in ("version", "full") if c.get(k)}
+    return {"full": c} if c.get("testers") else {}
+
+
+def ceiling_of(block, sc):
+    """Score, headroom and share of one ceiling block (None when it has no valid tester verdicts)."""
+    cts = [t for t in ((block or {}).get("testers") or []) if str(t.get("verdict", "")).strip("[] ").upper() in W_]
+    if not cts:
+        return None
+    for t in cts:
+        t["verdict"] = str(t["verdict"]).strip("[] ").upper()
+    cs = score(cts)
+    stuck = [t for t in cts if t["verdict"] != "WISHLIST"]
+    reasons = Counter((t.get("reason") or "").split(":")[0].strip().lower() or "n/d" for t in stuck)
+    head = None if sc is None or cs is None else round(cs - sc, 1)
+    share = None if not cs or sc is None or cs <= 0 else round(100 * sc / cs, 1)
+    return dict(score=cs, n=len(cts), headroom=head, share=share, counts={k: sum(1 for t in cts if t["verdict"] == k) for k in W_},
+                stuck=len(stuck), reasons=dict(reasons), near=(head is not None and (head <= CEIL_NEAR_POINTS or (share or 0) >= CEIL_NEAR_SHARE)))
 
 
 def table(headers: list[str], rows: list[list]) -> str:
@@ -141,24 +201,44 @@ def table(headers: list[str], rows: list[list]) -> str:
     return "\n".join(out)
 
 
+def _n(v) -> str:
+    """Numbers in Italian style (comma as decimal separator)."""
+    return "-" if v is None else f"{v:g}".replace(".", ",") if isinstance(v, float) else str(v)
+
+
 def md_metrics(m: dict) -> str:
     c, p = m["counts"], m["pct"]
-    gap = f"{m['gap']} points" + (" **> 15: explain it (core vs wide audience)**" if m["gap"] and m["gap"] > GAP_FLAG else "")
-    s = [f"## Wave {m['wave']} ({m['date']}) {m['label'] or ''}", f"Build: {m['build']} | Evidence: {m['evidence']} | N = {m['n']} (A {m['n_a']}, B {m['n_b']})" + (f" | Judged as: {m['stage']}" if m.get("stage") else ""), "",
-         f"**Wishlist score: {m['score']}** (gate {m['gate']['threshold']}, {m['gate']['basis']}: "
-         f"{'PASS' if m['gate']['passed'] else 'BELOW'}) | A {m['score_a']} vs B {m['score_b']}, gap {gap}", "",
-         table(["Verdict", "Count", "%"], [[k, c[k], p[k]] for k in W_]), "",
-         f"First-glance click: {m['click']['yes']}/{m['click']['n']} ({m['click']['pct']}%) | "
-         f"Pitch understood: {m['pitch']['yes']}/{m['pitch']['n']} ({m['pitch']['pct']}%)"]
+    stage = STAGE_IT.get(m.get("stage") or "", m.get("stage") or "")
+    gap = f"{_n(m['gap'])} punti" + (" **oltre 15: va spiegato (pubblico esperto contro pubblico largo)**" if m["gap"] and m["gap"] > GAP_FLAG else "")
+    s = [f"## Ondata {m['wave']} ({m['date']})" + (f" · {stage}" if stage else "") + (f" · {m['label']}" if m.get("label") else ""),
+         f"Versione: {m['build']} | Materiale mostrato: {m['evidence']} | Tester: {m['n']} (gruppo A {m['n_a']}, gruppo B {m['n_b']})", "",
+         f"**Punteggio wishlist: {_n(m['score'])}** (soglia {_n(m['gate']['threshold'])}: {'superata' if m['gate']['passed'] else 'NON superata'}) | gruppo A {_n(m['score_a'])}, gruppo B {_n(m['score_b'])}, distanza {gap}", "",
+         table(["Cosa farebbe il tester", "Quanti", "%"], [[VERDICT_IT[k], c[k], _n(p[k])] for k in W_]), "",
+         f"Cliccherebbe al primo sguardo: {m['click']['yes']} su {m['click']['n']} ({_n(m['click']['pct'])}%) | "
+         f"Ha capito il gioco dal pitch: {m['pitch']['yes']} su {m['pitch']['n']} ({_n(m['pitch']['pct'])}%)"]
     if m.get("buy", {}).get("n"):
-        s.append(f"Would pay the planned launch price: {m['buy']['yes']}/{m['buy']['n']} ({m['buy']['pct']}%) (free beta: the panel judges how much it makes them want to buy the full game)")
+        s.append(f"Pagherebbe il prezzo previsto: {m['buy']['yes']} su {m['buy']['n']} ({_n(m['buy']['pct'])}%) (beta gratuita: quanto fa venire voglia di comprare il gioco completo)")
     if m.get("controls"):
-        s.append(f"Controls (panel score of reference capsules): {m['controls']}")
-    s += ["", "### Issues (frequency x severity)", table(
-        ["Issue", "Severity", "Seen by", "% of panel", "Main criticism of", "A / B", "Recommendation"],
-        [[i["label"], i["severity"], i["freq"], i["pct"], i["main_criticism"], f"{i['groups']['A']} / {i['groups']['B']}", i["recommendation"]]
+        s.append("Capsule di confronto (punteggio dato dal panel): " + ", ".join(f"{'riuscita' if k == 'success' else 'debole' if k == 'weak' else k} {_n(v)}" for k, v in m["controls"].items()))
+    c, cf, ce = m.get("ceiling"), m.get("ceiling_full"), m.get("ceiling_estimate")
+    if c:
+        s += ["", "### Tetto di questa versione: il massimo con le sole correzioni possibili adesso (bug, chiarezza, rifinitura; niente contenuti nuovi)",
+              f"**Tetto di questa versione: {_n(c['score'])}** | oggi {_n(m['score'])} = {_n(c['share'])}% del tetto | margine ancora da prendere: **{_n(c['headroom'])} punti**",
+              "Verdetti al tetto: " + ", ".join(f"{VERDICT_IT[k]} {v}" for k, v in c["counts"].items()) +
+              f" | non arrivano a Wishlist nemmeno così: {c['stuck']} su {c['n']}" + (f" (motivi: {', '.join(f'{k} {v}' for k, v in c['reasons'].items())})" if c["reasons"] else ""),
+              ("**Vicino al tetto di questa versione: smettere di aggiungere idee e passare ai test con persone vere.**" if c["near"] else
+               "Ancora margine: lavorare solo sui problemi risolvibili adesso, non su idee nuove.")]
+    elif ce:
+        s += ["", f"### Tetto di questa versione: non misurato · stima {ce['value']} [STIMA]" + (f" ({ce['note']})" if ce.get("note") else "")]
+    if cf:
+        s += ["", "### Tetto del gioco completo: con i contenuti pianificati (non è margine di oggi)",
+              f"**Tetto del gioco completo: {_n(cf['score'])}** | non arrivano a Wishlist nemmeno così: {cf['stuck']} su {cf['n']}"
+              + (f" (motivi: {', '.join(f'{k} {v}' for k, v in cf['reasons'].items())})" if cf["reasons"] else "")]
+    s += ["", "### Problemi (quanti li citano × gravità)", table(
+        ["Problema", "Gravità", "Citato da", "% del panel", "Critica principale di", "A / B", "Cosa fare"],
+        [[i["label"], SEV_IT.get(i["severity"], i["severity"]), i["freq"], _n(i["pct"]), i["main_criticism"], f"{i['groups']['A']} / {i['groups']['B']}", i["recommendation"] or ""]
          for i in m["issues"]]), "",
-         "_Simulated panel: scores order problems, they do not predict sales. With N=54 any percentage carries roughly +-13 points of uncertainty, and the sample is simulated._"]
+         "_Panel simulato: i punteggi ordinano i problemi, non prevedono le vendite. Con 54 tester ogni percentuale ha un margine di circa ±13 punti, e il campione è simulato._"]
     return "\n".join(s)
 
 
@@ -169,12 +249,13 @@ def md_delta(a: dict, b: dict, ma: dict, mb: dict, noise: float) -> str:
     sa, sb = score([ta[i] for i in common]), score([tb[i] for i in common])
     fixes = {f.get("issue"): f.get("what") for f in b.get("fixes", [])}
     trans = Counter((ta[i]["verdict"], tb[i]["verdict"]) for i in common)
-    out = [f"## Delta: wave {a['wave']} ({a['date']}) -> wave {b['wave']} ({b['date']})",
-           f"Builds: {a.get('build')} -> {b.get('build')}", "",
-           f"**Wishlist score on the same {len(common)} testers: {sa} -> {sb} ({sb - sa:+.1f})**" if common else "No tester in common: cannot compare.",
-           f"All testers: {ma['score']} -> {mb['score']} ({mb['score'] - ma['score']:+.1f})"
-           + (f" | new in wave {b['wave']}: {', '.join(only_b)}" if only_b else "") + (f" | dropped: {', '.join(only_a)}" if only_a else ""), ""]
-    out += ["### Verdict movements (same testers)", table(["From", "To", "Testers"], [[x, y, n] for (x, y), n in sorted(trans.items(), key=lambda kv: (-kv[1], kv[0])) if x != y]) if any(x != y for x, y in trans) else "No verdict changed.", ""]
+    stage = STAGE_IT.get(b.get("stage") or "", "")
+    out = [f"## Cosa è cambiato: ondata {a['wave']} ({a['date']}) -> ondata {b['wave']} ({b['date']})" + (f" · {stage}" if stage else ""),
+           f"Versioni: {a.get('build')} -> {b.get('build')}", "",
+           f"**Punteggio wishlist sugli stessi {len(common)} tester: {_n(sa)} -> {_n(sb)} ({sb - sa:+.1f})**".replace(".", ",") if common else "Nessun tester in comune: non si possono confrontare.",
+           f"Tutti i tester: {_n(ma['score'])} -> {_n(mb['score'])} ({mb['score'] - ma['score']:+.1f})".replace(".", ",")
+           + (f" | nuovi nell'ondata {b['wave']}: {', '.join(only_b)}" if only_b else "") + (f" | usciti: {', '.join(only_a)}" if only_a else ""), ""]
+    out += ["### Verdetti che cambiano (stessi tester)", table(["Prima", "Dopo", "Tester"], [[VERDICT_IT[x], VERDICT_IT[y], n] for (x, y), n in sorted(trans.items(), key=lambda kv: (-kv[1], kv[0])) if x != y]) if any(x != y for x, y in trans) else "Nessun verdetto è cambiato.", ""]
     keys = sorted({i["key"] for i in ma["issues"]} | {i["key"] for i in mb["issues"]})
     ia, ib = {i["key"]: i for i in ma["issues"]}, {i["key"]: i for i in mb["issues"]}
     rows = []
@@ -182,16 +263,16 @@ def md_delta(a: dict, b: dict, ma: dict, mb: dict, noise: float) -> str:
         pa, pb = (ia.get(k) or {}).get("pct") or 0.0, (ib.get(k) or {}).get("pct") or 0.0
         fa, fb = (ia.get(k) or {}).get("freq", 0), (ib.get(k) or {}).get("freq", 0)
         d = pb - pa
-        st = ("NEW" if pa == 0 else "RESOLVED" if pb == 0 else "UNCHANGED" if abs(d) < noise else "IMPROVED" if d < 0 else "WORSE")
-        rows.append([(ib.get(k) or ia.get(k))["label"], (ib.get(k) or ia.get(k))["severity"], f"{fa}/{ma['n']}", f"{fb}/{mb['n']}", f"{d:+.1f} pp", st, fixes.get(k, "")])
-    order = {"WORSE": 0, "NEW": 1, "UNCHANGED": 2, "IMPROVED": 3, "RESOLVED": 4}
+        st = ("NUOVO" if pa == 0 else "RISOLTO" if pb == 0 else "INVARIATO" if abs(d) < noise else "MIGLIORATO" if d < 0 else "PEGGIORATO")
+        rows.append([(ib.get(k) or ia.get(k))["label"], (ib.get(k) or ia.get(k))["severity"], f"{fa} su {ma['n']}", f"{fb} su {mb['n']}", f"{d:+.1f} punti".replace(".", ","), st, fixes.get(k, "")])
+    order = {"PEGGIORATO": 0, "NUOVO": 1, "INVARIATO": 2, "MIGLIORATO": 3, "RISOLTO": 4}
     rows.sort(key=lambda r: (order[r[5]], r[0]))
-    out += ["### Effect on each issue", table(["Issue", "Severity", "Before", "After", "Change", "Status", "Fix applied"], rows),
-            f"_Status uses a noise band of +-{noise} percentage points (default is an opinion, adjust with --noise)._", ""]
-    chg = [[i, f"{ta[i]['verdict']} -> {tb[i]['verdict']}", (ta[i]['issues'] or ['-'])[0], (tb[i]['issues'] or ['-'])[0], ""]
+    out += ["### Effetto su ogni problema", table(["Problema", "Gravità", "Prima", "Dopo", "Variazione", "Esito", "Correzione fatta"], rows),
+            f"_L'esito usa una fascia di rumore di ±{noise:g} punti percentuali (valore di default: un'opinione, si cambia con --noise)._", ""]
+    chg = [[i, f"{VERDICT_IT[ta[i]['verdict']]} -> {VERDICT_IT[tb[i]['verdict']]}", (ta[i]['issues'] or ['-'])[0], (tb[i]['issues'] or ['-'])[0], ""]
            for i in common if ta[i]["verdict"] != tb[i]["verdict"] or ta[i]["issues"][:1] != tb[i]["issues"][:1]]
-    out += ["### Per tester (verdict or main criticism changed)", table(["ID", "Verdict", "Main criticism before", "Main criticism after", "Attributed cause"], chg) if chg else "No change.", "",
-            "_Same simulated testers with the same biases: the delta is directional, not proof. Confirm important improvements in the real test (Gate B)._"]
+    out += ["### Per tester (verdetto o critica principale cambiati)", table(["ID", "Verdetto", "Critica principale prima", "Critica principale dopo", "Causa attribuita"], chg) if chg else "Nessun cambiamento.", "",
+            "_Stessi tester simulati con gli stessi gusti: il confronto indica una direzione, non è una prova. Le migliorie importanti si confermano nel test reale (Gate B)._"]
     return "\n".join(out)
 
 
@@ -239,29 +320,33 @@ def cmd_delta(a):
 def cmd_timeline(a):
     roster = load_json(a.roster) if a.roster else None
     ms = [metrics(w, a.gate) for w in load_dir(a.dir, roster)]
-    rows, csv_rows, prev = [], [], None
+    rows, csv_rows, prevs = [], [], {}
     for m in ms:
+        prev = prevs.get(m.get("stage") or "beta")   # beta and full waves are compared only with waves of the same kind
         d = "" if prev is None else f"{m['score'] - prev['score']:+.1f}"
         top = m["issues"][0]["label"] if m["issues"] else "-"
         open_high = sum(1 for i in m["issues"] if i["severity"] == "alta")
-        rows.append([m["wave"], m["date"], m["build"], m["n"], m["score"], d, f"{m['pct']['WISHLIST']}/{m['pct']['SALDI']}/{m['pct']['IGNORO']}/{m['pct']['REFUND']}",
+        rows.append([m["wave"], STAGE_IT.get(m.get("stage") or "", "") or "-", m["date"], m["build"], m["n"], m["score"], d, f"{m['pct']['WISHLIST']}/{m['pct']['SALDI']}/{m['pct']['IGNORO']}/{m['pct']['REFUND']}",
                      m["click"]["pct"], m["pitch"]["pct"], f"{m['score_a']} / {m['score_b']}", open_high, top,
-                     f"{'PASS' if m['gate']['passed'] else 'below'} ({m['gate']['threshold']})"])
-        csv_rows.append(dict(wave=m["wave"], date=m["date"], build=m["build"], n=m["n"], score=m["score"], delta=d,
+                     f"{'superato' if m['gate']['passed'] else 'sotto'} ({m['gate']['threshold']})",
+                     (m["ceiling"] or {}).get("score", "-"), (m["ceiling"] or {}).get("headroom", "-"), (m.get("ceiling_full") or {}).get("score", "-")])
+        csv_rows.append(dict(wave=m["wave"], stage=m.get("stage") or "", date=m["date"], build=m["build"], n=m["n"], score=m["score"], delta=d,
                              wishlist_pct=m["pct"]["WISHLIST"], saldi_pct=m["pct"]["SALDI"], ignoro_pct=m["pct"]["IGNORO"],
                              refund_pct=m["pct"]["REFUND"], click_pct=m["click"]["pct"], pitch_pct=m["pitch"]["pct"], buy_pct=m["buy"]["pct"],
                              score_a=m["score_a"], score_b=m["score_b"], high_severity_issues=open_high, top_issue=top,
-                             gate=m["gate"]["threshold"], gate_passed=m["gate"]["passed"]))
-        prev = m
-    txt = ["# Focus group timeline", "",
-           f"Score trend: `{spark([m['score'] for m in ms])}` ({ms[0]['score']} -> {ms[-1]['score']}, {len(ms)} waves)", "",
-           table(["Wave", "Date", "Build", "N", "Score", "Δ", "W/S/I/R %", "Click %", "Pitch %", "A / B", "High-sev. issues", "Top issue", "Gate A"], rows), "",
-           "_Simulated waves with the same roster: directional trend, not proof or sales forecast. Differences within a few points are noise._"]
+                             gate=m["gate"]["threshold"], gate_passed=m["gate"]["passed"],
+                             ceiling=(m["ceiling"] or {}).get("score"), headroom=(m["ceiling"] or {}).get("headroom"),
+                             ceiling_estimate=(m.get("ceiling_estimate") or {}).get("value"), ceiling_full=(m.get("ceiling_full") or {}).get("score")))
+        prevs[m.get("stage") or "beta"] = m
+    txt = ["# Focus group: andamento delle ondate", "",
+           f"Andamento del punteggio: `{spark([m['score'] for m in ms])}` ({_n(ms[0]['score'])} -> {_n(ms[-1]['score'])}, {len(ms)} ondate)", "",
+           table(["Ondata", "Tipo", "Data", "Versione", "Tester", "Punteggio", "Variazione", "Wishlist/Saldi/Ignora/Rimborso %", "Click %", "Pitch %", "A / B", "Problemi gravi", "Problema principale", "Gate A", "Tetto di questa versione", "Margine", "Tetto del gioco completo"], rows), "",
+           "_Ondate simulate con gli stessi tester: indicano una direzione, non sono una prova né una previsione di vendita. Differenze di pochi punti sono rumore. Beta e gioco completo si confrontano solo con ondate dello stesso tipo._"]
     if len(ms) > 1:
         first, last = {i["key"]: i for i in ms[0]["issues"]}, {i["key"]: i for i in ms[-1]["issues"]}
         gone = sorted(first[k]["label"] for k in first if k not in last)
         new = sorted(last[k]["label"] for k in last if k not in first)
-        txt += ["", f"Since wave {ms[0]['wave']}: resolved issues: {', '.join(gone) or 'none'}; new issues: {', '.join(new) or 'none'}."]
+        txt += ["", f"Dall'ondata {ms[0]['wave']}: problemi spariti: {', '.join(gone) or 'nessuno'}; problemi nuovi: {', '.join(new) or 'nessuno'}."]
     out = "\n".join(txt) + "\n"
     if a.out:
         open(a.out, "w", encoding="utf-8", newline="\n").write(out)

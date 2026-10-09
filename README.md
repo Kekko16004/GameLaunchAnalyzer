@@ -73,7 +73,18 @@ installer.bat
 
 **Codex**: `--codex` (PowerShell: `-Codex`) installs the skill in `$CODEX_HOME/skills` (default `~/.codex/skills`) and the command as a prompt in `~/.codex/prompts`, used as `/prompts:game-launch-strategist` [verify the paths against your Codex version]. Where an environment lacks a tool the skill uses (structured questions, sub-agents, tool search), `SKILL.md` says what to do instead.
 
-Only `SKILL.md`, `references/` and `scripts/` are installed, plus the `/game-launch-strategist` slash command. In `link` mode (default) edits to this repository are picked up immediately.
+Only `SKILL.md`, `references/` and `scripts/` are installed, plus the `/game-launch-strategist` slash command. In `link` mode (default) edits to this repository are picked up immediately (`SKILL.md` is a symlink with Developer Mode on, otherwise a copy that `update.bat` refreshes). Every install records its choices in `~/.game-launch-strategist/install.json`; `install.ps1 -Reuse` repeats them without questions.
+
+## Update (one click)
+
+```bat
+update.bat              :: download from GitHub, check the scripts, reinstall in every IDE with the last choices, verify
+update.bat -Test        :: also run the unit tests before installing
+update.bat -NoSelf      :: no download, only reinstall        update.bat -NoInstall   :: download only
+update.bat -Mode copy   :: install as copies                  update.bat -Branch dev  :: follow another branch
+```
+
+What it does: (0) installed copies that differ from this folder (edits made inside an IDE's skills folder) are saved to `~/.game-launch-strategist/backups/<date>/` before anything is overwritten; (1) `git pull --ff-only --autostash`, or the latest zip from GitHub if this folder is not a git clone (the previous files are backed up); (2) finds Python 3.9+, compiles every script; (3) `install.ps1 -Reuse` (first time: every IDE found on the PC); (4) checks that every installed `SKILL.md` matches. Exit code 1 if anything needs a look; the warnings are listed at the end.
 
 ## Use
 

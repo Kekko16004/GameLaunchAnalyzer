@@ -117,6 +117,14 @@ Quando i dati contraddicono o confermano un'intenzione, **riapri la domanda** co
 - **R-B, dopo Fase 5 (economia)**: "con i tuoi costi il break-even è N copie, cioè M wishlist al lancio: è realistico per te? Cambi prezzo, scope o obiettivo?"
 - **R-C, prima di fissare calendario e contingenze**: conferma date, soglie e chi fa cosa.
 - **R-D, dopo la Fase 10 (solo beta con piano del gioco completo)**: domande sul gioco completo prima dell'analisi rapida: quante ore di gioco e quali contenuti nel totale; cosa si aggiunge oltre la beta (Atti, modalità, co-op, contenuti); cosa è ancora solo un'idea; data di uscita e prezzo previsti; accesso anticipato sì o no; quante ore servono ancora e chi le fa; cosa tagliereste se il tempo non bastasse. Poi "ecco cosa vedo, ecco cosa migliorerei adesso".
+  - **Domande sull'Early Access** (sempre, se il percorso può essere "beta gratis → EA a pagamento → 1.0"; criteri, regole e numeri in `02-audit-platform-pricing.md`, "Early Access o lancio 1.0"):
+    1. Pensate di vendere il gioco in accesso anticipato prima della versione finale? Perché (soldi prima, feedback, motivazione)?
+    2. Cosa ci sarebbe **il primo giorno di EA**: quante ore di gioco, quali modalità? Il motivo principale per comprare (es. la co-op) ci sarebbe già?
+    3. Per quanto tempo potete aggiornare in pubblico (la mediana è oltre un anno), con quante ore a settimana?
+    4. Chi risponde a recensioni, Discord e segnalazioni durante l'EA?
+    5. Volete fare il Next Fest? (si può solo **prima** dell'uscita in EA)
+    6. Prezzo in EA e prezzo alla 1.0: siete d'accordo a dirlo sulla pagina fin dall'inizio?
+  - **Consiglio da dare** (formato del consiglio, una riga per voce): «**Il mio consiglio: [EA / 1.0 diretta / EA solo dopo X]**. Perché: [contenuto al giorno 1, motivo d'acquisto presente o no, ore e mesi disponibili]. Cosa vuol dire in pratica: l'uscita in EA sarà il vostro lancio vero (la 1.0 di solito incassa meno del primo mese di EA), quindi Next Fest prima, pagina e wishlist come per un lancio completo. Rischio principale: [es. EA con poco contenuto → recensioni "sembra una demo" e rimborsi]. Cosa farei adesso: [1-2 azioni]. Da decidere entro: [data].» Registra la scelta in `00-intenzioni.md`.
 
 Anche questi round hanno il formato del consiglio e finiscono nel registro.
 

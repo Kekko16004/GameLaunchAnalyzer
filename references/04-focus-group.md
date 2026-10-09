@@ -106,6 +106,31 @@ Lo script valida (ID, verdetti, duplicati), calcola e **non si ricalcola a mano*
 
 Aggiungi nel report: **problema N.1 di game feel** (la cosa più pesante per il divertimento, con evidenza), **leva strategica del genere** (la feature o il fattore che decide più wishlist, con quante wishlist nascerebbero o morirebbero), **rischio rimborso** (percentuale e motivo).
 
+### Passo 3b: le due domande del tetto (`ceiling.version` e `ceiling.full`)
+
+Dopo il verdetto sullo stato attuale, ogni tester risponde a **due** domande, separate e in quest'ordine:
+
+1. **Tetto di questa versione**: "se si sistemasse **solo** ciò che si può sistemare in questa versione (bug, chiarezza, rifinitura, bilanciamento), **senza contenuti né modalità nuove**, cosa faresti?". Nel pacchetto di evidenze ripeti cosa NON entra (es. altre mappe, co-op, nuovi atti).
+2. **Tetto del gioco completo**: "e con i contenuti pianificati del gioco completo (elencati), cosa faresti?".
+
+Perché due: con una sola domanda i tester immaginano anche i contenuti futuri, e il tetto diventa quello della 1.0. Così il margine sembra grande ma **non è raggiungibile adesso** (è successo: il proprietario ha visto un tetto della beta di 84,4 che in realtà era quello del gioco completo).
+
+Nel JSON dell'ondata:
+```json
+"ceiling": {
+  "version": {"testers": [{"id": "A-01", "verdict": "SALDI", "reason": "risolvibile: leggibilità"}]},
+  "full":    {"testers": [{"id": "A-01", "verdict": "WISHLIST", "reason": "risolvibile: co-op e mappe"}]}
+}
+```
+Se la domanda sulla versione non è stata fatta, scrivi una stima dichiarata: `"version": {"estimate": "55-58", "note": "non misurato: …"}` (compare come **[STIMA]**). Un vecchio blocco unico `"ceiling": {"testers": [...]}` viene letto come **tetto del gioco completo**. `fg_waves.py` calcola:
+
+- **tetto di questa versione** e **margine** = tetto di questa versione − punteggio attuale (solo questo margine guida il lavoro di adesso);
+- **vicino al tetto** se quel margine è sotto 5 punti o il punteggio è già al 90 % del tetto di questa versione;
+- **tetto del gioco completo**: dove può arrivare il gioco finito con il piano; serve a decidere il piano, non a dire quanto si guadagna oggi;
+- **bloccati**: chi non metterebbe in wishlist neanche così, con il motivo (di solito il gusto: genere, tema, stile). Sono il pubblico che il gioco non avrà mai: non si inseguono.
+
+Come si usa: vicino al tetto di questa versione si **smette di aggiungere idee** e si passa ai test con persone vere; con margine si lavora solo sui problemi risolvibili adesso. Realismo: i tetti dichiarati sono ottimisti (i tester immaginano la versione migliore); un tetto realistico è circa **punteggio attuale + metà del margine**. Per un indie piccolo del settore, 65-70 è già un risultato alto **[OPINIONE]**.
+
 ### Passo 4: dibattito della giuria (`wNN-debate.md`)
 I 10 della giuria (`jury` in `roster.json`, **gli stessi ID a ogni ondata**: ruoli principiante, esperto, scettico, impaziente, accessibilità, bastian contrario, cacciatore di valore/rimborsi, creator di clip/streamer, più voci di coorte; se nel roster manca un curatore indie o un creator di short video, aggiungi quel ruolo a un ID senza cambiarne le colonne tecniche) discutono con i dati dei Passi 2-3 e della Sezione B sul tavolo.
 
@@ -134,7 +159,7 @@ Senza dialoghi, per sviluppatori e designer:
 Chiudi il report con la dichiarazione: valutazione **simulata** con persone fittizie, non ricerca empirica; accelera la scoperta euristica ma le decisioni critiche si validano con utenti reali.
 
 ### Passo 6: aggiornamenti
-Aggiorna `05-focusgroup.md`, `05a-critiche-simulate.md`, la timeline (7.5) e `STATUS.md` (numero ondata, build, punteggio). Poi la segnalazione all'utente (7.4).
+Aggiorna `05-focusgroup.md`, `05a-critiche-simulate.md`, la timeline (7.5) e `STATUS.md` (numero ondata, build, punteggio). Aggiorna **`issue_status.json`** (chiavi nuove come `aperto`, sistemate come `risolto` con il gate; formato in `06-synthesis-output.md`) e **`TODO.md`** con `todo_track.py` (spunta ciò che l'ondata conferma fatto, aggiungi i problemi nuovi da fare), poi rigenera `STATUS.html`. Poi la segnalazione all'utente (7.4); quando il proprietario decide su un problema ("va bene così", "nel gioco completo"), scrivilo subito in `issue_status.json`.
 
 ---
 
@@ -192,6 +217,7 @@ Appena l'ondata è scritta, **scrivi in chat** (anche nel mezzo di una Completa)
 ONDATA [N] - segnalazione problemi (panel simulato, non dato di mercato)
 Stato valutato: [build/commit, materiali visti]. Metodo gruppi: [subagenti separati / sequenziale].
 Punteggio wishlist [X] (soglia [S], motivata) | A [..] vs B [..] | click [..]% | pitch capito [..]%
+Tetto [T] | margine [T-X] punti | [vicino al tetto: stop idee, si testa con persone vere / ancora margine: solo problemi risolvibili]
 [Ondate > 1: punteggio [prima] -> [dopo] ([+/-]); risolti: [..]; peggiorati o nuovi: [..]]
 
 Problemi, dal più pesante:

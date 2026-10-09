@@ -70,7 +70,7 @@ def build(root: str, today: dt.date, hide: set[str]) -> str:
     v = st.get("verdict") or {}
     if v:
         kind, word = sp.LIGHT.get(str(v.get("color", "")).lower(), ("info", str(v.get("color", "n/d"))))
-        risks = "".join(f"<li>{sp.state('warn', f'Rischio {k}')}<span>{sp.esc(r)}</span></li>" for k, r in enumerate(v.get("risks", [])[:3], 1))
+        risks = "".join(f"<li>{sp.state('warn', f'Rischio {k}')}<span>{sp.esc(r.get('text', '') if isinstance(r, dict) else r)}</span></li>" for k, r in enumerate(v.get("risks", [])[:3], 1))
         top.append(f'<section class="card verdict"><div>{sp.ICONS[kind][0]}</div><div><div class="big">Verdetto: {sp.esc(word)}{" (provvisorio)" if v.get("provisional") else ""}</div><p>{sp.esc(v.get("summary", ""))}</p>'
                    + (f'<p class="sub">Probabilità stimata di recuperare i costi: {sp.esc(v["probability"])}</p>' if v.get("probability") else "") + (f'<ul class="clean">{risks}</ul>' if risks else "") + "</div></section>")
     wl_a, wl_svg = sp.wishlist_section(root, today)

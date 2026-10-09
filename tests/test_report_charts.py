@@ -37,12 +37,13 @@ d = tempfile.mkdtemp(); build_launch(d)
 today = dt.date(2026, 10, 25)
 gs = {g["key"]: g for g in rc.groups(d, today)}
 assert set(gs) == {"product", "fg", "market", "reviews", "econ", "plan", "creators", "fullgame"}, set(gs)
-assert len(gs["product"]["charts"]) == 2 and len(gs["fg"]["charts"]) == 2   # waves JSON absent: no issue chart, no crash
+assert len(gs["product"]["charts"]) == 1 and len(gs["fg"]["charts"]) == 2   # waves JSON absent: no issue chart, no crash
 assert len(gs["market"]["charts"]) == 6 and len(gs["reviews"]["charts"]) == 3 and len(gs["econ"]["charts"]) == 4
 allhtml = "".join(c for g in gs.values() for c in g["charts"])
 assert "PASS" in allhtml and "Pagherebbe il prezzo previsto" in allhtml and "break-even" in allhtml and "Vista tabella" in allhtml
 assert "<b>x</b>" not in allhtml and "&lt;b&gt;x&lt;/b&gt;" in allhtml     # text from files is escaped
-assert "ore per arrivare a PASS" in allhtml and "120 h" in allhtml and "No trailer" not in allhtml
+assert "Feedback del successo" in allhtml and "Non regge" in allhtml and "18 h" in allhtml and "Ore stimate" in allhtml and "120 h" in allhtml and "No trailer" not in allhtml   # pillars by NAME, credible hours only
+pr = rc.pillar_rows(d); assert [r["name"] for r in pr][:2] == ["Loop", "Feedback del successo"] and pr[0]["hours"] is None and pr[1]["hours"] == (18.0, 18.0)   # "0" hours is not credible: words instead
 assert "NaN" not in allhtml and "inf" not in allhtml.lower().replace("information", "")
 
 # REPORT.html: each group sits in its section, nothing is lost, hostile text inert
@@ -67,10 +68,11 @@ except SystemExit as e: assert "REPORT.md" in str(e)
 
 # STATUS.html carries the block, publisher gets only the public-safe groups
 sp_page = sp.build(d, "partner", [], [], set(), today)
-assert "Quadro d'insieme" in sp_page and "Dal prezzo a quanto resta" in sp_page and "creator per piattaforma" in sp_page
+assert 'role="tablist"' in sp_page and sp_page.count('role="tabpanel"') >= 4 and "Dal prezzo a quanto resta" in sp_page and "creator per piattaforma" in sp_page
+assert sp_page.index('id="p-piano"') < sp_page.index("Dal prezzo a quanto resta") and sp_page.index('id="p-gioco"') < sp_page.index("Pilastri del genere") < sp_page.index('id="p-marketing"')   # each chart group sits in its tab
 pub = sp.build(d, "publisher", [], [], set(), today)
 assert "Cosa farebbero i tester" in pub and "Dal prezzo a quanto resta" not in pub and "creator per piattaforma" not in pub and "Pilastri del genere" not in pub and "Dalla beta" not in pub
-assert "Quadro d'insieme" not in sp.build(d, "partner", [], [], {"charts"}, today)
+assert "Dal prezzo a quanto resta" not in sp.build(d, "partner", [], [], {"charts"}, today)
 
 # STATUS.html "everything": SteamDB table, launch window table, per-wave reports, extra documents, sticky index, "Adesso" box
 dd = tempfile.mkdtemp(); build_launch(dd)
@@ -84,7 +86,7 @@ W2("05a-critiche-simulate.md", "# Critiche simulate\nuna\n"); W2("05b-critiche-r
 W2("06-creators.md", "# Creator\nsegreto\n")
 priv = sp.build(dd, "private", [], [], set(), today)
 for need in ("SteamDB: numeri letti a mano", "12.900", "+500", "Rival &lt;b&gt;One&lt;/b&gt;", "Finestra di lancio", "Le 5 settimane più tranquille", "Voci non conteggiate", "Vague (date",
-             "Ondata 1: metriche", "Ondata 2: cosa è cambiato", "Critiche simulate", "Critiche reali (con fonti)", "Hook e clip", "Calcolo economico", "Adesso", 'class="toc"', 'href="#sec1"', "Gate 0 · Posizionamento"):
+             "Ondata 1: metriche", "Ondata 2: cosa è cambiato", "Critiche simulate", "Critiche reali (con fonti)", "Hook e clip", "Calcolo economico", "Adesso", 'class="toc"', 'href="#sec', "Gate 0 · Posizionamento", 'role="tab"', "localStorage"):
     assert need in priv, need
 assert "<b>One</b>" not in priv and priv.count("<h2 id=") == priv.count("<h2 ") and "Tocca a Claude" in priv
 part = sp.build(dd, "partner", [], [], set(), today)
@@ -104,7 +106,7 @@ open(os.path.join(d3, "_raw", "econ.json"), "w") if os.path.isdir(os.path.join(d
 # standalone svg export
 out = tempfile.mkdtemp()
 r = subprocess.run([sys.executable, os.path.join(R, "charts_export.py"), "--launch-dir", d, "--out", out], capture_output=True, env=dict(os.environ, PYTHONIOENCODING="cp1252")); assert r.returncode == 0, r.stderr
-files = sorted(os.listdir(out)); assert "index.md" in files and sum(f.endswith(".svg") for f in files) == 20, files
+files = sorted(os.listdir(out)); assert "index.md" in files and sum(f.endswith(".svg") for f in files) == 19, files
 svg = open(os.path.join(out, "product-1.svg"), encoding="utf-8").read()
 assert svg.startswith("<svg xmlns=") and "var(--" not in svg and 'class="hit"' not in svg and "#0ca30c" in svg and "<script" not in svg
 import xml.dom.minidom as md

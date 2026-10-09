@@ -27,11 +27,22 @@ store_kit.json shape (keys not listed are ignored; every platform: steam, itch):
     "capsules": [{"name": "Header capsule", "size": "920x430", "what": "composition and what it says in 1.5 s"}],
     "trailer": {"duration_s": 60, "placement": "first media of the page", "script": "launch/04b-store-copy.md#trailer"},
     "settings": [{"label": "Languages", "value": "EN, IT", "note": ""}],
-    "checklist": ["AI disclosure completed", "..."]
+    "checklist": ["Content survey completed", "..."],
+    "early_access": {                                  # only if the game ships in Early Access (Steam questionnaire, shown on the store page)
+      "verified_on": "AAAA-MM-GG", "source": "https://partner.steamgames.com/doc/store/earlyaccess",
+      "limits": {"why": 1200},                         # Valve declares none: the default is a readability limit [OPINIONE]
+      "questions": [{"key": "why", "label": "Why Early Access?", "value": "..."},
+                    {"key": "duration", ...}, {"key": "full_vs_ea", ...}, {"key": "current_state", ...}, {"key": "pricing", ...}, {"key": "community", ...}]},
+    "accessibility": {"intro": "...", "features": [{"label": "Reduce motion", "value": "turns off head bob, camera shake and hit-stop"}]}
   },
   "itch": { ...same shape, long_description.format "markdown"... }
 }
 Usage: store_kit.py check|render|export launch/store_kit.json [--md launch/store_kit.md] [--dir launch/store_kit]
+
+Live pages: the kit must follow the game. After every owner decision, gate or wave that changes what the game is or promises
+(Early Access, multiplayer roadmap, accessibility, languages, price) Claude updates store_kit.json ("updated": date) and re-runs
+check/render/export. `freshness(launch_dir)` (used by `check` and by STATUS.html) says "aggiornate al <date>" or "da aggiornare"
+when the kit is older than the latest decision in 00-intenzioni.md (a "## AAAA-MM-GG" heading), the latest wave or the latest gate doc.
 """
 from __future__ import annotations
 
@@ -46,6 +57,14 @@ import common  # noqa: F401  (side effect: UTF-8 stdout, so emoji and arrows do 
 PLATFORMS = ("steam", "itch")
 PLACEHOLDER = re.compile(r"<<<.*?>>>")
 REQUIRED = {"steam": ["title", "short_description"], "itch": ["title", "tagline"]}
+# Steam Early Access questionnaire (field names read on partner.steamgames.com/doc/store/earlyaccess on 2026-10-09; re-check them)
+EA_QUESTIONS = [("why", "Why Early Access?"), ("duration", "Approximately how long will this game be in Early Access?"),
+                ("full_vs_ea", "How is the full version planned to differ from the Early Access version?"),
+                ("current_state", "What is the current state of the Early Access version?"),
+                ("pricing", "Will the game be priced differently during and after Early Access?"),
+                ("community", "How are you planning on involving the Community in your development process?")]
+EA_SOFT_LIMIT = 1200   # Valve declares no limit; past this a player stops reading [OPINIONE]
+PROMISE = re.compile(r"\b(guarantee[ds]?|definitely|we promise|will (?:definitely |surely )?(?:be (?:released|finished|out)|release|launch|ship)\s+(?:on|by|in)\s+(?:\w+\s+)?\d{4})\b", re.I)
 
 
 def load(path: str) -> dict:
@@ -116,8 +135,92 @@ def validate(kit: dict) -> tuple[list[str], list[str], dict]:
         for key in ("capsules",) + (("trailer",) if pf == "steam" else ()):
             if not p.get(key):
                 warns.append(f"{pf}: '{key}' missing")
+        ea = p.get("early_access")
+        if ea:
+            if not ea.get("verified_on"):
+                warns.append(f"{pf}: early_access.verified_on missing (question names change: re-read the Steamworks page)")
+            got = {q.get("key"): q for q in ea.get("questions", [])}
+            elim = ea.get("limits") or {}
+            for key, label in EA_QUESTIONS:
+                q = got.get(key)
+                val = str((q or {}).get("value") or "").strip()
+                if not val:
+                    errs.append(f"{pf}: Early Access question '{label}' has no answer")
+                    continue
+                lim = elim.get(key) or (q or {}).get("limit") or EA_SOFT_LIMIT
+                st[f"ea_{key}"] = len(val)
+                if len(val) > lim:
+                    (errs if elim.get(key) or (q or {}).get("limit") else warns).append(f"{pf}: Early Access '{key}' has {len(val)} characters (limit {lim})")
+                if PROMISE.search(val):
+                    warns.append(f"{pf}: Early Access '{key}' sounds like a promise ('{PROMISE.search(val).group(0)}'): Valve asks not to promise future features or dates")
+            if pf == "steam" and not re.search(r"early access", assemble(p.get("long_description") or {}), re.I):
+                warns.append("steam: the long description does not say the game is in Early Access")
+        acc = p.get("accessibility")
+        if acc:
+            feats = acc.get("features") or []
+            if not feats:
+                errs.append(f"{pf}: accessibility block without features")
+            for f in feats:
+                if not str(f.get("label") or "").strip() or not str(f.get("value") or "").strip():
+                    errs.append(f"{pf}: accessibility feature without label or description")
+            st["accessibility_features"] = len(feats)
         stats[pf] = st
     return errs, warns, stats
+
+
+def ea_rows(p: dict) -> list[tuple[str, str, str]]:
+    ea = p.get("early_access") or {}
+    got = {q.get("key"): q for q in ea.get("questions", [])}
+    return [(got.get(k, {}).get("label") or label, str(got.get(k, {}).get("value") or ""), got.get(k, {}).get("note") or "") for k, label in EA_QUESTIONS if k in got]
+
+
+def accessibility_text(p: dict, fmt: str = "text") -> str:
+    """The accessibility block as pasteable text: intro + one line per feature (bbcode list on Steam, markdown on itch)."""
+    acc = p.get("accessibility") or {}
+    feats = acc.get("features") or []
+    if not feats:
+        return ""
+    if fmt == "bbcode":
+        body = "[list]\n" + "\n".join(f"[*][b]{f['label']}[/b]: {f['value']}" for f in feats) + "\n[/list]"
+    else:
+        body = "\n".join(f"- **{f['label']}**: {f['value']}" for f in feats)
+    return ((acc.get("intro") or "").strip() + "\n" + body).strip()
+
+
+def freshness(root: str, kit_path: str | None = None) -> dict:
+    """{"kit_date", "stale": bool, "newer": [(what, date)]}: is the kit older than the latest decision, wave or gate?"""
+    import datetime as dt
+    import glob
+    kit_path = kit_path or os.path.join(root, "store_kit.json")
+    if not os.path.exists(kit_path):
+        return {}
+    try:
+        kd = str(load(kit_path).get("updated") or "")[:10]
+        kit_date = dt.date.fromisoformat(kd)
+    except (ValueError, OSError, json.JSONDecodeError):
+        kit_date = dt.date.fromtimestamp(os.path.getmtime(kit_path))
+    newer = []
+    try:
+        dates = re.findall(r"^#{2,3}\s+(\d{4}-\d{2}-\d{2})", open(os.path.join(root, "00-intenzioni.md"), encoding="utf-8").read(), re.M)
+        if dates and max(dates) > kit_date.isoformat():
+            newer.append(("ultima decisione in 00-intenzioni.md", max(dates)))
+    except OSError:
+        pass
+    wd = []
+    for f in glob.glob(os.path.join(root, "fg", "waves", "w[0-9]*.json")):
+        try:
+            wd.append(str(load(f).get("date") or "")[:10])
+        except (OSError, json.JSONDecodeError):
+            pass
+    if wd and max(wd) > kit_date.isoformat():
+        newer.append(("ultima ondata del focus group", max(wd)))
+    gates = glob.glob(os.path.join(os.path.dirname(os.path.abspath(root)), "docs", "gates", "*.md"))
+    if gates:
+        g = max(gates, key=os.path.getmtime)
+        gd = dt.date.fromtimestamp(os.path.getmtime(g)).isoformat()
+        if gd > kit_date.isoformat():
+            newer.append((f"ultimo gate ({os.path.basename(g)})", gd))
+    return dict(kit_date=kit_date.isoformat(), stale=bool(newer), newer=newer)
 
 
 def copy_rows(p: dict) -> list[tuple[str, str, str]]:
@@ -154,6 +257,13 @@ def to_md(kit: dict) -> str:
             L += ["### Trailer", "", f"Durata prevista {t.get('duration_s', '?')} s · posizione: {t.get('placement', '')} · script: {t.get('script', '')}", ""]
         if p.get("settings"):
             L += ["### Impostazioni da compilare", "", "| Voce | Valore | Nota |", "|---|---|---|"] + [f"| {s.get('label')} | {s.get('value')} | {s.get('note', '')} |" for s in p["settings"]] + [""]
+        if p.get("early_access"):
+            ea = p["early_access"]
+            L += ["### Early Access: le domande di Steam", "", f"_Domande lette su {ea.get('source', 'partner.steamgames.com/doc/store/earlyaccess')} il {ea.get('verified_on', '[DA VERIFICARE]')}. Valve: niente promesse su date o funzioni future._", ""]
+            for label, value, note in ea_rows(p):
+                L += [f"#### {label}", "", "```text", value, "```", ""] + ([f"_{note}_", ""] if note else [])
+        if p.get("accessibility"):
+            L += ["### Accessibilità (da copiare)", "", "```text", accessibility_text(p, "bbcode" if pf == "steam" else "md"), "```", ""]
         if p.get("checklist"):
             L += ["### Controlli prima di pubblicare", ""] + [f"- [ ] {c}" for c in p["checklist"]] + [""]
     return "\n".join(L)
@@ -175,6 +285,14 @@ def export(kit: dict, outdir: str) -> list[str]:
             path = os.path.join(outdir, f"{pf}_long_description.{'bbcode.txt' if ld.get('format') == 'bbcode' else 'md'}")
             open(path, "w", encoding="utf-8", newline="\n").write(assemble(ld) + "\n")
             written.append(path)
+        for k, (label, value, _) in zip([q for q, _ in EA_QUESTIONS if q in {x.get("key") for x in (p.get("early_access") or {}).get("questions", [])}], ea_rows(p)):
+            path = os.path.join(outdir, f"{pf}_early_access_{k}.txt")
+            open(path, "w", encoding="utf-8", newline="\n").write(value + "\n")
+            written.append(path)
+        if p.get("accessibility"):
+            path = os.path.join(outdir, f"{pf}_accessibility.txt")
+            open(path, "w", encoding="utf-8", newline="\n").write(accessibility_text(p, "bbcode" if pf == "steam" else "md") + "\n")
+            written.append(path)
         if p.get("tags"):
             path = os.path.join(outdir, f"{pf}_tags.txt")
             open(path, "w", encoding="utf-8", newline="\n").write("\n".join(t["tag"] for t in p["tags"]) + "\n")
@@ -193,6 +311,10 @@ def main():
         for pf, st in stats.items():
             print(f"{pf}: " + ", ".join(f"{k}={v}" for k, v in st.items()))
         print("\n".join(f"ERROR {e}" for e in errs + []) + ("\n" if errs else "") + "\n".join(f"WARN  {w}" for w in warns))
+        fr = freshness(os.path.dirname(os.path.abspath(a.kit)), a.kit)
+        if fr:
+            print(f"pagine store: aggiornate al {fr['kit_date']}" if not fr["stale"] else
+                  f"pagine store: DA AGGIORNARE (kit del {fr['kit_date']}; più recenti: " + "; ".join(f"{w} {d}" for w, d in fr["newer"]) + ")")
         print("OK" if not errs else f"{len(errs)} errors")
         sys.exit(1 if errs else 0)
     if a.cmd == "render":

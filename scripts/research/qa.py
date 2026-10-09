@@ -83,7 +83,7 @@ def faq(ctx: dict) -> list[tuple]:
     if v:
         word = str(v.get("color", "")).capitalize() or "n/d"
         notpass = [names.get(k, f"Gate {k}") for k, g in gates.items() if g.get("state") != "pass"]
-        a = esc(v.get("summary", "")) + (f' Rischi principali: {esc("; ".join(v.get("risks", [])[:3]))}.' if v.get("risks") else "") + (f' Cancelli non ancora superati: {esc(", ".join(notpass))} ([[gates|vedi i cancelli]]).' if notpass else "")
+        a = esc(v.get("summary", "")) + (f' Rischi principali: {esc("; ".join((r.get("text", "") if isinstance(r, dict) else str(r)) for r in v.get("risks", [])[:3]))}.' if v.get("risks") else "") + (f' Cancelli non ancora superati: {esc(", ".join(notpass))} ([[gates|vedi i cancelli]]).' if notpass else "")
         out.append(("Verdetto", f"Perché il verdetto è {word.lower()}?", a))
     if plan.get("phases"):
         import plan_steps as ps
@@ -109,11 +109,11 @@ def faq(ctx: dict) -> list[tuple]:
             a = "È la prima ondata: non c'è ancora un confronto. Dalla prossima vedrai cosa migliora e cosa peggiora in [[critiche|Criticità]]."
         out.append(("Ondate", "Cosa è cambiato rispetto all'ultima ondata?", a))
     if crit and crit.get("issues"):
-        opened = [x for x in crit["issues"] if x["open"]][:3] + []
+        opened = [x for x in crit["issues"] if x["open"] and x.get("now", True)][:3]   # still to do now (no closed decision in issue_status.json)
         reg = [m for m in crit.get("register", []) if m["status"] != "risolta"]
         lines = [f'<li><strong>{esc(x["label"])}</strong>, gravità {esc(x["severity"])}' + (f', {x["last_pct"]:g}% dei tester' if x.get("last_pct") is not None else "") + (f', cancello {esc(x["gate"])}' if x.get("gate") else "") + "</li>" for x in opened]
         lines += [f'<li><strong>{esc(m["label"])}</strong>, gravità {esc(m["severity"])}, da {esc(m["source"])}</li>' for m in reg[:max(0, 3 - len(lines))]]
-        out.append(("Ondate", "Quali sono le criticità aperte più gravi?", ("<ul>" + "".join(lines) + "</ul>Tutte, ondata per ondata, in [[critiche|Criticità]]." if lines else "Nessuna criticità aperta nell'ultima ondata.")))
+        out.append(("Ondate", "Quali sono le criticità aperte più gravi?", ("<ul>" + "".join(lines) + "</ul>Sono quelle ancora segnalate e senza una tua decisione chiusa. Tutte, ondata per ondata, in [[critiche|Criticità]]." if lines else "Nessuna criticità da affrontare adesso: le altre hanno già una decisione.")))
     if gates:
         nopass = [(k, g) for k, g in gates.items() if g.get("state") != "pass"]
         if nopass:
@@ -163,7 +163,7 @@ def suggested(ctx: dict) -> list[tuple]:
             out.append((f"Cosa manca per superare il {names.get(k, 'Gate ' + k)}?", "Un cancello non superato blocca il pagamento di Steam: meglio sapere cosa serve e quando rifare la prova."))
             break
     if crit:
-        top = next((x for x in crit.get("issues", []) if x["open"] and x["severity"] == "alta"), None)
+        top = next((x for x in crit.get("issues", []) if x["open"] and x.get("now", True) and x["severity"] == "alta"), None)
         if top:
             out.append((f"Quanto costa sistemare «{top['label']}» e ho le ore per farlo?", "È una criticità grave ancora aperta: conviene sapere ore, scadenza e cosa si sposta se la risolvi."))
     if win and win.get("chosen", {}).get("verdict") == "affollata":
