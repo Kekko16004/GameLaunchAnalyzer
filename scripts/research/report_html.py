@@ -100,6 +100,9 @@ def build(root: str, today: dt.date, hide: set[str]) -> str:
     anchors = gl.anchors_for(heads)
     used: set = set()
     own_top = lambda c: {x for x in ("trend", "overview") if f'id="{x}"' in c}
+    import weblinks
+    top = [weblinks.linkify_html(c) for c in top]     # every URL clickable (short label, new tab), before the glossary
+    body = [weblinks.linkify_html(c) for c in body]
     top = [gl.enrich(c, anchors, own_top(c), used) for c in top]   # plain-Italian tooltips and links to the section that deals with the thing
     body = [gl.enrich(c, anchors, {f"s{i}"}, used) for i, c in enumerate(body)]
     glo = gl.glossary_html(used)

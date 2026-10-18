@@ -10,6 +10,10 @@ game". This scan reads the disk (read-only, nothing is written unless you pass -
                 roadmap, TODO...), with their first heading, so you read the right ones first
   artifacts     what other skills left behind: GDD.md (locked?), GAME_CONTEXT.md, GAME_TASKS.md (done/open), docs/gates, ASSET-LEDGER.md,
                 screenshots/000-index.md, and this skill's own launch/ (STATUS.md, status.json)
+  dev_link      the game-developer contract (references/dev-link.md): mode linked / launch-only / solo (same rule as
+                game-developer's `gate_link.py detect`), DECISIONI.md (D-NNN count), docs/design-review/ (game-map, screen-map,
+                runs, changes-since-wNN, "aggiornata al gate NN"), gates with the machine-readable header (last number, date,
+                status), gate plans plan-wNN.md, and whether the two copies of the contract carry the same `contract:` version
   steam / itch  steam_appid.txt, vdf files, Steamworks plugin or package, .itch.toml
   media         screenshots, capsules and videos found in the usual folders (newest first)
   git           branch, last commits, remote host (credentials in the URL are removed)
@@ -250,6 +254,79 @@ def artifacts(root: str) -> dict:
     return out
 
 
+def _gate_header(path: str) -> dict | None:
+    """gate / date / status / title of the machine-readable header of a development gate (dev-link.md §7), None without one."""
+    lines = read(path, 20000).splitlines()
+    if not lines or lines[0].strip() != "---":
+        return None
+    head = {}
+    for ln in lines[1:200]:
+        if ln.strip() == "---":
+            break
+        m = re.match(r"^(gate|date|status|title|wave)\s*:\s*(.*?)\s*(?:#.*)?$", ln)
+        if m:
+            head[m.group(1)] = m.group(2).strip().strip("\"'")
+    else:
+        return None
+    return head if str(head.get("gate", "")).isdigit() else None
+
+
+def _skill_installed(name: str) -> str | None:
+    home = os.path.expanduser("~")
+    for base in (os.path.join(home, ".claude", "skills"), os.path.join(home, ".agents", "skills")):
+        if os.path.exists(os.path.join(base, name, "SKILL.md")):
+            return os.path.join(base, name)
+    return None
+
+
+def _contract_version(path: str | None) -> str | None:
+    m = re.search(r"(?m)^contract:\s*(\S+)", read(path, 4000)) if path and os.path.exists(path) else None
+    return m.group(1) if m else None
+
+
+def dev_link(root: str) -> dict:
+    """The game-developer side of the project, read-only (references/dev-link.md §1). mode: linked when launch/ exists and the
+    strategist skill is installed, launch-only when launch/ exists without it, solo without launch/ (gate_link.py detect)."""
+    j = lambda *p: os.path.join(root, *p)
+    launch = os.path.isdir(j("launch"))
+    strategist = _skill_installed("game-launch-strategist")
+    dev = _skill_installed("game-developer")
+    out = dict(mode="linked" if launch and strategist else "launch-only" if launch else "solo", launch_dir=launch,
+               strategist_skill=bool(strategist), dev_skill=bool(dev),
+               dev_work=any(os.path.exists(j(*x.split("/"))) for x in ("docs/gates", "GAME_TASKS.md", "DECISIONI.md")))
+    dec = read(j("DECISIONI.md"), 400000)
+    if dec:
+        ids = re.findall(r"(?m)^\s*(?:\|\s*|[-*]\s*\**)(D-\d{2,})\b", dec)
+        out["decisions"] = dict(path="DECISIONI.md", count=len(set(ids)), last=max(ids, key=lambda x: int(x[2:])) if ids else None)
+    rd = j("docs", "design-review")
+    if os.path.isdir(rd):
+        files = sorted(os.listdir(rd))
+        cs = sorted((f for f in files if re.match(r"changes-since-w\d+\.md$", f)), key=lambda f: int(re.search(r"\d+", f).group(0)))
+        gm = re.search(r"aggiornat[ao]\s+al\s+gate\s+(\d+)", read(j("docs", "design-review", "game-map.md"), 3000), re.I)
+        out["design_review"] = dict(path="docs/design-review/", game_map="game-map.md" in files, screen_map="screen-map.md" in files,
+                                    runs="runs.md" in files, changes_since=cs, latest_changes_since=cs[-1] if cs else None,
+                                    map_gate=int(gm.group(1)) if gm else None)
+    heads = []
+    for g in glob.glob(j("docs", "gates", "*.md")):
+        h = _gate_header(g)
+        if h:
+            heads.append(dict(gate=int(h["gate"]), date=h.get("date"), status=h.get("status"), title=h.get("title"),
+                              file=os.path.basename(g)))
+    if heads:
+        last = max(heads, key=lambda h: h["gate"])
+        out["gates_with_header"] = dict(count=len(heads), last=last["gate"], last_date=last["date"], last_status=last["status"],
+                                        last_title=last["title"], last_file=last["file"])
+    plans = sorted(os.path.basename(p) for p in glob.glob(j("docs", "gates", "plan-w*.md")))
+    if plans:
+        out["gate_plans"] = plans
+    ours = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "references", "dev-link.md")
+    theirs = os.path.join(dev, "references", "launch-link.md") if dev else None
+    cv = dict(ours=_contract_version(ours), theirs=_contract_version(theirs))
+    cv["match"] = None if not (cv["ours"] and cv["theirs"]) else cv["ours"] == cv["theirs"]
+    out["contract"] = cv
+    return out
+
+
 def scan_steam(root: str) -> dict:
     ids = []
     for f in ("steam_appid.txt", os.path.join("Binaries", "Win64", "steam_appid.txt")):
@@ -337,7 +414,7 @@ def scan(root: str, max_docs: int, probe: bool) -> dict:
     root = os.path.abspath(root)
     eng = find_engines(root)
     docs = scan_docs(root, max_docs)
-    return dict(root=os.path.basename(root), engines=eng, primary_engine=(eng[0]["engine"] if eng else None), docs=docs, artifacts=artifacts(root), store=scan_steam(root), media=scan_media(root), git=scan_git(root),
+    return dict(root=os.path.basename(root), engines=eng, primary_engine=(eng[0]["engine"] if eng else None), docs=docs, artifacts=artifacts(root), dev_link=dev_link(root), store=scan_steam(root), media=scan_media(root), git=scan_git(root),
                 tools=scan_tools(root, probe), genre_hints=genre_hints(root, docs))
 
 
@@ -357,6 +434,26 @@ def to_md(r: dict) -> str:
     L += ["## Documenti da leggere, in ordine", "", "| File | Tipo | Titolo |", "|---|---|---|"] + [f"| `{d['path']}` | {d['kind']} | {d['heading']} |" for d in r["docs"][:25]] + [""]
     if r["artifacts"]:
         L += ["## Lasciato da altre skill o dal progetto", ""] + [f"- {k}: {json.dumps(v, ensure_ascii=False)}" for k, v in r["artifacts"].items()] + [""]
+    dl = r.get("dev_link") or {}
+    if dl:
+        mode_it = {"linked": "insieme (launch + game-developer)", "launch-only": "launch senza la skill launch installata", "solo": "solo sviluppo (niente launch/)"}
+        L += ["## Collegamento con game-developer (`references/dev-link.md`)", "",
+              f"- modo: **{dl['mode']}** ({mode_it.get(dl['mode'], dl['mode'])}) · skill game-developer: {'sì' if dl['dev_skill'] else 'no'} · lavoro dev nel progetto: {'sì' if dl['dev_work'] else 'no'}"]
+        if dl.get("decisions"):
+            L.append(f"- `DECISIONI.md`: {dl['decisions']['count']} decisioni (ultima {dl['decisions']['last']}): importa quelle che mancano con `todo_track.py sync-decisions`")
+        if dl.get("gates_with_header"):
+            g = dl["gates_with_header"]
+            L.append(f"- gate con intestazione: {g['count']} · ultimo **gate {g['last']}** ({g['last_date']}, {g['last_status']}): {g['last_title']}")
+        if dl.get("gate_plans"):
+            L.append("- piani dei gate: " + ", ".join(dl["gate_plans"]))
+        if dl.get("design_review"):
+            d = dl["design_review"]
+            L.append(f"- `docs/design-review/`: mappa {'sì' if d['game_map'] else 'no'}" + (f" (gate {d['map_gate']})" if d.get("map_gate") else "")
+                     + f", schermate {'sì' if d['screen_map'] else 'no'}, run {'sì' if d['runs'] else 'no'}, changes-since: {d['latest_changes_since'] or 'nessuno'}")
+        c = dl.get("contract") or {}
+        if c.get("match") is False:
+            L.append(f"- ⚠️ versioni del contratto diverse: qui {c['ours']}, game-developer {c['theirs']}: dillo al proprietario una volta e segui la regola più prudente")
+        L.append("")
     st = r["store"]
     L += ["## Steam e itch", "", f"- steam_appid: {', '.join(st['app_ids']) or 'non trovato'} · vdf: {', '.join(st['vdf_files']) or '-'} · itch: {'sì' if st['itch'] else 'no'}", ""]
     m = r["media"]

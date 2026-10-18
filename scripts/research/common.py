@@ -198,3 +198,42 @@ def parse_count(s) -> int | None:
         return int(float(s.rstrip("KMBkmb")) * mul)
     except ValueError:
         return None
+
+
+# ---------------------------------------------------------------- user folder and private keys
+def user_dir(*parts: str) -> str:
+    """The skill's per-user data folder (~/.game-launch-strategist, or $GLS_HOME): datasets, calibration, keys file.
+    Lives OUTSIDE the skill repository, so nothing in it can be committed by mistake."""
+    base = os.environ.get("GLS_HOME") or os.path.join(os.path.expanduser("~"), ".game-launch-strategist")
+    return os.path.join(base, *parts)
+
+
+def load_env(path: str | None = None) -> list[str]:
+    """Load API keys from private .env files into this process. Returns the NAMES loaded, never the values.
+
+    Order (first wins, and a variable already set in the environment always wins): `path` (--env-file),
+    $GLS_ENV_FILE, then the private keys file ~/.game-launch-strategist/.env. Lines are KEY=VALUE; quotes are
+    stripped; comments and blank lines are skipped. Never print, log or write the values anywhere.
+    """
+    loaded: list[str] = []
+    for p in [path, os.environ.get("GLS_ENV_FILE"), user_dir(".env")]:
+        if not p or not os.path.isfile(p):
+            continue
+        try:
+            with open(p, encoding="utf-8-sig") as f:
+                for line in f:
+                    line = line.strip()
+                    if not line or line.startswith("#") or "=" not in line:
+                        continue
+                    k, v = line.split("=", 1)
+                    k, v = k.strip().removeprefix("export ").strip(), v.strip().strip('"').strip("'")
+                    if k and v and k not in os.environ:
+                        os.environ[k] = v
+                        loaded.append(k)
+        except OSError as e:
+            log(f"WARN cannot read keys file: {e.__class__.__name__}")
+    return loaded
+
+
+def has_key(name: str) -> bool:
+    return bool(os.environ.get(name, "").strip())

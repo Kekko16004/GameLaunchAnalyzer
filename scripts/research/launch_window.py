@@ -5,6 +5,9 @@ Reads, never fetches:
   launch/watchlist.csv   competitors you follow with watchlist.py (role `competitor`, release date from the store; coming soon)
   launch/window.csv      what you add by hand: big releases, festivals, sales, holidays, rivals seen on SteamDB "upcoming" or in the press
                          columns: date,name,kind,weight,source,note   (kind: competitor | big_release | festival | sale | holiday)
+  Steam's own calendar   seasonal sales, Next Fest and themed fests from steam_events.py (user file, else its built-in fallback),
+                         one row per week of each event, added automatically (--no-steam-events to leave them out); the same
+                         rows written into window.csv by `steam_events.py export-window` are counted once
 Public Steam data does not list every upcoming game, so a free week in this list is NOT a free week in the world: the tool
 says what it counted and how many items had no usable date.
 
@@ -128,7 +131,8 @@ def analyse(items: list[dict], launch: dt.date, start: dt.date, end: dt.date) ->
 def md(res: dict, bad: list[str], today: dt.date) -> str:
     ch = res["chosen"]
     L = ["# Calendario dei concorrenti per la finestra di lancio", "",
-         f"Data scelta: **{res['launch']}** (settimana del {ch['week']}), valutata il {today.isoformat()}. Conteggiate **{res['counted']}** voci (rivali, grandi uscite, festival, saldi, festività) dalle liste `watchlist.csv` e `window.csv`.", "",
+         f"Data scelta: **{res['launch']}** (settimana del {ch['week']}), valutata il {today.isoformat()}. Conteggiate **{res['counted']}** voci (rivali, grandi uscite, festival, saldi, festività) dalle liste `watchlist.csv` e `window.csv`"
+         + (f", compresi i saldi e i fest ufficiali di Steam (`steam_events.py`, {res['steam_events']} righe settimanali; le stesse righe in `window.csv` contano una volta sola)." if res.get("steam_events") else "."), "",
          f"**Esito: settimana {ch['verdict']}** (punteggio {ch['score']}; il {ch['quieter_weeks_pct']}% delle settimane candidate è più tranquillo). "
          "Il punteggio confronta le settimane tra loro [OPINIONE]: non prevede wishlist o vendite, e vale solo per ciò che è in lista: una settimana libera qui non è libera nel mondo.", "",
          "## Le 5 settimane più tranquille", "", "| Settimana dal | Punteggio | Cosa c'è vicino |", "|---|---|---|"]
@@ -180,7 +184,15 @@ def cmd_plan(a):
         raise SystemExit("--to is before --from")
     i1, b1 = read_watchlist(a.watchlist)
     i2, b2 = read_window(a.csv)
-    res = analyse(dedupe(i1 + i2), launch, start, end)
+    i3 = []
+    if not a.no_steam_events:      # Steam's own sales and fests (steam_events.py), always counted unless switched off
+        try:
+            import steam_events
+            i3 = steam_events.window_items(a.steam_events)
+        except Exception as e:  # noqa: BLE001
+            log(f"WARN steam events not read: {e}")
+    res = analyse(dedupe(i1 + i2 + i3), launch, start, end)
+    res["steam_events"] = len(i3)
     res["not_counted"] = b1 + b2
     text = md(res, b1 + b2, today)
     if a.md:
@@ -202,6 +214,8 @@ def main():
     p.add_argument("--weight", type=float); p.add_argument("--source", default=""); p.add_argument("--note", default=""); p.add_argument("--csv", default="launch/window.csv")
     p = sub.add_parser("plan"); p.add_argument("--launch", required=True); p.add_argument("--from", dest="start"); p.add_argument("--to", dest="end")
     p.add_argument("--watchlist", default="launch/watchlist.csv"); p.add_argument("--csv", default="launch/window.csv"); p.add_argument("--md"); p.add_argument("-o", "--out"); p.add_argument("--today")
+    p.add_argument("--steam-events", help="steam_events.json (default: ~/.game-launch-strategist/steam_events.json, else the built-in fallback)")
+    p.add_argument("--no-steam-events", action="store_true", help="do not add Steam's official sales and fests")
     a = ap.parse_args()
     (cmd_add if a.cmd == "add" else cmd_plan)(a)
 

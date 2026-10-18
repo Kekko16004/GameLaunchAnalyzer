@@ -354,13 +354,14 @@ def wave_panel(p: dict, manual: list, gate_names: dict, owner: dict | None = Non
             + (f" · confronto con l'{esc(wave_label(prev))}" if prev else "") + "</p>")
     out = [head]
     if p["fixes"]:
-        out.append("<h4>Cosa è stato corretto prima di questa ondata</h4><ul>" + "".join(f'<li>{esc(f.get("what"))}' + (f' <span class="note">(criticità: {esc(f.get("issue"))})</span>' if f.get("issue") else "") + "</li>" for f in p["fixes"]) + "</ul>")
+        out.append("<h4>Cosa è stato corretto prima di questa ondata</h4><ul>" + "".join(f'<li>{esc(f.get("what"))}' + (f' <span class="note">(criticità: {esc(f.get("issue"))})</span>' if f.get("issue") else "")
+                   + (f' <span class="note">· gate di sviluppo {esc(f.get("gate_dev"))}' + (" · da verificare con persone vere" if f.get("status") == "da_verificare" else "") + "</span>" if f.get("gate_dev") is not None else "") + "</li>" for f in p["fixes"] if isinstance(f, dict)) + "</ul>")
     if p["rows"]:
         has_gate = any(r["gate"] for r in p["rows"])
 
         def row(r):
             g = gate_names.get(r["gate"], f"Gate {r['gate']}") if r["gate"] else "—"
-            return (f'<tr><td><strong>{esc(r["label"])}</strong>' + (f'<br><span class="note">{esc(r["area"])}</span>' if r["area"] else "") + f'</td><td class="nw">{sev_pill(r["severity"])}</td>'
+            return (f'<tr><td><strong>{esc(r["label"])}</strong>' + (f' {pill("warn", "nato col gate " + str(r["from_gate_dev"]))}' if r.get("from_gate_dev") is not None else "") + (f'<br><span class="note">{esc(r["area"])}</span>' if r["area"] else "") + f'</td><td class="nw">{sev_pill(r["severity"])}</td>'
                     f'<td class="n nw">{_pc(r["pct"])}<br><span class="note">{r["freq"]} su {w["n_testers"]}</span></td>'
                     f'<td class="nw">{status_pill(r["status"])}' + (f'<br><span class="note">{esc(_delta(r["delta"]))}</span>' if r["delta"] is not None else "") + "</td>"
                     f'<td class="dec">{owner_badge(r["key"], owner)}</td>' + (f'<td class="nw">{esc(g)}</td>' if has_gate else "") + f'<td class="todo">{esc(r.get("recommendation") or "")}</td></tr>')

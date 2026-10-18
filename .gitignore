@@ -4,3 +4,5 @@ __pycache__/
 *.orig
 *.bak2
 *.m4s
+.env
+*.env

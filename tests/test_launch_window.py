@@ -44,7 +44,7 @@ assert len(dup) == 2 and max(i["weight"] for i in dup) == 4.0
 # ---- CLI under a cp1252 console (the report uses ◀ and ★)
 def run(*a):
     return subprocess.run([sys.executable, os.path.join(R, "launch_window.py")] + list(a), capture_output=True, env=dict(os.environ, PYTHONIOENCODING="cp1252"))
-r = run("plan", "--launch", "2027-03-01", "--from", "2027-02-01", "--to", "2027-04-30", "--watchlist", os.path.join(d, "watchlist.csv"), "--csv", os.path.join(d, "window.csv"), "--today", "2026-10-07", "-o", os.path.join(d, "_raw", "window.json"))
+r = run("plan", "--launch", "2027-03-01", "--from", "2027-02-01", "--to", "2027-04-30", "--watchlist", os.path.join(d, "watchlist.csv"), "--csv", os.path.join(d, "window.csv"), "--today", "2026-10-07", "--no-steam-events", "-o", os.path.join(d, "_raw", "window.json"))
 assert r.returncode == 0, r.stderr.decode("utf-8", "replace")
 text = r.stdout.decode("utf-8")
 assert "◀ la tua" in text and "Voci non conteggiate" in text and "Rival Vague" in text and "una settimana libera qui non è libera nel mondo" in text and "Conteggiate **4** voci" in text, text[:600]

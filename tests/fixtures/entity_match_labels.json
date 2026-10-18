@@ -1,0 +1,2431 @@
+{
+ "games": [
+  {
+   "appid": 3808690,
+   "title": "Pathogenic",
+   "developers": [
+    "Aberrant Labs"
+   ],
+   "publishers": [
+    "Slug Disco"
+   ],
+   "words": [
+    "Action",
+    "RPG",
+    "Simulation",
+    "Roguelike",
+    "Bullet Hell",
+    "Top-Down Shooter"
+   ],
+   "languages": [
+    "English"
+   ],
+   "announced": "2024-07-16",
+   "release_date": "2026-07-16"
+  },
+  {
+   "appid": 3767850,
+   "title": "SpiritVale",
+   "developers": [
+    "Baikun Interactive"
+   ],
+   "publishers": [
+    "Baikun Interactive"
+   ],
+   "words": [
+    "Action",
+    "Massively Multiplayer",
+    "RPG",
+    "Early Access",
+    "Early Access",
+    "MMORPG"
+   ],
+   "languages": [
+    "English"
+   ],
+   "announced": "2024-07-15",
+   "release_date": "2026-07-15"
+  },
+  {
+   "appid": 3712080,
+   "title": "Funnel Runners",
+   "developers": [
+    "Supernova Studios LLC"
+   ],
+   "publishers": [
+    "Supernova Studios LLC"
+   ],
+   "words": [
+    "Action",
+    "Simulation",
+    "Early Access",
+    "Survival Horror",
+    "Exploration",
+    "Nature"
+   ],
+   "languages": [
+    "English"
+   ],
+   "announced": "2024-07-16",
+   "release_date": "2026-07-16"
+  },
+  {
+   "appid": 2524850,
+   "title": "Denshattack!",
+   "developers": [
+    "Undercoders"
+   ],
+   "publishers": [
+    "Fireshine Games",
+    "Boltray Games"
+   ],
+   "words": [
+    "Action",
+    "Adventure",
+    "Arcade",
+    "Trains",
+    "Fast-Paced",
+    "3D Platformer"
+   ],
+   "languages": [
+    "English"
+   ],
+   "announced": "2024-07-15",
+   "release_date": "2026-07-15"
+  },
+  {
+   "appid": 3372060,
+   "title": "Hell Maiden",
+   "developers": [
+    "AstralShift"
+   ],
+   "publishers": [
+    "AstralShift"
+   ],
+   "words": [
+    "Action",
+    "Casual",
+    "RPG",
+    "Early Access",
+    "Action Roguelike",
+    "Bullet Heaven"
+   ],
+   "languages": [
+    "English"
+   ],
+   "announced": "2024-07-16",
+   "release_date": "2026-07-16"
+  },
+  {
+   "appid": 4252290,
+   "title": "Meowgic",
+   "developers": [
+    "Lazy Turtle Games"
+   ],
+   "publishers": [
+    "Polden Publishing"
+   ],
+   "words": [
+    "Action",
+    "Adventure",
+    "Online Co-Op",
+    "Magic",
+    "Funny",
+    "Co-op"
+   ],
+   "languages": [
+    "English"
+   ],
+   "announced": "2024-07-20",
+   "release_date": "2026-07-20"
+  },
+  {
+   "appid": 1952920,
+   "title": "Strikers Club",
+   "developers": [
+    "Oddshot Games"
+   ],
+   "publishers": [
+    "Oddshot Games"
+   ],
+   "words": [
+    "Action",
+    "Simulation",
+    "Sports",
+    "Free To Play",
+    "Early Access",
+    "Early Access"
+   ],
+   "languages": [
+    "English"
+   ],
+   "announced": "2024-07-17",
+   "release_date": "2026-07-17"
+  },
+  {
+   "appid": 4157430,
+   "title": "Diggin",
+   "developers": [
+    "Longshot Studio"
+   ],
+   "publishers": [
+    "Longshot Studio",
+    "Gamersky"
+   ],
+   "words": [
+    "Adventure",
+    "Casual",
+    "Strategy",
+    "Incremental",
+    "Exploration",
+    "Management"
+   ],
+   "languages": [
+    "English"
+   ],
+   "announced": "2024-07-16",
+   "release_date": "2026-07-16"
+  },
+  {
+   "appid": 4899300,
+   "title": "Cheminots",
+   "developers": [
+    "Weasel Sailor"
+   ],
+   "publishers": [
+    "Weasel Sailor"
+   ],
+   "words": [
+    "Adventure",
+    "Casual",
+    "Simulation",
+    "Casual",
+    "Trains",
+    "Adventure"
+   ],
+   "languages": [
+    "English"
+   ],
+   "announced": "2024-07-21",
+   "release_date": "2026-07-21"
+  },
+  {
+   "appid": 4466930,
+   "title": "Are We Sinking Yet?",
+   "developers": [
+    " SP GAMES"
+   ],
+   "publishers": [
+    " SP GAMES"
+   ],
+   "words": [
+    "Action",
+    "Adventure",
+    "Massively Multiplayer",
+    "Simulation",
+    "Adventure",
+    "Simulation"
+   ],
+   "languages": [
+    "English"
+   ],
+   "announced": "2024-07-16",
+   "release_date": "2026-07-16"
+  },
+  {
+   "appid": 4867330,
+   "title": "Toy Keeper",
+   "developers": [
+    "Pocket Collector"
+   ],
+   "publishers": [
+    "HeadArrow"
+   ],
+   "words": [
+    "Adventure",
+    "Casual",
+    "Early Access",
+    "Relaxing",
+    "Organizing",
+    "Collectathon"
+   ],
+   "languages": [
+    "English"
+   ],
+   "announced": "2024-07-17",
+   "release_date": "2026-07-17"
+  },
+  {
+   "appid": 3665520,
+   "title": "Catto Pew Pew!",
+   "developers": [
+    "Oakley Blade"
+   ],
+   "publishers": [
+    "Oakley Blade Games LLC"
+   ],
+   "words": [
+    "Action",
+    "Free To Play",
+    "Free to Play",
+    "Action",
+    "Shooter",
+    "Physics"
+   ],
+   "languages": [
+    "English"
+   ],
+   "announced": "2024-07-20",
+   "release_date": "2026-07-20"
+  },
+  {
+   "appid": 2315970,
+   "title": "SHARKS",
+   "developers": [
+    "Ezone PTY LTD"
+   ],
+   "publishers": [
+    "Ezone PTY LTD"
+   ],
+   "words": [
+    "Action",
+    "Adventure",
+    "Casual",
+    "Simulation",
+    "Sports",
+    "Free To Play"
+   ],
+   "languages": [
+    "English"
+   ],
+   "announced": "2024-07-16",
+   "release_date": "2026-07-16"
+  },
+  {
+   "appid": 4749870,
+   "title": "Decline",
+   "developers": [
+    "Ronaldo Campos"
+   ],
+   "publishers": [
+    "Ronaldo Campos"
+   ],
+   "words": [
+    "Horror",
+    "Singleplayer",
+    "Survival Horror",
+    "Psychological Horror",
+    "Incremental",
+    "Point & Click"
+   ],
+   "languages": [
+    "English"
+   ],
+   "announced": "2024-07-20",
+   "release_date": "2026-07-20"
+  },
+  {
+   "appid": 4774650,
+   "title": "The Wanderer",
+   "developers": [
+    "Jamie Parish"
+   ],
+   "publishers": [
+    "PARISH DIGITAL LIMITED"
+   ],
+   "words": [
+    "Action",
+    "Adventure",
+    "Casual",
+    "RPG",
+    "Adventure",
+    "RPG"
+   ],
+   "languages": [
+    "English"
+   ],
+   "announced": "2024-07-21",
+   "release_date": "2026-07-21"
+  },
+  {
+   "appid": 4852380,
+   "title": "Dropoff",
+   "developers": [
+    "Tzjr Games"
+   ],
+   "publishers": [
+    "Tzjr Games"
+   ],
+   "words": [
+    "Action",
+    "Casual",
+    "Racing",
+    "Simulation",
+    "Casual",
+    "Simulation"
+   ],
+   "languages": [
+    "English"
+   ],
+   "announced": "2024-07-15",
+   "release_date": "2026-07-15"
+  },
+  {
+   "appid": 4731310,
+   "title": "HOOK",
+   "developers": [
+    "Neoff Media",
+    "Evan Rosenberg (Neoff Media)"
+   ],
+   "publishers": [
+    "Neoff Media"
+   ],
+   "words": [
+    "Casual",
+    "Simulation",
+    "Casual",
+    "Traditional Roguelike",
+    "Fishing",
+    "Arcade"
+   ],
+   "languages": [
+    "English"
+   ],
+   "announced": "2024-07-17",
+   "release_date": "2026-07-17"
+  },
+  {
+   "appid": 4659900,
+   "title": "Monitor",
+   "developers": [
+    "Yacht Club"
+   ],
+   "publishers": [
+    "Yacht Club"
+   ],
+   "words": [
+    "Adventure",
+    "Exploration",
+    "Adventure",
+    "Puzzle",
+    "Point & Click",
+    "2D"
+   ],
+   "languages": [
+    "English"
+   ],
+   "announced": "2024-07-16",
+   "release_date": "2026-07-16"
+  },
+  {
+   "appid": 4864580,
+   "title": "TideFall",
+   "developers": [
+    "RootWaves"
+   ],
+   "publishers": [
+    "RootWaves"
+   ],
+   "words": [
+    "Action",
+    "2D Platformer",
+    "Action",
+    "Action Roguelike",
+    "Singleplayer",
+    "Roguelite"
+   ],
+   "languages": [
+    "English"
+   ],
+   "announced": "2024-07-16",
+   "release_date": "2026-07-16"
+  },
+  {
+   "appid": 2646720,
+   "title": "Dead Weight",
+   "developers": [
+    "Klukva Games"
+   ],
+   "publishers": [
+    "Klukva Games",
+    "Spaghetti Cat"
+   ],
+   "words": [
+    "Adventure",
+    "RPG",
+    "Strategy",
+    "Turn-Based Combat",
+    "Strategy",
+    "RPG"
+   ],
+   "languages": [
+    "English"
+   ],
+   "announced": "2024-07-16",
+   "release_date": "2026-07-16"
+  }
+ ],
+ "items": [
+  {
+   "appid": 3808690,
+   "title": "TU SEI IL VIRUS! Questo nuovo ROGUELIKE è una FIGATA CLAMOROSA",
+   "text": "Pathogenic è l'action roguelike che fonde Spore e The Binding of Isaac in un INCREDIBILE mix di gameplay e build assurde!",
+   "author": "PolyMAOffline",
+   "author_id": "UCh4Jz5HvOURDld3oNQvS7zQ",
+   "url": "https://www.youtube.com/watch?v=GHNgqCdGdk4",
+   "published": "2026-07-23",
+   "relevant": true
+  },
+  {
+   "appid": 3808690,
+   "title": "PATHOGENIC: Become disease. Infect host. Create giga-cancer.",
+   "text": "Donate a kidney and everybody calls you a hero. Donate ten and everybody calls you a monster. Society, truly. Music is mostly ...",
+   "author": "Anti-Kleaper",
+   "author_id": "UCAV8wKgROckLODCVnteIrVg",
+   "url": "https://www.youtube.com/watch?v=zoXiKl3eb2w",
+   "published": "2026-07-28",
+   "relevant": true
+  },
+  {
+   "appid": 3808690,
+   "title": "【Pathogenic】ナノボットになって人間の心臓をデカイビームで撃ち抜く",
+   "text": "ビーーーム Pathogenic 【お借りした立ち絵】 Who inside様 https://seiga.nicovideo.jp/seiga/im11771415 VOICEVOX：四国めたん ...",
+   "author": "めたんのめためたゲームch",
+   "author_id": "UCNag-Pn66ARVjaICkN5InuQ",
+   "url": "https://www.youtube.com/watch?v=f44a0E5eCms",
+   "published": "2026-10-13",
+   "relevant": true
+  },
+  {
+   "appid": 3808690,
+   "title": "This game is sick (Pathogenic)",
+   "text": "Pathogenic on Steam: https://store.steampowered.com/app/3808690/Pathogenic/ This video came from my stream on July 27th, ...",
+   "author": "Northernlion",
+   "author_id": "UC3tNpTOHsTnkmbwztCs30sA",
+   "url": "https://www.youtube.com/watch?v=_d6gBD2FUqA",
+   "published": "2026-07-28",
+   "relevant": true
+  },
+  {
+   "appid": 3808690,
+   "title": "A build so good that the game plays itself! | Pathogenic",
+   "text": "Pathogenic playlist! https://www.youtube.com/playlist?list=PLCy8iG6zuxew VOD Channel: ...",
+   "author": "Haelian",
+   "author_id": "UCSnGGntxMnAM6oDHML2qzaw",
+   "url": "https://www.youtube.com/watch?v=16P2tHkI8eg",
+   "published": "2026-07-28",
+   "relevant": true
+  },
+  {
+   "appid": 3808690,
+   "title": "BREAKING the game with Infuser Chaining - Pathogenic",
+   "text": "A quick video to explain how infusers work in Pathogenic! Play the game on Steam: ...",
+   "author": "Pathogenic Game",
+   "author_id": "UC0HII95TjwsL1fwQ0FRA7jQ",
+   "url": "https://www.youtube.com/watch?v=pZyLRC8eSI4",
+   "published": "2026-09-24",
+   "relevant": true
+  },
+  {
+   "appid": 3808690,
+   "title": "10 Tips and Tricks Every Player Needs | Pathogenic",
+   "text": "10 Essential Tips, Tricks and Guidance to help you in Pathogenic! Everyone needs to know these! The Game ...",
+   "author": "JammyGiraffe",
+   "author_id": "UCNDpUoboX05JPEeLcM1Gp8w",
+   "url": "https://www.youtube.com/watch?v=YyWv7Bbt-dg",
+   "published": "2026-07-26",
+   "relevant": true
+  },
+  {
+   "appid": 3808690,
+   "title": "The Most Creative Roguelike of 2026? - Pathogenic Review",
+   "text": "Find out if Pathogenic, the latest 2D Twin-Stick shooter Roguelike is worth checking out in our full review! *A review code was ...",
+   "author": "I Dream of Indie Games",
+   "author_id": "UC_HX1n5iojK-xjy9WxfxXhg",
+   "url": "https://www.youtube.com/watch?v=GTeeFPY2cEg",
+   "published": "2026-07-14",
+   "relevant": true
+  },
+  {
+   "appid": 3808690,
+   "title": "The Best Action Roguelike I&#39;ve Played in a LONG Time! | Pathogenic",
+   "text": "Steam page: https://store.steampowered.com/app/3808690/Pathogenic/ VOD Channel: ...",
+   "author": "Haelian",
+   "author_id": "UCSnGGntxMnAM6oDHML2qzaw",
+   "url": "https://www.youtube.com/watch?v=_mUZGA5UVHU",
+   "published": "2026-07-18",
+   "relevant": true
+  },
+  {
+   "appid": 3808690,
+   "title": "Pathogenic Release Date Trailer - Cellular Combat Evolved",
+   "text": "Pathogenic is OUT NOW: https://store.steampowered.com/app/3808690/Pathogenic/ In Pathogenic, you ARE the disease.",
+   "author": "Pathogenic Game",
+   "author_id": "UC0HII95TjwsL1fwQ0FRA7jQ",
+   "url": "https://www.youtube.com/watch?v=7C9EZzd4JnE",
+   "published": "2026-06-04",
+   "relevant": true
+  },
+  {
+   "appid": 3767850,
+   "title": "SpiritVale Is in Serious Trouble",
+   "text": "Today I talk about what I think is killing SpiritVale, and the HUGE mistake the dev made when releasing EA Subscribe to help me ...",
+   "author": "vasDcrak Gaming",
+   "author_id": "UCOo3ukBNI5X0quYB_DdxW1g",
+   "url": "https://www.youtube.com/watch?v=p8YSsbmfXLQ",
+   "published": "2026-09-10",
+   "relevant": true
+  },
+  {
+   "appid": 3767850,
+   "title": "SpiritVale Necromancer Turtle Champion | Easy Grind + Full Build 🔥",
+   "text": "Easy grind with my Necromancer using Turtle Champion, followed by my full build — gear, cards, stats, artifact, and Grimoire.",
+   "author": "AlwaysWeakGaming",
+   "author_id": "UCDzwdyUndMSqysEA6z708NA",
+   "url": "https://www.youtube.com/watch?v=n2WUD14A9ng",
+   "published": "2026-09-24",
+   "relevant": true
+  },
+  {
+   "appid": 3767850,
+   "title": "SpiritVale | Halloween 2026",
+   "text": "Hello! I'm Phil and I've been building SpiritVale, a class-based indie MMORPG inspired by Ragnarok Online and Project Return to ...",
+   "author": "SpiritVale",
+   "author_id": "UCpkowDR5z682F_i3CrH3Wvw",
+   "url": "https://www.youtube.com/watch?v=QhOiTBxouBc",
+   "published": "2026-10-01",
+   "relevant": true
+  },
+  {
+   "appid": 3767850,
+   "title": "3.1M  DPS Berserker its new good dps?!! #spiritvale",
+   "text": "https://www.twitch.tv/moguexe.",
+   "author": "蘑菇(Mogu)",
+   "author_id": "UCZv6Gcz3Fpfz64uxJlDYjtQ",
+   "url": "https://www.youtube.com/watch?v=XjMyzGdkQn8",
+   "published": "2026-10-03",
+   "relevant": true
+  },
+  {
+   "appid": 3767850,
+   "title": "Não jogue SPIRITVALE antes de ver este vídeo",
+   "text": "Sejam bem-vindos a mais um vídeo meus amigos! Espero que gostem do conteúdo e que retornem mais vezes, é um prazer ...",
+   "author": "Japa MMORPGs",
+   "author_id": "UCtVYjW51CHVC0B7LkRrP-dw",
+   "url": "https://www.youtube.com/watch?v=ktY8kE6SQ5o",
+   "published": "2026-07-16",
+   "relevant": true
+  },
+  {
+   "appid": 3767850,
+   "title": "2.7M Sustained DPS - Necromancer Build After Nerfs | Spiritvale",
+   "text": "GJ Phill #spiritvale.",
+   "author": "Paul",
+   "author_id": "UCJvYCviS-sd2LyVkmdwmOlQ",
+   "url": "https://www.youtube.com/watch?v=GDkzSLx2Hug",
+   "published": "2026-10-01",
+   "relevant": true
+  },
+  {
+   "appid": 3767850,
+   "title": "Spiritvale Necromancer Update: New Grimoire Books &amp; Exclusive Artifacts!",
+   "text": "What's up, DMCitizens! Today, we're taking a first look at the upcoming Grimoire Books and the new exclusive Artifact Set for the ...",
+   "author": "DMC Gaming",
+   "author_id": "UCub7JC98TXVCuJg486bzdVw",
+   "url": "https://www.youtube.com/watch?v=BfA8IIYiAhQ",
+   "published": "2026-09-21",
+   "relevant": true
+  },
+  {
+   "appid": 3767850,
+   "title": "SPIRIT VALE: O QUE ESTÁ ACONTECENDO COM O JOGO? 🤔 | Problemas e Futuro do MMORPG",
+   "text": "O QUE ESTÁ ACONTECENDO COM SPIRIT VALE? Neste vídeo, vamos conversar sobre o estado atual de Spirit Vale, um ...",
+   "author": "TeuPersonal",
+   "author_id": "UCEWuhPXp4nbGklejI2CGcRQ",
+   "url": "https://www.youtube.com/watch?v=S_e5c3r9JuI",
+   "published": "2026-09-20",
+   "relevant": true
+  },
+  {
+   "appid": 3767850,
+   "title": "SpiritVale - Should you play?",
+   "text": "If you loved Ragnarok Online back in the day, you'll love this one!",
+   "author": "Vagrant",
+   "author_id": "UCA3aDTFK19KEEIb0jHpM-9Q",
+   "url": "https://www.youtube.com/watch?v=3HpGHtZ5o04",
+   "published": "2026-08-13",
+   "relevant": true
+  },
+  {
+   "appid": 3767850,
+   "title": "Spiritvale Early Access Review &amp; Update",
+   "text": "Subscribe if you love MMORPGs! My Amazon link https://www.amazon.com/?tag=indiepatron-20 **PLEASE bookmark** ...",
+   "author": "Indie P",
+   "author_id": "UCV-zJgFImHFfKV5VYrUvrow",
+   "url": "https://www.youtube.com/watch?v=5spBeoKrHXI",
+   "published": "2026-08-08",
+   "relevant": true
+  },
+  {
+   "appid": 3712080,
+   "title": "Funnel Runners - Official Trailer",
+   "text": "Here's your look at the Funnel Runners trailer for this upcoming first-person co-op survival game with escalating disasters and ...",
+   "author": "GameTrailers",
+   "author_id": "UCJx5KP-pCUmL9eZUv-mIcNw",
+   "url": "https://www.youtube.com/watch?v=ACp9FlLWan0",
+   "published": "2026-03-13",
+   "relevant": true
+  },
+  {
+   "appid": 3712080,
+   "title": "FUNNEL RUNNERS But I Don&#39;t Waste Your Time (Review &amp; Solo-Viable?)",
+   "text": "Support This Channel on Patreon, starting 2$ / Month! It Helps Massively.",
+   "author": "The Singleplayer Squad",
+   "author_id": "UC2THf0jmDDeBujMzG1sD2-Q",
+   "url": "https://www.youtube.com/watch?v=LzrWUc6rKFg",
+   "published": "2026-07-16",
+   "relevant": true
+  },
+  {
+   "appid": 3712080,
+   "title": "This EF5 Tornado Was WAY Too Close! (Funnel Runners)",
+   "text": "This EF5 Tornado Was WAY Too Close! (Funnel Runners) OB and I are back in Funnel Runners, and this episode quickly turns ...",
+   "author": "Camodo Gaming",
+   "author_id": "UCC6ulNJ-KDoIa3VI2gcvQpA",
+   "url": "https://www.youtube.com/watch?v=kLfgDORCKvE",
+   "published": "2026-07-18",
+   "relevant": true
+  },
+  {
+   "appid": 3712080,
+   "title": "THE TORNADO IS HERE AND WE NEED TO LEAVE [Funnel Runners]",
+   "text": "TRY OUT GAMER SUPPS AND USE CODE: Bart FOR 10% OFF AND FREE SHIPPING: https://gamersupps.gg/bart ☆Socials: ...",
+   "author": "Joe Bart Games",
+   "author_id": "UCeBPTBz1oRnsWsUBnKNNKNw",
+   "url": "https://www.youtube.com/watch?v=9onNMk9djnk",
+   "published": "2026-08-07",
+   "relevant": true
+  },
+  {
+   "appid": 3712080,
+   "title": "Funnel Runners - CERCHIAMO DI SFUGGIRE AL TORNADO - Gameplay ITA",
+   "text": "Oggi con #funnelrunners siamo impegnati con la banda a fuggire da una serie di tornadi che metteranno a dura prova il nostro ...",
+   "author": "QuelTaleAle Games",
+   "author_id": "UCEAi0pTniT3l2WEMX1Bl7og",
+   "url": "https://www.youtube.com/watch?v=5hT-sXML_WI",
+   "published": "2026-07-24",
+   "relevant": true
+  },
+  {
+   "appid": 3712080,
+   "title": "We Played Funnel Runners on Every Difficulty and the Tornadoes are MASSIVE",
+   "text": "I stream every day on https://www.twitch.tv/insym Discord: https://discord.gg/insym Suggest Games for me to Play Here: ...",
+   "author": "Insym",
+   "author_id": "UC5uNya42ayhsRnZOR3mO6NA",
+   "url": "https://www.youtube.com/watch?v=dAmqKmN1EQw",
+   "published": "2026-08-18",
+   "relevant": true
+  },
+  {
+   "appid": 3712080,
+   "title": "RIPARIAMO IL FURGONE PER LA FUGA PRIMA CHE ARRIVI IL MEGA URAGANO | Funnel Runners - ep.01",
+   "text": "Music by Bensound License code: YIDRS2DTCKWHZJ0P Artist: : Benjamin Tissot.",
+   "author": "TheLoneGamer",
+   "author_id": "UCNXR5tzJZmwPT6lKFjmBDIQ",
+   "url": "https://www.youtube.com/watch?v=QX-XTiMxAFY",
+   "published": "2026-07-22",
+   "relevant": true
+  },
+  {
+   "appid": 3712080,
+   "title": "Funnel Runners | Full Game - Solo Run | Trapped in a Doomed City | Walkthrough No Commentary",
+   "text": "Funnel Runners | Full Game - Solo Run | Trapped in a Doomed City | Walkthrough No Commentary Trapped in a doomed city, you ...",
+   "author": "SvalPlay",
+   "author_id": "UCAOsl9ea7LldOMYXm7X2TIw",
+   "url": "https://www.youtube.com/watch?v=ehIQIKq5i3w",
+   "published": "2026-07-18",
+   "relevant": true
+  },
+  {
+   "appid": 3712080,
+   "title": "ENTKOMME DEM TORNADO! Funnel Runners mit Trymacs und Rumathra | Papaplatte",
+   "text": "Sei live mit dabei: https://twitch.tv/papaplatte Twitter: https://twitter.com/papaplatte Instagram: https://instagram.com/papaplatte ...",
+   "author": "Papaplatte Uncut",
+   "author_id": "UCrFuNvyuEtK2E_JG1MTt95Q",
+   "url": "https://www.youtube.com/watch?v=g5ee1siMMrU",
+   "published": "2026-08-13",
+   "relevant": true
+  },
+  {
+   "appid": 2524850,
+   "title": "Denshattack! - Reveal Trailer | PS5 Games",
+   "text": "Welcome to Denshattack! The adrenaline-pumping, trick-infused ride that catapults you through 50+ levels of pure, exciting chaos.",
+   "author": "PlayStation",
+   "author_id": "UC-2Y8dQb0S6DtpxNgAKoJKA",
+   "url": "https://www.youtube.com/watch?v=gL6dF_JU8Rs",
+   "published": "2025-08-19",
+   "relevant": true
+  },
+  {
+   "appid": 2524850,
+   "title": "Denshattack - Full Game Walkthrough",
+   "text": "Denshattack Full Game Walkthrough with No Commentary Gameplay. In this straight-to-the-point playthrough, we complete all ...",
+   "author": "BeardBear",
+   "author_id": "UCZU03wNQEGmDkGcNN-BT2Ng",
+   "url": "https://www.youtube.com/watch?v=fqsrN-SdWXk",
+   "published": "2026-07-15",
+   "relevant": true
+  },
+  {
+   "appid": 2524850,
+   "title": "Denshattack! Review",
+   "text": "Denshattack! reviewed by Will Borger on PC, also available on Xbox Series X, PlayStation 5, and Switch 2. Denshattack's learning ...",
+   "author": "IGN",
+   "author_id": "UCKy1dAqELo0zrOtPkf0eTMw",
+   "url": "https://www.youtube.com/watch?v=58uCAQi_iR8",
+   "published": "2026-07-15",
+   "relevant": true
+  },
+  {
+   "appid": 2524850,
+   "title": "THIS GAME IS ACTUAL CHAOS!!! 😭 | Denshattack!",
+   "text": "WATCH ME LIVE https://www.twitch.tv/chibidoki I stream: Wednesday-Sunday at 2 PM PST / 5 PM EST / 4PM CST! Don't Forget ...",
+   "author": "chibidoki",
+   "author_id": "UCoqNvjhUxJRYW4JsT5fBK6w",
+   "url": "https://www.youtube.com/watch?v=hGZqdgsn3OA",
+   "published": "2026-09-30",
+   "relevant": true
+  },
+  {
+   "appid": 2524850,
+   "title": "Denshattack! - Official Creator Reveal Trailer",
+   "text": "Watch the latest Denshattack! trailer for the upcoming action-adventure platformer game to see the creators joining the game, ...",
+   "author": "GameTrailers",
+   "author_id": "UCJx5KP-pCUmL9eZUv-mIcNw",
+   "url": "https://www.youtube.com/watch?v=ZKEIrwlTM5Q",
+   "published": "2026-07-08",
+   "relevant": true
+  },
+  {
+   "appid": 2524850,
+   "title": "Простите. ОЧЕНЬ рекомендуем - Denshattack! (обзор)",
+   "text": "Лучшее средство против игровой импотенции. Отмороженная и веселая. Про поезд и трюки. Миша в восторге, Виталя в ...",
+   "author": "IXBT Games",
+   "author_id": "UC4e_XPBiiIO4fo4_CucxQeg",
+   "url": "https://www.youtube.com/watch?v=ptpK8lKHP6w",
+   "published": "2026-08-01",
+   "relevant": true
+  },
+  {
+   "appid": 2524850,
+   "title": "Denshattack (FULL GAME)",
+   "text": "Get Goof Juice and use code MOIST https://gamersupps.gg/moist Use Cheeky https://www.usecheeky.com/moist Starforge PC ...",
+   "author": "MoistCr1TiKaL Gaming",
+   "author_id": "UCxfr3b8IuHSzu22UHnAvHWg",
+   "url": "https://www.youtube.com/watch?v=f_Xco_2lkV0",
+   "published": "2026-07-21",
+   "relevant": true
+  },
+  {
+   "appid": 2524850,
+   "title": "Denshattack! – Launch Trailer – Nintendo Switch 2",
+   "text": "Take to the tracks in Denshattack! now on Nintendo Switch 2: ...",
+   "author": "Nintendo of America",
+   "author_id": "UCGIY_O-8vW4rfX98KlMkvRg",
+   "url": "https://www.youtube.com/watch?v=NSR-nskeuBI",
+   "published": "2026-07-15",
+   "relevant": true
+  },
+  {
+   "appid": 2524850,
+   "title": "I PLATFORMGUYS si godono DENSHATTACK insieme a MARCO MERRINO | Gaming con Dario Moccia e Sdrumox",
+   "text": "Scarica Saily per i tuoi viaggi: https://saily.com/dario Usa il coupon DARIO per il 15% di sconto da app o sito Seguimi in live il ...",
+   "author": "Dario Moccia",
+   "author_id": "UCoDTIJsjwkNzFEGXhj07gwA",
+   "url": "https://www.youtube.com/watch?v=3sVxVjbpZF4",
+   "published": "2026-07-24",
+   "relevant": true
+  },
+  {
+   "appid": 2524850,
+   "title": "Denshattack goes Beyond Insane, I have Ruined Reality with Drifting",
+   "text": "We have to fight God in Denshattack now Watch my previous Denshattack videos: ...",
+   "author": "RTGame",
+   "author_id": "UCRC6cNamj9tYAO6h_RXd5xA",
+   "url": "https://www.youtube.com/watch?v=n0gOGgMN1lU",
+   "published": "2026-07-21",
+   "relevant": true
+  },
+  {
+   "appid": 3372060,
+   "title": "Hell Maiden | Opening &quot;Not My Paradiso&quot;",
+   "text": "Available now in Early Access of Steam! Hell Maiden is an action horde survival deck-building game inspired by Dante's Divine ...",
+   "author": "AstralShift",
+   "author_id": "UC6Gu_lRdHmO1SxmUHxKZa5w",
+   "url": "https://www.youtube.com/watch?v=nKmHUQIUzmM",
+   "published": "2026-07-15",
+   "relevant": true
+  },
+  {
+   "appid": 3372060,
+   "title": "Hell Maiden | Gameplay Trailer",
+   "text": "Hell Maiden is an action horde survival deck-building game inspired by Dante's Divine Comedy. Follow Dante on a new ...",
+   "author": "AstralShift",
+   "author_id": "UC6Gu_lRdHmO1SxmUHxKZa5w",
+   "url": "https://www.youtube.com/watch?v=90EaQ4buCC8",
+   "published": "2025-05-23",
+   "relevant": true
+  },
+  {
+   "appid": 3372060,
+   "title": "Is Hell Maiden Worth it? My thoughts after 20 hours",
+   "text": "Here's my Early Access Review of \"Hell Maiden\", a delightful bullet heaven roguelike inspired by Dante's Divine Comedy. I had a ...",
+   "author": "duckducktoby",
+   "author_id": "UCSPzZhdX4pqwepPElsnCbVA",
+   "url": "https://www.youtube.com/watch?v=Ksgq6PpCl9w",
+   "published": "2026-07-22",
+   "relevant": true
+  },
+  {
+   "appid": 3372060,
+   "title": "Hell Maiden Review ☯ Full Game Breakdown: Story and World (Hell Maiden Gameplay)",
+   "text": "Hell Maiden is a fast-paced horde survival roguelite that blends the addictive chaos of bullet heaven combat with strategic ...",
+   "author": "Max Dixon",
+   "author_id": "UCoe-mi_wr1Yu_AAHlqgjO7w",
+   "url": "https://www.youtube.com/watch?v=gdZJvPoMzIQ",
+   "published": "2026-07-16",
+   "relevant": true
+  },
+  {
+   "appid": 3372060,
+   "title": "Hell Maiden | Release Date Trailer",
+   "text": "Available now in Early Access of Steam! Hell Maiden is an action horde survival deck-building game inspired by Dante's Divine ...",
+   "author": "AstralShift",
+   "author_id": "UC6Gu_lRdHmO1SxmUHxKZa5w",
+   "url": "https://www.youtube.com/watch?v=Z43f0VYhNv8",
+   "published": "2026-06-23",
+   "relevant": true
+  },
+  {
+   "appid": 3372060,
+   "title": "Anime + Vampire Survivors + Divina Comédia? 🎀🔥 Hell Maiden - tiemiau | #1",
+   "text": "que jogo ABSURDAMENTE lindo e perigosamente viciante..... já quero jogar mais... vlog novo no outro canal: ...",
+   "author": "tiemiau LIVES",
+   "author_id": "UCdzN8xSdGHwbYebpWxQgmWg",
+   "url": "https://www.youtube.com/watch?v=ozLRvY1JiGs",
+   "published": "2026-09-02",
+   "relevant": true
+  },
+  {
+   "appid": 3372060,
+   "title": "Mili - Not My Paradiso [&quot;Hell Maiden&quot; Opening Theme]",
+   "text": "Opening theme for the game Hell Maiden: https://store.steampowered.com/app/3372060/Hell_Maiden/ Streaming: ...",
+   "author": "Mili",
+   "author_id": "UCVh47EKH9VLresRqiYi9txw",
+   "url": "https://www.youtube.com/watch?v=SWn8PU83_-c",
+   "published": "2026-08-02",
+   "relevant": true
+  },
+  {
+   "appid": 3372060,
+   "title": "Hell Maiden- History in the (Re)Making",
+   "text": "What's your favorite layer of hell? Thank you patrons: https://www.patreon.com/Twiinsiink Find me across the internet: ...",
+   "author": "Twiins iink",
+   "author_id": "UCyStnAgP-rvHejwKjwlHH2Q",
+   "url": "https://www.youtube.com/watch?v=KbqdeylVZjw",
+   "published": "2026-08-15",
+   "relevant": true
+  },
+  {
+   "appid": 3372060,
+   "title": "Hell Maiden | EA Launch Trailer",
+   "text": "Available now in Early Access of Steam! Hell Maiden is an action horde survival deck-building game inspired by Dante's Divine ...",
+   "author": "AstralShift",
+   "author_id": "UC6Gu_lRdHmO1SxmUHxKZa5w",
+   "url": "https://www.youtube.com/watch?v=Gk1G2bFG_b0",
+   "published": "2026-07-16",
+   "relevant": true
+  },
+  {
+   "appid": 3372060,
+   "title": "Moe... Dante&#39;s Inferno... Bullet Heaven??? IT&#39;S GOOD THOUGH??? - Hell Maiden",
+   "text": "Get Hell Maiden: https://store.steampowered.com/app/3372060/Hell_Maiden/ Traverse the depths of Hell and beat its toughest ...",
+   "author": "Wanderbots",
+   "author_id": "UC2wac-sRkNMPSFEnaOHCL3g",
+   "url": "https://www.youtube.com/watch?v=3kKECslKe3c",
+   "published": "2026-07-17",
+   "relevant": true
+  },
+  {
+   "appid": 4252290,
+   "title": "Meowgic - Official Launch Trailer",
+   "text": "Don't miss the Launch Trailer for Meowgic, a co-op fantasy adventure game developed by Lazy Turtle Games. Players will explore ...",
+   "author": "GameTrailers",
+   "author_id": "UCJx5KP-pCUmL9eZUv-mIcNw",
+   "url": "https://www.youtube.com/watch?v=GR1qB32m4rE",
+   "published": "2026-07-20",
+   "relevant": true
+  },
+  {
+   "appid": 4252290,
+   "title": "Meowgic - Official Announcement Trailer",
+   "text": "Check out the Meowgic announcement trailer for this upcoming co-op fantasy adventure where your voice is magic. Play as cat ...",
+   "author": "GameTrailers",
+   "author_id": "UCJx5KP-pCUmL9eZUv-mIcNw",
+   "url": "https://www.youtube.com/watch?v=eSP7CLEx3AE",
+   "published": "2026-03-20",
+   "relevant": true
+  },
+  {
+   "appid": 4252290,
+   "title": "Casting Spells with My Wet Mouth in Meowgic!",
+   "text": "Become a member of the channel: https://www.youtube.com/channel/UCIDlKYC7I6_76jCUBdX-6VQ/join My Twitter ...",
+   "author": "KYRSP33DY",
+   "author_id": "UCIDlKYC7I6_76jCUBdX-6VQ",
+   "url": "https://www.youtube.com/watch?v=fwLHP-LcgRU",
+   "published": "2026-07-21",
+   "relevant": true
+  },
+  {
+   "appid": 4252290,
+   "title": "MEOWGIC w/ my DAUGHTER!",
+   "text": "Me, my wife and my daughter got on Meowgic with Hazard last night and I immediately knew I needed to make a video on this!",
+   "author": "Jacombo",
+   "author_id": "UCKdU7A6RthWoslBtWesK0_w",
+   "url": "https://www.youtube.com/watch?v=wtm7DS-uNEU",
+   "published": "2026-04-30",
+   "relevant": true
+  },
+  {
+   "appid": 4252290,
+   "title": "New Co-op Game That Lets You Be A Wizard Cat | Meowgic",
+   "text": "I stream on Twitch: https://www.twitch.tv/just_magikarp Follow my socials: Twitter: https://x.com/Just_Magikarp Bluesky: ...",
+   "author": "Just Magikarp",
+   "author_id": "UCmLJzuUYUv5razNxz8C6V-w",
+   "url": "https://www.youtube.com/watch?v=xbt9ISTFgKk",
+   "published": "2026-02-14",
+   "relevant": true
+  },
+  {
+   "appid": 4252290,
+   "title": "Meowing Back To Fixing Our Academy ~ Meowgic",
+   "text": "A co-op fantasy adventure where your voice is magic. Play as cat wizards, cast spells by shouting into your mic, explore fairy-tale ...",
+   "author": "Grillmastah",
+   "author_id": "UClBwVnq5mpwxugvP2D2SHrw",
+   "url": "https://www.youtube.com/watch?v=YieyqMUV434",
+   "published": "2026-09-27",
+   "relevant": true
+  },
+  {
+   "appid": 4252290,
+   "title": "POOF! You Turned Into a Cat! 【Meowgic】",
+   "text": "Check out my latest cover! https://youtu.be/U48CBKV2fZA?si=5JvVc1Ubj9Rexjwm Check out my animated series here!",
+   "author": "Shiori Novella Ch. hololive",
+   "author_id": "UCgnfPPb9JI3e9A4cXHnWbyg",
+   "url": "https://www.youtube.com/watch?v=lNpOfFG4HlQ",
+   "published": "2026-08-22",
+   "relevant": true
+  },
+  {
+   "appid": 4252290,
+   "title": "Play As A Cat WIZARD On A Hot Air Balloon - Meowgic #gaming #steamgame #meowgic",
+   "text": "",
+   "author": "Mildsoss",
+   "author_id": "UCFVXFcY7akuWI1njguyogrg",
+   "url": "https://www.youtube.com/watch?v=w5omMNb6sZ0",
+   "published": "2026-02-03",
+   "relevant": true
+  },
+  {
+   "appid": 4252290,
+   "title": "NÓS VIRAMOS GATOS MAGOS | Meowgic",
+   "text": "vire membro!! https://www.youtube.com/channel/UCn_zl80QFuAXF_OZkfitWVQ/join fala galerinha!!! mount gameplays na área!",
+   "author": "mount gameplays",
+   "author_id": "UCn_zl80QFuAXF_OZkfitWVQ",
+   "url": "https://www.youtube.com/watch?v=eaHuq14num0",
+   "published": "2026-07-26",
+   "relevant": true
+  },
+  {
+   "appid": 4252290,
+   "title": "4 Idiotas jogando Meowgic",
+   "text": "gameplay em cooperativo com @ScorpionJogaJogos, @megachronos140 e @Meiri do jogo Meowgic. Não esqueça de avaliar o ...",
+   "author": "Viking Of South",
+   "author_id": "UCZOiuf27Exy38lhA7H5e-gg",
+   "url": "https://www.youtube.com/watch?v=uDdJaTDqBhQ",
+   "published": "2026-08-29",
+   "relevant": true
+  },
+  {
+   "appid": 1952920,
+   "title": "The Best Player I&#39;ve Ever Faced in Strikers Club",
+   "text": "This video is episode 1 of Strikers Club Masterclass; a new series where we analyse gameplay from the best players in the game, ...",
+   "author": "Mogz",
+   "author_id": "UCxpnMfdO1ZKFKIR2itY_qZQ",
+   "url": "https://www.youtube.com/watch?v=bvienXNBlWQ",
+   "published": "2026-08-12",
+   "relevant": true
+  },
+  {
+   "appid": 1952920,
+   "title": "We made headers feel awesome! #football #footballgame #gaming",
+   "text": "Headers are an essential part of any football game. In this update we focused on giving you control and making them feel natural, ...",
+   "author": "Strikers Club",
+   "author_id": "UCpEXtvR_czO0wKxPGDX3ltQ",
+   "url": "https://www.youtube.com/watch?v=femwCQIGrZk",
+   "published": "2026-05-16",
+   "relevant": true
+  },
+  {
+   "appid": 1952920,
+   "title": "Strikers Club - Official Gameplay Trailer",
+   "text": "Take a look at gameplay from Strikers Club in this trailer for the upcoming free-to-play, physics-driven football simulation game.",
+   "author": "GameTrailers",
+   "author_id": "UCJx5KP-pCUmL9eZUv-mIcNw",
+   "url": "https://www.youtube.com/watch?v=8ApsDz2SlIc",
+   "published": "2026-06-11",
+   "relevant": true
+  },
+  {
+   "appid": 1952920,
+   "title": "Advanced Mechanics 2 - Strikers Club",
+   "text": "All songs are made by Sympheus.",
+   "author": "Slyex",
+   "author_id": "UC3pv1Bb-t-39s2BM9khR-6A",
+   "url": "https://www.youtube.com/watch?v=zmd7k0WiSvs",
+   "published": "2026-08-30",
+   "relevant": true
+  },
+  {
+   "appid": 1952920,
+   "title": "Strikers Club is FINALLY Here!",
+   "text": "If you're interested in buying a CHEAP but QUALITY jersey, click on this link and use PROMO CODE: HAJKO for 15% discount on ...",
+   "author": "Hajko",
+   "author_id": "UCzxtnv8ca4KMd-aia34Azmw",
+   "url": "https://www.youtube.com/watch?v=mB2XJsJuc98",
+   "published": "2026-07-22",
+   "relevant": true
+  },
+  {
+   "appid": 1952920,
+   "title": "Strikers Club but I&#39;m a PRO Goalkeeper! &quot;fr&quot;",
+   "text": "Hello my friends ♥️ YouTube randomly recommended this football game to me, and after watching the trailer, I knew I had to try ...",
+   "author": "Hajko",
+   "author_id": "UCzxtnv8ca4KMd-aia34Azmw",
+   "url": "https://www.youtube.com/watch?v=BPx_vh6_KwA",
+   "published": "2026-06-22",
+   "relevant": true
+  },
+  {
+   "appid": 1952920,
+   "title": "I Tried a F2P Rematch Slop Clone and It Actually Wasn’t Terrible",
+   "text": "Is Strikers club a just a free to play slop clone of rematch or is the addition of actual soccer rules enough to separate it into its own?",
+   "author": "Pleatyy",
+   "author_id": "UCBlOsjIkrqxq6uLROiiJ7Hg",
+   "url": "https://www.youtube.com/watch?v=pp-Lg5PBEC8",
+   "published": "2026-07-24",
+   "relevant": true
+  },
+  {
+   "appid": 1952920,
+   "title": "Strikers Club Highlights -- Number 16",
+   "text": "Chapters 0:00 Game 1 2:24 Game 2 5:45 Game 3 STRIKERS CLUB HIGHLIGHTS is an unofficial fan channel for the game ...",
+   "author": "Strikers Club Highlights",
+   "author_id": "UC33yetTZOkBL429AfkG6EPg",
+   "url": "https://www.youtube.com/watch?v=YN0mq3T_uQ0",
+   "published": "2026-09-26",
+   "relevant": true
+  },
+  {
+   "appid": 1952920,
+   "title": "Advanced dribble tutorial - Strikers Club",
+   "text": "All songs by Sympheus.",
+   "author": "Slyex",
+   "author_id": "UC3pv1Bb-t-39s2BM9khR-6A",
+   "url": "https://www.youtube.com/watch?v=m9R3vKR7xHU",
+   "published": "2026-09-30",
+   "relevant": true
+  },
+  {
+   "appid": 1952920,
+   "title": "Strikers Club - Advanced Mechanics Tutorial and Settings",
+   "text": "Quick reminder...",
+   "author": "Slyex",
+   "author_id": "UC3pv1Bb-t-39s2BM9khR-6A",
+   "url": "https://www.youtube.com/watch?v=yLZFmQN4lb4",
+   "published": "2026-08-23",
+   "relevant": true
+  },
+  {
+   "appid": 4157430,
+   "title": "Diggin&#39;",
+   "text": "Provided to YouTube by The Orchard Enterprises Diggin' · Seatbelts · Yoko Kanno · yoko kanno · Tim Jensen COWBOY BEBOP ...",
+   "author": "SEATBELTS - Topic",
+   "author_id": "UCFhMA8ygjzH72UqPf7PmlUg",
+   "url": "https://www.youtube.com/watch?v=T_HtkiWystI",
+   "published": "2020-07-23",
+   "relevant": false
+  },
+  {
+   "appid": 4157430,
+   "title": "Kovacs - Diggin (Official Lyric Video)",
+   "text": "After \"My Love\" another great track from the debut album \"Shades Of Black\" (release april 2015) ▻ iTunes: ...",
+   "author": "Kovacs",
+   "author_id": "UC3m8IF_W9UwKwRx4be7yJOw",
+   "url": "https://www.youtube.com/watch?v=3M2UB1aWwns",
+   "published": "2015-03-09",
+   "relevant": false
+  },
+  {
+   "appid": 4157430,
+   "title": "Day 12 digging a Secret Bunker in my mom’s greenhouse! #spoontobunker",
+   "text": "",
+   "author": "Spoon to bunker",
+   "author_id": "UCZEaTJTFwQPCkTj6-TF3KvA",
+   "url": "https://www.youtube.com/watch?v=kY29aBerY3w",
+   "published": "2026-07-21",
+   "relevant": false
+  },
+  {
+   "appid": 4157430,
+   "title": "Caterpillar 6015B Excavator | Digging Hard Ground &amp; Loading Huge Rocks - Sotiriadis/Labrianidis",
+   "text": "Take to the skies above a huge mining site where the powerful Caterpillar 6015B hydraulic excavator takes on extremely hard and ...",
+   "author": "Mega Machines Channel",
+   "author_id": "UCeEjzibJG6myFaFJ0stfKUg",
+   "url": "https://www.youtube.com/watch?v=NlMSf3j08pM",
+   "published": "2026-10-12",
+   "relevant": false
+  },
+  {
+   "appid": 4157430,
+   "title": "I Played 100% of The MOST Satifying Digging Game",
+   "text": "Sleep Channel ➞ @SleepyFon i 100%'d Diggin, and it was VERY satisfying To 100% this game, I'll have to find every ancient ...",
+   "author": "FonFon",
+   "author_id": "UCizbhWTZJ-SrbzGFVWoXt-A",
+   "url": "https://www.youtube.com/watch?v=EgNkjyR3xtY",
+   "published": "2026-08-03",
+   "relevant": true
+  },
+  {
+   "appid": 4157430,
+   "title": "Diggin Café Chanakyapuri ✨ #gurutalks #food",
+   "text": "",
+   "author": "GuruTalks",
+   "author_id": "UCCGpaXy003wqJ_gIbhZTsYg",
+   "url": "https://www.youtube.com/watch?v=mwX0vOpTdho",
+   "published": "2024-03-27",
+   "relevant": false
+  },
+  {
+   "appid": 4157430,
+   "title": "Division All Stars「Diggin&#39;」Music Video",
+   "text": "7月16日(木)発売 Nintendo Switch版 『ヒプノシスマイク - Alternative Rap Battle - 2nd period』主題歌「Diggin'」7月16日(金) ...",
+   "author": "Channelヒプノシスマイク",
+   "author_id": "UCLQwZQHMTRqeeUSzZt5ii6g",
+   "url": "https://www.youtube.com/watch?v=4pQ-MigYbtE",
+   "published": "2026-07-16",
+   "relevant": false
+  },
+  {
+   "appid": 4157430,
+   "title": "Day 26 digging a secret Bunker in my mom’s greenhouse! #spoontobunker",
+   "text": "",
+   "author": "Exzmotivation",
+   "author_id": "UCxrcR9I1m26-vQPaPPd-2QQ",
+   "url": "https://www.youtube.com/watch?v=VFLZ2XFcKvk",
+   "published": "2026-08-27",
+   "relevant": false
+  },
+  {
+   "appid": 4157430,
+   "title": "The Seatbelts - Diggin&#39;",
+   "text": "\"Diggin'\" performed by The Seatbelts, vocals by Steve Conte, on their 2001 soundtrack album \"Cowboy Bebop OST: Future Blues\" ...",
+   "author": "Sarybird",
+   "author_id": "UC8bUdxmX5TWvr4XUAjYhrbw",
+   "url": "https://www.youtube.com/watch?v=Yimu1x8FgTM",
+   "published": "2008-08-11",
+   "relevant": false
+  },
+  {
+   "appid": 4157430,
+   "title": "I Played 100% of Diggin!",
+   "text": "Drill into the depths of a meteor crater in this incremental adventure. Mine ores, unlock upgrades and find the cosmic treasure that ...",
+   "author": "Sifd",
+   "author_id": "UCALBEjFFT3liQ4hUkEEln2A",
+   "url": "https://www.youtube.com/watch?v=Y_yhCVihsLo",
+   "published": "2026-08-28",
+   "relevant": true
+  },
+  {
+   "appid": 4899300,
+   "title": "Cheminots et résistants : au cœur des sabotages ferroviaires sous l&#39;occupation – Documentaire - AMP",
+   "text": "Ils faisaient rouler les trains… mais aussi dérailler l'occupant... Découvrez l'histoire méconnue des cheminots français qui, dans ...",
+   "author": "Notre Histoire",
+   "author_id": "UCeLnsoEsuM4rWzzCU9RIlPQ",
+   "url": "https://www.youtube.com/watch?v=lnKgOM713xg",
+   "published": "2025-04-29",
+   "relevant": false
+  },
+  {
+   "appid": 4899300,
+   "title": "RSEQ Volleyball D1| Cheminots Vs Lynx | Vendredi 2 octobre 2026 | 🚂🏐",
+   "text": "",
+   "author": "Les Cheminots du Cégep de Saint-Jérôme",
+   "author_id": "UCdL3DWRA62KWJeeTiC3xrLQ",
+   "url": "https://www.youtube.com/watch?v=qOfqis7fAWE",
+   "published": "2026-10-03",
+   "relevant": false
+  },
+  {
+   "appid": 4899300,
+   "title": "#TOUS CHEMINOTS LE DOC",
+   "text": "14 décembre 2024 le premier train de la concurrence arrive sur les rails de la région Paca, impactant indirectement la vie de ...",
+   "author": "Casi Cheminots PACA",
+   "author_id": "UCxJL9QiJzpjAwHqovWz8FEA",
+   "url": "https://www.youtube.com/watch?v=-9RDO-j4yfo",
+   "published": "2026-09-28",
+   "relevant": false
+  },
+  {
+   "appid": 4899300,
+   "title": "Les cheminots sont des privilégiés ? - Les Guignols - CANAL+",
+   "text": "Les cheminots sont-ils des privilégiés ? C'est la question à laquelle Jean-Pierre Pernaut va tenter de répondre en filmant la ...",
+   "author": "Les Guignols - CANAL+",
+   "author_id": "UC1-myiFo9wGsPCcuEjNds_A",
+   "url": "https://www.youtube.com/watch?v=6mj6CDcrw8s",
+   "published": "2023-02-16",
+   "relevant": false
+  },
+  {
+   "appid": 4899300,
+   "title": "Petit Cheminot (La Chanson du Dimanche S02E05)",
+   "text": "Devenez nos amis : http://www.facebook.com/lachansondudimanche.",
+   "author": "La Chanson du Dimanche",
+   "author_id": "UC7alOiCs-PVsRIq_3pzZ3Sg",
+   "url": "https://www.youtube.com/watch?v=33ovVKiV6e0",
+   "published": "2007-10-21",
+   "relevant": false
+  },
+  {
+   "appid": 4899300,
+   "title": "1974 : Cheminot, un métier d&#39;avenir ? | INA",
+   "text": "Vous reconnaissez une personne dans le reportage ? Ecrivez-nous quesontilsdevenus@ina.fr Abonnez-vous ...",
+   "author": "INA Société",
+   "author_id": "UCCTuFofVWD9uORhQqgn-d7Q",
+   "url": "https://www.youtube.com/watch?v=xhxryTizNCw",
+   "published": "2022-11-14",
+   "relevant": false
+  },
+  {
+   "appid": 4899300,
+   "title": "Cocovoit - Les Cheminots",
+   "text": "Soutien total à ces feignasses... NB : une censure sans partage est effectuée dans le fil des commentaires envers : 1) les ...",
+   "author": "Sympa Cool",
+   "author_id": "UCHVxCo7tMNY6OrjVnJct--A",
+   "url": "https://www.youtube.com/watch?v=VhKsfJIDoKg",
+   "published": "2018-06-21",
+   "relevant": false
+  },
+  {
+   "appid": 4899300,
+   "title": "🛑 ET LA CGT ELLE FAIT QUOI POUR TOI ?➡️ #cgt #cgtcheminots #casi #sncf #TERbretagne",
+   "text": "",
+   "author": "CGT-Cheminots Saint-Brieuc",
+   "author_id": "UCpOsWFgY2qzAn-RMVd_ga6g",
+   "url": "https://www.youtube.com/watch?v=88PdnkxIG5I",
+   "published": "2026-09-27",
+   "relevant": false
+  },
+  {
+   "appid": 4899300,
+   "title": "Qu&#39;est-ce qu&#39;être cheminot aujourd&#39;hui ?",
+   "text": "Reportage de Boris Loumagne à découvrir sur notre site avec vos réactions. Plus d'informations sur ...",
+   "author": "France Culture",
+   "author_id": "UCd5DKToXYTKAQ6khzewww2g",
+   "url": "https://www.youtube.com/watch?v=tzwXsEM6aUI",
+   "published": "2018-04-06",
+   "relevant": false
+  },
+  {
+   "appid": 4899300,
+   "title": "L&#39;ambiance avec les supporters de l&#39;AS Cheminots de Pointe-Noire | Grande Chorale AS Cheminots",
+   "text": "KIP U BUAL - L'ambiance avec les supporters de l'AS Cheminots de Pointe-Noire | Grande Chorale AS Cheminots Abonne-toi à ...",
+   "author": "Mr Lewis Brown 242 [ Trip In Congo & Africa ]",
+   "author_id": "UCjoCRW_zRUCyEpcqX7Cb4lg",
+   "url": "https://www.youtube.com/watch?v=VVwwtoCM8X0",
+   "published": "2022-10-31",
+   "relevant": false
+  },
+  {
+   "appid": 4466930,
+   "title": "Are We Sinking Yet?  | Bakalım Neymiş @Hndgames",
+   "text": "Are We Sinking Yet? Steam : https://store.steampowered.com/app/4466930/Are_We_Sinking_Yet/ Bugün birlikte We Sinking Yet ...",
+   "author": "Demlenmiş Oyuncular",
+   "author_id": "UC19BMlE_xHXMC9rj7U-SyAQ",
+   "url": "https://www.youtube.com/watch?v=5o7SwXSnq2k",
+   "published": "2026-07-08",
+   "relevant": true
+  },
+  {
+   "appid": 4466930,
+   "title": "THE RATS ARE LEAVING THE SINKING SHIP",
+   "text": "Donald Trump's promise of $5000 payouts, contingent on Republicans keeping control of Congress, echoes previous unfulfilled ...",
+   "author": "David Pakman",
+   "author_id": "UCvixJtaXuNdMPUGdOPcY8Ag",
+   "url": "https://www.youtube.com/watch?v=o1kwjOAMaHE",
+   "published": "2026-10-11",
+   "relevant": false
+  },
+  {
+   "appid": 4466930,
+   "title": "Why are you sinking about!? 🤣🤣🤣(4k memes) join membership to support my animations",
+   "text": "Join channel membership to access perks and also support my animations use this link ...",
+   "author": "Rico Animations",
+   "author_id": "UCOicc9kd58k_XR3D7bTx8oA",
+   "url": "https://www.youtube.com/watch?v=2Do6ymz4tVA",
+   "published": "2023-03-14",
+   "relevant": false
+  },
+  {
+   "appid": 4466930,
+   "title": "ARE WE SINKING YET? 🚣 Il cooperativo più caotico del momento! #Shorts",
+   "text": "Se pensi di avere un ottimo spirito di squadra... questo gioco potrebbe farti cambiare idea In Are We Sinking Yet? dovrete ...",
+   "author": "Lary",
+   "author_id": "UCtPXR7Vgubb0LDkpo2RP_-A",
+   "url": "https://www.youtube.com/watch?v=GYTbFBL2NoE",
+   "published": "2026-07-10",
+   "relevant": true
+  },
+  {
+   "appid": 4466930,
+   "title": "SINKING TOWN ANIMATION MEME TREND | The New Norm | month late but i dont care!! 😼😼‼️",
+   "text": "animationmeme #oc #animation #givemebackmykids #thenewnorm No lyrics cuz they werent relevant lol First time exporting a ...",
+   "author": "pizdum",
+   "author_id": "UCF5jkXIxrP_xTJ0ygY4NMeQ",
+   "url": "https://www.youtube.com/watch?v=VnK0uNtO4L0",
+   "published": "2025-07-09",
+   "relevant": false
+  },
+  {
+   "appid": 4466930,
+   "title": "LIXIAN&#39;S NEWEST HORROR GAME | Sinking Iron",
+   "text": "Lixian just released his latest game which is described as a cross between Iron Lung and Five Nights at Freddy's! Play Sinking ...",
+   "author": "Markiplier",
+   "author_id": "UC7_YxT-KID8kRbqZo7MyscQ",
+   "url": "https://www.youtube.com/watch?v=U9yUYRWR62c",
+   "published": "2023-05-28",
+   "relevant": false
+  },
+  {
+   "appid": 4466930,
+   "title": "CANADIANS  BLAME AMERICA … but FORGET CARNEY is the CAPTAIN sinking CANADA .",
+   "text": "Canada is facing growing economic and social challenges, and more Canadians and Canadian businesses are looking south ...",
+   "author": "REAL MAKOS",
+   "author_id": "UCKTeU-0dirA90FscfCyCStw",
+   "url": "https://www.youtube.com/watch?v=9Hk_0INaKuk",
+   "published": "2026-10-08",
+   "relevant": false
+  },
+  {
+   "appid": 4466930,
+   "title": "YOU Must See This Footage From Sinking Titanic! #shorts",
+   "text": "",
+   "author": "Gopal Chanda",
+   "author_id": "UCbI60KU5un0HJ3bOGEiL2pQ",
+   "url": "https://www.youtube.com/watch?v=eessGL6GIqc",
+   "published": "2023-01-26",
+   "relevant": false
+  },
+  {
+   "appid": 4466930,
+   "title": "「”You’re The Emperor” - Invincible」SONG: Sinking Town || #invincible #invincibleedit #viraledits 💛",
+   "text": "Invincible Wobble Edit Next??? Lmk in the comments…",
+   "author": "期JAYKOB",
+   "author_id": "UCG9f--jLQhcXqYu73_Ginng",
+   "url": "https://www.youtube.com/watch?v=P_6vY0leefM",
+   "published": "2026-05-05",
+   "relevant": false
+  },
+  {
+   "appid": 4466930,
+   "title": "Nothing Is Sinking Titanic 2 🚢📱",
+   "text": "A video featuring a satirical meme where a massive iceberg breaks off Antarctica, and Nokia immediately responds by building ...",
+   "author": "less",
+   "author_id": "UCFHe4bChdKUquANouAuudww",
+   "url": "https://www.youtube.com/watch?v=MEjYMBvKX2w",
+   "published": "2026-07-25",
+   "relevant": false
+  },
+  {
+   "appid": 4867330,
+   "title": "Toy Keeper | Full Game | No Commentary",
+   "text": "Relaxing longplay with calming gameplay – perfect for studying, working, sleeping or just chilling ♡ Toy Keeper - A relaxing ...",
+   "author": "HushPlaythroughs",
+   "author_id": "UCZNh0umQEqRYW_Enpij5r0w",
+   "url": "https://www.youtube.com/watch?v=aVQP_LZQr2I",
+   "published": "2026-07-15",
+   "relevant": true
+  },
+  {
+   "appid": 4867330,
+   "title": "TOY KEEPER [RELEASE TRAILER]",
+   "text": "ADD TO WISHLIST! https://store.steampowered.com/app/4867330/Toy_Keeper/",
+   "author": "HeadArrow Studios",
+   "author_id": "UCyYFHL5UU_8kJ28pLwNj1Xw",
+   "url": "https://www.youtube.com/watch?v=0uD1rlA8EyU",
+   "published": "2026-06-21",
+   "relevant": true
+  },
+  {
+   "appid": 4867330,
+   "title": "I Wanted To Love This Game... | Toy Keeper Let&#39;s Play",
+   "text": "Head over to Missy Spooks' Patreon to get SUPER cool perks, help support the channel, and fuel my cats' Nip addiction: ...",
+   "author": "Missy Spooks",
+   "author_id": "UCerMiVmCYemhY9UN7ECIaUg",
+   "url": "https://www.youtube.com/watch?v=ZnURAGqNhso",
+   "published": "2026-07-22",
+   "relevant": true
+  },
+  {
+   "appid": 4867330,
+   "title": "Toy Keeper - Full Gameplay Walkthrough (PC)",
+   "text": "A giant toy store. 2694 toys out of place. One mission: put everything back where it belongs. In Toy Keeper, you'll explore a ...",
+   "author": "Minipurplayz",
+   "author_id": "UCogweFMu7Ql85M2viSZcu5Q",
+   "url": "https://www.youtube.com/watch?v=GsbJFi99qR8",
+   "published": "2026-07-26",
+   "relevant": true
+  },
+  {
+   "appid": 4867330,
+   "title": "Sorting Three Story Toy Store Begins ~ Toy Keeper",
+   "text": "Sort 2694 toys across a massive three-floor toy store, unlock powerful upgrades, and turn complete chaos into perfect ...",
+   "author": "Grillmastah",
+   "author_id": "UClBwVnq5mpwxugvP2D2SHrw",
+   "url": "https://www.youtube.com/watch?v=5DWLYOsHbUc",
+   "published": "2026-07-13",
+   "relevant": true
+  },
+  {
+   "appid": 4867330,
+   "title": "Cleaning All The Floors Of Our Toy Shop ~ Toy Keeper",
+   "text": "Sort 2694 toys across a massive three-floor toy store, unlock powerful upgrades, and turn complete chaos into perfect ...",
+   "author": "Grillmastah",
+   "author_id": "UClBwVnq5mpwxugvP2D2SHrw",
+   "url": "https://www.youtube.com/watch?v=FKU8EIr_tf0",
+   "published": "2026-07-15",
+   "relevant": true
+  },
+  {
+   "appid": 4867330,
+   "title": "TOY KEEPER [MAJOR UPDATES TRAILER]",
+   "text": "GET IT NOW ON STEAM! https://store.steampowered.com/app/4867330/Toy_Keeper/",
+   "author": "HeadArrow Studios",
+   "author_id": "UCyYFHL5UU_8kJ28pLwNj1Xw",
+   "url": "https://www.youtube.com/watch?v=CuZ4t-_ZKS8",
+   "published": "2026-08-05",
+   "relevant": true
+  },
+  {
+   "appid": 4867330,
+   "title": "Toy Keeper | Release Trailer",
+   "text": "Sort 2694 toys across a massive three-floor toy store, unlock powerful upgrades, and turn complete chaos into perfect ...",
+   "author": "Indie Game Radar",
+   "author_id": "UCSGw1naR9Fof33Rxblg1e-Q",
+   "url": "https://www.youtube.com/watch?v=KfmZjaTzO1I",
+   "published": "2026-07-14",
+   "relevant": true
+  },
+  {
+   "appid": 4867330,
+   "title": "21 | Toy Keeper - Preciso organizar 2.694 brinquedos ~ Dia 1",
+   "text": "Organize milhares de brinquedos espalhados por uma enorme loja, desbloqueie melhorias e transforme uma bagunça completa ...",
+   "author": "Start Games",
+   "author_id": "UCkGTOXP6VxLUdIpjsr312vg",
+   "url": "https://www.youtube.com/watch?v=cejebRjsef8",
+   "published": "2026-07-18",
+   "relevant": true
+  },
+  {
+   "appid": 4867330,
+   "title": "Toy Keeper - Cap.1 - Tenemos Que Ordenar Una Juguetería",
+   "text": "Apoya el canal para que siga en el aire y creciendo!",
+   "author": "Darkchiken8",
+   "author_id": "UCZoR6IIHJK8xmKQyT2ClBGQ",
+   "url": "https://www.youtube.com/watch?v=kgC0s4ig0yU",
+   "published": "2026-08-04",
+   "relevant": true
+  },
+  {
+   "appid": 3665520,
+   "title": "Catto Pew Pew! Gameplay Trailer",
+   "text": "WISHLIST ON STEAM: https://store.steampowered.com/app/3665520?utm_source=Youtube WISHLIST ON META QUEST: ...",
+   "author": "Oakley Blade Games",
+   "author_id": "UCyfGS4oZYaWTX4qwhB21Kiw",
+   "url": "https://www.youtube.com/watch?v=tShOqjsdo6k",
+   "published": "2026-04-13",
+   "relevant": true
+  },
+  {
+   "appid": 3665520,
+   "title": "Crazy Cute Colorful Chaos | Catto Pew Pew VR",
+   "text": "This is a hybrid game giving you the option to play on Flatscreen or in VR, with both monke (Gorilla Tag) movement or controller ...",
+   "author": "U W I P",
+   "author_id": "UC69SgpNWeU4FDRbNiFwljmA",
+   "url": "https://www.youtube.com/watch?v=U-evg2PuZYA",
+   "published": "2026-06-25",
+   "relevant": true
+  },
+  {
+   "appid": 3665520,
+   "title": "Catto Pew Pew! | Gameplay PC | Steam | GandaCu",
+   "text": "Checking out Catto Pew Pew! gameplay on PC! Join the community for more indie gems and gameplay here: ...",
+   "author": "GandaCu",
+   "author_id": "UC7wfSA8Q-qC6ef3WLjVM-nw",
+   "url": "https://www.youtube.com/watch?v=dQPeXhu_UoE",
+   "published": "2026-07-23",
+   "relevant": true
+  },
+  {
+   "appid": 3665520,
+   "title": "Catto Pew Pew main menu bug pls help me fix #cattopewpew #bug",
+   "text": "please help fixthe bug.",
+   "author": "dumgperson",
+   "author_id": "UCyXo_zYRV12tn9fpaR6Gn9w",
+   "url": "https://www.youtube.com/watch?v=mlBk7MqTo5s",
+   "published": "2026-07-20",
+   "relevant": true
+  },
+  {
+   "appid": 3665520,
+   "title": "Catto Pew Pew! | Gameplay Trailer",
+   "text": "Catto Pew Pew! is a physics-based shooter game where competitive gameplay, proximity chat, and pure chaos collide. Shoot your ...",
+   "author": "Indie Game Radar",
+   "author_id": "UCSGw1naR9Fof33Rxblg1e-Q",
+   "url": "https://www.youtube.com/watch?v=BqwGx5V0zLo",
+   "published": "2026-07-02",
+   "relevant": true
+  },
+  {
+   "appid": 3665520,
+   "title": "This hat SAVED my game! #gamedev #indiegame #vedinad",
+   "text": "Free Demo on STEAM: https://store.steampowered.com/app/3665520?utm_source=Youtube Wishlist on META (VR Version!)",
+   "author": "Oakley Blade Games",
+   "author_id": "UCyfGS4oZYaWTX4qwhB21Kiw",
+   "url": "https://www.youtube.com/watch?v=wY0SKR2BOJo",
+   "published": "2026-05-19",
+   "relevant": true
+  },
+  {
+   "appid": 3665520,
+   "title": "I added the BACKROOMS to my game?? #gamedev #indiegame #vr",
+   "text": "Join the DISCORD: https://discord.com/invite/ddYpAWwTCG Get the SHIRT: https://robaroba.gg/products/catto-splosion Wishlist ...",
+   "author": "Oakley Blade Games",
+   "author_id": "UCyfGS4oZYaWTX4qwhB21Kiw",
+   "url": "https://www.youtube.com/watch?v=z1Gs4MVH_-Q",
+   "published": "2026-09-19",
+   "relevant": true
+  },
+  {
+   "appid": 3665520,
+   "title": "Catto Pew Pew Gameplay",
+   "text": "Welcome To GanjaPlays ⭐ Subscribe https://www.youtube.com/@GanjaPlays1 ✖️ Follow on X https://x.com/GanjaYT2 ...",
+   "author": "GanjaPlays",
+   "author_id": "UCaioiR4PKB9k3jNxzI1iFGQ",
+   "url": "https://www.youtube.com/watch?v=Pjx7sTy1Nck",
+   "published": "2026-08-10",
+   "relevant": true
+  },
+  {
+   "appid": 3665520,
+   "title": "I accidentally KILLED my own game #gamedev #indiegame #vedinad",
+   "text": "Join the DISCORD: https://discord.com/invite/ddYpAWwTCG Get the SHIRT: https://robaroba.gg/products/catto-splosion Wishlist ...",
+   "author": "Oakley Blade Games",
+   "author_id": "UCyfGS4oZYaWTX4qwhB21Kiw",
+   "url": "https://www.youtube.com/watch?v=42yAJUCFwbc",
+   "published": "2026-08-16",
+   "relevant": true
+  },
+  {
+   "appid": 3665520,
+   "title": "Welcome to Catto Pew Pew! @oakley_blade",
+   "text": "",
+   "author": "Omdvr",
+   "author_id": "UC2c62vQ1Vopn9HGqq8uVgHg",
+   "url": "https://www.youtube.com/watch?v=HAfN7eemJIM",
+   "published": "2026-08-12",
+   "relevant": true
+  },
+  {
+   "appid": 2315970,
+   "title": "Baby Shark in a Surprise Egg! 🦈🥚 | TigiBoo Kids Songs",
+   "text": "Baby Shark in a Surprise Egg! | TigiBoo Kids Songs What's hiding inside the colorful surprise eggs? ✨ Let's count from 1 to ...",
+   "author": "TigiBoo",
+   "author_id": "UCWtP-ST0PZdoWJTwqVxHfOg",
+   "url": "https://www.youtube.com/watch?v=QDbJSWzTb-Q",
+   "published": "2026-10-13",
+   "relevant": false
+  },
+  {
+   "appid": 2315970,
+   "title": "Imagine Dragons - Sharks (Official Lyric Video)",
+   "text": "Imagine Dragons - Sharks (Official Lyric Video) Listen to “Sharks” : https://ImagineDragons.lnk.to/Sharks Watch the Official Video ...",
+   "author": "ImagineDragonsVEVO",
+   "author_id": "UCpx_k19S2vUutWUUM9qmXEg",
+   "url": "https://www.youtube.com/watch?v=7j7twuejxvU",
+   "published": "2022-07-14",
+   "relevant": false
+  },
+  {
+   "appid": 2315970,
+   "title": "Imagine Dragons - Sharks (Official Music Video)",
+   "text": "Listen to 'Eyes Closed' out now: https://ImagineDragons.lnk.to/EyesClosed Watch the official video for 'Eyes Closed here: ...",
+   "author": "ImagineDragonsVEVO",
+   "author_id": "UCpx_k19S2vUutWUUM9qmXEg",
+   "url": "https://www.youtube.com/watch?v=Te3_VlimRw0",
+   "published": "2022-06-24",
+   "relevant": false
+  },
+  {
+   "appid": 2315970,
+   "title": "The Diver Who Pulled Hooks From Sharks 😮",
+   "text": "",
+   "author": "Zack D. Films",
+   "author_id": "UCvz84_Q0BbvZThy75mbd-Dg",
+   "url": "https://www.youtube.com/watch?v=aCPTLbEv8Y0",
+   "published": "2025-10-18",
+   "relevant": false
+  },
+  {
+   "appid": 2315970,
+   "title": "10 Terrifying Shark Attacks Caught on Camera",
+   "text": "10 Terrifying Shark Attacks Caught on Camera SUBSCRIBE: https://bit.ly/3obsVlo ▻ Music Licensed From SoundStripe/Envato ...",
+   "author": "Underworld",
+   "author_id": "UCu6H0owNo5Cm_J2znpYBjGA",
+   "url": "https://www.youtube.com/watch?v=rHng-E_5XvQ",
+   "published": "2025-03-06",
+   "relevant": false
+  },
+  {
+   "appid": 2315970,
+   "title": "GIANT SHARKS Turn A Town Into Open Hunting Ground | SHARK MOVIE In English | Free Hollywood Movies",
+   "text": "Get ready for a terrifying ocean nightmare where danger strikes from beneath the waves. When a deadly predator begins ...",
+   "author": "Hollywood Action",
+   "author_id": "UCSCyFNBoGoKdi3y5SI03OxQ",
+   "url": "https://www.youtube.com/watch?v=UC89LKqUQ7I",
+   "published": "2026-08-27",
+   "relevant": false
+  },
+  {
+   "appid": 2315970,
+   "title": "The Most MASSIVE Sharks in Shark Week History | Discovery",
+   "text": "Tune in for a roundup of shark behemoths across the years on Shark Week, from gigantic great whites to monster hammerheads ...",
+   "author": "Discovery",
+   "author_id": "UCqOoboPm3uhY_YXhvhmL-WA",
+   "url": "https://www.youtube.com/watch?v=9dCXW_r_0Pk",
+   "published": "2026-08-11",
+   "relevant": false
+  },
+  {
+   "appid": 2315970,
+   "title": "Sharks 101 | National Geographic",
+   "text": "Sharks can rouse fear and awe like no other creature in the sea. Find out about the world's biggest and fastest sharks, how sharks ...",
+   "author": "National Geographic",
+   "author_id": "UCpVm7bg6pXKo1Pr6k5kxG9A",
+   "url": "https://www.youtube.com/watch?v=4HGNqFdaD34",
+   "published": "2019-07-25",
+   "relevant": false
+  },
+  {
+   "appid": 2315970,
+   "title": "NEW LINES: San Jose Sharks Unleash Power Trio as Celebrini, Smith, Chernyshov To DRIVE Offense",
+   "text": "San Jose Sharks shake up forward lines as Macklin Celebrini returns, pairing Igor Chernyshov and Will Smith atop the lineup to ...",
+   "author": "Locked On Sharks",
+   "author_id": "UCcEuDcICvWTCMwN_Isuh_ZA",
+   "url": "https://www.youtube.com/watch?v=jW78YnHXzQA",
+   "published": "2026-10-13",
+   "relevant": false
+  },
+  {
+   "appid": 2315970,
+   "title": "The Shark That May Explain the Missing Alcatraz Escapees  #sharks #sharkfacts",
+   "text": "LIKE - COMMENT - SUBSCRIBE ...",
+   "author": "SHARK BYTES",
+   "author_id": "UC4O9LhULkvWqrek88tB52Yg",
+   "url": "https://www.youtube.com/watch?v=7XejR0gfaGo",
+   "published": "2026-10-12",
+   "relevant": false
+  },
+  {
+   "appid": 4749870,
+   "title": "decline",
+   "text": "Provided to YouTube by DistroKid decline · Skyte · Cameron Charles McEachern · tjayy · ayowitty decline ℗ Locke Released on: ...",
+   "author": "Skyte - Topic",
+   "author_id": "UCWIYoUMjkDbpgMkhTgFH-wA",
+   "url": "https://www.youtube.com/watch?v=fFVCARikumM",
+   "published": "2025-07-10",
+   "relevant": false
+  },
+  {
+   "appid": 4749870,
+   "title": "Khalid - Decline (Lyric Video)",
+   "text": "Listen to “Decline” here: https://khalid.lnk.to/Sincere Shop 'Sincere' CDs and box sets here: https://khalid.lnk.to/Shop Follow ...",
+   "author": "KhalidVEVO",
+   "author_id": "UCcN-NDV03eHs6oLd1pe2r8w",
+   "url": "https://www.youtube.com/watch?v=znxRUvRtj0k",
+   "published": "2024-08-02",
+   "relevant": false
+  },
+  {
+   "appid": 4749870,
+   "title": "decline (slowed) (last part extended) skyte, ayowitty",
+   "text": "i do not claim any of this song, all credits go to Skyte! maki edit version: https://www.youtube.com/watch?v=uyJuQLAcDtQ.",
+   "author": "breezywolf",
+   "author_id": "UCn92_pFk8OhRwXBnBNuaO6w",
+   "url": "https://www.youtube.com/watch?v=0pFQm_UgB_8",
+   "published": "2026-02-09",
+   "relevant": false
+  },
+  {
+   "appid": 4749870,
+   "title": "Decline-skyte  (best version)",
+   "text": "",
+   "author": "soulpr0digy's music",
+   "author_id": "UCifRhWTNn21j6OmAjC8eMEw",
+   "url": "https://www.youtube.com/watch?v=vY_HLEkEe7M",
+   "published": "2026-03-04",
+   "relevant": false
+  },
+  {
+   "appid": 4749870,
+   "title": "Deutschland steigt ab – und sie findet das interessant",
+   "text": "Gloria von Thurn und Taxis spricht über sinkenden Wohlstand, Europas Entwicklung und ihre ungewöhnliche Sicht auf ...",
+   "author": "Jasmin Kosubek Clips",
+   "author_id": "UCp7VGMiRXm8tB6LcTwc3qcQ",
+   "url": "https://www.youtube.com/watch?v=TySvr7K6wcc",
+   "published": "2026-10-10",
+   "relevant": false
+  },
+  {
+   "appid": 4749870,
+   "title": "I Know Just How Bad Trump&#39;s Decline Is About to Be | The Daily Beast Podcast",
+   "text": "Kurt Andersen and Joanna Coles revisit the Donald Trump that Spy magazine spotted 40 years ago: a blustering New York ...",
+   "author": "The Daily Beast",
+   "author_id": "UC7qZ_e097NBkgOljy1joVRA",
+   "url": "https://www.youtube.com/watch?v=kfbVgn9Zdl8",
+   "published": "2026-10-11",
+   "relevant": false
+  },
+  {
+   "appid": 4749870,
+   "title": "Trump’s Mental Decline Is Now a National Emergency (w/ Jim Acosta) | Psycho Politics",
+   "text": "In the premiere episode of Psycho Politics, George Conway welcomes Jim Acosta to discuss Trump's increasingly bizarre ...",
+   "author": "The Bulwark",
+   "author_id": "UCG4Hp1KbGw4e02N7FpPXDgQ",
+   "url": "https://www.youtube.com/watch?v=IDu3dPDsZDM",
+   "published": "2026-10-12",
+   "relevant": false
+  },
+  {
+   "appid": 4749870,
+   "title": "Decline",
+   "text": "Provided to YouTube by EMPIRE Distribution Decline · Lil Durk · Chief Keef Decline (feat. Chief Keef) ℗ 2015 ChopSquad.inc ...",
+   "author": "Lil Durk - Topic",
+   "author_id": "UCSWKNHx2g_yk9VlErHqJaMw",
+   "url": "https://www.youtube.com/watch?v=mjC0EXkKGbc",
+   "published": "2017-05-18",
+   "relevant": false
+  },
+  {
+   "appid": 4749870,
+   "title": "Decline by Skyte, ft. ayowitty.   Maki Edit (Last part of Decline extended)",
+   "text": "First Video I edited this on my own so it's not perfect. The reason of this post is because, I couldn't find the song I was looking for, ...",
+   "author": "Daviana D. Atkinson",
+   "author_id": "UCaaEFydG815B4yElfm3LLpQ",
+   "url": "https://www.youtube.com/watch?v=uyJuQLAcDtQ",
+   "published": "2026-02-28",
+   "relevant": false
+  },
+  {
+   "appid": 4749870,
+   "title": "Trump&#39;s Approval Rating In A &#39;Slow Decline&#39;",
+   "text": "Trump's approval rating has been in a “slow decline” since he returned to office in 2025, as the Iran war and other policies prove ...",
+   "author": "Times Radio",
+   "author_id": "UCF-VP3b3oH0XASqsLI5rnLw",
+   "url": "https://www.youtube.com/watch?v=ztIGFxAG59o",
+   "published": "2026-10-13",
+   "relevant": false
+  },
+  {
+   "appid": 4774650,
+   "title": "The Wanderer",
+   "text": "Provided to YouTube by Universal Music Group The Wanderer · Dion The Complete Laurie Singles ℗ 1961 Capitol Records, LLC ...",
+   "author": "Dion - Topic",
+   "author_id": "UCcNiYPb4JhBLrjtnqiPHB6w",
+   "url": "https://www.youtube.com/watch?v=SbYa7NBYyRc",
+   "published": "2018-07-26",
+   "relevant": false
+  },
+  {
+   "appid": 4774650,
+   "title": "The Wanderer",
+   "text": "Provided to YouTube by Universal Music Group The Wanderer · Dion Runaround Sue ℗ 1961 Capitol Records LLC Released on: ...",
+   "author": "Dion - Topic",
+   "author_id": "UCcNiYPb4JhBLrjtnqiPHB6w",
+   "url": "https://www.youtube.com/watch?v=FCW0HviPEEY",
+   "published": "2016-08-24",
+   "relevant": false
+  },
+  {
+   "appid": 4774650,
+   "title": "Dion - The Wanderer - 1961",
+   "text": "From the 1961 film, \"Twist Around The Clock\" In this film Dion performs three songs, The Wanderer, Runaround Sue and The ...",
+   "author": "VIDEOBEAT dotCOM",
+   "author_id": "UC98cWLRnIk1YaF_N1x8QqPA",
+   "url": "https://www.youtube.com/watch?v=jP1z0dQVcIQ",
+   "published": "2012-10-11",
+   "relevant": false
+  },
+  {
+   "appid": 4774650,
+   "title": "2 Circuits - 4 Stages of Gain - The Wanderer",
+   "text": "It's arrived! The JHS Wanderer: a Morning Glory and a NOTAKLÖN in one compact enclosure, and the first pedal in our new ...",
+   "author": "JHS Pedals",
+   "author_id": "UCjfbkA4jJkJY5g0wbjuoZWA",
+   "url": "https://www.youtube.com/watch?v=BMbowO6Ipqw",
+   "published": "2026-10-13",
+   "relevant": false
+  },
+  {
+   "appid": 4774650,
+   "title": "The Wanderer - Fallout 4 (Diamond Radio)",
+   "text": "Fallout 4, Diamond Radio: \"The Wanderer\" - Dion [1961] Lyrics: \"Oh, well, I'm the type of guy who will never settle down Where ...",
+   "author": "FalloutSebbo",
+   "author_id": "UCC1MW5ihQt_2V7t9U_OA9Xg",
+   "url": "https://www.youtube.com/watch?v=fEzqndjwwIA",
+   "published": "2015-11-19",
+   "relevant": false
+  },
+  {
+   "appid": 4774650,
+   "title": "Fallout 4 - &quot;The Wanderer&quot; Music Video HD (2015)",
+   "text": "Dion - The Wanderer (FULL SONG)",
+   "author": "Mike Valenzuela (xMIKEx714x)",
+   "author_id": "UCfVIuFXyfPqimlQYk3NsFZg",
+   "url": "https://www.youtube.com/watch?v=LclHp7zppQY",
+   "published": "2015-10-15",
+   "relevant": false
+  },
+  {
+   "appid": 4774650,
+   "title": "The Wanderer",
+   "text": "Provided to YouTube by Universal Music Group The Wanderer · Dion The Best Of Dion ℗ 1961 Capitol Records LLC Released ...",
+   "author": "Dion - Topic",
+   "author_id": "UCcNiYPb4JhBLrjtnqiPHB6w",
+   "url": "https://www.youtube.com/watch?v=trEBTaWNHeU",
+   "published": "2018-07-26",
+   "relevant": false
+  },
+  {
+   "appid": 4774650,
+   "title": "The Wanderer",
+   "text": "Provided to YouTube by The Orchard Enterprises The Wanderer · Dion Brian Wilson's Jukebox ℗ 2012 Chrome Dreams ...",
+   "author": "Dion - Topic",
+   "author_id": "UCcNiYPb4JhBLrjtnqiPHB6w",
+   "url": "https://www.youtube.com/watch?v=vXDHqNKLL98",
+   "published": "2014-11-08",
+   "relevant": false
+  },
+  {
+   "appid": 4774650,
+   "title": "&#39;The Wanderer&#39; (Nasheed Background) *Vocals and Daf* #HalalBeats",
+   "text": "Stream/Download: https://HalalBeats.lnk.to/The-Wanderer-Vocals-and-DafYD License for YouTube: ...",
+   "author": "Halal Beats",
+   "author_id": "UCJXo0Nr7CtWElUZNhZUHikw",
+   "url": "https://www.youtube.com/watch?v=DSEcRS3uzHw",
+   "published": "2025-06-03",
+   "relevant": false
+  },
+  {
+   "appid": 4774650,
+   "title": "Status Quo - The Wanderer • TopPop",
+   "text": "'The Wanderer, written by Ernie Maresca, was originally a number one hit by Dion di Mucci in 1961. UK hardrockers Status Quo ...",
+   "author": "TopPop",
+   "author_id": "UCxjzlr0hdKWfIwK2lY0SvEg",
+   "url": "https://www.youtube.com/watch?v=-fhPWuAGX4Q",
+   "published": "2018-08-17",
+   "relevant": false
+  },
+  {
+   "appid": 4852380,
+   "title": "Helicopter Drop Off For This 😳",
+   "text": "RedBull #GivesYouWiiings. Experience the world of Red Bull like you have never seen it before with the best action sports clips ...",
+   "author": "Red Bull",
+   "author_id": "UCblfuW_4rakIf2h6aqANefA",
+   "url": "https://www.youtube.com/watch?v=1LFrD1zNcYk",
+   "published": "2026-03-16",
+   "relevant": false
+  },
+  {
+   "appid": 4852380,
+   "title": "Ocean Drop Off😦 #thalassophobia #deepwater #deepocean #scary",
+   "text": "",
+   "author": "Andriana_Marine",
+   "author_id": "UCA2Zm1GXIxP3iVF18UD8k8w",
+   "url": "https://www.youtube.com/watch?v=S7kWtkiCVTE",
+   "published": "2024-07-24",
+   "relevant": false
+  },
+  {
+   "appid": 4852380,
+   "title": "Dropoff App Review Fast and Easy Delivery Explained",
+   "text": "This video provides a clear overview of the Dropoff app and how it helps you request fast and reliable deliveries for your daily ...",
+   "author": "AppProfits",
+   "author_id": "UCx5qjmCxBFd0XMEBzBZhCwQ",
+   "url": "https://www.youtube.com/watch?v=WN44VO477T8",
+   "published": "2025-11-19",
+   "relevant": false
+  },
+  {
+   "appid": 4852380,
+   "title": "The Drop Off S1E1 - &quot;THE FLIRTINATOR&quot;",
+   "text": "",
+   "author": "Kiss&Go Productions",
+   "author_id": "UCAcDg9Rv7cPTGN2Z0-S_N9g",
+   "url": "https://www.youtube.com/watch?v=A81Bebs1Wk8",
+   "published": "2019-03-11",
+   "relevant": false
+  },
+  {
+   "appid": 4852380,
+   "title": "Tears In The Rain [Updated] - A Conceptualized Neutral Run Megalovania",
+   "text": "the art's by lisalindsayart. check it out, okay? https://lisalindsayart.tumblr.com/post/142822806238/hot-date-with-sans a long ...",
+   "author": "Drop0ff",
+   "author_id": "UCTOL3j4paSClxCLG4iukKMQ",
+   "url": "https://www.youtube.com/watch?v=JUM6SbOF74s",
+   "published": "2017-07-10",
+   "relevant": false
+  },
+  {
+   "appid": 4852380,
+   "title": "Driving For Dropoff (Medical Courier Two Month Review)",
+   "text": "I applied for Dropoff two months ago and in this video I give you a complete review of my application process, driver earnings and ...",
+   "author": "Your Driver Mike",
+   "author_id": "UCbGdkBwstr1fT_tgZLAFjHQ",
+   "url": "https://www.youtube.com/watch?v=5iYVXQ6-UiU",
+   "published": "2023-07-29",
+   "relevant": false
+  },
+  {
+   "appid": 4852380,
+   "title": "Medical Courier Experience with Dropoff, My first courier contract. Dropoff Review.",
+   "text": "DropoffCourier #DropoffReview #MedicalCourier #CourierBusiness #CourierContracts #CourierJobs #IndependentContractor ...",
+   "author": "Sarah Davis | The D&G Way™",
+   "author_id": "UCeGKindS0dgSXmUjSX3MD1A",
+   "url": "https://www.youtube.com/watch?v=sAqbb43XSL0",
+   "published": "2026-01-04",
+   "relevant": false
+  },
+  {
+   "appid": 4852380,
+   "title": "Dropoffs",
+   "text": "Provided to YouTube by CDBaby Dropoffs · Treety Before the Fame ℗ 2017 Treety Released on: 2017-08-21 Auto-generated by ...",
+   "author": "Treety - Topic",
+   "author_id": "UCcs9os0kbhEg4oArx4KYrdA",
+   "url": "https://www.youtube.com/watch?v=UcMPRMb7YQU",
+   "published": "2017-11-20",
+   "relevant": false
+  },
+  {
+   "appid": 4852380,
+   "title": "Wind Up Bingo | Daddy Drop Off | Bluey",
+   "text": "Watch Bluey full episodes! ABC Kids (Australia): https://iview.abc.net.au/show/bluey Available on Disney Junior and Disney+.",
+   "author": "Bluey - Official Channel",
+   "author_id": "UCVzLLZkDuFGAE2BGdBuBNBg",
+   "url": "https://www.youtube.com/watch?v=W-pdKRD7ARY",
+   "published": "2023-06-17",
+   "relevant": false
+  },
+  {
+   "appid": 4852380,
+   "title": "The Truth about the Dropoff App! Why Didn&#39;t You Ever Get In?",
+   "text": "Sign up to MAKE MONEY W/these App Links ⬇️ DeliverThat Link: http://www.ideliverthat.com/candc DLIVRD Link: ...",
+   "author": "CARS AND CRIBS",
+   "author_id": "UCeqjobAPzbMruJ0mgvAcy0Q",
+   "url": "https://www.youtube.com/watch?v=VjBDbZSAwW0",
+   "published": "2024-01-11",
+   "relevant": false
+  },
+  {
+   "appid": 4731310,
+   "title": "美國航空商務艙開箱，他們眼中的亞洲人到底是什麼模樣（順便增重了三公斤）【燒錢來吃#18】｜HOOK ft. 德國Emma",
+   "text": "喵喵先生是我看過最有個性的嬰兒但連喵喵先生都能乖乖躺在德國Emma上我真的要幫德國Emma做牛做馬難怪我經紀人一直想要幹 ...",
+   "author": "HOOK",
+   "author_id": "UCbIJeyl_va8MG2xx0q4Uobg",
+   "url": "https://www.youtube.com/watch?v=SS3UK4lpWs4",
+   "published": "2026-10-11",
+   "relevant": false
+  },
+  {
+   "appid": 4731310,
+   "title": "Hook (1991) | Peter Fights Hook &amp; The Pirates | Dustin Hoffman, Robin Williams, Julia Roberts",
+   "text": "Peter (Robin Williams) returns to Hook's (Dustin Hoffman) ship to save his children, with the help of Rufio (Dante Basco) and the ...",
+   "author": "The Film Scene",
+   "author_id": "UCtjz8kIKDJ0_pCwclti3JKQ",
+   "url": "https://www.youtube.com/watch?v=QJnmTmsYyls",
+   "published": "2025-03-10",
+   "relevant": false
+  },
+  {
+   "appid": 4731310,
+   "title": "The End of Captain Hook | HOOK",
+   "text": "To rescue his children, an adult Peter Pan must return to Neverland and battle an old enemy . . . and rediscover the child in ...",
+   "author": "FilmIsNow Epic Scenes",
+   "author_id": "UCqMDM353bZ_i3TkLYgDMi3A",
+   "url": "https://www.youtube.com/watch?v=TgoK4r3hpVU",
+   "published": "2024-12-23",
+   "relevant": false
+  },
+  {
+   "appid": 4731310,
+   "title": "Hook (1991) Movie | Robin Williams, Dustin Hoffman | Review and Reaction",
+   "text": "In this full cinematic breakdown, we explore Hook, the 1991 fantasy adventure film directed by Steven Spielberg. This movie ...",
+   "author": "Animated Rewind",
+   "author_id": "UCYRdssfHDezvWU33FnSCzBw",
+   "url": "https://www.youtube.com/watch?v=rlgROpENzr8",
+   "published": "2026-09-03",
+   "relevant": false
+  },
+  {
+   "appid": 4731310,
+   "title": "【全家死光】保護世界和平的約翰甘迺迪，卻無法守護老婆與小孩的痛苦人生（大家將一個一個離去）【行萬里路#25（下）】｜HOOK ft. Surfshark",
+   "text": "2026還是不放過你，點擊我的Surfshark VPN專屬訂購連結，成為國際養殖漁業：https://surfshark.com/HOOK （記得輸入我的折扣 ...",
+   "author": "HOOK",
+   "author_id": "UCbIJeyl_va8MG2xx0q4Uobg",
+   "url": "https://www.youtube.com/watch?v=kFr5ndXIPoY",
+   "published": "2026-10-04",
+   "relevant": false
+  },
+  {
+   "appid": 4731310,
+   "title": "雇用偵探跟蹤黃大謙，謙謙公主的葡萄牙單身日記｜HOOK ft. Saily eSIM",
+   "text": "不管去哪都會理你的Saily eSIM：https://saily.com/hook 穿越世界的方便網路魔法，使用我的折扣碼「HOOK」還可以享獨家85折 ...",
+   "author": "HOOK",
+   "author_id": "UCbIJeyl_va8MG2xx0q4Uobg",
+   "url": "https://www.youtube.com/watch?v=qcc3V5t2bXM",
+   "published": "2026-07-30",
+   "relevant": false
+  },
+  {
+   "appid": 4731310,
+   "title": "Hook Episode 1 | 21st December 2022 (English Subtitles) - ARY Digital",
+   "text": "To watch all the episodes of Hook: https://bit.ly/3Z7cMQ7 Subscribe NOW: https://www.youtube.com/arydigitalasia Download ...",
+   "author": "ARY Digital HD",
+   "author_id": "UC4JCksJF76g_MdzPVBJoC3Q",
+   "url": "https://www.youtube.com/watch?v=R3YuQ-HY3BM",
+   "published": "2022-12-21",
+   "relevant": false
+  },
+  {
+   "appid": 4731310,
+   "title": "Hook (1991) | Peter Learns To Fly | Dustin Hoffman, Robin Williams, Julia Roberts",
+   "text": "Peter (Robin Williams) remembers his past as a baby saved by Tinkerbell (Julia Roberts) and finds his happy thought, learning ...",
+   "author": "The Film Scene",
+   "author_id": "UCtjz8kIKDJ0_pCwclti3JKQ",
+   "url": "https://www.youtube.com/watch?v=57l8OBGmu3o",
+   "published": "2025-03-09",
+   "relevant": false
+  },
+  {
+   "appid": 4731310,
+   "title": "The Troubled History of Steven Spielberg&#39;s &quot;Hook&quot; - A Classic That Should’ve Been",
+   "text": "A Deep Dive into the History & Making of Steven Spielberg's \"Hook\" and how it came to be. From its origins as an abandoned ...",
+   "author": "Yesterworld Entertainment",
+   "author_id": "UCmOy2-vrvwDh6O1bTUB5m_g",
+   "url": "https://www.youtube.com/watch?v=BeV-zPB4s30",
+   "published": "2020-09-10",
+   "relevant": false
+  },
+  {
+   "appid": 4731310,
+   "title": "Costa x Lil Rome Praba - Na Hook (Official Music Video)",
+   "text": "Official Video for Na Hook by Costa & Lil Rome Praba Listen to \"Na Hook\" available everywhere now ...",
+   "author": "Costa",
+   "author_id": "UC6ClgNoiMI8i6EVnBBmlE1Q",
+   "url": "https://www.youtube.com/watch?v=aFwBgKIbdvc",
+   "published": "2026-01-30",
+   "relevant": false
+  },
+  {
+   "appid": 4659900,
+   "title": "If You’re About to Buy a Monitor, Watch This First",
+   "text": "Good Monitors for GAMING   -Msi MPG 321URX - https://amzn.to/47F6f55 -ASUS ROG PG32UCDM - https://amzn.to/4bSdGIC ...",
+   "author": "Aman",
+   "author_id": "UClLMEPnOs9IZdFVBeYG5ybw",
+   "url": "https://www.youtube.com/watch?v=6F0iI_OxU9E",
+   "published": "2026-04-06",
+   "relevant": false
+  },
+  {
+   "appid": 4659900,
+   "title": "DA 150€ A 1500€: MIGLIORI MONITOR E TV PER OGNI BUDGET",
+   "text": "Risparmia il 25% su Whokeys.com! Codice sconto: PD20 □ Windows 11 (€22): https://it.whokeys.com/wk/Wins11PD □ Office ...",
+   "author": "Prodigeek",
+   "author_id": "UC6NpRkanSBgQVdPZs_y3aKg",
+   "url": "https://www.youtube.com/watch?v=VuIY6vhJCkQ",
+   "published": "2026-07-26",
+   "relevant": false
+  },
+  {
+   "appid": 4659900,
+   "title": "MEGA TIER LIST 46 MONITOR 🏆 ECCO I MIGLIORI E I PEGGIORI DEL 2026",
+   "text": "Devi comprare un monitor e non vuoi buttare soldi? In questo video ho classificato i modelli più popolari del momento, dal ...",
+   "author": "Prophecy Tech",
+   "author_id": "UC4NxRIlCBRI-jDPwpyyZJaQ",
+   "url": "https://www.youtube.com/watch?v=7UvCAW4ylL0",
+   "published": "2026-10-05",
+   "relevant": false
+  },
+  {
+   "appid": 4659900,
+   "title": "The Best Monitor At Every Price",
+   "text": "Try out SetupReady for up-to-date monitor recommendations! getsetupready.com/bestmonitor Best Office Chair at Every Price ...",
+   "author": "Reid Wilking",
+   "author_id": "UCGTxQKN8nd47EDvnbBWIY-g",
+   "url": "https://www.youtube.com/watch?v=4BxduuJAbpM",
+   "published": "2026-08-29",
+   "relevant": false
+  },
+  {
+   "appid": 4659900,
+   "title": "One Monitor Setup for EVERYTHING - Mac, PC and PS5",
+   "text": "Wallpaper - https://platsupply.com/products/3d-circles-wallpaper-pack?utm_source=oliurYT_LG_GM9 LG monitor link ...",
+   "author": "Oliur / UltraLinx",
+   "author_id": "UCzJjUHizQfPYywqt1mSEMww",
+   "url": "https://www.youtube.com/watch?v=UKaytu1CjgA",
+   "published": "2026-08-24",
+   "relevant": false
+  },
+  {
+   "appid": 4659900,
+   "title": "THIS 6K MONITOR IS CRAZY?? dream desk monitor upgrade: Pro Display XDR 🖥️✨ #monitor #apple #tech",
+   "text": "",
+   "author": "Maisy Leigh",
+   "author_id": "UC_h-Jl4Zxb7p-sSBTxprs4Q",
+   "url": "https://www.youtube.com/watch?v=yLAH2votG9M",
+   "published": "2025-08-30",
+   "relevant": false
+  },
+  {
+   "appid": 4659900,
+   "title": "Stop Wasting Money on Premium Monitors",
+   "text": "Check out NexiGo's Black Friday sale at: https://lmg.gg/NexiGoBF It's nice to splurge on high-end displays but you don't NEED ...",
+   "author": "Linus Tech Tips",
+   "author_id": "UCXuqSBlHAE6Xw-yeJA0Tunw",
+   "url": "https://www.youtube.com/watch?v=BUPtrvh8fCg",
+   "published": "2025-11-23",
+   "relevant": false
+  },
+  {
+   "appid": 4864580,
+   "title": "FULL GUIDE To TIDEFALL UPDATE In Fisch Roblox!",
+   "text": "FULL GUIDE To TIDEFALL UPDATE In Fisch Roblox! Want to JOIN ME In FISCH? Join with the link below!",
+   "author": "Carbon Meister Plays",
+   "author_id": "UCM2IZ0oXZRTFr5Dnw8IIy9g",
+   "url": "https://www.youtube.com/watch?v=8ugVXm6SWjE",
+   "published": "2026-01-18",
+   "relevant": false
+  },
+  {
+   "appid": 4864580,
+   "title": "TIDEFALL FULL GUIDE #fisch",
+   "text": "TIDEFALL FULL GUIDE Main YouTube Channel: https://www.youtube.com/@Flee2Pea Roblox Profile: ...",
+   "author": "Flee2Pea",
+   "author_id": "UC-CL5b2u4XDl43arZ_HBA_g",
+   "url": "https://www.youtube.com/watch?v=o9XgboHRfMM",
+   "published": "2026-01-17",
+   "relevant": false
+  },
+  {
+   "appid": 4864580,
+   "title": "HUGE FIXES FOR TIDEFALL DIFFICULTY #fisch",
+   "text": "HUGE FIXES FOR TIDEFALL DIFFICULTY Main YouTube Channel: https://www.youtube.com/@Flee2Pea Roblox Profile: ...",
+   "author": "Flee2Pea",
+   "author_id": "UC-CL5b2u4XDl43arZ_HBA_g",
+   "url": "https://www.youtube.com/watch?v=HbRKfKwbzI0",
+   "published": "2026-01-20",
+   "relevant": false
+  },
+  {
+   "appid": 4864580,
+   "title": "How To Unlock Tidefall Castle In Fisch (5 Obelisk Puzzle) – Step By Step Guide",
+   "text": "How to unlock Tidefall Castle in Fisch — this guide shows you exactly which items each Obelisk needs and how to open the castle ...",
+   "author": "GuideHub",
+   "author_id": "UCWkZdayHQSuvL-82epH-VPQ",
+   "url": "https://www.youtube.com/watch?v=du7KluvkAWE",
+   "published": "2026-09-03",
+   "relevant": false
+  },
+  {
+   "appid": 4864580,
+   "title": "How to Open TIDEFALL CASTLE in FISCH! (Roblox) | Fisch OBELISK Puzzle",
+   "text": "Subscribe if my video make you smile⭐ In this video, I'll show you how to navigate the \" tidefall fisch \" area and open those tricky ...",
+   "author": "Sowwy",
+   "author_id": "UCOwGdetyaN3FMjoZTeTE7lg",
+   "url": "https://www.youtube.com/watch?v=1H-uvzU0TtY",
+   "published": "2026-01-23",
+   "relevant": false
+  },
+  {
+   "appid": 4864580,
+   "title": "Como chegar no TIDEFALL e Tudo Sobre!! (Part 1. Fisch tutorial)",
+   "text": "se inscreve ai para me ajudar   Grupo no Roblox   : https://web.roblox.com/groups/8496854/Familia-adri#!/about Servidor ...",
+   "author": "Nickadrigames",
+   "author_id": "UCYtTld7N3m4phXiLSFci8mg",
+   "url": "https://www.youtube.com/watch?v=s9AkmqokfE4",
+   "published": "2026-01-20",
+   "relevant": false
+  },
+  {
+   "appid": 4864580,
+   "title": "FASTEST Way Into Tidefall! 🌊 | Fisch Update Guide",
+   "text": "Want to get into Tidefall fast? Here's the quickest method: - Sail to the underwater opening near the abandoned boats. - Use a ...",
+   "author": "FifeFam",
+   "author_id": "UCRNpq1EVc6T2tsKAK6g1nEQ",
+   "url": "https://www.youtube.com/watch?v=kgLudv4wQoE",
+   "published": "2026-01-17",
+   "relevant": false
+  },
+  {
+   "appid": 4864580,
+   "title": "COMO PEGAR THALASSAR&#39;S RUIN ROD - GUIA COMPLETO UPDATE TIDEFALL NO FISCH",
+   "text": "Nesse vídeo você saberá como pegar a nova vara ASTRAEUS SERENADE da ASTRAEUS no FISCH... Não se esqueça de ...",
+   "author": "KLAUS TV",
+   "author_id": "UCwJPEsyqeqU0GpHttH4ThOg",
+   "url": "https://www.youtube.com/watch?v=l80eViUopMQ",
+   "published": "2026-01-20",
+   "relevant": false
+  },
+  {
+   "appid": 4864580,
+   "title": "How To Get Thalassar’s Ruin Rod in Roblox Fisch Tidefall Essence SAVE NATE FischFright 3",
+   "text": "Here's how to get Thalassar's Ruin Rod in Fisch. First, go to Tidefall and dive into the water with a tidebreaker. Go down past the ...",
+   "author": "DatBrian",
+   "author_id": "UCMvBbCUnlCeoaiQabtJ_sQQ",
+   "url": "https://www.youtube.com/watch?v=NG2MFiab_OM",
+   "published": "2026-01-18",
+   "relevant": false
+  },
+  {
+   "appid": 4864580,
+   "title": "FULL GUIDE To TIDEFALL UPDATE In Roblox Fisch",
+   "text": "My Discord Server: https://discord.gg/7aQPcJya8a Follow me on Roblox: https://www.roblox.com/users/23678101/profile Buy My ...",
+   "author": "FyReO",
+   "author_id": "UCFXjyG1ozAK44vXGYf-5lzA",
+   "url": "https://www.youtube.com/watch?v=L_r4dnxiRnw",
+   "published": "2026-01-17",
+   "relevant": false
+  },
+  {
+   "appid": 2646720,
+   "title": "Dead Weight - Jack Stauber",
+   "text": "New Album: HiLo coming April 14th https://www.patreon.com/jackstauber https://www.jackstauber.com ...",
+   "author": "JackStauber",
+   "author_id": "UCe_ijwgvhtHQwQ55vsXDY8w",
+   "url": "https://www.youtube.com/watch?v=-ZTdb5zCzuI",
+   "published": "2018-04-05",
+   "relevant": false
+  },
+  {
+   "appid": 2646720,
+   "title": "Jack Stauber - Dead Weight",
+   "text": "Gênio SoundCloud: https://soundcloud.com/jackstauber/sets/hilo Bandcamp: https://jackstauber.bandcamp.com Instagram: ...",
+   "author": "Deep Void",
+   "author_id": "UCD5zh2Qmk3PhCRTPr7yhztQ",
+   "url": "https://www.youtube.com/watch?v=limCrcfqpVo",
+   "published": "2018-04-16",
+   "relevant": false
+  },
+  {
+   "appid": 2646720,
+   "title": "Deadweights",
+   "text": "Provided to YouTube by DistroKid Deadweights · STΛTIC WØLF · James Clevenger · James Clevenger Whiplash ℗ 10596976 ...",
+   "author": "STΛTIC WØLF - Topic",
+   "author_id": "UCBLNMvDcskejaWtN8GD_Pww",
+   "url": "https://www.youtube.com/watch?v=7zLf13ZGhC0",
+   "published": "2026-05-16",
+   "relevant": false
+  },
+  {
+   "appid": 2646720,
+   "title": "Dead Weight - Official Launch Trailer",
+   "text": "Dead Weight is available now on Steam. Watch the Dead Weight launch trailer for this roguelite adventure game. The Dead ...",
+   "author": "GameTrailers",
+   "author_id": "UCJx5KP-pCUmL9eZUv-mIcNw",
+   "url": "https://www.youtube.com/watch?v=PmSVujx8Db4",
+   "published": "2026-07-16",
+   "relevant": true
+  },
+  {
+   "appid": 2646720,
+   "title": "ИМБОВАЯ ПОШАГОВАЯ СТРАТЕГИЯ / DEAD WEIGHT🔥🎮",
+   "text": "",
+   "author": "НИКИТА БУРБОН",
+   "author_id": "UC16e7pe0qVMQstJEBx-cPIw",
+   "url": "https://www.youtube.com/watch?v=yeaawDeXhk0",
+   "published": "2025-05-21",
+   "relevant": true
+  },
+  {
+   "appid": 2646720,
+   "title": "Dead Weight - Official Trailer",
+   "text": "Face the Ancient Gods! Set the sails of your flying pirate ship and embark on a roguelite adventure in the steampunk world of ...",
+   "author": "Indie Games Hub",
+   "author_id": "UCt8CJiye87FMbEwt0npPMuQ",
+   "url": "https://www.youtube.com/watch?v=OCCmIBhevYc",
+   "published": "2025-09-10",
+   "relevant": true
+  },
+  {
+   "appid": 2646720,
+   "title": "I Became KING OF THE SKY PIRATES in this Tactical Roguelite! - Dead Weight",
+   "text": "Dead Weight is an interesting mix of a lot of genres. While taking some clear inspiration from Into The Beach, where it truly stands ...",
+   "author": "Gohjoe",
+   "author_id": "UCac9YlOpTLy_wToRb5Bo-DQ",
+   "url": "https://www.youtube.com/watch?v=ByIdJs9Zkxs",
+   "published": "2026-07-20",
+   "relevant": true
+  },
+  {
+   "appid": 2646720,
+   "title": "PVRIS - Dead Weight (Official Music Video)",
+   "text": "Production Company: YHELLOW http://weareyhellow.com Directed, Edited and Colored by Lorenzo Diego Carrera Produced and ...",
+   "author": "PVRIS",
+   "author_id": "UC16zGxZ1weXDUXzRYwtfPqg",
+   "url": "https://www.youtube.com/watch?v=c4iyEXDStgk",
+   "published": "2020-03-04",
+   "relevant": false
+  },
+  {
+   "appid": 2646720,
+   "title": "Dead Weight - Official Launch Trailer",
+   "text": "Dead Weight is available NOW on Steam! Get it: https://store.steampowered.com/app/2646720/Dead_Weight/ Face the Ancient ...",
+   "author": "Indie Games Hub",
+   "author_id": "UCt8CJiye87FMbEwt0npPMuQ",
+   "url": "https://www.youtube.com/watch?v=NeObEdMBot0",
+   "published": "2026-07-17",
+   "relevant": true
+  },
+  {
+   "appid": 2646720,
+   "title": "Неожиданно Увлекательный Новый Рогалик - Dead Weight",
+   "text": "Это небольшой обзорный выпуск на новую игру рогали Dead Weight, в котором посмотрим, что она из себя представляет.",
+   "author": "Muzzloff Play",
+   "author_id": "UCy7nbUh8X3TVYW7tWLXSFvA",
+   "url": "https://www.youtube.com/watch?v=7IazHFKxY0Q",
+   "published": "2026-07-19",
+   "relevant": true
+  }
+ ],
+ "_note": "Hand-labelled sample for entity_match.py: YouTube search.list with the bare title (what a title-only collector does), 10 results for each of 20 games released 2026-07-15..21, collected 2026-10-13. relevant = the video is about this game, judged by reading title, channel, date and description; null = could not be verified (excluded). One labeller (the agent that also wrote the matcher): a second, independent labeller would make the precision figure stronger."
+}

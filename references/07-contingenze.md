@@ -55,3 +55,9 @@ Esce con codice 2 se uno scenario con gravità `ALARM` è scattato. Le wishlist 
 ## Limiti da dichiarare
 
 Le soglie sono ipotesi calibrabili: dopo le prime settimane di dati reali vanno riviste (annota la revisione). Poche osservazioni danno rumore: non reagire a una sola rilevazione, a meno di un ALLARME definito per quel caso.
+
+---
+
+## Soglie dal mercato reale
+
+Le soglie dei tripwire di vendita ("sotto N copie a 30 / 90 giorni") si ancorano al base rate della fascia del gioco in `calibration.json`: p25 della fascia B al suo prezzo = allarme, mediana = in linea, p75 = sopra le attese. Durante il lancio, `market_tracker.py snapshot` (a +24h, 48h, 1 settimana, 1 mese, 3 mesi) e `--players-only` più volte al giorno misurano lo stesso percorso sul gioco e sui concorrenti; `timeline` mette accanto eventi e picchi (un evento prima di un picco non prova che lo abbia causato). L'ordine dei passi dei B vincenti (demo, Next Fest, trailer, creator) è in `calibration.json` → `marketing`.

@@ -22,6 +22,11 @@ month makes --ea-first-month of them (default 0.35 [OPINIONE]); the 1.0 launch m
 The point: the EA release IS the launch; 1.0 is a smaller second push, not a second launch.
   python calc_econ.py --price 9.99 --ea-price 7.99 --full-price 9.99 --wishlists 1000,3000,8000 --conv 0.1,0.2,0.3 ...
 
+Real-market base rates (optional): --calibration [PATH] reads ~/.game-launch-strategist/calibration.json (made by
+`cohort_bench.py calibrate`) and adds three scenarios from what games of --tier (default B) at this price really sold
+(p25 / median / p75 of copies, Boxleiter range x20..x60, [STIMA] with the data date). They sit NEXT to the wishlist scenarios.
+  python calc_econ.py --price 7.99 --wishlists 1000,3000,8000 --conv 0.1,0.2,0.3 --calibration --tier B
+
 Defaults (all adjustable): steam-cut 0.30, vat-share 0.10 (blended average of prices that include VAT and
 prices that do not), refund 0.06, avg-discount 0.15 (launch discount and sales over year 1), local-tax 0.
 """
@@ -69,7 +74,7 @@ def compute(c: dict) -> dict:
     def be(cost):
         return math.ceil(cost / net) if cost > 0 else 0
 
-    out = dict(inputs={**c, **r}, per_copy=[dict(step=s, value=round(x, 2)) for s, x in steps], net_per_copy=round(net, 2),
+    out = dict(inputs={**{k: v for k, v in c.items() if k != "calibration_data"}, **r}, per_copy=[dict(step=s, value=round(x, 2)) for s, x in steps], net_per_copy=round(net, 2),
                net_share_of_list_price=round(net / price, 3), costs=dict(cash=cash, time=round(time_cost, 2), total=round(total, 2)),
                breakeven=dict(copies_cash=be(cash), copies_with_time=be(total),
                               wishlists_needed={f"{round(x * 100)}%": math.ceil(be(total) / x) for x in conv if x > 0}),
@@ -89,7 +94,27 @@ def compute(c: dict) -> dict:
         out["sensitivity"].append(dict(case=label, net_per_copy=round(n, 2), breakeven_copies=math.ceil(total / n) if total > 0 else 0))
     if c.get("ea_price"):
         out["early_access"] = early_access(c, r, out)
+    if c.get("calibration_data"):
+        out["calibrated"] = calibrated(c, out)
     return out
+
+
+def calibrated(c: dict, out: dict) -> dict | None:
+    """Scenarios from real base rates: copies of a typical game of the tier at this price, low (x20) and high (x60) estimate."""
+    from cohort_bench import base_rate
+    cal = c["calibration_data"]
+    g, label = base_rate(cal, c.get("tier") or "B", float(c["price"]), c.get("genre"))
+    if not g.get("n"):
+        return None
+    net, cash, total = out["net_per_copy"], out["costs"]["cash"], out["costs"]["total"]
+    rows = []
+    for name, q in (("pessimistico (p25)", "p25"), ("base (mediana)", "median"), ("ottimistico (p75)", "p75"), ("raro (p90)", "p90")):
+        lo, hi = g["copies"][q]
+        rows.append(dict(name=name, copies_low=lo, copies_high=hi, net_low=round(lo * net, 2), net_high=round(hi * net, 2),
+                         profit_cash_low=round(lo * net - cash, 2), profit_cash_high=round(hi * net - cash, 2),
+                         covers_time=(lo * net >= total, hi * net >= total) if total else None))
+    return dict(group=label, n=g["n"], small_sample=g.get("small_sample"), milestone=cal.get("primary"), data_from=cal.get("data_from"),
+                data_to=cal.get("data_to"), generated_on=cal.get("generated_on"), popular=g.get("popular"), scenarios=rows)
 
 
 def early_access(c: dict, r: dict, out: dict) -> dict:
@@ -142,6 +167,15 @@ def md(o: dict) -> str:
               "| Scenario | Netto anno in EA | Copie mese EA | Netto mese EA | Netto mese 1.0 | Copie mese 1.0 |", "|---|---|---|---|---|---|"]
         L += [f"| {x['name']} | {x['ea_year_net']:.0f} | {x['ea_month_copies']} | {x['ea_month_net']:.0f} | {x['full_month_net']:.0f} | {x['full_month_copies']} |" for x in ea["scenarios"]]
         L += ["", "**L'uscita in EA è il lancio vero**: la 1.0 di solito porta meno del primo mese in EA, quindi l'EA va preparato come un lancio completo (pagina, wishlist, creator, prezzo)."]
+    cb = o.get("calibrated")
+    if cb:
+        L += ["", f"## Scenari dal mercato reale ({cb['group']}, n = {cb['n']}) **[STIMA]**", "",
+              f"Copie vendute a {cb['milestone'][1:]} giorni dall'uscita dai giochi reali di questa fascia usciti dal {cb['data_from']} al {cb['data_to']} "
+              f"(calibrazione del {cb['generated_on']}, `cohort_bench.py`); copie = recensioni × 20..60. "
+              + ("**Campione piccolo: solo indicativo.** " if cb.get("small_sample") else "")
+              + "Non sostituiscono gli scenari da wishlist: sono il controllo con la realtà.", "",
+              "| Scenario | Copie | Netto | Utile (cassa) |", "|---|---|---|---|"]
+        L += [f"| {x['name']} | {x['copies_low']:,} … {x['copies_high']:,} | {x['net_low']:.0f} … {x['net_high']:.0f} | {x['profit_cash_low']:.0f} … {x['profit_cash_high']:.0f} |" for x in cb["scenarios"]]
     L += ["", "_Le conversioni wishlist -> acquisto sono un'ipotesi [DA VERIFICARE] sui comparabili; il modello non include vendite non passate dalla wishlist, DLC, bundle né ricavi di altri store._"]
     return "\n".join(L) + "\n"
 
@@ -161,12 +195,22 @@ def main():
     ap.add_argument("--full-price", dest="full_price", type=float, help="price at 1.0 (default --price)")
     ap.add_argument("--ea-first-month", dest="ea_first_month", help="share of year-1 copies sold in the EA launch month (default 0.35)")
     ap.add_argument("--full-vs-ea", dest="full_vs_ea", help="1.0 launch month revenue as a share of the EA launch month (default 0.40)")
+    ap.add_argument("--calibration", nargs="?", const="auto", help="real-market base rates (default path ~/.game-launch-strategist/calibration.json)")
+    ap.add_argument("--tier", help="tier of the game in the calibration (A/B/C, default B)"); ap.add_argument("--genre", help="genre bucket of the calibration, e.g. casual")
     ap.add_argument("-o", "--out", help="JSON output (also read by wl_track.py and status_page.py)"); ap.add_argument("--md", help="Markdown output file")
     a = ap.parse_args()
     c = dict(DEFAULTS)
     if a.config:
         c.update(load_json(a.config))
-    c.update({k: v for k, v in vars(a).items() if k not in ("config", "out", "md") and v is not None})
+    c.update({k: v for k, v in vars(a).items() if k not in ("config", "out", "md", "calibration") and v is not None})
+    if a.calibration:
+        import os
+        from common import user_dir
+        cp = user_dir("calibration.json") if a.calibration == "auto" else a.calibration
+        if os.path.exists(cp):
+            c["calibration_data"] = load_json(cp)
+        else:
+            log(f"no calibration file at {cp}: run cohort_bench.py update + calibrate first (scenarios from wishlists only)")
     if "price" not in c:
         ap.error("--price (or price in --config) is required")
     o = compute(c)

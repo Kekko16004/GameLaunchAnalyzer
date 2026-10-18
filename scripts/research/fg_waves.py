@@ -14,6 +14,8 @@ Wave file (launch/fg/waves/w01-YYYY-MM-DD.json), written after the panel has jud
     "issues":  [{"key": "slow-opening", "label": "Apertura lenta", "severity": "alta",
                  "recommendation": "...", "gate": "A", "area": "Primi minuti"}, ...],   # gate (0|A|B|C) and area: optional, used to group the criticalities in STATUS.html
     "fixes":   [{"issue": "slow-opening", "what": "tutorial shortened"}],   # waves > 1: fixes since the previous wave
+               # optional "gate_dev": 57 (development gate of game-developer that made the fix) and "status": risolto | da_verificare,
+               # as written by `gate_link.py since` (copy with `wave_kit.py fixes`); an issue born from a gate has "from_gate_dev": 57
     "ceiling": {                                        # the two CEILING questions (04-focus-group.md, Passo 3b):
       "version": {"testers": [{"id": "A-01", "verdict": "WISHLIST", "reason": "risolvibile: ..."}]},   # THIS version with only in-scope fixes
                   # (bugs, clarity, polish; no new content or modes). If not asked: {"estimate": "55-58", "note": "..."} = [STIMA], not measured
@@ -76,6 +78,18 @@ def load_wave(path: str, roster: dict | None = None) -> dict:
     for i in defined.values():
         if i.get("severity") not in SEV:
             errs.append(f"issue {i['key']}: severity must be one of {list(SEV)}")
+        if "from_gate_dev" in i and not _gate_no(i["from_gate_dev"]):
+            errs.append(f"issue {i['key']}: from_gate_dev must be a development gate number, got {i['from_gate_dev']!r}")
+    for k, f in enumerate(w.get("fixes") or []):
+        if not isinstance(f, dict):
+            errs.append(f"fixes[{k}] must be an object {{issue, what}}")
+            continue
+        if not f.get("issue"):
+            warns.append(f"fixes[{k}] has no 'issue' key: it cannot be linked to a criticality")
+        if "gate_dev" in f and not _gate_no(f["gate_dev"]):
+            errs.append(f"fixes[{k}] ({f.get('issue')}): gate_dev must be a development gate number, got {f['gate_dev']!r}")
+        if f.get("status") not in (None, "risolto", "da_verificare"):
+            errs.append(f"fixes[{k}] ({f.get('issue')}): status must be risolto or da_verificare, got {f['status']!r}")
     used = {k for t in w["testers"] for k in t["issues"]}
     if used - set(defined):
         warns.append(f"issue keys used by testers but not defined (severity assumed 'media'): {sorted(used - set(defined))}")
@@ -94,6 +108,17 @@ def load_wave(path: str, roster: dict | None = None) -> dict:
     w["_defined"] = defined
     w["stage"] = infer_stage(w, path)
     return w
+
+
+def _gate_no(v) -> bool:
+    """A development gate number (int, or digits): 57, "57"."""
+    return (isinstance(v, int) and not isinstance(v, bool) and v >= 0) or (isinstance(v, str) and v.strip().isdigit())
+
+
+def born_note(i: dict) -> str:
+    """'nato col gate NN' for an issue a development gate created (dev-link.md §8), else ''."""
+    g = i.get("from_gate_dev")
+    return f"nato col gate {int(g)}" if g is not None and _gate_no(g) else ""
 
 
 def infer_stage(w: dict, path: str = "") -> str:
@@ -150,7 +175,7 @@ def metrics(w: dict, gate: float | None = None) -> dict:
         issues.append(dict(key=key, label=d.get("label", key), severity=d.get("severity", "media"), freq=freq,
                            pct=pct(freq, n), main_criticism=main, weighted=freq * SEV[d.get("severity", "media")],
                            groups=dict(A=sum(1 for t in A if key in t["issues"]), B=sum(1 for t in B if key in t["issues"])),
-                           recommendation=d.get("recommendation")))
+                           recommendation=d.get("recommendation"), from_gate_dev=int(d["from_gate_dev"]) if _gate_no(d.get("from_gate_dev")) else None))
     issues.sort(key=lambda i: (-i["weighted"], -i["freq"], i["key"]))
     thr, how = gate_of(w, gate)
     sc = score(ts)
@@ -236,7 +261,7 @@ def md_metrics(m: dict) -> str:
               + (f" (motivi: {', '.join(f'{k} {v}' for k, v in cf['reasons'].items())})" if cf["reasons"] else "")]
     s += ["", "### Problemi (quanti li citano × gravità)", table(
         ["Problema", "Gravità", "Citato da", "% del panel", "Critica principale di", "A / B", "Cosa fare"],
-        [[i["label"], SEV_IT.get(i["severity"], i["severity"]), i["freq"], _n(i["pct"]), i["main_criticism"], f"{i['groups']['A']} / {i['groups']['B']}", i["recommendation"] or ""]
+        [[i["label"] + (f" ({born_note(i)})" if born_note(i) else ""), SEV_IT.get(i["severity"], i["severity"]), i["freq"], _n(i["pct"]), i["main_criticism"], f"{i['groups']['A']} / {i['groups']['B']}", i["recommendation"] or ""]
          for i in m["issues"]]), "",
          "_Panel simulato: i punteggi ordinano i problemi, non prevedono le vendite. Con 54 tester ogni percentuale ha un margine di circa ±13 punti, e il campione è simulato._"]
     return "\n".join(s)
@@ -247,7 +272,8 @@ def md_delta(a: dict, b: dict, ma: dict, mb: dict, noise: float) -> str:
     common = sorted(set(ta) & set(tb))
     only_a, only_b = sorted(set(ta) - set(tb)), sorted(set(tb) - set(ta))
     sa, sb = score([ta[i] for i in common]), score([tb[i] for i in common])
-    fixes = {f.get("issue"): f.get("what") for f in b.get("fixes", [])}
+    fixes = {f.get("issue"): (f.get("what") or "") + (f" (gate {int(f['gate_dev'])})" if _gate_no(f.get("gate_dev")) and f"gate {int(f['gate_dev'])}" not in str(f.get("what")) else "")
+             for f in b.get("fixes", []) if isinstance(f, dict)}
     trans = Counter((ta[i]["verdict"], tb[i]["verdict"]) for i in common)
     stage = STAGE_IT.get(b.get("stage") or "", "")
     out = [f"## Cosa è cambiato: ondata {a['wave']} ({a['date']}) -> ondata {b['wave']} ({b['date']})" + (f" · {stage}" if stage else ""),
@@ -264,7 +290,8 @@ def md_delta(a: dict, b: dict, ma: dict, mb: dict, noise: float) -> str:
         fa, fb = (ia.get(k) or {}).get("freq", 0), (ib.get(k) or {}).get("freq", 0)
         d = pb - pa
         st = ("NUOVO" if pa == 0 else "RISOLTO" if pb == 0 else "INVARIATO" if abs(d) < noise else "MIGLIORATO" if d < 0 else "PEGGIORATO")
-        rows.append([(ib.get(k) or ia.get(k))["label"], (ib.get(k) or ia.get(k))["severity"], f"{fa} su {ma['n']}", f"{fb} su {mb['n']}", f"{d:+.1f} punti".replace(".", ","), st, fixes.get(k, "")])
+        born = born_note(ib.get(k) or {}) if st == "NUOVO" else ""
+        rows.append([(ib.get(k) or ia.get(k))["label"] + (f" ({born})" if born else ""), (ib.get(k) or ia.get(k))["severity"], f"{fa} su {ma['n']}", f"{fb} su {mb['n']}", f"{d:+.1f} punti".replace(".", ","), st, fixes.get(k, "")])
     order = {"PEGGIORATO": 0, "NUOVO": 1, "INVARIATO": 2, "MIGLIORATO": 3, "RISOLTO": 4}
     rows.sort(key=lambda r: (order[r[5]], r[0]))
     out += ["### Effetto su ogni problema", table(["Problema", "Gravità", "Prima", "Dopo", "Variazione", "Esito", "Correzione fatta"], rows),

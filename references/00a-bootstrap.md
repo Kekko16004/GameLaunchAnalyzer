@@ -46,10 +46,13 @@ Nell'ordine che dà lo scan, fino a circa 15 file e le prime 200 righe di ciascu
 | `GDD.md` (se `locked`) | Fasi 0, 1, 0A: genere, stile, pilastri, pubblico, piattaforme, stack; le domande già risposte si saltano (si cita il GDD) |
 | `GAME_TASKS.md` | TODO del **gioco completo** (Fase 10B) e stato reale del lavoro (fatti / aperti / bloccati) → beta o completo? |
 | `GAME_CONTEXT.md` | loop dei 30 secondi e dei 3 minuti, vittoria e sconfitta, controlli: base di audit e di evidenze |
-| `docs/gates/*.md`, `docs/lint/scene-lint.json`, `docs/playtest.md` | cosa è stato **dimostrato** (test, lint, playtest): qualità tecnica della Fase 3 |
+| `docs/gates/*.md`, `docs/lint/scene-lint.json`, `docs/playtest.md` | cosa è stato **dimostrato** (test, lint, playtest): qualità tecnica della Fase 3. I gate nuovi hanno un'intestazione leggibile da macchina (gate, data, PASS/PARTIAL/FAIL, chiavi chiuse, rischi, cosa provare): `project_scan.py` dà l'ultimo (`dev_link.gates_with_header`) |
+| `DECISIONI.md` | decisioni del proprietario prese nella chat del dev (`D-NNN`): valgono come le tue, non si contano come problemi; quelle che mancano in "Decisioni prese" e `00-intenzioni.md` si importano con `todo_track.py sync-decisions` (`fonte: DECISIONI.md D-NNN`). Non si scrive mai |
+| `docs/design-review/` (`game-map.md`, `screen-map.md`, `runs.md`, `changes-since-wNN.md`), `docs/gates/plan-wNN.md` | stato attuale del gioco dopo i gate e piano dei gate: base della prossima ondata (`references/dev-link.md` §6.2, `04-focus-group.md` Passo 0) |
 | `ASSET-LEDGER.md` | licenze degli asset, dichiarazione AI di Steam, crediti: Fasi 4 e 10 |
 | `screenshots/000-index.md`, `art/reference/BOARD.md`, `docs/scene-map.md` | evidenze reali, riferimenti visivi, contenuto della scena |
 Il GDD non contiene prezzo, budget, date e capacità del team: quelli restano all'intervista.
+Con `game-developer` vale il contratto `references/dev-link.md` (leggilo se lo scan dà `dev_work` o `docs/design-review/`): chi scrive quali file, decisioni in due registri, cosa lasciare su disco dopo ogni ondata, cosa leggere dopo ogni gate. Si scrive solo in `launch/`.
 
 ## 5. Guarda la build con gli strumenti del motore (sola lettura)
 

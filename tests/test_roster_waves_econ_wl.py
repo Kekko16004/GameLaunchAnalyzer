@@ -2,6 +2,7 @@
 wishlist tracker alerts and the status page (escaping, audiences)."""
 import os, sys, json, random, tempfile, datetime as dt, csv
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "scripts", "research"))
+os.environ["GLS_HOME"] = tempfile.mkdtemp()  # never read the user's real calibration or keys
 import roster, fg_waves, calc_econ, wl_track, status_page
 
 # ---- roster: deterministic, append-only, stable jury, mandatory dissent

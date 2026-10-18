@@ -84,6 +84,37 @@ Poi metti sotto osservazione i comparabili più vicini e i possibili concorrenti
 
 **SteamDB (solo a mano)**: per ciò che le API pubbliche non danno (follower, posizione tra i più desiderati, picchi di giocatori con storico, prezzo minimo, uscite in arrivo) non fare scraping: SteamDB non ha API e lo vieta. Genera i link con `steamdb_assist.py links <appid...> --md launch/_raw/steamdb_links.md`, chiedi all'utente di aprirli e leggere i numeri (o, se puoi aprire pagine, leggili tu e citane la data), e registrali con `steamdb_assist.py add`. Sono **[FATTO]** con data di lettura. Per i concorrenti nella tua finestra aggiungi anche la lista delle uscite in arrivo.
 
+### 2.0b Base rate della concorrenza reale (junk escluso)
+
+I comparabili famosi dicono cosa è possibile, non cosa è probabile. Per sapere quanti giochi **al nostro livello** escono ogni giorno e quanti vendono:
+
+```bash
+python3 <skill>/scripts/research/cohort_bench.py volume --days 14
+python3 <skill>/scripts/research/cohort_bench.py fetch --from <oggi-90g> --to <oggi-84g>     # 7 giorni con ~3 mesi di risultati
+python3 <skill>/scripts/research/cohort_bench.py filter
+python3 <skill>/scripts/research/cohort_bench.py sheets --reference <header capsule del gioco>
+# guarda i fogli in launch/_raw/cohort/sheets/ e compila grades.csv con A / B / C
+python3 <skill>/scripts/research/cohort_bench.py report --mine-price <prezzo> --md launch/_raw/cohort/report.md
+python3 <skill>/scripts/research/cohort_bench.py report --price-min <p-3> --price-max <p+7> --genres <generi vicini>
+```
+
+Regole: il giudizio visivo è **severo** (A = chiaramente sopra, B = al nostro livello, C = sotto) e il gioco dell'utente **è "B" finché i dati non dicono altro**: "abbastanza buono, non top" è B, non A. Il junk si esclude con regole automatiche e il motivo resta scritto. Si risponde con "X su 20 al giorno" e intervalli **[STIMA]**; si citano n per fascia e i limiti (Boxleiter, un solo valutatore, una settimana di uscite). Il risultato alimenta gli scenari della FASE 5.
+
+**Dataset che cresce e calibrazione.** Per non rifare tutto a ogni progetto, la coorte entra in un dataset personale fuori dalla skill (`~/.game-launch-strategist/cohorts/`, un CSV per settimana di uscita) e si aggiorna ogni settimana:
+
+```bash
+python3 <skill>/scripts/research/cohort_bench.py update --reference <header capsule del gioco>   # nuova settimana + ricontrolli a 30/90/180 giorni
+# giudica le capsule nuove (fogli in ~/.game-launch-strategist/cohorts/_work/<settimana>/sheets, voti in grades.csv), poi:
+python3 <skill>/scripts/research/cohort_bench.py update --new-weeks 0                              # importa i voti
+python3 <skill>/scripts/research/cohort_bench.py calibrate                                         # -> ~/.game-launch-strategist/calibration.json
+```
+
+Il giudizio A/B/C resta un passo di giudizio (dell'agente o dell'utente), severo, e i voti si accumulano nel dataset. Per la testa del mercato, i nuovi che decollano e il marketing dei giochi: `market_tracker.py` (README degli script).
+
+**Metro oggettivo pre-uscita e dossier.** Con il dataset di almeno due settimane di uscite giudicate: `cohort_bench.py --dir <cartella della settimana> news` (notizie ufficiali Steam di ogni gioco), `cohort_bench.py metro` (allena e verifica fuori dal tempo), poi `cohort_bench.py score --features launch/prelaunch.json -o launch/_raw/metro.json --md launch/_raw/metro.md` con le caratteristiche visibili **oggi** del gioco (e una seconda versione `prelaunch-piano.json` con quelle previste dal piano). Riporta fascia, probabilità e leve sempre con il giudizio della verifica ("utile", "debole", "non migliore del base rate") e la dimensione del campione. Per i comparabili e i concorrenti: `market_tracker.py comps` (misurati a 30/90 giorni come la coorte) e `cohort_bench.py dossier --appid X` (tutto il marketing pubblico del gioco, con date, abbinato al gioco).
+
+**Fonti: cosa si legge con gli script e cosa no.** Si usano solo endpoint ufficiali di Steam, SteamSpy e API ufficiali (YouTube, Reddit, Twitch, Gamalytic con chiave). **SteamDB non si legge mai con script** (i termini lo vietano ed è dietro Cloudflare), così come TikTok, Instagram e X: si scrivono in `launch/ricerche-manuali.md` le pagine e le ricerche da fare a mano, con gli appid. Non "correggere" questa scelta con uno scraper.
+
 ### 2.1 Trova i comparabili
 
 ```bash

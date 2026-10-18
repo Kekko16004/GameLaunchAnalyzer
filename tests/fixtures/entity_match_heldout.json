@@ -1,0 +1,1473 @@
+{
+ "games": [
+  {
+   "appid": 2021960,
+   "title": "Cozy Grove: Camp Spirit",
+   "developers": [
+    "Spry Fox"
+   ],
+   "publishers": [
+    "Spry Fox"
+   ],
+   "words": [
+    "Casual",
+    "Simulation",
+    "Casual",
+    "Life Sim",
+    "Collectathon",
+    "Hidden Object"
+   ],
+   "languages": [
+    "English"
+   ],
+   "announced": "2024-07-15",
+   "release_date": "2026-07-15"
+  },
+  {
+   "appid": 3219010,
+   "title": "Fogpiercer",
+   "developers": [
+    "Mad Cookies Studio"
+   ],
+   "publishers": [
+    "Hooded Horse"
+   ],
+   "words": [
+    "RPG",
+    "Strategy",
+    "Strategy",
+    "Roguelike",
+    "Card Game",
+    "Deckbuilding"
+   ],
+   "languages": [
+    "English"
+   ],
+   "announced": "2024-07-17",
+   "release_date": "2026-07-17"
+  },
+  {
+   "appid": 4169820,
+   "title": "Our Brief Eternity",
+   "developers": [
+    "土豆花制作组"
+   ],
+   "publishers": [
+    "土豆花制作组"
+   ],
+   "words": [
+    "Adventure",
+    "RPG",
+    "Simulation",
+    "Adventure",
+    "Simulation",
+    "RPG"
+   ],
+   "languages": [
+    "English"
+   ],
+   "announced": "2024-07-16",
+   "release_date": "2026-07-16"
+  },
+  {
+   "appid": 4134600,
+   "title": "EverRail",
+   "developers": [
+    "Aesir Interactive"
+   ],
+   "publishers": [
+    "Aesir Interactive"
+   ],
+   "words": [
+    "Action",
+    "Adventure",
+    "Simulation",
+    "Early Access",
+    "Open World Survival Craft",
+    "Base Building"
+   ],
+   "languages": [
+    "English"
+   ],
+   "announced": "2024-07-20",
+   "release_date": "2026-07-20"
+  },
+  {
+   "appid": 4178020,
+   "title": "Lured In",
+   "developers": [
+    "Big Boy Games"
+   ],
+   "publishers": [
+    "2 Left Thumbs"
+   ],
+   "words": [
+    "Casual",
+    "Simulation",
+    "Fishing",
+    "Idler",
+    "Incremental",
+    "Shop Keeper"
+   ],
+   "languages": [
+    "English"
+   ],
+   "announced": "2024-07-17",
+   "release_date": "2026-07-17"
+  },
+  {
+   "appid": 2491490,
+   "title": "Pit Panic",
+   "developers": [
+    "Flying Rat Studio"
+   ],
+   "publishers": [
+    "Flying Rat Studio"
+   ],
+   "words": [
+    "Adventure",
+    "Platformer",
+    "Roguelike",
+    "Action Roguelike",
+    "Difficult",
+    "Side Scroller"
+   ],
+   "languages": [
+    "English"
+   ],
+   "announced": "2024-07-21",
+   "release_date": "2026-07-21"
+  },
+  {
+   "appid": 4623260,
+   "title": "slimes!",
+   "developers": [
+    "zulakgames"
+   ],
+   "publishers": [
+    "zulakgames"
+   ],
+   "words": [
+    "Casual",
+    "Casual",
+    "Arcade",
+    "Creature Collector",
+    "Exploration",
+    "Hidden Object"
+   ],
+   "languages": [
+    "English"
+   ],
+   "announced": "2024-07-17",
+   "release_date": "2026-07-17"
+  },
+  {
+   "appid": 4119270,
+   "title": "Kitty Burger",
+   "developers": [
+    "Kowal Games"
+   ],
+   "publishers": [
+    "Easy Clap Games"
+   ],
+   "words": [
+    "Casual",
+    "Simulation",
+    "Cooking",
+    "Cats",
+    "Simulation",
+    "Casual"
+   ],
+   "languages": [
+    "English"
+   ],
+   "announced": "2024-07-16",
+   "release_date": "2026-07-16"
+  },
+  {
+   "appid": 4676380,
+   "title": "Grind 'Em All",
+   "developers": [
+    "wasabiman"
+   ],
+   "publishers": [
+    "wasabiman"
+   ],
+   "words": [
+    "Casual",
+    "Simulation",
+    "Strategy",
+    "Incremental",
+    "Casual",
+    "Relaxing"
+   ],
+   "languages": [
+    "English"
+   ],
+   "announced": "2024-07-19",
+   "release_date": "2026-07-19"
+  },
+  {
+   "appid": 4570940,
+   "title": "Monster Flipper",
+   "developers": [
+    "NovaScreen"
+   ],
+   "publishers": [
+    "NovaScreen"
+   ],
+   "words": [
+    "Casual",
+    "Simulation",
+    "Strategy",
+    "Idler",
+    "Strategy",
+    "Incremental"
+   ],
+   "languages": [
+    "English"
+   ],
+   "announced": "2024-07-15",
+   "release_date": "2026-07-15"
+  },
+  {
+   "appid": 4434050,
+   "title": "Corporate Climb",
+   "developers": [
+    "BrainMania"
+   ],
+   "publishers": [
+    "Brainstormer Technologies"
+   ],
+   "words": [
+    "Action",
+    "Adventure",
+    "Simulation",
+    "Strategy",
+    "Action",
+    "Adventure"
+   ],
+   "languages": [
+    "English"
+   ],
+   "announced": "2024-07-20",
+   "release_date": "2026-07-20"
+  },
+  {
+   "appid": 3950130,
+   "title": "Database Detective: Minor Crimes Division",
+   "developers": [
+    "Thomas Hsu"
+   ],
+   "publishers": [
+    "Thomas Hsu"
+   ],
+   "words": [
+    "Programming",
+    "Puzzle",
+    "Education",
+    "Logic",
+    "Detective",
+    "Investigation"
+   ],
+   "languages": [
+    "English"
+   ],
+   "announced": "2024-07-17",
+   "release_date": "2026-07-17"
+  }
+ ],
+ "items": [
+  {
+   "appid": 2021960,
+   "title": "What Others ARE NOT Telling You | My thoughts after 30+ hours | Cozy Grove Camp Spirit Review",
+   "text": "Check out the game here (no-commission link but it helps the channel tremendously, tysm if you do use it ...",
+   "author": "Miss Bubbles | RPGs & Cozy Games",
+   "author_id": "UC1z0rotCfa_8r9TCYUcS6IA",
+   "url": "https://www.youtube.com/watch?v=LUwOnipD07A",
+   "published": "2026-07-24",
+   "relevant": true
+  },
+  {
+   "appid": 2021960,
+   "title": "Cozy Grove: Camp Spirit – Announcement Trailer – Nintendo Switch 2",
+   "text": "Cozy Grove: Camp Spirit wanders onto Nintendo Switch 2 and Nintendo Switch on July 15, 2026! Pre-order now to receive ...",
+   "author": "Nintendo of America",
+   "author_id": "UCGIY_O-8vW4rfX98KlMkvRg",
+   "url": "https://www.youtube.com/watch?v=MOBxK9L_utY",
+   "published": "2026-06-06",
+   "relevant": true
+  },
+  {
+   "appid": 2021960,
+   "title": "COZY GROVE is back! Everything you need to know about Cozy Grove: Camp Spirit!",
+   "text": "Learn more about camp spirit here: https://bit.ly/Fleurs_CGCampSpirit This video was sponsored by Spry Fox but all opinions ...",
+   "author": "Fleurs ",
+   "author_id": "UCKsOpe3LfqxPy3Wi5hoEQfA",
+   "url": "https://www.youtube.com/watch?v=Xga4g1X25gQ",
+   "published": "2026-07-15",
+   "relevant": true
+  },
+  {
+   "appid": 2021960,
+   "title": "Cozy Grove: Camp Spirit – Launch Trailer – Nintendo Switch 2",
+   "text": "Play Cozy Grove: Camp Spirit now on Nintendo Switch 2 and Nintendo Switch: ...",
+   "author": "Nintendo of America",
+   "author_id": "UCGIY_O-8vW4rfX98KlMkvRg",
+   "url": "https://www.youtube.com/watch?v=p1_aTl0F4I4",
+   "published": "2026-07-15",
+   "relevant": true
+  },
+  {
+   "appid": 2021960,
+   "title": "the NEW Cozy Grove sequel is finally here ⛺ COZY GROVE: CAMP SPIRIT",
+   "text": "weee Cozy Grove: Camp Spirit!! 0:00 - intro 0:48 - gameplay 36:20 - thoughts Vlog Channel: @CozyK Discord: ...",
+   "author": "Cozy K Games",
+   "author_id": "UCm6Y9TF6GUiJiNB9VzyRLoQ",
+   "url": "https://www.youtube.com/watch?v=C_l4r7LH_y0",
+   "published": "2026-07-19",
+   "relevant": true
+  },
+  {
+   "appid": 2021960,
+   "title": "5 Things You NEED To Know Before Playing Cozy Grove: Camp Spirit | HONEST Review",
+   "text": "Cozy Grove: Camp Spirit, the relaxing sequel to Cozy Grove, is finally here! If you're not familiar, Cozy Grove is a life-sim game ...",
+   "author": "Thalry Games",
+   "author_id": "UCoDm5lnsbMON4RUYrU9gEjQ",
+   "url": "https://www.youtube.com/watch?v=uHu4ROJWMNI",
+   "published": "2024-06-25",
+   "relevant": true
+  },
+  {
+   "appid": 2021960,
+   "title": "DÉCOUVERTE | FR | 🐻🩵 &quot;Cozy grove : Camp spirit&quot;, une douce simulation de vie vers la paix intérieure",
+   "text": "Deviens un kiki ...",
+   "author": "Danéfreya",
+   "author_id": "UCgqx7K5CSaMYjphUU8Iaaaw",
+   "url": "https://www.youtube.com/watch?v=rJA271Eq3KE",
+   "published": "2026-07-03",
+   "relevant": true
+  },
+  {
+   "appid": 2021960,
+   "title": "J&#39;ai testé COZY GROVE CAMP SPIRIT, ma déception du mois !",
+   "text": "J'ai testé Cozy Grove: Camp Spirit, la suite du life sim aux ours fantômes de Spry Fox, sortie le 15 juillet 2026 sur PC, PS5, Xbox ...",
+   "author": "Azzertyran ",
+   "author_id": "UC5EvqHqAqVl3iAW-xzXFX1A",
+   "url": "https://www.youtube.com/watch?v=9yx01Ac5ymM",
+   "published": "2026-07-16",
+   "relevant": true
+  },
+  {
+   "appid": 2021960,
+   "title": "Cozy Grove: Camp Spirit Gameplay Walkthrough Part 1 (Android, iOS)",
+   "text": "Cozy Grove: Camp Spirit Gameplay Walkthrough Part 1 (Android, iOS) Cozy Grove: Camp Spirit is coming soon on both Android ...",
+   "author": "Techzamazing",
+   "author_id": "UCyo4ROy9-8ymQTBWcPA5Fjg",
+   "url": "https://www.youtube.com/watch?v=IeJidHRVMEM",
+   "published": "2024-05-01",
+   "relevant": true
+  },
+  {
+   "appid": 2021960,
+   "title": "Cozy Grove: Camp Spirit - Out Today",
+   "text": "All those who are lost deserve kindness. Help cute, ghostly bears find peace in this relaxing sequel to the beloved life-sim game ...",
+   "author": "ID@XBOX",
+   "author_id": "UC6RNPkZr2YxjP6zbC9FaK0A",
+   "url": "https://www.youtube.com/watch?v=fLQ0VDdlSa4",
+   "published": "2026-07-15",
+   "relevant": true
+  },
+  {
+   "appid": 3219010,
+   "title": "Fogpiercer | Worth Your Time and Money | (Overview)",
+   "text": "Fogpiercer is the new game we are looking at today with a Review of what it is and how its gameplay plays. First we will review ...",
+   "author": "The Scarlet Seeker",
+   "author_id": "UCbptkXtf65wRj1fPaQG948A",
+   "url": "https://www.youtube.com/watch?v=dM-5nUn3iaQ",
+   "published": "2026-07-16",
+   "relevant": true
+  },
+  {
+   "appid": 3219010,
+   "title": "New Tactics Roguelike Deckbuilder | Fogpiercer",
+   "text": "Play Fogpiercer - https://store.steampowered.com/app/3219010/Fogpiercer/ The Let's Try series is a way to preview / review ...",
+   "author": "Retromation",
+   "author_id": "UC4Xj6emHTXnKHUq8btUuN6A",
+   "url": "https://www.youtube.com/watch?v=29b_HaLTaNw",
+   "published": "2026-07-10",
+   "relevant": true
+  },
+  {
+   "appid": 3219010,
+   "title": "Fogpiercer - Official Release Date Trailer",
+   "text": "Fogpiercer will be released on 17 July 2026 for PC and Xbox. Wishlist on Steam: ...",
+   "author": "Indie Games Hub",
+   "author_id": "UCt8CJiye87FMbEwt0npPMuQ",
+   "url": "https://www.youtube.com/watch?v=IE2eY3a_dIw",
+   "published": "2026-06-19",
+   "relevant": true
+  },
+  {
+   "appid": 3219010,
+   "title": "Fogpiercer Launch Trailer",
+   "text": "Fogpiercer is out now on XBOX on PC and with PC Game Pass! Fight through the fog in this sci-fi roguelike deckbuilder where ...",
+   "author": "XBOX",
+   "author_id": "UCjBp_7RuDBUYbd1LegWEJ8g",
+   "url": "https://www.youtube.com/watch?v=gFfpRKzsyJE",
+   "published": "2026-07-17",
+   "relevant": true
+  },
+  {
+   "appid": 3219010,
+   "title": "Let&#39;s Play Fogpiercer Episode 1",
+   "text": "Fight through the fog in this sci-fi roguelike deckbuilder where clever positioning, explosive chain-reactions, and the environment ...",
+   "author": "Daberz",
+   "author_id": "UCQRRhxzuPAzBQO9QBkXWv9Q",
+   "url": "https://www.youtube.com/watch?v=g4NOCtR4Bos",
+   "published": "2026-07-25",
+   "relevant": true
+  },
+  {
+   "appid": 3219010,
+   "title": "Fogpiercer - Official Gameplay Trailer | Convergence Games Showcase 2025",
+   "text": "Here's your look at gameplay from Fogpiercer in this trailer for the upcoming post-apocalyptic roguelike deckbuilder game.",
+   "author": "GameTrailers",
+   "author_id": "UCJx5KP-pCUmL9eZUv-mIcNw",
+   "url": "https://www.youtube.com/watch?v=ShnN4iLKE-o",
+   "published": "2025-09-19",
+   "relevant": true
+  },
+  {
+   "appid": 3219010,
+   "title": "FOGPIERCER - Official Launch Trailer",
+   "text": "In this roguelite deckbuilder, build and upgrade your train to expand your deck, fight off bandits on a square grid using unique ...",
+   "author": "Mad Cookies Studio",
+   "author_id": "UCsayvfhwQ4epxM89ge70xqw",
+   "url": "https://www.youtube.com/watch?v=fxnBN6H7Ato",
+   "published": "2026-07-17",
+   "relevant": true
+  },
+  {
+   "appid": 3219010,
+   "title": "Fogpiercer Review ➤ Is This Game For You? [Fogpiercer Gameplay]",
+   "text": "As humanity's last hope races across a world consumed by a deadly fog, Fogpiercer combines roguelike deckbuilding with deep ...",
+   "author": "Max Dixon",
+   "author_id": "UCoe-mi_wr1Yu_AAHlqgjO7w",
+   "url": "https://www.youtube.com/watch?v=_QcqxZFv6ek",
+   "published": "2026-07-13",
+   "relevant": true
+  },
+  {
+   "appid": 3219010,
+   "title": "Fogpiercer - Release Date Announcement Trailer",
+   "text": "Fogpiercer is coming to Xbox on PC and PC Game Pass on July 17th! Fight through the fog in this sci-fi roguelike deckbuilder ...",
+   "author": "XBOX",
+   "author_id": "UCjBp_7RuDBUYbd1LegWEJ8g",
+   "url": "https://www.youtube.com/watch?v=dB3kn4DfEHQ",
+   "published": "2026-06-18",
+   "relevant": true
+  },
+  {
+   "appid": 3219010,
+   "title": "Engineering a train to SURVIVE a frozen apocalypse...",
+   "text": "Fogpiercer is a super fun strategy game about trains! Stock up on Gamer Supps with 10% off (affiliate): ...",
+   "author": "Real Civil Engineer",
+   "author_id": "UCeP4Yv3s4RvS0-6d9OInRMw",
+   "url": "https://www.youtube.com/watch?v=opwTlCENKOc",
+   "published": "2025-05-10",
+   "relevant": true
+  },
+  {
+   "appid": 4169820,
+   "title": "Our Brief Eternity | Official Trailer",
+   "text": "Wishlist on Steam: https://store.steampowered.com/app/4169820/Our_Brief_Eternity/?l=en Our Brief Eternity | Official Trailer In the ...",
+   "author": "The Trailer Post",
+   "author_id": "UCf-kcGm7tZNjMshupUTZtmg",
+   "url": "https://www.youtube.com/watch?v=A3xOqjUDFu8",
+   "published": "2026-07-30",
+   "relevant": true
+  },
+  {
+   "appid": 4169820,
+   "title": "『OUR BRIEF ETERNITY』official trailer",
+   "text": "http://www.ourbriefeternity.com/ 福島拓哉監督作品「アワ・ブリーフ・エタニティ／OUR BRIEF ETERNITY」 2010年10月16日（ ...",
+   "author": "OURBRIEETERNITY",
+   "author_id": "UC98Z6OySyHW3NBQsU-8O4fw",
+   "url": "https://www.youtube.com/watch?v=VE3GkygXiBA",
+   "published": "2010-08-09",
+   "relevant": false
+  },
+  {
+   "appid": 4169820,
+   "title": "Our Brief Eternity",
+   "text": "Provided to YouTube by CDBaby Our Brief Eternity · Heejin Jang Our Brief Eternity ℗ 2023 Doom Trip Records Released on: ...",
+   "author": "Heejin Jang - Topic",
+   "author_id": "UCanHy-qd-SSQdg5Gunv4FGQ",
+   "url": "https://www.youtube.com/watch?v=RKroUAP7OAk",
+   "published": "2023-02-06",
+   "relevant": false
+  },
+  {
+   "appid": 4169820,
+   "title": "Our Brief Eternity",
+   "text": "Provided to YouTube by CDBaby Our Brief Eternity · Heejin Jang Me and the Glassbirds ℗ 2023 Doom Trip Records Released on: ...",
+   "author": "Heejin Jang - Topic",
+   "author_id": "UCanHy-qd-SSQdg5Gunv4FGQ",
+   "url": "https://www.youtube.com/watch?v=PDbNeODBY48",
+   "published": "2023-03-01",
+   "relevant": false
+  },
+  {
+   "appid": 4169820,
+   "title": "『OUR BRIEF ETERNITY』予告編ver,1.5",
+   "text": "東京のインディペンデントシーンを支える様々な活動を展開している映画監督・福島拓哉。 2009 年、公開劇場にて伝説的な動員 ...",
+   "author": "OURBRIEETERNITY",
+   "author_id": "UC98Z6OySyHW3NBQsU-8O4fw",
+   "url": "https://www.youtube.com/watch?v=5SGDuAhF-F0",
+   "published": "2009-10-14",
+   "relevant": false
+  },
+  {
+   "appid": 4169820,
+   "title": "Heejin Jang - Our Brief Eternity (2023)",
+   "text": "All proceeds from ads that appear on my channel go to copyright holders, my channel is not monetized, I earn nothing; it's about ...",
+   "author": "VisioncreationnewSon",
+   "author_id": "UCDbRbuGF-PsMPvMiBK4ggag",
+   "url": "https://www.youtube.com/watch?v=9lHE68tJ9hw",
+   "published": "2023-03-05",
+   "relevant": false
+  },
+  {
+   "appid": 4169820,
+   "title": "《永恒与星辰与日常 / Our brief eternity》OPENING MOVIE",
+   "text": "这个世界上，有不能做却可以做的事，也有能做却不该做的事。” 当优雅的血族与冒失的魔女突然闯入你平静的生活，作为普通人的你 ...",
+   "author": "匣中猫",
+   "author_id": "UCQcAaUxt1_LzxTF5u8EPXGQ",
+   "url": "https://www.youtube.com/watch?v=dspHpMgldl4",
+   "published": "2026-06-01",
+   "relevant": true
+  },
+  {
+   "appid": 4169820,
+   "title": "Our Brief Eternity - 预告片 2 [PC]",
+   "text": "在视觉小说《永恒、星空与日常生活》中，你将扮演普通上班族林小凑。当两位来自异世界的少女意外入住你的生活，原本平静的 ...",
+   "author": "GameReleasesInfo",
+   "author_id": "UCNyRNaHBg6d-nQ2Jk86J0Zw",
+   "url": "https://www.youtube.com/watch?v=9g1_R5z1hL0",
+   "published": "2026-08-17",
+   "relevant": true
+  },
+  {
+   "appid": 4169820,
+   "title": "Our Brief Eternity - 预告片 [PC]",
+   "text": "在视觉小说《永恒、星空与日常生活》中，你将扮演普通上班族林小凑。当两位来自异世界的少女意外入住你的生活，原本平静的 ...",
+   "author": "GameReleasesInfo",
+   "author_id": "UCNyRNaHBg6d-nQ2Jk86J0Zw",
+   "url": "https://www.youtube.com/watch?v=t4Va8MCea6I",
+   "published": "2026-08-17",
+   "relevant": true
+  },
+  {
+   "appid": 4169820,
+   "title": "A Brief Eternity | Cinematic Video",
+   "text": "For those who work miles away from home, time moves differently. \"A Brief Eternity\" captures the bittersweet cycle of working far ...",
+   "author": "Tragitza Rescha",
+   "author_id": "UC-Kdumo5_6Q-tm0d5D4eVOQ",
+   "url": "https://www.youtube.com/watch?v=SdZioc-simY",
+   "published": "2026-09-16",
+   "relevant": false
+  },
+  {
+   "appid": 4134600,
+   "title": "MY BASE IS A TRAIN! | EverRail Day One",
+   "text": "Humanity has landed on a frozen moon expecting to find a civilisation built by the robots sent ahead of them. Instead, the robots ...",
+   "author": "JaWoodle",
+   "author_id": "UCJNeiS810mGG98ctG45M1WA",
+   "url": "https://www.youtube.com/watch?v=LDkiIufi_PA",
+   "published": "2026-07-20",
+   "relevant": true
+  },
+  {
+   "appid": 4134600,
+   "title": "A Frost Planet Wasteland Scavenging Survival Sandbox! - EverRail",
+   "text": "EverRail gameplay with Splattercat! Let's Play EverRail and check out a game where you'll build up a post apocalyptic train-base ...",
+   "author": "Splattercatgaming",
+   "author_id": "UC8nZUXCwCTffxthKLtOp6ng",
+   "url": "https://www.youtube.com/watch?v=DmaNhbs3CCI",
+   "published": "2026-08-03",
+   "relevant": true
+  },
+  {
+   "appid": 4134600,
+   "title": "Day ONE on This NEW Train Survival Crafting Game SOLO! - Everrail",
+   "text": "Everrail is a survival crafting game set aboard a train that serves as both your transport and your only safe haven in a frozen, ...",
+   "author": "ProRogueBear",
+   "author_id": "UC9uHL5MeIA_IwSddagpwHSA",
+   "url": "https://www.youtube.com/watch?v=cFRnk_m22As",
+   "published": "2026-07-20",
+   "relevant": true
+  },
+  {
+   "appid": 4134600,
+   "title": "EverRail - Official Early Access Launch Trailer",
+   "text": "Check out the Early Access Launch Trailer for EverRail, an open-world base-building survival crafting game developed by Aesir ...",
+   "author": "GameTrailers",
+   "author_id": "UCJx5KP-pCUmL9eZUv-mIcNw",
+   "url": "https://www.youtube.com/watch?v=s-cpRYlViYs",
+   "published": "2026-07-20",
+   "relevant": true
+  },
+  {
+   "appid": 4134600,
+   "title": "You Must Watch This Before You Buy EverRail ! Honest Analytic Review !",
+   "text": "In this EverRail before you buy video, I explain what this game actually is, how it plays, what makes it interesting, and what ...",
+   "author": "Durandian",
+   "author_id": "UCNzDoNeQ0D2Q1BsNNScZX4Q",
+   "url": "https://www.youtube.com/watch?v=ya2jZrrjgPM",
+   "published": "2026-07-28",
+   "relevant": true
+  },
+  {
+   "appid": 4134600,
+   "title": "DO NOT LEAVE The Starter Zone !!! EverRail Guide , Tips And Tricks",
+   "text": "In this EverRail beginner guide, I explain why you should not leave the starter zone too early. EverRail may look like a game ...",
+   "author": "Durandian",
+   "author_id": "UCNzDoNeQ0D2Q1BsNNScZX4Q",
+   "url": "https://www.youtube.com/watch?v=6IcO0ldWSX4",
+   "published": "2026-07-29",
+   "relevant": true
+  },
+  {
+   "appid": 4134600,
+   "title": "UMA ODISSEIA DE SOBREVIVÊNCIA EM UM MUNDO CONGELADO: VIAJE DE TREM E VOE PELOS CÉUS! - EverRail",
+   "text": "Gameplay do jogo de sobrevivência EverRail • Compre Jogos Mais Baratos na Instant Gaming: ...",
+   "author": "Andarilho",
+   "author_id": "UCBUPPrMmr9TIhEo849cQm-w",
+   "url": "https://www.youtube.com/watch?v=ie_QsiCH_vc",
+   "published": "2026-07-18",
+   "relevant": true
+  },
+  {
+   "appid": 4134600,
+   "title": "Моя база — поезд, и если он остановится, мы замёрзнем — EverRail",
+   "text": "EverRail — это выживание на замёрзшей экзолуне, где поезд становится нашей базой, мастерской и единственным ...",
+   "author": "RIMPAC",
+   "author_id": "UCKx-nf2ylWlvugaqzTbuotg",
+   "url": "https://www.youtube.com/watch?v=IPPmwKu5cmk",
+   "published": "2026-07-23",
+   "relevant": true
+  },
+  {
+   "appid": 4134600,
+   "title": "Best Train Modifications For EverRail Guide !!",
+   "text": "In this EverRail train modification guide, I explain the best train upgrades and why I use this setup before leaving the starter circle.",
+   "author": "Durandian",
+   "author_id": "UCNzDoNeQ0D2Q1BsNNScZX4Q",
+   "url": "https://www.youtube.com/watch?v=EilI9XKOV1E",
+   "published": "2026-08-04",
+   "relevant": true
+  },
+  {
+   "appid": 4134600,
+   "title": "Keep The Train Alive In This NEW Survival Game — EverRail [01]",
+   "text": "This is Everrail survival gameplay by FloppySword. Every passenger is a life. Every death brings the end closer. An open world ...",
+   "author": "FloppySword",
+   "author_id": "UCVTnHTOXSFjmV7EUVG96IeQ",
+   "url": "https://www.youtube.com/watch?v=HSfVfFEmBcs",
+   "published": "2026-07-21",
+   "relevant": true
+  },
+  {
+   "appid": 4178020,
+   "title": "I Played 100% of Lured In",
+   "text": "Main Channel: https://www.youtube.com/@UCI_NMOUQwdBGLw-PlcdcWsw About Lured In: ...",
+   "author": "Skoottie Twoottie",
+   "author_id": "UCayQ6hKydamhCgcb1DnnxmQ",
+   "url": "https://www.youtube.com/watch?v=BCGnumpiDw8",
+   "published": "2026-08-04",
+   "relevant": true
+  },
+  {
+   "appid": 4178020,
+   "title": "Im Playing 100% of Lured In",
+   "text": "Join the chat!: https://www.twitch.tv/skoottie Code \"SKOOT\" for 10% off Gamersupps: https://gamersupps.gg/skoottie Track my ...",
+   "author": "Skoottie",
+   "author_id": "UCI_NMOUQwdBGLw-PlcdcWsw",
+   "url": "https://www.youtube.com/watch?v=4y5UuH0U5_A",
+   "published": "2026-07-24",
+   "relevant": true
+  },
+  {
+   "appid": 4178020,
+   "title": "This Aquarium Fishing Game is Incredibly Relaxing!",
+   "text": "Lured In Review Gameplay First Impression ▻DISCORD Discord: https://www.discord.gg/67Nu6Aa22S ▻TWITCH Twitch: ...",
+   "author": "Idle cub",
+   "author_id": "UCDD9T_c6VD6g1yRXPXW5stw",
+   "url": "https://www.youtube.com/watch?v=Tit4tiQGQy4",
+   "published": "2026-05-19",
+   "relevant": true
+  },
+  {
+   "appid": 4178020,
+   "title": "After 4 months, it&#39;s finally here",
+   "text": "I'm working on Lured In, a cozy idle fishing game where you run an aquarium, catch fish, and bring them back to put them on ...",
+   "author": "Big Boy Games",
+   "author_id": "UCwBr1b2fAeCKThPWN6FYL1w",
+   "url": "https://www.youtube.com/watch?v=6Ur6eDPjth8",
+   "published": "2026-04-09",
+   "relevant": true
+  },
+  {
+   "appid": 4178020,
+   "title": "ЛУЧШАЯ игра про РЫБАЛКУ ⨀ Показываю игру Lured In",
+   "text": "Многа рыбалки! Мала декора(.. Lured In: https://store.steampowered.com/app/4178020/Lured_In/ Телега в которой я кидаю ...",
+   "author": "BreagoKeK",
+   "author_id": "UC8Cz70NsKE1TlPLNv0cbBhQ",
+   "url": "https://www.youtube.com/watch?v=12ATLhto5kw",
+   "published": "2026-07-13",
+   "relevant": true
+  },
+  {
+   "appid": 4178020,
+   "title": "Lured In Release Trailer",
+   "text": "Buy Lured In on Steam now! https://store.steampowered.com/app/4178020/Lured_In/ Run your own cozy aquarium! Travel far and ...",
+   "author": "Big Boy Games",
+   "author_id": "UCwBr1b2fAeCKThPWN6FYL1w",
+   "url": "https://www.youtube.com/watch?v=9I0phCAffPE",
+   "published": "2026-07-17",
+   "relevant": true
+  },
+  {
+   "appid": 4178020,
+   "title": "Testing out the workshop, then Lured In v1.3! | TACTIC-TOE | !discord !game !buy",
+   "text": "Working on making video games! Support us on Ko-fi: https://ko-fi.com/bigboygames Lured In: ...",
+   "author": "Big Boy Games",
+   "author_id": "UCwBr1b2fAeCKThPWN6FYL1w",
+   "url": "https://www.youtube.com/watch?v=Iie8ICI2cXg",
+   "published": "2026-10-11",
+   "relevant": true
+  },
+  {
+   "appid": 4178020,
+   "title": "Lured In Announcement Trailer",
+   "text": "Wishlist Lured In now! https://store.steampowered.com/app/4178020/Lured_In/ Run your own cozy aquarium! Travel to different ...",
+   "author": "Big Boy Games",
+   "author_id": "UCwBr1b2fAeCKThPWN6FYL1w",
+   "url": "https://www.youtube.com/watch?v=XIHwJDMrldY",
+   "published": "2026-03-04",
+   "relevant": true
+  },
+  {
+   "appid": 4178020,
+   "title": "I caught fish to generate millions",
+   "text": "I'm running my own cozy, crazy aquarium today and it's my job to catch ALL the fish in Lured In! This game has it all - idling, selling ...",
+   "author": "Blitz",
+   "author_id": "UCK3eoeo-HGHH11Pevo1MzfQ",
+   "url": "https://www.youtube.com/watch?v=jmkEg24Yra8",
+   "published": "2026-07-15",
+   "relevant": true
+  },
+  {
+   "appid": 2491490,
+   "title": "Pit Panic – Official Gameplay Trailer | The Game Is Out Now!",
+   "text": "Pit Panic is OUT NOW! ⛏️ Escape a collapsing Aztec temple in this fast-paced rogue-like 2D platformer! Dig your own path, ...",
+   "author": "Pit Panic",
+   "author_id": "UCG_ayEkh8LeEvrAsqjT_BnQ",
+   "url": "https://www.youtube.com/watch?v=YMmEuyTcPWc",
+   "published": "2026-07-21",
+   "relevant": true
+  },
+  {
+   "appid": 2491490,
+   "title": "Pit Panic – Official Gameplay Trailer | Demo Out Now!",
+   "text": "Escape the sinking Aztec temple in Pit Panic — a fast-paced rogue-like platformer where every second counts. Dig your own path ...",
+   "author": "Pit Panic",
+   "author_id": "UCG_ayEkh8LeEvrAsqjT_BnQ",
+   "url": "https://www.youtube.com/watch?v=Z480WAu_9bE",
+   "published": "2026-05-15",
+   "relevant": true
+  },
+  {
+   "appid": 2491490,
+   "title": "Pit Panic - Devs Play #1",
+   "text": "Watch the very first official Pit Panic developer stream! Wishlist Pit Panic and play the free demo on Steam: ...",
+   "author": "Pit Panic",
+   "author_id": "UCG_ayEkh8LeEvrAsqjT_BnQ",
+   "url": "https://www.youtube.com/watch?v=efdf37eV5Js",
+   "published": "2026-07-17",
+   "relevant": true
+  },
+  {
+   "appid": 2491490,
+   "title": "Pit Panic Gameplay",
+   "text": "Escape the sinking Aztec temple in this cartoonish rogue-like arcade platformer. Dig your own path up, jump and climb in blazing ...",
+   "author": "Pink Alpaca Plays",
+   "author_id": "UC4jjEaYgLOj30BxNDTPdikA",
+   "url": "https://www.youtube.com/watch?v=yD6oqfLkJ1k",
+   "published": "2026-05-27",
+   "relevant": true
+  },
+  {
+   "appid": 2491490,
+   "title": "Pit Panic - Official Trailer",
+   "text": "Pit Panic is a cartoonish roguelike arcade platformer where you race up a sinking Aztec temple by digging, jumping, and climbing ...",
+   "author": "IndieBunny",
+   "author_id": "UCxO9W1jZKAiNFM2tqSbldgg",
+   "url": "https://www.youtube.com/watch?v=em88MfiUPvE",
+   "published": "2026-05-26",
+   "relevant": true
+  },
+  {
+   "appid": 2491490,
+   "title": "Pit Panic – Nintendo Switch / Switch 2 Gameplay",
+   "text": "Pit Panic – Nintendo Switch / Nintendo Switch 2 Gameplay 🏛️ Platformer | Roguelike | Arcade | Action Escape a collapsing ...",
+   "author": "Gamer Linear",
+   "author_id": "UCYkwOCr6cNuqVZBktkjOwAQ",
+   "url": "https://www.youtube.com/watch?v=co5-8Ju2DAU",
+   "published": "2026-07-21",
+   "relevant": true
+  },
+  {
+   "appid": 2491490,
+   "title": "Agility is my middle name",
+   "text": "pitpanic #indiegame #rougelike #platformer #spelunky2 #spelunky.",
+   "author": "Pit Panic",
+   "author_id": "UCG_ayEkh8LeEvrAsqjT_BnQ",
+   "url": "https://www.youtube.com/watch?v=ll5BTil0Jxc",
+   "published": "2026-10-13",
+   "relevant": true
+  },
+  {
+   "appid": 2491490,
+   "title": "Pit Panic gameplay - GogetaSuperx",
+   "text": "Pit Panic gameplay - GogetaSuperx ㅤ ㅤ New Free Games Demos Early Access -Steam Currator Version: ...",
+   "author": "GogetaSuperx",
+   "author_id": "UC8zYtDjRHYaK9zKLt0ysf4A",
+   "url": "https://www.youtube.com/watch?v=-OFMDTqqex4",
+   "published": "2026-07-22",
+   "relevant": true
+  },
+  {
+   "appid": 2491490,
+   "title": "Pit Panic - Gameplay PS5",
+   "text": "I received a free review copy of this product from https://www.keymailer.co #Playstation #Gameplay #PitPanic #FlyingRatStudio ...",
+   "author": "piep91",
+   "author_id": "UCrM5qIjHLFJDPjdJOqWoofg",
+   "url": "https://www.youtube.com/watch?v=evy95PTfBmk",
+   "published": "2026-08-28",
+   "relevant": true
+  },
+  {
+   "appid": 2491490,
+   "title": "Pit Panic | Demo | Gameplay PC",
+   "text": "Pit Panic is a challenging rogue-like 2D platformer with fast pace, unique gameplay and environmental puzzles. Take on the role ...",
+   "author": "MAZAVS - Games Channel",
+   "author_id": "UC3OAgUoy1JEp1FbYQK8bEEA",
+   "url": "https://www.youtube.com/watch?v=bivzOYsJnRI",
+   "published": "2026-05-27",
+   "relevant": true
+  },
+  {
+   "appid": 4623260,
+   "title": "SHAMPOO NO GLUE SLIME?! 😱😳 🧼 How to Make Slime Without Glue &amp; Activator",
+   "text": "SHAMPOO NO GLUE SLIME?! How to Make Slime Without Glue & Activator In this shorts, I show how to make no glue ...",
+   "author": "Chillin' with Rachel 💛",
+   "author_id": "UCsUGQ3eJjYOv00609MFs1wQ",
+   "url": "https://www.youtube.com/watch?v=p9cSdcjI8QE",
+   "published": "2025-07-27",
+   "relevant": false
+  },
+  {
+   "appid": 4623260,
+   "title": "Can the Scrub Mommy Clean Up Slime???",
+   "text": "Subscribe Here: https://www.youtube.com/c/Peachybbies/?sub_confirmation=1 Order slime at: https://www.peachybbies.com/ ...",
+   "author": "Peachybbies",
+   "author_id": "UCrv0rZSx_6LWaZVWHWQdnlQ",
+   "url": "https://www.youtube.com/watch?v=opn7VjnTbp8",
+   "published": "2022-07-18",
+   "relevant": false
+  },
+  {
+   "appid": 4623260,
+   "title": "NO GLUE Clear Slime!? 🫧🤍 #slime #shorts",
+   "text": "Hey Guys!! I'm Ally, Also Well Known As Kawaii Toy Collector!! I Love Everything And Anything Kawaii, And Love Slime, Fidget ...",
+   "author": "Kawaii Toy Collector",
+   "author_id": "UCDPSEXaZKQhRLldZbUBMS6Q",
+   "url": "https://www.youtube.com/watch?v=p6C2CcALqGk",
+   "published": "2024-09-05",
+   "relevant": false
+  },
+  {
+   "appid": 4623260,
+   "title": "TRYING VIRAL NO GLUE NO ACTIVATOR SLIME RECIPES 😱 DIY how to make slime tutorial",
+   "text": "TRYING VIRAL NO GLUE NO ACTIVATOR SLIME RECIPES DIY how to make slime tutorial In this slime video, I show how to ...",
+   "author": "Slime Masters",
+   "author_id": "UCncW1mTN8mgKo4g9D8im-_A",
+   "url": "https://www.youtube.com/watch?v=sAn0y9rWax4",
+   "published": "2024-10-04",
+   "relevant": false
+  },
+  {
+   "appid": 4623260,
+   "title": "Satisfying Slime ASMR mixing clay into clear slime #slime #asmr #slimeasmr #satisfying",
+   "text": "",
+   "author": "SLIME DAZZLE ",
+   "author_id": "UCTHPfIvrP2bIHDdTgEocY-Q",
+   "url": "https://www.youtube.com/watch?v=5QW9qXIuB58",
+   "published": "2025-01-11",
+   "relevant": false
+  },
+  {
+   "appid": 4623260,
+   "title": "*real vs. fake* mango cracking asmr🥭 #asmr #slime #mango #clay #asmrforsleep",
+   "text": "",
+   "author": "miss foxy",
+   "author_id": "UC89EuEZMeVi3g5R2P6PixTQ",
+   "url": "https://www.youtube.com/watch?v=7gV-0be8WqE",
+   "published": "2026-08-27",
+   "relevant": false
+  },
+  {
+   "appid": 4623260,
+   "title": "Iceberg Slime Tutorial 🏔️",
+   "text": "Thanks for watching! » Subscribe for more Snoopslimes videos ...",
+   "author": "Snoopslimes",
+   "author_id": "UCSLqPa5N5CAvxZFENSjd9wg",
+   "url": "https://www.youtube.com/watch?v=isQPSeeikFA",
+   "published": "2026-07-26",
+   "relevant": false
+  },
+  {
+   "appid": 4623260,
+   "title": "I Tried Recreating AI Slimes!",
+   "text": "Hey Peachybbies! In this video Hanna tries recreating viral AI slime! ‼️HEY YOU‼️ Stop what you're doing and Click Here to ...",
+   "author": "Peachybbies",
+   "author_id": "UCrv0rZSx_6LWaZVWHWQdnlQ",
+   "url": "https://www.youtube.com/watch?v=0b2jgPsNgVo",
+   "published": "2025-10-23",
+   "relevant": false
+  },
+  {
+   "appid": 4623260,
+   "title": "STRAWBERRY SLIME | Mixing makeup and glitter into Clear Slime | Satisfying Slime Videos 1080p",
+   "text": "STRAWBERRY SLIME | Mixing makeup and glitter into Clear Slime | Satisfying Slime Videos 1080p The goal is 250 000 followers ...",
+   "author": "ASMR Slime Makeup",
+   "author_id": "UCxPAOnpl7TEs2SxeQM432DA",
+   "url": "https://www.youtube.com/watch?v=sqqfVVcCiAY",
+   "published": "2021-01-17",
+   "relevant": false
+  },
+  {
+   "appid": 4623260,
+   "title": "Salish’s GUI GUI slime ✨🩵 @salishmatter  *SO SATISFYING* #slime #slimereview #unboxing",
+   "text": "",
+   "author": "Mia Van Haarlem",
+   "author_id": "UC7-m4XG4fU2LJ1-rMGTzpJw",
+   "url": "https://www.youtube.com/watch?v=VL0ML7nuwQw",
+   "published": "2026-10-05",
+   "relevant": false
+  },
+  {
+   "appid": 4119270,
+   "title": "KittyBurger Fan Edit Part 2 🥰",
+   "text": "Twitch - https://www.twitch.tv/sxohmm My 2nd Channel - https://www.youtube.com/@sxohmmm Join my Discord ...",
+   "author": "KittyBurger",
+   "author_id": "UCm0tmCfgW7vs0Zqv3qsW_Zg",
+   "url": "https://www.youtube.com/watch?v=eFUbOVEvuS4",
+   "published": "2026-04-30",
+   "relevant": false
+  },
+  {
+   "appid": 4119270,
+   "title": "This trick is crazy 🤣 #bloxfruits #shorts",
+   "text": "Tags - blox fruits blox fruit roblox blox fruits blox fruits update blox fruits admin blox fruits troll blox fruits live blox fruits roblox blox ...",
+   "author": "KittyBurger",
+   "author_id": "UCm0tmCfgW7vs0Zqv3qsW_Zg",
+   "url": "https://www.youtube.com/watch?v=QA2UkbvS9Zs",
+   "published": "2025-09-02",
+   "relevant": false
+  },
+  {
+   "appid": 4119270,
+   "title": "bro remembered how to pvp",
+   "text": "Twitch - https://www.twitch.tv/sxohmm My 2nd Channel - https://www.youtube.com/@sxohmmm Join my Discord ...",
+   "author": "KittyBurger",
+   "author_id": "UCm0tmCfgW7vs0Zqv3qsW_Zg",
+   "url": "https://www.youtube.com/watch?v=ifoHPOBt88U",
+   "published": "2026-05-06",
+   "relevant": false
+  },
+  {
+   "appid": 4119270,
+   "title": "29.9M Bounty Players... 💀 #bloxfruits #bloxfruit #shorts",
+   "text": "Tags - blox fruits blox fruit roblox blox fruits blox fruits update blox fruits admin blox fruits troll blox fruits live blox fruits roblox blox ...",
+   "author": "KittyBurger",
+   "author_id": "UCm0tmCfgW7vs0Zqv3qsW_Zg",
+   "url": "https://www.youtube.com/watch?v=-jqKLAe5Uhk",
+   "published": "2025-09-06",
+   "relevant": false
+  },
+  {
+   "appid": 4119270,
+   "title": "Here kitty, You can has cheeseburger",
+   "text": "cheezburger.",
+   "author": "unwanted_pink",
+   "author_id": "UClWXy0w9DXgVdAoKlXI1Pzw",
+   "url": "https://www.youtube.com/watch?v=o9g7_PET_Wc",
+   "published": "2023-12-20",
+   "relevant": false
+  },
+  {
+   "appid": 4119270,
+   "title": "I Destroyed Every Buddha User in Blox Fruits! 😡",
+   "text": "I Hate Buddha Users in Blox Fruits Twitch - https://www.twitch.tv/sxohmm Join my Discord - https://discord.gg/FzzPfHSUTn ...",
+   "author": "KittyBurger",
+   "author_id": "UCm0tmCfgW7vs0Zqv3qsW_Zg",
+   "url": "https://www.youtube.com/watch?v=PereSlygun0",
+   "published": "2026-06-04",
+   "relevant": false
+  },
+  {
+   "appid": 4119270,
+   "title": "Is GODHUMAN Good with Kabucha Gun Main Build?",
+   "text": "Is GODHUMAN Good with Kabucha Gun Main Build? My 2nd Channel - https://www.youtube.com/@primekittyburger-shorts Join ...",
+   "author": "KittyBurger",
+   "author_id": "UCm0tmCfgW7vs0Zqv3qsW_Zg",
+   "url": "https://www.youtube.com/watch?v=CkGXkSmE9Kk",
+   "published": "2026-03-24",
+   "relevant": false
+  },
+  {
+   "appid": 4119270,
+   "title": "KittyBurger Fan Edit 🥰",
+   "text": "Twitch - https://www.twitch.tv/sxohmm My 2nd Channel - https://www.youtube.com/@sxohmmm Join my Discord ...",
+   "author": "KittyBurger",
+   "author_id": "UCm0tmCfgW7vs0Zqv3qsW_Zg",
+   "url": "https://www.youtube.com/watch?v=rlCc19GMFe0",
+   "published": "2026-04-26",
+   "relevant": false
+  },
+  {
+   "appid": 4119270,
+   "title": "TTK and Kabucha is UNBELIEVABLY GOOD! 🔥",
+   "text": "TTK and Kabucha is UNBELIEVABLY GOOD! Twitch - https://www.twitch.tv/sxohmm Join my Discord ...",
+   "author": "KittyBurger",
+   "author_id": "UCm0tmCfgW7vs0Zqv3qsW_Zg",
+   "url": "https://www.youtube.com/watch?v=Qk0I_WBTtVA",
+   "published": "2026-05-16",
+   "relevant": false
+  },
+  {
+   "appid": 4119270,
+   "title": "this is why you should never steal a kill in Blox Fruits",
+   "text": "",
+   "author": "KittyBurger",
+   "author_id": "UCm0tmCfgW7vs0Zqv3qsW_Zg",
+   "url": "https://www.youtube.com/watch?v=gpLLMJEDuRw",
+   "published": "2026-03-28",
+   "relevant": false
+  },
+  {
+   "appid": 4676380,
+   "title": "The Black Dahlia Murder - Grind &#39;Em All 2014 [FULL EP]",
+   "text": "This is just to promote the music. All rights reserved to the band. The Black Dahlia Murder: Facebook: [http://goo.gl/7KMlV1] 01.",
+   "author": "Death Metal / Deathcore Album´s",
+   "author_id": "UCPOfF4HNQFXY0NJidzBQL9w",
+   "url": "https://www.youtube.com/watch?v=ZOsBjRYiPVw",
+   "published": "2014-12-26",
+   "relevant": false
+  },
+  {
+   "appid": 4676380,
+   "title": "Grind&#39;em All",
+   "text": "Provided to YouTube by CDBaby Grind'em All · Yuval Levi The Secret of Retropolis (Original Soundtrack) ℗ 2021 Peanut Button ...",
+   "author": "Yuval Levi - Topic",
+   "author_id": "UC1G7NG-cNXW0qegdomBZtUg",
+   "url": "https://www.youtube.com/watch?v=9TKhviRAVa0",
+   "published": "2022-02-08",
+   "relevant": false
+  },
+  {
+   "appid": 4676380,
+   "title": "Grind Em All – Peak Sound(15.08.26)",
+   "text": "0:00 BANKA 3:40 КxУxПxЧ 5:22 Stool Donation 7:02 FERTILIZER 10:22 Iron of Hate 14:48 Соprосult #grindcore #underground ...",
+   "author": "Watchtower 22",
+   "author_id": "UCmaHw5LZzc3zMS-epjftqgw",
+   "url": "https://www.youtube.com/watch?v=D2Gpaka83aM",
+   "published": "2026-08-16",
+   "relevant": false
+  },
+  {
+   "appid": 4676380,
+   "title": "고블린을 잡아서 강해지는 개꿀잼 아이들러! (Grind &#39;Em All)",
+   "text": "[스팀주소][] https://store.steampowered.com/app/4676380/Grind_Em_All/ 구독과 좋아요 댓글은 영상을 만드는 힘이 됩니다!",
+   "author": "룡룡 RyongRyong",
+   "author_id": "UCOQ-22L53_nLxVkKSLizM7g",
+   "url": "https://www.youtube.com/watch?v=mMrSPfTSk0k",
+   "published": "2026-07-19",
+   "relevant": true
+  },
+  {
+   "appid": 4676380,
+   "title": "The black dahlia murder - grind &#39;em all (2014) [full ep]",
+   "text": "Grind 'Em All is The Black Dahlia Murder's 2014 EP, featuring blistering covers of classic punk and grind songs. Originally ...",
+   "author": "Heavy metal and memes",
+   "author_id": "UCpE8B2jNk3jawCO-f7vBlmA",
+   "url": "https://www.youtube.com/watch?v=46kQnX8bic8",
+   "published": "2025-03-28",
+   "relevant": false
+  },
+  {
+   "appid": 4676380,
+   "title": "【Grind &#39;Em All】巨大なモンスターの群れを倒して圧倒的に成長するハクスラ系インクリメンタルゲーム",
+   "text": "Grind 'Em All https://store.steampowered.com/app/4676380/Grind_Em_All/ 提供：wasabiman #インディーゲーム ...",
+   "author": "Hultutigamer",
+   "author_id": "UCkcsp4GpSAlMYkKQtsNRO-Q",
+   "url": "https://www.youtube.com/watch?v=vRx3b1wIrhA",
+   "published": "2026-07-20",
+   "relevant": true
+  },
+  {
+   "appid": 4676380,
+   "title": "&quot;Gotta Main &#39;Em All!&quot; - SMASH BROS ULTIMATE RAP Ft. Swiblet (Parody of The Pokérap)",
+   "text": "Get it now!! Links below~ Itunes ▶️ https://apple.co/2DmyrvO Spotify ▶️ https://spoti.fi/2DkSBX4 Google play ...",
+   "author": "djsmell",
+   "author_id": "UC8taJP20zu3PxChqh1Ol7vw",
+   "url": "https://www.youtube.com/watch?v=YbPzbGNzIFk",
+   "published": "2018-12-06",
+   "relevant": false
+  },
+  {
+   "appid": 4676380,
+   "title": "Someone Made a Game About Shredding Monsters and Its CRAZY",
+   "text": "This is my first impression of the game 'Grind 'Em All'. I hope you guys enjoyed the video! Grind 'Em All: ...",
+   "author": "DrMocha",
+   "author_id": "UCMcf6mH2rC2Blar3J3oUkjQ",
+   "url": "https://www.youtube.com/watch?v=CntaAPFpZ-A",
+   "published": "2026-07-18",
+   "relevant": true
+  },
+  {
+   "appid": 4676380,
+   "title": "Hang&#39;em All",
+   "text": "Provided to YouTube by Universal Music Group Hang'em All · Carpenter Brut TRILOGY ℗ 2013 No Quarter Released on: ...",
+   "author": "Carpenter Brut - Topic",
+   "author_id": "UCLZeFBZ-PRQsYaNMzPOnReA",
+   "url": "https://www.youtube.com/watch?v=G_wxc7woND4",
+   "published": "2018-07-26",
+   "relevant": false
+  },
+  {
+   "appid": 4676380,
+   "title": "I Bought a Grapple Saw to Build my Off-Grid Cabin",
+   "text": "LAST WEEK to enter the 6x6 and tools giveaway! https://www.grindhardplumbingco.com/ We got a grapple with a saw built-in to ...",
+   "author": "Grind Hard Plumbing Co",
+   "author_id": "UCivi_f1nniBzEOfKhRoN12Q",
+   "url": "https://www.youtube.com/watch?v=edQlSXhyz2k",
+   "published": "2026-10-09",
+   "relevant": false
+  },
+  {
+   "appid": 4570940,
+   "title": "I 100% an Incremental where I Flip Monsters for Money",
+   "text": "Playlist: https://www.youtube.com/playlist?list=PLEnz2EwvYH7BDDnyXMNjxhHs_lWQElk4K Today we 100% Monster Flipper, an ...",
+   "author": "Dex",
+   "author_id": "UCz9boSY06_KXeVrAv70qysA",
+   "url": "https://www.youtube.com/watch?v=wOLa18heAP8",
+   "published": "2026-07-10",
+   "relevant": true
+  },
+  {
+   "appid": 4570940,
+   "title": "MONSTER FLIPPER | 4 Minutes Walkthrough Gameplay (No Commentary)",
+   "text": "Monster Flipper is a fast-paced incremental game where you smash monsters with a giant hammer to earn gold, upgrade your ...",
+   "author": "JunChoco",
+   "author_id": "UCp48ivD5ytQhcNLaNyoaMZQ",
+   "url": "https://www.youtube.com/watch?v=MDarQrIq8Bs",
+   "published": "2026-07-14",
+   "relevant": true
+  },
+  {
+   "appid": 4570940,
+   "title": "Monster Flipper - Trailer",
+   "text": "(Steam) https://store.steampowered.com/app/4570940/Monster_Flipper/ (itch.io) https://novascreen.itch.io/monster-flipper.",
+   "author": "NovaScreen",
+   "author_id": "UCs3ZWK-viVUPryXoJ68Za4A",
+   "url": "https://www.youtube.com/watch?v=u5MdkRe3lH4",
+   "published": "2026-04-01",
+   "relevant": true
+  },
+  {
+   "appid": 4570940,
+   "title": "Monster Flipper Full Game No Commentary 4K 60FPS | Complete Walkthrough",
+   "text": "Monster Flipper full game walkthrough played on PC in 4K 60FPS — no commentary, pure incremental gameplay from start to ...",
+   "author": "AlmostViralGamer",
+   "author_id": "UCpneysGx0hewI6TLFrRuxvg",
+   "url": "https://www.youtube.com/watch?v=TIVPOHTgzhc",
+   "published": "2026-07-10",
+   "relevant": true
+  },
+  {
+   "appid": 4570940,
+   "title": "I couldn&#39;t stop flipping monsters for 2 hours... [Monster Flipper] Gameplay",
+   "text": "Monster Flipper is a short incremental game where you buy and level monsters, smash them with a giant hammer for gold, and ...",
+   "author": "Idleprins",
+   "author_id": "UCEB8lVAaPrJ6iOQCd4ei-3A",
+   "url": "https://www.youtube.com/watch?v=0egT6eCkjsU",
+   "published": "2026-07-11",
+   "relevant": true
+  },
+  {
+   "appid": 4570940,
+   "title": "🔨МОЛОТОМ ПО МОНСТРАМ! 🪙 Залипательный кликер Monster Flipper #1",
+   "text": "Привет! На канале Santiago Play тебя ждут прохождения самых залипательных инди-игр, симуляторов, стратегий и крутых ...",
+   "author": "Santiago Play",
+   "author_id": "UCHxFCAmr8yG7iUAke231mZQ",
+   "url": "https://www.youtube.com/watch?v=az6masQDtyQ",
+   "published": "2026-07-24",
+   "relevant": true
+  },
+  {
+   "appid": 4570940,
+   "title": "【Monster Flipper】10万使って解放しました",
+   "text": "メンバーシップ加入はこちらから！ iPhoneの方はYouTubeアプリだと手数料が取られるため、PCやブラウザからの加入を ...",
+   "author": "しょう",
+   "author_id": "UCi96GK--TJzPLXqdi3BlHuQ",
+   "url": "https://www.youtube.com/watch?v=wjgIOWIqNvo",
+   "published": "2026-07-22",
+   "relevant": true
+  },
+  {
+   "appid": 4570940,
+   "title": "MONSTER FLIPPER: GOLPEANDO MONSTRUOS HASTA ROMPER EL JUEGO 🔨",
+   "text": "MonsterFlipper #Incremental #Gaming En este vídeo probamos Monster Flipper, un juego incremental donde el objetivo es ...",
+   "author": "TheFradox",
+   "author_id": "UCTzXLyoapDsmzpos-uYPj3Q",
+   "url": "https://www.youtube.com/watch?v=SqERXVuJqbA",
+   "published": "2026-08-04",
+   "relevant": true
+  },
+  {
+   "appid": 4570940,
+   "title": "Is Monster Flipper Worth 2.99€??!!",
+   "text": "I bought Monster Flipper on Steam with the intention of playing it for 3 hours or until I completed the game. Join me to see if ...",
+   "author": "MoniesWorth",
+   "author_id": "UCsc3XgfnioCzakudDxoe34w",
+   "url": "https://www.youtube.com/watch?v=nxqtohlt3dE",
+   "published": "2026-07-15",
+   "relevant": true
+  },
+  {
+   "appid": 4570940,
+   "title": "I Flipped 100% Of Monsters And Became Filthy Rich",
+   "text": "They must be dizzy from how many flips they did. LINK TO THE GAME IN DESCRIPTION Game: Monster Flipper ...",
+   "author": "FungalBrainRot",
+   "author_id": "UCH7FyUuZS8g6rkjF6PPSRpA",
+   "url": "https://www.youtube.com/watch?v=gfZiIPYFrUA",
+   "published": "2026-07-13",
+   "relevant": true
+  },
+  {
+   "appid": 4434050,
+   "title": "Corporate Climb",
+   "text": "Provided to YouTube by DistroKid Corporate Climb · Andrew Dykes - The Blues Man · Andrew Dykes - The Blues Man · Andrew ...",
+   "author": "Andrew Dykes - The Blues Man - Topic",
+   "author_id": "UCCDKUYQRyb-8aQGhG805NsA",
+   "url": "https://www.youtube.com/watch?v=BkjU0P0XmAw",
+   "published": "2025-11-17",
+   "relevant": false
+  },
+  {
+   "appid": 4434050,
+   "title": "How to advance your career quickly to climb the corporate ladder",
+   "text": "Ready to level up your leadership game? Whether you're battling self-doubt, juggling team drama, or just want to finally feel in ...",
+   "author": "Leadership with Mike",
+   "author_id": "UCX_oT8liQty9EL7ZJVpz3RA",
+   "url": "https://www.youtube.com/watch?v=vPfe2w_xx18",
+   "published": "2023-02-09",
+   "relevant": false
+  },
+  {
+   "appid": 4434050,
+   "title": "WHY CLIMBING THE CORPORATE LADDER IS A JOKE!",
+   "text": "NEW! Resume Reviews, Custom Resumes and Templates, Courses, and Consultations! https://joshuafluke.teachable.com/ ...",
+   "author": "Joshua Fluke",
+   "author_id": "UC-91UA-Xy2Cvb98deRXuggA",
+   "url": "https://www.youtube.com/watch?v=vuPeDtnp6fA",
+   "published": "2021-05-11",
+   "relevant": false
+  },
+  {
+   "appid": 4434050,
+   "title": "Forget the Corporate Ladder — Winners Take Risks | Molly Graham | TED",
+   "text": "Success in your career looks different for everyone — but no matter your industry, you'll need to take risks. Company and ...",
+   "author": "TED",
+   "author_id": "UCAuUUnT6oDeKwE6v1NGQxug",
+   "url": "https://www.youtube.com/watch?v=amtBUvkweEA",
+   "published": "2024-12-12",
+   "relevant": false
+  },
+  {
+   "appid": 4434050,
+   "title": "How to climb tree easily #howto #climb #treeclimbing #treeclimber #climbing #climber  #treeclimbers",
+   "text": "How to climb tree easily #howto #climb #treeclimbing #treeclimber #climbing #climber #treeclimbers #treeclimbinggear ...",
+   "author": "ToolNerd Techie",
+   "author_id": "UC_jpyQh0nTrh0_BT6sxGxlQ",
+   "url": "https://www.youtube.com/watch?v=nEbpdnQjJ6I",
+   "published": "2022-02-12",
+   "relevant": false
+  },
+  {
+   "appid": 4434050,
+   "title": "**CLIMB TO THE TOP ** #treework #professional #arborist #climber #treewarriors",
+   "text": "",
+   "author": "Tree Warriors",
+   "author_id": "UCrlMOWuO94WiOd2uI-6DMZw",
+   "url": "https://www.youtube.com/watch?v=pQsDi3-tsFs",
+   "published": "2022-03-05",
+   "relevant": false
+  },
+  {
+   "appid": 4434050,
+   "title": "ADC Climb UPDATE 🤔",
+   "text": "Make sure to hit the like button and subscribe to my channel! ↓ More Info Below ↓ COURSES & GUIDES: ...",
+   "author": "AloisNL",
+   "author_id": "UChwh1KpZf0Y5KsmaCCMSt6A",
+   "url": "https://www.youtube.com/watch?v=cbo4LpgZi2I",
+   "published": "2026-10-11",
+   "relevant": false
+  },
+  {
+   "appid": 4434050,
+   "title": "The rise of stay-at-home dads as women climb corporate ladder",
+   "text": "Nearly one in five stay-at-home parents is a father. Inside the growing number of men choosing to support their spouses and their ...",
+   "author": "ABC News",
+   "author_id": "UCBi2mrWuNuyYy4gbM6fU18Q",
+   "url": "https://www.youtube.com/watch?v=HdDwCyF4AgM",
+   "published": "2025-04-15",
+   "relevant": false
+  },
+  {
+   "appid": 4434050,
+   "title": "Viral Video: पति के टॉवर पर चढ़ने से इलाके में मचा हड़कंप #viral #shorts #viral #aajtak",
+   "text": "Viral Video: पति के टॉवर पर चढ़ने से इलाके में मचा हड़कंप #viral #shorts #viral #aajtak ...",
+   "author": "Aaj Tak",
+   "author_id": "UCt4t-jeY85JegMlZ-E5UWtA",
+   "url": "https://www.youtube.com/watch?v=xOmn2KvZ8A8",
+   "published": "2026-10-13",
+   "relevant": false
+  },
+  {
+   "appid": 4434050,
+   "title": "The Promotion Came. The Feeling Didn’t. Here’s Why",
+   "text": "Feeling unfulfilled at work after every promotion? Here's what the climb cost you, and how to get it back. You got the title. You got ...",
+   "author": "Shedding the Corporate B!tch with Bernadette Boas",
+   "author_id": "UCQUh5IXTbEsfidOtdcc4snQ",
+   "url": "https://www.youtube.com/watch?v=kxz0aK5oIak",
+   "published": "2026-10-13",
+   "relevant": false
+  },
+  {
+   "appid": 3950130,
+   "title": "Database Detective - Achievement Guide + Full Walkthrough",
+   "text": "This is my guide for getting 100% achievements/trophies for the game Database Detective: Minor Crimes Division. Full guided ...",
+   "author": "GushingGecko",
+   "author_id": "UCTZ4Y259OUqkikKg7QGizGA",
+   "url": "https://www.youtube.com/watch?v=Tcm2n8qwatM",
+   "published": "2026-08-16",
+   "relevant": true
+  },
+  {
+   "appid": 3950130,
+   "title": "I Was Way Too Qualified for This Detective Game | Database Detective: Minor Crimes Division",
+   "text": "Today I'm trying out the demo for this game coming out soon (already out??). This is the intersection of my two skills - detective ...",
+   "author": "Halcy Games",
+   "author_id": "UCJyOZVIu5ZTz-IW0COZrtrg",
+   "url": "https://www.youtube.com/watch?v=-6WcMUaS_eo",
+   "published": "2026-07-14",
+   "relevant": true
+  },
+  {
+   "appid": 3950130,
+   "title": "Database Detective: Minor Crimes Division - Chapter 5",
+   "text": "DatabaseDetective #MinorCrimesDivision #IndieGame #SQL #Gaming.",
+   "author": "Mirraj Gaming",
+   "author_id": "UCRxXrfNXbsjRLxXxXyUuuFQ",
+   "url": "https://www.youtube.com/watch?v=rE92GlDCWRw",
+   "published": "2026-07-23",
+   "relevant": true
+  },
+  {
+   "appid": 3950130,
+   "title": "Learn SQL &amp; Solve Crimes in This Funny Detective Game! | Database Detective: Minor Crimes Division",
+   "text": "Full Series Playlist Here: https://www.youtube.com/playlist?list=PLR8wg-FXUK_E Donate to Extra Life Here: ...",
+   "author": "QuanticFlux",
+   "author_id": "UCbdXgC3m58OnEVVDv3M6xtQ",
+   "url": "https://www.youtube.com/watch?v=aHYfLWtrw6k",
+   "published": "2025-12-30",
+   "relevant": true
+  },
+  {
+   "appid": 3950130,
+   "title": "Database Detective: Minor Crimes Division | Gameplay Trailer | Gamflix",
+   "text": "A new (unpaid) work from home opportunity has opened up in Los Zorangeles! Become the police department's new Database ...",
+   "author": "Gamflix",
+   "author_id": "UC3YhSpmAiTwBppUKd7OVujg",
+   "url": "https://www.youtube.com/watch?v=sFtrPOsXg6k",
+   "published": "2025-12-30",
+   "relevant": true
+  },
+  {
+   "appid": 3950130,
+   "title": "Database Detective: Minor Crimes Division - Chapter 3",
+   "text": "DatabaseDetective #MinorCrimesDivision #IndieGame #SQL #Gaming.",
+   "author": "Mirraj Gaming",
+   "author_id": "UCRxXrfNXbsjRLxXxXyUuuFQ",
+   "url": "https://www.youtube.com/watch?v=6vpE4yWpM7M",
+   "published": "2026-07-17",
+   "relevant": true
+  },
+  {
+   "appid": 3950130,
+   "title": "Database Detective: Minor Crimes Division Gameplay - First Look",
+   "text": "Solve intriguing cases in **Database Detective: Minor Crimes Division**! In this gameplay, we take on the role of a skilled ...",
+   "author": "OnGame Tips",
+   "author_id": "UCP2B3uRBtIT6-XQQ1-H9pBQ",
+   "url": "https://www.youtube.com/watch?v=nvkiqDS_YGc",
+   "published": "2026-07-19",
+   "relevant": true
+  },
+  {
+   "appid": 3950130,
+   "title": "Database Detective: Minor Crimes Division - Chapter 4",
+   "text": "DatabaseDetective #MinorCrimesDivision #IndieGame #SQL #Gaming.",
+   "author": "Mirraj Gaming",
+   "author_id": "UCRxXrfNXbsjRLxXxXyUuuFQ",
+   "url": "https://www.youtube.com/watch?v=pfzvPEfQhhg",
+   "published": "2026-07-18",
+   "relevant": true
+  },
+  {
+   "appid": 3950130,
+   "title": "Database Detective: Minor Crimes Division | Release Date Trailer",
+   "text": "Become a Database Detective on July 17th! Steam: https://store.steampowered.com/app/3950130/ Discord: ...",
+   "author": "Thomas Hsu",
+   "author_id": "UCGRm6mh5ZUx32WccpIWigsQ",
+   "url": "https://www.youtube.com/watch?v=9R1E-J1YAWM",
+   "published": "2026-06-21",
+   "relevant": true
+  },
+  {
+   "appid": 3950130,
+   "title": "Database Detective: Minor Crimes Division Demo",
+   "text": "This was fun~ I'm surprised I did as well as I did while I'm still battling this cold. I definitely need to work on getting all the short ...",
+   "author": "Crystal Dreams",
+   "author_id": "UCr_vdRz1iA9St9wyNhlvm_A",
+   "url": "https://www.youtube.com/watch?v=3khR_liE6bY",
+   "published": "2026-05-06",
+   "relevant": true
+  }
+ ],
+ "_note": "HELD-OUT sample: collected and labelled AFTER the matching rules were frozen (2026-10-13), 12 other games of the same cohort, YouTube search.list with the bare title, 10 results each. Same single labeller."
+}

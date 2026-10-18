@@ -1,6 +1,7 @@
 """status_page with every section: steps, store kit with copy buttons, contingencies, watchlist, intentions; escaping; audiences."""
 import os, sys, json, tempfile, datetime as dt, re
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "scripts", "research"))
+os.environ["GLS_HOME"] = tempfile.mkdtemp()  # never read the user's real calibration or keys
 import status_page as sp
 
 L = tempfile.mkdtemp(); os.makedirs(os.path.join(L, "_raw"))
@@ -39,7 +40,11 @@ json.dump({"launch": "2027-03-01", "targets": {}, "tripwires": [], "events": []}
 today = dt.date(2026, 11, 25)
 page = sp.build(L, "partner", [], [], set(), today)
 body = page.replace("<script>" + sp.JS + "</script>", "")
-assert "<img src=x" not in body and "onerror=alert" not in body.replace("&lt;img src=x onerror=alert(1)&gt;", ""), "hostile markup leaked"
+assert "<img src=x" not in body and "onerror=alert" not in body.replace("&lt;img src=x onerror=alert(1)&gt;", "").replace(r"\u0026lt;img src=x onerror=alert(1)\u0026gt;", ""), "hostile markup leaked"
+# calendar data embedded as JSON: no "<" can close the script, and the HTML of every item is escaped
+cal = json.loads(re.search(r'<script type="application/json" id="cal-data">(.*?)</script>', page, re.S).group(1))
+assert all("<img" not in it["html"] and "<img" not in __import__("html").escape(it["title"]) for it in cal["items"].values()) and "2026-12-10" in cal["days"]
+assert 'id="step-4"' in page and 'aria-controls="p-calendario"' in page
 assert page.count('class="step"') == 4 and 'data-owner="both"' in page and "In ritardo" in page and "Tocca a te</h3>" in page and "<h2 id=\"sec" in page and "1 di 4" in page
 assert page.count("button type=\"button\" class=\"copy\"") >= 5 and "Oltre il limite" in page and "📷" in page and "il crollo" in page
 copy = re.findall(r'data-copy="([^"]*)"', page); assert any("&lt;&lt;&lt; GIF 1" in c or "<<< GIF 1" in html_unescaped for c in copy for html_unescaped in [__import__("html").unescape(c)])

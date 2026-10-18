@@ -40,7 +40,8 @@ In `launch/`:
 - `00-contesto.md` (Context Pack della Fase B), `00-brief.md`, `01-dev.md`, `01b-positioning.md`, `01c-full-game.md` (solo se beta con piano del gioco completo), `02-platform.md`, `03-pricing.md`, `04-clips.md`, `04b-store-copy.md`
 - `05-focusgroup.md`, `05a-critiche-simulate.md`, `05b-critiche-reali.md`, `05c-premortem.md`
 - `06-creators.md`, `07-community.md`, `08-brand-legal.md`
-- `fg/roster.md`, `fg/roster.json` (tester con ID stabili e giuria), `fg/waves/` (una serie di file per ondata: evidenze, gruppi A e B, dati JSON, dibattito, report, delta), `fg/timeline.md`, `fg/timeline.csv`
+- `fg/roster.md`, `fg/roster.json` (tester con ID stabili e giuria), `fg/waves/` (una serie di file per ondata: **preparazione** `wNN-brief.md`, `wNN-mappa-gioco.md`, `wNN-schermate.md`, `wNN-runs.md`, `wNN-mercato.md`, `wNN-proposte-gameplay.md`, `wNN-limite-beta.md` se c'è una demo o beta gratuita, controllati con `wave_kit.py check`; poi evidenze, gruppi A e B, dati JSON, dibattito, metriche, report, delta, `wNN-sintesi.md` per il proprietario; dettagli in `04-focus-group.md` 7.1, Passo 0), `fg/timeline.md`, `fg/timeline.csv`
+- **`fg/waves/wNN-sintesi.md`** (per il proprietario e per game-developer, `dev-link.md` §5.1): ogni riga di problemi e proposte ha la colonna **Chiave** (la chiave stabile di `issue_status.json`) e, se c'è una proposta, l'ID **`P-wNN-n`** (lo stesso di `wNN-proposte-gameplay.md`, numerato da 1, non cambia più); una sezione "Nati da un gate di sviluppo o ricomparsi" ("nato col gate NN" / "ricomparso dopo il gate NN"); le riaperture a parte, una riga ciascuna: `Riapre la decisione: <D-NNN o testo> — prove: <dati veri, con fonte> — proposta: <cosa> — costo: <ore>`. Il modello lo scrive `wave_kit.py init`.
 - `comps.csv`, `sources.md`, `creators.csv`, `window.csv`, `window.md`, `calendar.md` (con i passi 👤/🤖), `03-pricing-calc.md`, `00-intenzioni.md`, `05d-contingenze.md`, `store_kit.json`, `store_kit.md`, `store_kit/`, `wishlists.csv`, `wishlist-status.md`, `metrics.csv`, `metrics-status.md`, `watchlist.csv`, `watchlist-report.md`, `status.json`, `STATUS.html`, `REPORT.html`, `charts/` (grafici `.svg`)
 - `_raw/`: dati grezzi degli script (`comps.json`, `corpus.json`/`corpus.md`, `store_pages.json`/`store_bench.md`, `hooks/`, `econ.json`, `wl_plan.json`, `window.json`, `project_scan.json`, `contingencies.json`, `genre_bench.json`, `my_features.json`, `reviews_*.json`, `yt_*.json`, `social_verified.json`, `reddit_rules.md`, `curation.json`, `topics.json`)
 - `playbook-usato.md` (solo se ad hoc), `ricerche-manuali.md` (solo se serve), `history/` (in Aggiornamento)
@@ -92,19 +93,26 @@ Alla ripresa ("continua") leggi `STATUS.md` e riparti dalla prima fase non compl
   "product": {"kind": "beta|demo|vertical_slice|full|post_launch", "label": "Beta (Atto I)", "has_full_plan": true},
   "full_game": {"summary": "verdetto provvisorio sul gioco completo in 1-2 frasi",
                 "gaps": [{"area": "Contenuto", "today": "1 biome", "target": "4 biomi", "action": "3 biomi nuovi", "hours": 120}]},
-  "issue_aliases": {"run-variety": ["run ripetitive", "poca variet"], "tray-feel": ["vassoio"]}
+  "issue_aliases": {"run-variety": ["run ripetitive", "poca variet"], "tray-feel": ["vassoio"]},
+  "roadmap": {"note": "una riga sul piano (es. beta gratuita = demo di 30-60 min)",
+              "milestones": [{"date": "AAAA-MM-GG", "end": "AAAA-MM-GG", "title": "Pagina Coming Soon su Steam", "phase": "Pagina",
+                              "what": "cosa succede, una riga", "needs": "cosa serve, una riga", "state": "done|next|later",
+                              "step": 23, "approx": true}]}
 }
 ```
 `issue_aliases` (facoltativo, espressioni regolari senza distinzione di maiuscole) collega a una chiave di criticità i testi che la nominano con altre parole: i rischi del verdetto e le righe delle tabelle nei documenti (per esempio la matrice di convergenza di `05-focusgroup.md`). Così accanto a quel testo compare la decisione del proprietario. Un rischio può anche dire le sue chiavi direttamente (`{"text": …, "issues": [...]}`).
 `product` va scritto sempre (la pagina lo mostra in testa: "valutato come: Beta"); `full_game` solo se la Fase 10B è stata eseguita.
+`roadmap` è un'uscita **standard**: solo le tappe chiave vere (di solito test con amici o chiuso, Steam Direct pagato, pagina Coming Soon, beta gratuita su itch, demo pubblica su Steam, Steam Next Fest, Early Access, 1.0), prese da `calendar.md`, `00-intenzioni.md` e dalle decisioni del proprietario. Campi facoltativi: `end` (tappa che dura più giorni), `phase`, `state` (altrimenti si calcola da data e passi), `step` (numero del passo in `calendar.md`, per il link ai dettagli), `approx` (data stimata). **Claude la aggiorna dopo ogni decisione.** Se manca, `status_page.py` ricava le tappe da `calendar.md` per parole chiave (al meglio).
 
-**Com'è fatta la pagina.** Larga fino a 1400 px (e leggibile a 390 px), divisa in **cinque schede** fisse in alto; la pagina ricorda l'ultima scheda aperta:
+**Com'è fatta la pagina.** Larga fino a 1400 px (e leggibile a 390 px), divisa in **schede** fisse in alto; la pagina ricorda l'ultima scheda aperta. In cima a Riepilogo e Calendario c'è la **roadmap** (tappe chiave su una linea del tempo); il riquadro in testa dice anche **cosa manca per passare al livello successivo**:
 | Scheda | Contenuto |
 |---|---|
-| **Riepilogo** | verdetto con i rischi (ognuno con la decisione del proprietario) e i cancelli, riquadro "Adesso" (tocca a te / tocca a Claude), numeri chiave (punteggio beta e gioco completo separati, tetto e margine), alert, andamento di wishlist e ondate, profilo decisionale |
+| **Riepilogo** | roadmap, verdetto con i rischi (ognuno con la decisione del proprietario) e i cancelli, riquadro "Adesso" (tocca a te / tocca a Claude), numeri chiave (punteggio beta e gioco completo separati, tetto e margine), alert, andamento di wishlist e ondate, profilo decisionale |
 | **Gioco e test** | pilastri per nome (esito, perché in una riga, cosa fare, ore solo se l'audit le stima in modo credibile), criticità ondata per ondata, grafici del focus group, ondate (beta e gioco completo ben distinte, con tetto e margine), recensioni reali con "il tuo gioco ne soffre? / ce l'hai?", beta contro gioco completo, documenti di questa parte (audit, focus group, critiche) |
 | **Marketing e store** | pagine Steam e itch da copiare, creator, documenti (posizionamento, clip, testi dello store, creator, community) |
 | **Piano e soldi** | passi in ordine, **TODO viva**, cancelli, date fisse, economia, piani se… allora, finestra di lancio, concorrenti, SteamDB, mercato e comparabili, documenti (piattaforme, prezzo, pre-mortem, contingenze) |
+| **Calendario** | roadmap e griglie dei mesi da oggi all'uscita con ogni cosa datata (passi e tabelle di `calendar.md`, scadenze di `TODO.md`, eventi Steam, showcase online, ondate, gate, tripwire), colorata per chi la fa (👤 / 🤖 / insieme), ritardi in evidenza, clic sul giorno per i dettagli, agenda dei prossimi 14 giorni |
+| **Mercato reale** | tutto il mercato vero: base rate, metro oggettivo, comparabili, mosse |
 | **Documenti** | report completo, intenzioni, brief, legale e fiscale, domande e risposte, glossario |
 Genera la pagina:
 
@@ -153,6 +161,18 @@ I problemi segnalati all'inizio non restano fermi: cambiano a ogni ondata **e a 
 | `pianificato` | si farà più avanti (dire quando: beta finita, gioco completo…) | Già deciso |
 | `accettato` | si tiene così, per scelta | Già deciso |
 | `non_problema` | il proprietario non lo considera un problema | Già deciso |
+**Campi del gate di sviluppo (con `game-developer`, `dev-link.md` §6.3).** Dopo un gate il dev lancia `gate_link.py apply-status --write`, che è l'unico modo in cui scrive in questo file: chiavi chiuse → `"status": "risolto"`, chiavi da confermare → `"da_verificare"`, e a tutte e due aggiunge
+```json
+ "ui-chaos": {"status": "risolto", "note": "Gate 57 (2026-10-19): Scheda Stasera. · nota di prima", "gate": "docs/gates/57-stasera.md", "resolved": "2026-10-19"}
+```
+- `gate`: percorso del gate di sviluppo che ha toccato la chiave (è un gate di **sviluppo**, non il cancello 0/A/B/C, che sta nel JSON dell'ondata come `issues[].gate`);
+- `resolved`: data del gate che l'ha chiusa (solo con `risolto`).
+**Il launch non sovrascrive e non cancella mai `gate` e `resolved`**: quando aggiorna una chiave cambia solo `status`, `note`, `aliases`, e i campi del dev restano anche se la chiave torna `aperto` (sono la storia). Non tocca le chiavi nuove create dal dev (non ne crea: le chiavi le crea il launch con l'ondata) né le decisioni del proprietario.
+- **Approvata** (`dev-link.md` §5.2): la chiave passa a `in_lavorazione` con `todo_track.py approve` (sotto, `TODO.md`), nota "Approvata dal proprietario il DATA (P-wNN-n)."
+- **Ricomparsa** (`dev-link.md` §8): una chiave `risolto` che i tester citano di nuovo torna `aperto`, nota in testa "Ricomparso dopo il gate NN (ondata wNN)." (NN = il gate scritto in `gate`); `gate` e `resolved` restano. Nella sintesi: "ricomparso dopo il gate NN".
+- **Nata da un gate**: un problema nuovo causato da un gate entra come chiave **nuova** (`aperto`), con `"from_gate_dev": NN` nel JSON dell'ondata; nota "Nato col gate NN."; nella sintesi "nato col gate NN" (anche `STATUS.html` lo mostra).
+- **`fixes` del JSON dell'ondata**: si riempiono dal blocco `fixes` di `docs/design-review/changes-since-wNN.md` **così com'è** (`issue`, `what`), con `gate_dev` (numero del gate di sviluppo, preso dalla tabella dello stesso file) o, da `gate_link.py since --json`, anche `status` (`risolto` / `da_verificare`): `wave_kit.py fixes --launch-dir launch --wave N --write <json>` aggiunge quelli che mancano e non toglie né cambia quelli scritti a mano. `fg_waves.py` li valida e `STATUS.html` mostra "gate di sviluppo NN" accanto alla correzione.
+
 Una criticità che i tester segnalano e che **non è nel file** compare come **"Da decidere"** e resta tra le cose da fare adesso. Ovunque compaiano criticità (ondata per ondata, per cancello, evoluzione, grafico "Critiche da affrontare adesso", ondate del focus group, rischi del verdetto, righe della matrice di convergenza e delle altre tabelle dei documenti, temi delle recensioni reali) la pagina mostra la decisione come etichetta con icona e nota, e separa **Da fare adesso** da **Già deciso** (chiuso, si apre con un clic). Le domande e risposte ("criticità aperte più gravi") seguono le stesse decisioni.
 
 **Regola: Claude aggiorna `issue_status.json` subito dopo ogni decisione del proprietario** (anche detta in chat: "questo va bene così", "lo facciamo nel completo", "fatto nel gate 48") **e dopo ogni ondata** (le chiavi nuove entrano come `aperto` o con la decisione proposta e confermata; quelle sparite e sistemate passano a `risolto` con il gate). Poi rigenera `STATUS.html`. Non cambiare mai una decisione del proprietario senza dirglielo: se i dati la contraddicono (per esempio un `non_problema` che sale nell'ondata), riapri la domanda.
@@ -224,6 +244,18 @@ python3 <skill>/scripts/research/todo_track.py --file launch/TODO.md reopen "per
 python3 <skill>/scripts/research/todo_track.py --file launch/TODO.md drop "clip settimanali" --why "decisione: clip a beta finita"   # superata da una decisione: [-], resta scritta ma non si conta
 ```
 `done` cambia `[ ]` in `[x]`, aggiunge "· fatto il DATA (da 🤖, nota)" e aggiorna `Aggiornato:`; se le parole trovano più righe non tocca nulla e mostra i candidati. `STATUS.html` (scheda Piano e soldi) mostra la TODO viva: avanzamento, aperte e fatte per sezione (le fatte chiuse), in ritardo, e un avviso **"Da aggiornare"** quando `TODO.md` è più vecchio dell'ultima ondata, di `issue_status.json` o del calendario.
+
+**Righe di lavoro sul gioco (con `game-developer`, `dev-link.md` §5.1).** Ogni riga 🤖 che chiede una modifica al gioco porta nel testo l'ID della proposta e le chiavi, e le Dipendenze dicono se il proprietario l'ha approvata:
+```
+- [ ] 🤖 **Scheda Stasera unica** (P-w10-1, key:new-too-much-ui,new-hidden-rules) — 2026-10-25 — 3-5 h — ok del proprietario 2026-10-19 — 0 avvisi nei primi 10 s
+```
+- `P-wNN-n` = l'ID della proposta in `wNN-proposte-gameplay.md` e nella sintesi; `key:<chiave>[,<chiave>]` = le chiavi di `issue_status.json`. Il gate del dev le cita (`todo: ["P-w10-1"]`) e alla chiusura spunta la riga con `todo_track.py done "P-w10-1" --by claude --note "gate 58"`: l'ID deve trovare **una sola** riga aperta, quindi nelle Dipendenze delle altre righe non scrivere l'ID esatto di un'altra proposta ("dopo la scheda Stasera", non "dopo P-w10-1").
+- Quando il proprietario dice sì (in chat, con la data): `todo_track.py approve "P-w10-1" --date AAAA-MM-GG --status-file launch/issue_status.json` scrive `ok del proprietario AAAA-MM-GG` nelle Dipendenze (al posto di "nessuna", o dopo un ";") e porta le chiavi della riga a `in_lavorazione` (mai le decisioni del proprietario, mai le chiavi già `risolto`, mai i campi `gate` / `resolved`). Una proposta non approvata resta senza `ok del proprietario`: il dev non la trasforma in lavoro.
+```bash
+python3 <skill>/scripts/research/todo_track.py --file launch/TODO.md approve "P-w10-1" --date 2026-10-19 --status-file launch/issue_status.json
+```
+
+**Decisioni del dev (`DECISIONI.md`) nei registri del launch (`dev-link.md` §4.2).** All'avvio e prima di ogni brief: `todo_track.py sync-decisions --decisions DECISIONI.md --intents launch/00-intenzioni.md` mostra le righe `D-NNN` che mancano sia in "Decisioni prese" sia in `00-intenzioni.md`; con `--write` le aggiunge in fondo a "Decisioni prese" così: `- **Area:** decisione (fonte: DECISIONI.md D-NNN, AAAA-MM-GG)`. Non riporta indietro le righe che il dev aveva copiato dal launch (fonte `launch/…`). **`DECISIONI.md` non si scrive mai**: è del dev. Se una decisione del dev contraddice una del launch, vince la data più recente; senza data si chiede al proprietario una volta.
 
 Raggruppate per area: **Dev e pilastri**, **Posizionamento e store**, **Marketing e hook**, **Creator e community**, **Burocrazia e release**, **Tripwire e misure**. In testa: **"I 3 dealbreaker da risolvere in 14-20 giorni"**. Le scadenze sono date assolute calcolate dalla data odierna. In fondo: totale ore per area e confronto con la capacità del team (Fase 11.5).
 
@@ -308,7 +340,7 @@ In **Rapida** e **Mirata** il debriefing si accorcia alle sole righe delle fasi 
 - [ ] Matrice di convergenza presente e i 3 dealbreaker ne derivano.
 - [ ] Pre-mortem con 5 cause, segnale misurabile, soglia e data; almeno una contraddice il verdetto positivo.
 - [ ] Testi dello store scritti (descrizioni, tag, 3 capsule, trailer) e ogni affermazione ha un'evidenza nel gioco.
-- [ ] Roster con ID stabili e giuria fissa; ogni ondata ha il suo file JSON validato da `fg_waves.py`; punteggi, delta e timeline vengono dal tool; metodo di indipendenza dei gruppi dichiarato.
+- [ ] Roster con ID stabili e giuria fissa; ogni ondata ha la preparazione completa (`wave_kit.py check` tutto ✅: mappa del gioco, schermate, 3+ run a tempi, mercato, proposte con "Riapre la decisione", domande extra) e il suo file JSON validato da `fg_waves.py`; punteggi, delta e timeline vengono dal tool; metodo di indipendenza dei gruppi dichiarato.
 - [ ] Ondata 1 eseguita prima delle fasi di piattaforma, prezzo e store e seguita dalla segnalazione problemi; nessuna ondata successiva lanciata senza l'ok dell'utente; evidenze delle ondate successive senza critiche né fix precedenti.
 - [ ] Focus group calibrato (controlli o confronto col comparabile) e dichiarato non-dato-di-mercato; soglia del Gate A motivata.
 - [ ] I benchmark di pagina store, trailer e genere vengono da `store_bench.py`, `review_corpus.py` o `genre_bench.py`, con n, tag e data, e il limite della coda alta dichiarato (altrimenti dichiarati di opinione); le cifre economiche vengono da `calc_econ.py` con aliquote dichiarate.
@@ -328,5 +360,13 @@ In **Rapida** e **Mirata** il debriefing si accorcia alle sole righe delle fasi 
 - [ ] Cancelli con date assolute e soglie adattate al genere; TODO con azione, scadenza, ore, dipendenze, metrica; ore totali entro la capacità del team.
 - [ ] Il semaforo applica i criteri di `SKILL.md`; il verdetto è marcato **provvisorio** se il materiale era insufficiente.
 - [ ] `STATUS.md` aggiornato; nulla modificato nel progetto fuori da `launch/`.
+- [ ] `status.json` → `roadmap` con le tappe chiave aggiornate all'ultima decisione.
+- [ ] Con `game-developer`: brief con "Da ricontrollare" dal `changes-since-wNN.md` (`wave_kit.py check` senza avvisi del contratto), `fixes` copiati così come sono (`wave_kit.py fixes --write`), sintesi e proposte con chiave e `P-wNN-n` su ogni riga, riaperture nel formato `Riapre la decisione: … — prove: … — proposta: … — costo: …`, problemi nati da un gate con chiave nuova e `from_gate_dev`, chiavi risolte che tornano riaperte "ricomparso dopo il gate NN", righe 🤖 con `P-wNN-n`, `key:` e `ok del proprietario` quando approvate, decisioni di `DECISIONI.md` importate con `fonte:`; `gate` e `resolved` di `issue_status.json` intatti.
 - [ ] `issue_status.json` riflette tutte le decisioni del proprietario e l'ultima ondata; `TODO.md` spuntata e aggiornata con `todo_track.py` (nessun avviso "Da aggiornare" in `STATUS.html`).
 - [ ] Il debriefing in chat segue il formato.
+
+---
+
+## STATUS.html: riassunto dai dati e scheda Mercato reale
+
+Prima di rigenerare la pagina: `predictions.py sync`, `top_moves.py apply` (le 3 mosse in `TODO.md` e `calendar.md`, senza duplicati) e, se la calibrazione ha più di 30 giorni, la proposta di aggiornarla. In cima alla pagina il riassunto si scrive da solo dai dati (freschezza dei dati per prima se sono vecchi, ondata con la sua tendenza SIMULATO, base rate [STIMA], metro, problemi gravi, mosse, scadenza, accuratezza delle previsioni); il semaforo resta come piccolo badge. La scheda **Mercato reale** raccoglie tutto il mercato vero; le altre schede hanno una scheda che la collega. Mai più ottimisti dei dati.

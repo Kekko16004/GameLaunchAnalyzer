@@ -17,11 +17,15 @@ launch/05-focusgroup.md            sintesi viva: ultima ondata, convergenza, dea
 launch/05a-critiche-simulate.md    top critiche dell'ultima ondata (lo storico sta in fg/waves/)
 launch/05b-critiche-reali.md       Sezione B
 launch/fg/roster.json, roster.md   tester con ID stabili (mai modificati)
+launch/fg/waves/wNN-brief.md       cosa si valuta, domande ai tester, uscite (Passo 0)
+launch/fg/waves/wNN-mappa-gioco.md, wNN-schermate.md, wNN-runs.md, wNN-mercato.md,
+                 wNN-proposte-gameplay.md, wNN-limite-beta.md   preparazione dell'ondata (Passo 0)
 launch/fg/waves/wNN-evidence.md    cosa ha visto il panel in quell'ondata
 launch/fg/waves/wNN-group-a.md, wNN-group-b.md   giudizi dei due gruppi
 launch/fg/waves/wNN-AAAA-MM-GG.json   dati dell'ondata (input di fg_waves.py)
 launch/fg/waves/wNN-debate.md      dibattito della giuria
 launch/fg/waves/wNN-report.md      report strutturato dell'ondata
+launch/fg/waves/wNN-sintesi.md     sintesi per il proprietario, in italiano semplice (risposte alle domande, proposte, limite della demo)
 launch/fg/waves/wNN-delta.md       confronto con l'ondata precedente (da N = 2)
 launch/fg/timeline.md, timeline.csv   andamento di tutte le ondate
 ```
@@ -63,6 +67,7 @@ Tu aggiungi a mano nella colonna *Scheda* di `roster.md` gusti, giochi di riferi
 ### Calibrazione anti-gentilezza
 1. Il panel vede il gioco come traffico **freddo** su Steam (capsule, titolo, tag, 2 secondi): il click al primo sguardo parte da una base bassa realistica. Sopra il 50% su 54 va giustificato.
 2. **Controlli**: inserisci alla cieca la capsule del **comparabile di successo più vicino** e di uno **debole**. Il loro punteggio è il righello: se il panel è generoso con ciò che non lo merita, riduci. Registra i punteggi in `controls` del file d'ondata.
+   **Se esiste la calibrazione** (`~/.game-launch-strategist/calibration.json`, sezione `controls`), i controlli si prendono da lì: un **B vincente** e un **B perdente reali e recenti** (usciti negli ultimi mesi, con le loro recensioni a 90 giorni), non comparabili vecchi e famosi. Scrivi nel file d'ondata appid, nome e data della calibrazione.
 3. Confronta con il comparabile reale più vicino; se il panel è più ottimista del mercato, riduci e spiega.
 4. Risultati come intervalli (con N = 54 una percentuale ha circa ±13 punti di incertezza **[STIMA]**, e il campione è simulato: l'intervallo misura la diversità del panel, non il mercato).
 5. Scrivi sempre: "questi numeri ordinano i problemi, non prevedono le vendite".
@@ -71,8 +76,33 @@ Tu aggiungi a mano nella colonna *Scheda* di `roster.md` gusti, giochi di riferi
 
 ## 7.1 Una ondata, passo per passo
 
+### Passo 0: preparazione dell'ondata (obbligatoria, ogni ondata)
+Prima dei giudizi si costruisce il gioco **intero** su carta, dai dati veri. Vale per ogni motore: leggi script, file di dati e scene (Unity: script, `.asset`, `.prefab`, `.uxml`; Unreal: C++, DataTable, `.ini`, Blueprint via MCP dell'editor se c'è; Godot: `.gd`, `.tscn`, `.tres`; motore proprio: sorgenti e configurazioni). Solo lettura: non si apre né si modifica il progetto.
+
+```bash
+python3 <skill>/scripts/research/wave_kit.py init  --launch-dir launch --wave N [--date AAAA-MM-GG]   # modelli, non sovrascrive mai
+python3 <skill>/scripts/research/wave_kit.py check --launch-dir launch --wave N [--json]              # ✅/❌; esce con errore se manca qualcosa
+```
+
+| File | Cosa contiene | Il controllo chiede |
+|---|---|---|
+| `wNN-brief.md` | cosa si valuta, domande ai tester (sotto), limite della demo se serve, uscite; con l'ok del proprietario | domande extra presenti |
+| `wNN-mappa-gioco.md` | **mappa totale dal codice**: giro del gioco, livelli e durate, sistemi e regole, economia con i numeri, sblocchi, oggetti/perk, ostacoli/disturbi, eventi, HUD, comandi, accessibilità, audio, telemetria e lingue, cosa NON c'è. Ogni voce con il file (`percorso` o `percorso:riga`) | sezioni piene, almeno 5 riferimenti ai file |
+| `wNN-schermate.md` | ogni schermata e menu: come ci arrivi (tasti e clic), quando diventa raggiungibile, se il gioco te lo dice, voto **evidente / trovabile / nascosta**; poi cosa resta nascosto o doppio; in fondo il blocco ` ```screens ` (`root:`, `screen: Nome | file | hidden-ok: motivo`, `A -> B : come`), lo stesso formato di `design_review.py` di game-developer | almeno 3 righe con il voto; blocco `screens` e orfani (avviso) |
+| `wNN-runs.md` | **almeno 3 run simulate a tempi**: giocatore nuovo, giocatore che ha capito, prima vittoria (o quasi). Un titolo `## ` per run; ogni riga di tabella **comincia con il tempo dall'inizio della run** (`m:ss` o `m:ss-m:ss`, mai azzerato per livello). Numeri veri dal codice e dalla telemetria se c'è, il resto **[STIMA]**. Segni comuni nella riga: `[MORTO]` `[TOP]` `[FRUSTRA]` `[ABBANDONO]` `[CONFUSO]` `[TROPPA-UI:n]` `[SPIRALE]` (gli stessi di `design_review.py runs`) | 3 run con almeno 5 tempi ciascuna, i segni |
+| `wNN-mercato.md` | recensioni vere dei simili con `review_corpus.py` (cosa premiano e cosa puniscono, cosa dicono delle tue caratteristiche), durata delle demo che vendono, demo che regalano troppo, con fonti | recensioni, demo, URL o file |
+| `wNN-proposte-gameplay.md` | proposte con **ID `P-wNN-n`** e **chiave** delle criticità che chiudono, cosa cambia, perché, prova di mercato, ore **[STIMA]**, rischio; dopo il panel si aggiungono quelle di tester e giuria (stessa numerazione); a parte le riaperture, una riga ciascuna: `Riapre la decisione: <D-NNN o testo> — prove: <dati veri, con fonte> — proposta: <cosa> — costo: <ore>` | ore, rischio, prove, sezione "Riapre la decisione"; ID, chiavi e formato della riapertura (avviso) |
+| `wNN-limite-beta.md` | *(se c'è una demo o beta gratuita)* dove finisce, quanti minuti, quanti contenuti, cosa resta da desiderare, schermata finale | facoltativo: solo un avviso |
+
+**Con `game-developer` (`references/dev-link.md` §6.2, §8, §9).** Se nel progetto c'è `docs/design-review/` lo stato attuale lo descrive il dev: prima dell'ondata deve esserci `docs/design-review/changes-since-wMM.md` (MM = l'ultima ondata; se manca, chiedilo: `gate_link.py --project . since --out docs/design-review/changes-since-wMM.md`). `wave_kit.py init` allora:
+- scrive nel brief la sezione **"Da ricontrollare"** con i rischi introdotti dai gate e le scelte di design cambiate (`- [gate 57] …`): i tester li guardano apposta, come punti da guardare e non come elenco di fix (anti-ancoraggio);
+- fa partire `wNN-mappa-gioco.md`, `wNN-schermate.md`, `wNN-runs.md` da `game-map.md`, `screen-map.md`, `runs.md` del dev, copiati così come sono con la riga "Partita da … (aggiornata al gate NN)": **si verificano sul codice**, non si rifanno da zero; se la mappa delle schermate del dev non ha il blocco `screens`, lo aggiunge vuoto.
+`wave_kit.py check` avvisa (non blocca) se il `changes-since` c'è ma il brief non lo cita, se mancano i `fixes` nel JSON, se il blocco `screens` manca o ha orfani, se le run non hanno righe a tempo con i segni comuni, se proposte e sintesi non hanno `P-wNN-n` e chiave, se una riapertura non è nel formato del contratto. Senza game-developer tutto resta com'è: i file si compilano dal codice.
+
+I tester leggono questi file **prima** di giudicare (fanno parte del pacchetto di evidenze) e commentano le run. **Riapre la decisione**: il proprietario può riaprire le sue decisioni se il gioco migliora; una proposta che lo fa va nella sezione a parte, con prove di mercato forti, **non abbassa il punteggio e non conta come problema**. Conta come problema solo ciò che è davvero rotto o mancante. Il panel non parte finché `wave_kit.py check` non è tutto ✅ (gli avvisi ⚠️ si possono lasciare con un motivo).
+
 ### Passo 1: pacchetto di evidenze (`wNN-evidence.md`)
-Raccogli in un unico blocco **tutto e solo** ciò che i tester vedono nello **stato attuale** del gioco: capsule e screenshot esistenti (o concept se non c'è nulla), pitch, tag, descrizione, clip, estratti di codice e GDD pertinenti, versione/commit della build. Elenca anche ciò che **manca** ("nessuna build giocabile", "nessun trailer"). Nessun tester usa informazioni fuori da questo blocco.
+Raccogli in un unico blocco **tutto e solo** ciò che i tester vedono nello **stato attuale** del gioco: i file del Passo 0, capsule e screenshot esistenti (o concept se non c'è nulla), pitch, tag, descrizione, clip, estratti di codice e GDD pertinenti, versione/commit della build. Elenca anche ciò che **manca** ("nessuna build giocabile", "nessun trailer"). Nessun tester usa informazioni fuori da questo blocco.
 
 **Tipo di prodotto (domanda zero)**: la prima riga del pacchetto dice cosa si sta giudicando: *beta / demo / vertical slice* oppure *gioco completo*. Per una beta aggiungi un riquadro "cosa c'è e cosa è previsto ma non c'è ancora" e istruisci i tester a **giudicare ciò che c'è come beta** (il contenuto non ancora fatto è un'assenza dichiarata, non un difetto) e a dire quanto la beta li convince a seguire il gioco finito. **Se la beta è gratuita** ogni tester risponde anche: *"pagheresti il prezzo previsto all'uscita? Cosa ti manca per dire sì?"* (campo `would_buy`, vero/falso, con il motivo nella critica principale). La percentuale di sì è il numero che conta per una beta gratuita; `fg_waves.py metrics` la riporta. Il tipo di prodotto resta lo stesso tra le ondate, finché la build non cambia natura (beta → completo): in quel caso è un'ondata nuova con un metro nuovo, dichiaralo nel delta.
 
@@ -83,6 +113,21 @@ Ogni tester giudica **da solo**, leggendo prima la sua scheda, senza vedere gli 
 
 - **Giuria (10 ID da `roster.json`)**: 3-5 righe nella propria voce (personalità e stile della scheda) su **estetica, punti forti, confusione, attrito e la singola modifica prioritaria**. Concrete e ancorate ("il bottone principale ha poco contrasto sullo sfondo"), mai vaghe ("sembra pulito").
 - **Altri tester**: record compatto con verdetto, click al primo sguardo, pitch riformulato correttamente sì/no, una critica principale più una secondaria, ciascuna con evidenza, conseguenza ("esce al minuto X", "chiede rimborso", "non mette in wishlist") e correzione possibile.
+- **Domande extra (tutti, ogni ondata)**, con la chiave nel JSON dell'ondata:
+
+  | # | Domanda | Chiave |
+  |---|---|---|
+  | 1 | Spiega il gioco a un amico in **una frase**: arriva il gancio? | `hook_lands` |
+  | 2 | Dopo **quante run** (o partite) smetti, e perché? | `q_stop_after_runs` |
+  | 3 | **Quanto pagheresti** il gioco completo? Una cifra. | `q_price_full` |
+  | 4 | Quale **momento** ricordi di più? | `q_memorable` |
+  | 5 | La **co-op / il multiplayer** ti serve per comprarlo? | `q_coop_needed` |
+  | 6 | **In quale minuto** ti annoi la prima volta, e cosa stavi facendo? | `q_bored_minute` |
+  | 7 | Finita la demo/beta, cosa fai (wishlist, la consigli, la disinstalli)? Cosa ti farebbe tornare? | `q_after_demo` |
+  | 8 | Lo **guarderesti** da un creator o lo giocheresti tu? Quale momento condivideresti come clip? | `q_watch_or_play` |
+  | 9 | Dove **non sapevi cosa fare**, o c'erano **troppe cose a schermo**? Quale UI toglieresti, uniresti o rimpiccioliresti? | `q_lost_moment` |
+
+  Le risposte vanno in sintesi (mediane e conteggi) in `wNN-sintesi.md`; dove serve, i tester giudicano anche l'**architettura dei menu** da `wNN-schermate.md` (cosa unire, spostare, mostrare al momento giusto).
 
 Una critica è accettata se è: specifica a questo gioco; ancorata a un'evidenza; con conseguenza; con una correzione abbozzata; non duplicata senza un angolo nuovo. Niente adulazione: un difetto riceve critica diretta.
 
@@ -91,7 +136,7 @@ Una critica è accettata se è: specifica a questo gioco; ancorata a un'evidenza
 Scrivi `wNN-group-a.md` e `wNN-group-b.md` (impressioni della giuria incluse nel gruppo di appartenenza).
 
 ### Passo 3: dati dell'ondata e metriche (`fg_waves.py`)
-Trascrivi i giudizi nel file `fg/waves/wNN-AAAA-MM-GG.json` (schema in testa a `fg_waves.py`; la chiave facoltativa `"stage": "beta"|"full"` dichiara il metro e compare nel file metriche: per tester `verdict`, `click`, `pitch_ok`, `issues`; elenco `issues` con **chiavi stabili**, gravità e raccomandazione; `controls`; da N = 2 anche `fixes`). **Riusa le stesse chiavi dei problemi di ondata in ondata**, altrimenti il delta non li collega. Accanto a ogni problema scrivi anche `"gate"` (0, A, B o C: quale cancello blocca) e `"area"` (pilastro o zona del gioco): servono a `STATUS.html` per mostrare le **criticità ondata per ondata, per cancello e nella loro evoluzione** (nuova, persistente, in calo, risolta, ricomparsa). Le correzioni fatte prima dell'ondata vanno in `fixes`: compaiono accanto alla criticità risolta. Poi:
+Trascrivi i giudizi nel file `fg/waves/wNN-AAAA-MM-GG.json` (schema in testa a `fg_waves.py`; la chiave facoltativa `"stage": "beta"|"full"` dichiara il metro e compare nel file metriche: per tester `verdict`, `click`, `pitch_ok`, `issues`; elenco `issues` con **chiavi stabili**, gravità e raccomandazione; `controls`; da N = 2 anche `fixes`; con game-developer i `fixes` sono il blocco del `changes-since` **così com'è**, con `gate_dev` (numero del gate di sviluppo) e, se viene da `gate_link.py since --json`, `status` `risolto` / `da_verificare`: `wave_kit.py fixes --launch-dir launch --wave N --write launch/fg/waves/wNN-....json` li aggiunge senza togliere né cambiare quelli che ci sono; un problema nato da un gate ha `"from_gate_dev": NN`). **Riusa le stesse chiavi dei problemi di ondata in ondata**, altrimenti il delta non li collega. Accanto a ogni problema scrivi anche `"gate"` (0, A, B o C: quale cancello blocca) e `"area"` (pilastro o zona del gioco): servono a `STATUS.html` per mostrare le **criticità ondata per ondata, per cancello e nella loro evoluzione** (nuova, persistente, in calo, risolta, ricomparsa). Le correzioni fatte prima dell'ondata vanno in `fixes`: compaiono accanto alla criticità risolta. Poi:
 
 ```bash
 python3 <skill>/scripts/research/fg_waves.py metrics launch/fg/waves/wNN-AAAA-MM-GG.json --roster launch/fg/roster.json -o launch/fg/waves/wNN-metrics.md
@@ -157,6 +202,16 @@ Senza dialoghi, per sviluppatori e designer:
 10. Metriche (Passo 3), matrice di convergenza (7.3) e i **3 dealbreaker**.
 
 Chiudi il report con la dichiarazione: valutazione **simulata** con persone fittizie, non ricerca empirica; accelera la scoperta euristica ma le decisioni critiche si validano con utenti reali.
+
+### Passo 5b: accanto al punteggio, il controllo con la realtà
+Dopo ogni ondata: `predictions.py sync` registra la previsione dell'ondata (quota wishlist e quota che pagherebbe, SIMULATO), che si chiuderà con i dati dei tester veri (`metrics_track.py add --metric real_wishlist_pct ...`). Accanto al punteggio si riporta anche il **metro oggettivo** (dati veri) con la sua etichetta: i due numeri non si mescolano e non si fanno la media.
+
+Le ondate **restano esattamente come sono** (stessi 54 tester, stessi passi, stesse metriche): la calibrazione dal mercato reale le **affianca**, non le sostituisce. Se esiste `calibration.json`, sotto il punteggio wishlist dell'ondata scrivi una riga con il base rate della fascia del gioco (B salvo prove), al suo prezzo e genere, presa con `cohort_bench.base_rate`: per esempio "un gioco di fascia B a 5-15 $ vende almeno 1.000 copie nel X-Y % dei casi a 90 giorni (n = N, dati dal ... al ...) **[STIMA]**". Il punteggio simulato dice **cosa correggere**; il base rate dice **cosa aspettarsi** se il gioco resta nella sua fascia. Se il panel dà al gioco un punteggio da fascia A ma le capsule di controllo reali dicono B, vale la fascia B.
+
+### Regola di regressione (un fix può creare un problema nuovo, `dev-link.md` §8)
+- **Problema nuovo creato da un gate** (i tester lo collegano a un cambio del gate, o è uno dei rischi di "Da ricontrollare" che si è avverato): **chiave nuova** nel JSON dell'ondata con `"from_gate_dev": NN`, `aperto` in `issue_status.json` con nota "Nato col gate NN."; nella sintesi "nato col gate NN" (`fg_waves.py` e `STATUS.html` lo scrivono accanto alla criticità). Non si riusa la chiave del problema che il gate voleva risolvere.
+- **Chiave già `risolto` che torna**: stessa chiave, di nuovo `aperto` con nota in testa "Ricomparso dopo il gate NN (ondata wNN)." (NN = il gate scritto nel campo `gate`); `gate` e `resolved` restano. Nella sintesi "ricomparso dopo il gate NN".
+- Nella sintesi e nelle proposte le regressioni stanno **in cima**: nel piano dei gate del dev vengono prima del resto.
 
 ### Passo 6: aggiornamenti
 Aggiorna `05-focusgroup.md`, `05a-critiche-simulate.md`, la timeline (7.5) e `STATUS.md` (numero ondata, build, punteggio). Aggiorna **`issue_status.json`** (chiavi nuove come `aperto`, sistemate come `risolto` con il gate; formato in `06-synthesis-output.md`) e **`TODO.md`** con `todo_track.py` (spunta ciò che l'ondata conferma fatto, aggiungi i problemi nuovi da fare), poi rigenera `STATUS.html`. Poi la segnalazione all'utente (7.4); quando il proprietario decide su un problema ("va bene così", "nel gioco completo"), scrivilo subito in `issue_status.json`.
@@ -249,9 +304,9 @@ Regole:
 5. **Pre-lancio** e dopo ogni grande aggiornamento di contenuto.
 
 Procedura (modalità **Ondata**, o parte di **Aggiornamento**):
-1. Chiedi all'utente cosa è cambiato, oppure rilevalo (diff del codice, nuova build, nuovi asset) e scrivilo in `fixes` collegandolo alle chiavi dei problemi.
+1. Chiedi all'utente cosa è cambiato, oppure rilevalo (diff del codice, nuova build, nuovi asset) e scrivilo in `fixes` collegandolo alle chiavi dei problemi. Con game-developer lo dice `docs/design-review/changes-since-wMM.md` (gate nuovi, chiavi toccate, rischi da ricontrollare, cosa provare): leggilo per primo, `fixes` da lì (`wave_kit.py fixes`), le righe `owner_try` dei gate diventano righe 👤 "prova…" nella TODO.
 2. **Stesso roster, stesse schede, stessa giuria.** Rigenera con `roster.py` solo se serve più campione: i nuovi ID (`A-28`…) restano segnati come "nuovi" e il delta li esclude dal confronto a parità di tester.
-3. Pacchetto di evidenze **solo con lo stato attuale** (anti-ancoraggio: niente critiche vecchie, niente elenco di fix). Le ondate precedenti si leggono **dopo** aver scritto i giudizi, solo per il delta.
+3. **Passo 0 rifatto sullo stato attuale** (`wave_kit.py init`, poi `check` tutto ✅) e pacchetto di evidenze **solo con lo stato attuale** (anti-ancoraggio: niente critiche vecchie, niente elenco di fix). Le ondate precedenti si leggono **dopo** aver scritto i giudizi, solo per il delta.
 4. Esegui i Passi 2-6 (nel dibattito aggiungi un round sul cosa è cambiato, solo dopo i giudizi indipendenti).
 5. Delta e timeline:
 

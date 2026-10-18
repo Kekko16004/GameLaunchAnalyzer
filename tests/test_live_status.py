@@ -4,6 +4,7 @@ TODO.md kept alive by todo_track.py (done / reopen / add, open vs done per secti
 import os, sys, json, tempfile, datetime as dt, re, time, subprocess
 R = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "scripts", "research")
 sys.path.insert(0, R)
+os.environ["GLS_HOME"] = tempfile.mkdtemp()  # never read the user's real calibration or keys
 import common
 def no_net(*a, **k): raise AssertionError("must not use the network")
 common.http_get = no_net
@@ -120,11 +121,11 @@ later = time.time() + 3600; os.utime(os.path.join(d, "issue_status.json"), (late
 page = sp.build(d, "private", [], [], set(), dt.date(2026, 10, 9))
 body = page.split("<script>")[0]
 assert "<img src=x" not in body and "<script src" not in page and "<link " not in page and "https://" not in body
-assert page.count('role="tab"') == 4 and 'role="tabpanel"' in page and "localStorage" in page and "try{localStorage" in page and 'aria-controls="p-gioco"' in page
+assert page.count('role="tab"') == 6 and 'aria-controls="p-calendario"' in page and 'aria-controls="p-mercato"' in page and 'role="tabpanel"' in page and "localStorage" in page and "try{localStorage" in page and 'aria-controls="p-gioco"' in page
 for need in ("Pilastri: dove regge il gioco", "Criticità, ondata per ondata", "Ondate del focus group", "Gioco completo (proiezione)", "Beta gratuita", "Tetto del gioco completo", "non è margine di oggi",
              "Di cosa si lamentano", "Cose da fare (TODO)", "2 fatte su 4", "Superate dalle tue decisioni", "Da aggiornare", "le tue decisioni (issue_status.json)", "Run ripetitive / poca varietà", "Pianificato", "Da verificare", "Accettato così"):
     assert need in page, need
-verdict = page[page.index("Verdetto:"):page.index("</section>", page.index("Verdetto:"))]
+verdict = page[page.index("Verdetto del semaforo:"):page.index("</details>", page.index("Verdetto del semaforo:"))]   # the verdict is now a collapsible badge under the summary
 assert "Pianificato" in verdict and "Da verificare" in verdict and "Accettato così" in verdict and verdict.count('class="pill') == 3   # risk 1 -> run-variety + tray-feel, risk 2 -> no-coop, risk 3 -> none
 conv = page[page.index("Run ripetitive / poca varietà") - 400:]; conv = conv[:conv.index("</table>")]
 assert conv.count("own") >= 2 and "Altro</td>" in conv                                       # rows of document tables carry the owner's decision

@@ -1,0 +1,1665 @@
+{
+ "_comment": "Hand-curated for promo_events.py on read_on. Dated editions only with a source read that day; everything else is a pattern of usual months [DA VERIFICARE]. reach_tier / odds / odds_why are [OPINIONE] from the organisers' numbers and past line-ups (press articles, Steam sale pages). Update by hand when an organiser publishes a call; `promo_events.py fetch` re-reads the deadline_page links.",
+ "read_on": "2026-10-17",
+ "sources": [
+  "https://howtomarketagame.com/festivals/",
+  "https://wholesomegames.com/",
+  "https://www.galaxiesshow.com/",
+  "https://indie.live-expo.games/en/",
+  "https://home.indiearenabooth.de/submission",
+  "https://www.yogscast.games/tiny-teams-devs",
+  "https://itch.io/updates/what-is-creator-day",
+  "https://www.dayofthedevs.org/submit",
+  "https://threadfox.vip/rules/for/games (regole Reddit lette da terzi, 2026-09/10)"
+ ],
+ "physical_note": "**Gli eventi fisici sono facoltativi.** Per un team di 2 persone in Italia uno stand a PAX o a gamescom costa tra 3.000 e 7.000 € con viaggio, alloggio e PC da fiera [STIMA], più una settimana di lavoro persa; porta soprattutto contatti con stampa e publisher, poche wishlist per euro speso rispetto agli showcase online gratuiti. Il post su Reddit da cui nasce la domanda ('450 wishlist in 2 settimane' dopo il PAX) dice proprio questo: un evento fisico costoso non garantisce numeri. Se un giorno vale la pena, è un evento vicino e gratuito (Indie Dungeon di Milan Games Week, Svilupparty) usato anche come test della beta con giocatori veri.",
+ "events": [
+  {
+   "key": "big_winter",
+   "name": "BIG Winter Showcase",
+   "kind": "showcase",
+   "online": true,
+   "url": "https://www.thebestindiegames.com/",
+   "recurrence": "annual",
+   "submit_url": "https://docs.google.com/forms/d/e/1FAIpQLSclblIMMQJo5Z8HOuKZqS3lQBsdJS0pW78Vdhhv0sBnHmRgjA/viewform",
+   "editions": [
+    {
+     "label": "2026",
+     "start": "2026-12-01",
+     "end": "2026-12-01",
+     "submission_open": null,
+     "submission_deadline": "2026-10-23",
+     "status": "FATTO",
+     "source": "https://docs.google.com/forms/d/e/1FAIpQLSclblIMMQJo5Z8HOuKZqS3lQBsdJS0pW78Vdhhv0sBnHmRgjA/viewform",
+     "read_on": "2026-10-17"
+    }
+   ],
+   "pattern": {
+    "text": "Winter a inizio dicembre (2026: diretta 1 dicembre, candidature fino al 23 ottobre, selezione progressiva: prima è meglio; trailer entro il 17 novembre, dati wishlist entro il 15 dicembre)",
+    "event_months": [
+     12
+    ],
+    "close_month": 10
+   },
+   "requires": [
+    "trailer"
+   ],
+   "stages": [
+    "none",
+    "coming_soon",
+    "demo"
+   ],
+   "fit": "any",
+   "reach_tier": "media",
+   "odds": "media",
+   "odds_why": "60 giochi in un'ora, gratis; nel 2025 giochi piccoli come Food Truck Empire, Kaiju Cleaner Simulator, Everything is Crab; ma solo 60 posti e noi senza pagina Steam alla scadenza",
+   "cost": "free",
+   "reach_note": "canale YouTube Best Indie Games, numeri non pubblicati",
+   "cost_note": "gratis (\"no participation fee\")",
+   "next_step": "manda il modulo con un trailer (il v1 è bocciato: serve il vecchio trailer buono o il nuovo) e scrivi che la pagina Steam esce il ~31 ottobre",
+   "why_us": "giochi in uscita nel 2027 benvenuti, 55 s di trailer narrati",
+   "lineup": "https://www.thebestindiegames.com/best-indie-games-winter-showcase-2025",
+   "read_on": "2026-10-17"
+  },
+  {
+   "key": "big_summer",
+   "name": "BIG Summer Showcase",
+   "kind": "showcase",
+   "online": true,
+   "url": "https://www.thebestindiegames.com/",
+   "recurrence": "annual",
+   "pattern": {
+    "text": "estate a giugno; nel 2026 candidature chiuse il 25 aprile (lista di How To Market A Game)",
+    "event_months": [
+     6
+    ],
+    "close_month": 4
+   },
+   "requires": [
+    "steam_page",
+    "trailer"
+   ],
+   "stages": [
+    "coming_soon",
+    "demo",
+    "ea"
+   ],
+   "fit": "any",
+   "reach_tier": "media",
+   "odds": "media",
+   "odds_why": "tanti giochi a clip brevi, ma a pagamento",
+   "cost": "paid",
+   "cost_note": "197 $ (2026)",
+   "next_step": "decidi se vale 197 $ dopo i numeri del Next Fest",
+   "source": "https://howtomarketagame.com/festivals/",
+   "read_on": "2026-10-17"
+  },
+  {
+   "key": "indie_fan_fest",
+   "name": "Indie Fan Fest (Next Fest di febbraio)",
+   "kind": "showcase",
+   "online": true,
+   "url": "https://indiefanfest.com/",
+   "recurrence": "annual",
+   "pattern": {
+    "text": "stream e pagina Steam legati al Next Fest di febbraio; nel 2026 candidature chiuse il 9 gennaio, diretta 19-20 febbraio",
+    "event_months": [
+     2
+    ],
+    "open_month": 11,
+    "close_month": 1
+   },
+   "requires": [
+    "steam_page",
+    "demo",
+    "unreleased"
+   ],
+   "stages": [
+    "demo"
+   ],
+   "fit": "any",
+   "reach_tier": "media",
+   "odds": "media",
+   "odds_why": "~50 giochi mostrati, la tassa scoraggia molti; nel 2026 Pro Jank Footy (fisica 'jank'), Retail Hell, Cleaning Up!, Train Jumble",
+   "cost": "paid",
+   "reach_note": "The MIX + Digital Bandidos, ~50 giochi",
+   "cost_note": "~600 $ (forse solo se accettati) [DA VERIFICARE]",
+   "next_step": "da novembre segui indiefanfest.com e @indieexchange; scegli questo O The MIX, non entrambi",
+   "why_us": "serve proprio una demo nuova al primo Next Fest: è il nostro caso",
+   "lineup": "https://bleedingcool.com/games/everything-revealed-during-indie-fan-fest-february-2026/",
+   "read_on": "2026-10-17"
+  },
+  {
+   "key": "wholesome_direct",
+   "name": "Wholesome Direct",
+   "kind": "showcase",
+   "online": true,
+   "url": "https://wholesomegames.com/",
+   "recurrence": "annual",
+   "deadline_page": "https://wholesomegames.com/",
+   "pattern": {
+    "text": "diretta a inizio giugno (weekend del Summer Game Fest); nel 2026 candidature 2-20 marzo, annunciate nella newsletter",
+    "event_months": [
+     6
+    ],
+    "open_month": 3,
+    "close_month": 3
+   },
+   "requires": [
+    "steam_page",
+    "trailer"
+   ],
+   "stages": [
+    "coming_soon",
+    "demo",
+    "ea"
+   ],
+   "fit": "any",
+   "requires_fit": [
+    "cute",
+    "casual",
+    "cozy",
+    "wholesome",
+    "family"
+   ],
+   "reach_tier": "alta",
+   "odds": "bassa",
+   "odds_why": "1.000+ candidature per ~50 posti; il nostro caos è al limite del 'wholesome'",
+   "cost": "free",
+   "reach_note": "6+ milioni di visualizzazioni nel 2026, in media 20.000+ wishlist ai giochi mostrati [FATTO, wholesomegames.com]",
+   "next_step": "iscriviti ora alla newsletter di Wholesome Games: il modulo arriva lì",
+   "window_weight": 2,
+   "read_on": "2026-10-17"
+  },
+  {
+   "key": "wholesome_snack",
+   "name": "Wholesome Snack (The Game Awards)",
+   "kind": "showcase",
+   "online": true,
+   "url": "https://wholesomegames.com/",
+   "recurrence": "annual",
+   "pattern": {
+    "text": "~30 minuti a dicembre; nel 2026 candidature chiuse il 15 settembre",
+    "event_months": [
+     12
+    ],
+    "close_month": 9
+   },
+   "requires": [
+    "steam_page",
+    "trailer"
+   ],
+   "stages": [
+    "coming_soon",
+    "demo",
+    "ea"
+   ],
+   "fit": "any",
+   "requires_fit": [
+    "cute",
+    "casual",
+    "cozy",
+    "wholesome"
+   ],
+   "reach_tier": "alta",
+   "odds": "bassa",
+   "odds_why": "molto curato, vuole contenuti esclusivi",
+   "cost": "free",
+   "source": "https://howtomarketagame.com/festivals/",
+   "plan": false,
+   "read_on": "2026-10-17"
+  },
+  {
+   "key": "future_games_show",
+   "name": "Future Games Show",
+   "kind": "showcase",
+   "online": true,
+   "url": "https://www.futuregamesshow.com/take-part",
+   "recurrence": "annual",
+   "pattern": {
+    "text": "Spring a marzo, Summer a giugno, Gamescom ad agosto; nel 2026 la Spring chiudeva il 26 gennaio (2025: 6 febbraio); il modulo di segnalazione resta aperto",
+    "event_months": [
+     3,
+     6,
+     8
+    ],
+    "open_month": {
+     "3": 12,
+     "6": 3,
+     "8": 6
+    },
+    "close_month": {
+     "3": 1,
+     "6": 4,
+     "8": 7
+    }
+   },
+   "requires": [
+    "steam_page",
+    "trailer"
+   ],
+   "stages": [
+    "coming_soon",
+    "demo",
+    "ea"
+   ],
+   "fit": "any",
+   "reach_tier": "alta",
+   "odds": "bassa",
+   "odds_why": "~40 giochi, molti posti per partner a pagamento; vuole prime visioni",
+   "cost": "free",
+   "reach_note": "\"oltre 200 milioni di visualizzazioni\" (FGS, 2025)",
+   "next_step": "manda il modulo per la Spring con la demo e un trailer mai visto",
+   "window_weight": 2,
+   "read_on": "2026-10-17"
+  },
+  {
+   "key": "day_of_the_devs",
+   "name": "Day of the Devs",
+   "kind": "showcase",
+   "online": true,
+   "url": "https://www.dayofthedevs.org/submit",
+   "recurrence": "annual",
+   "deadline_page": "https://www.dayofthedevs.org/submit",
+   "pattern": {
+    "text": "edizione Summer Game Fest (finestra di una settimana tra fine marzo e inizio aprile; 2026: 31 marzo-6 aprile) e The Game Awards (2026: 21-28 settembre)",
+    "event_months": [
+     6,
+     12
+    ],
+    "open_month": {
+     "6": 3,
+     "12": 9
+    },
+    "close_month": {
+     "6": 4,
+     "12": 9
+    }
+   },
+   "requires": [
+    "build"
+   ],
+   "stages": [
+    "coming_soon",
+    "demo",
+    "ea"
+   ],
+   "fit": "any",
+   "reach_tier": "alta",
+   "odds": "bassa",
+   "odds_why": "1.700+ candidature per 20 posti (SGF 2026)",
+   "cost": "free",
+   "next_step": "segui @dayofthedevs: la finestra dura una settimana",
+   "window_weight": 2,
+   "read_on": "2026-10-17"
+  },
+  {
+   "key": "pc_gaming_show",
+   "name": "PC Gaming Show",
+   "kind": "showcase",
+   "online": true,
+   "url": "https://www.pcgamer.com/",
+   "recurrence": "annual",
+   "pattern": {
+    "text": "giugno; nessun modulo pubblico, solo email alla redazione di PC Gamer",
+    "event_months": [
+     6
+    ],
+    "close_month": 4
+   },
+   "requires": [
+    "steam_page",
+    "trailer"
+   ],
+   "stages": [
+    "coming_soon",
+    "demo",
+    "ea"
+   ],
+   "fit": "any",
+   "reach_tier": "alta",
+   "odds": "bassa",
+   "odds_why": "guidato dai partner; nessuna via pubblica trovata",
+   "cost": "paid",
+   "cost_note": "spazi commerciali [DA VERIFICARE]",
+   "next_step": "salta: nessuna via pubblica per candidarsi",
+   "plan": false,
+   "read_on": "2026-10-17"
+  },
+  {
+   "key": "the_mix",
+   "name": "The MIX (ex Guerrilla Collective)",
+   "kind": "showcase",
+   "online": true,
+   "url": "https://www.themixgames.com/",
+   "recurrence": "annual",
+   "pattern": {
+    "text": "Spring con Kinda Funny (2026: chiusa il 23 gennaio), Summer online (24 aprile), Fall online (10 agosto)",
+    "event_months": [
+     3,
+     6,
+     10
+    ],
+    "close_month": {
+     "3": 1,
+     "6": 4,
+     "10": 8
+    }
+   },
+   "requires": [
+    "steam_page",
+    "trailer"
+   ],
+   "stages": [
+    "coming_soon",
+    "demo",
+    "ea"
+   ],
+   "fit": "any",
+   "reach_tier": "media",
+   "odds": "media",
+   "odds_why": "500+ candidature per la Fall, ma decine di giochi mostrati; la tassa filtra",
+   "cost": "paid",
+   "cost_note": "600 $ per lo showcase online [FATTO, modulo Fall 2026]",
+   "next_step": "scegli The MIX O Indie Fan Fest, non entrambi",
+   "read_on": "2026-10-17"
+  },
+  {
+   "key": "galaxies",
+   "name": "Galaxies Showcase",
+   "kind": "showcase",
+   "online": true,
+   "url": "https://www.galaxiesshow.com/",
+   "recurrence": "annual",
+   "deadline_page": "https://www.galaxiesshow.com/",
+   "pattern": {
+    "text": "due edizioni l'anno, aprile e ottobre [FATTO galaxiesshow.com]; Spring 2026 chiusa il 10 febbraio, Autumn il 26 luglio",
+    "event_months": [
+     4,
+     10
+    ],
+    "close_month": {
+     "4": 2,
+     "10": 7
+    }
+   },
+   "requires": [
+    "steam_page",
+    "trailer"
+   ],
+   "stages": [
+    "coming_soon",
+    "demo",
+    "ea"
+   ],
+   "fit": "any",
+   "reach_tier": "media",
+   "odds": "bassa",
+   "odds_why": "~50 trailer molto curati",
+   "cost": "free",
+   "next_step": "segui Galaxies su Bluesky da gennaio",
+   "read_on": "2026-10-17"
+  },
+  {
+   "key": "indie_live_expo",
+   "name": "INDIE Live Expo (INDIE Waves)",
+   "kind": "showcase",
+   "online": true,
+   "url": "https://indie.live-expo.games/en/",
+   "recurrence": "annual",
+   "deadline_page": "https://indie.live-expo.games/en/",
+   "editions": [
+    {
+     "label": "dicembre 2026",
+     "start": "2026-12-01",
+     "end": "2026-12-01",
+     "submission_open": null,
+     "submission_deadline": "2026-09-28",
+     "status": "FATTO",
+     "source": "https://indie.live-expo.games/en/",
+     "read_on": "2026-10-17"
+    }
+   ],
+   "pattern": {
+    "text": "aprile e dicembre (2026: diretta 1 dicembre, candidature chiuse il 28 settembre; aprile 2026: 27 gennaio-20 febbraio)",
+    "event_months": [
+     4,
+     12
+    ],
+    "open_month": {
+     "4": 1,
+     "12": 8
+    },
+    "close_month": {
+     "4": 2,
+     "12": 9
+    }
+   },
+   "requires": [
+    "trailer",
+    "gameplay_video"
+   ],
+   "stages": [
+    "coming_soon",
+    "demo",
+    "ea"
+   ],
+   "fit": "any",
+   "reach_tier": "media",
+   "odds": "alta",
+   "odds_why": "segmento INDIE Waves: 100-200+ giochi in clip brevi, gratis per il primo titolo",
+   "cost": "free",
+   "reach_note": "\"oltre 100 milioni di visualizzazioni\" in totale (dato dell'organizzatore), pubblico soprattutto asiatico",
+   "next_step": "prepara 30 s di trailer e 15 s di gameplay",
+   "read_on": "2026-10-17"
+  },
+  {
+   "key": "wishlisted",
+   "name": "Wishlisted (ex OTK Games Expo)",
+   "kind": "showcase",
+   "online": true,
+   "url": "https://wishlisted.com/",
+   "recurrence": "annual",
+   "pattern": {
+    "text": "aprile; nel 2026 candidature chiuse il 20 marzo",
+    "event_months": [
+     4
+    ],
+    "close_month": 3
+   },
+   "requires": [
+    "steam_page",
+    "trailer"
+   ],
+   "stages": [
+    "coming_soon",
+    "demo",
+    "ea"
+   ],
+   "fit": "any",
+   "reach_tier": "media",
+   "odds": "bassa",
+   "odds_why": "\"decine\" di giochi; nel 2025 offerti posti garantiti a pagamento (7-65 mila $) a chi era scartato: mai pagarli",
+   "cost": "free",
+   "source": "https://howtomarketagame.com/festivals/",
+   "read_on": "2026-10-17"
+  },
+  {
+   "key": "cozy_quest",
+   "name": "Cozy Quest (Secret Mode)",
+   "kind": "showcase",
+   "online": true,
+   "url": "https://secretmode.com/",
+   "recurrence": "annual",
+   "pattern": {
+    "text": "metà novembre (2023-2025); nessun bando pubblico trovato",
+    "event_months": [
+     11
+    ]
+   },
+   "requires": [
+    "steam_page",
+    "trailer"
+   ],
+   "stages": [
+    "coming_soon",
+    "demo",
+    "ea"
+   ],
+   "fit": "any",
+   "requires_fit": [
+    "cozy",
+    "wholesome"
+   ],
+   "reach_tier": "media",
+   "odds": "bassa",
+   "odds_why": "nessun bando pubblico; tema cozy",
+   "cost": "free",
+   "plan": false,
+   "read_on": "2026-10-17"
+  },
+  {
+   "key": "latam_showcase",
+   "name": "Latin American Games Showcase",
+   "kind": "showcase",
+   "online": true,
+   "url": "https://www.latamgamesshowcase.com/",
+   "recurrence": "annual",
+   "pattern": {
+    "text": "giugno",
+    "event_months": [
+     6
+    ],
+    "close_month": 4
+   },
+   "requires": [],
+   "stages": [
+    "coming_soon",
+    "demo",
+    "ea"
+   ],
+   "fit": "any",
+   "reach_tier": "media",
+   "odds": "media",
+   "odds_why": "riservato a sviluppatori latinoamericani",
+   "cost": "free",
+   "team_only": "sviluppatori latinoamericani",
+   "read_on": "2026-10-17"
+  },
+  {
+   "key": "frosty",
+   "name": "Frosty Games Fest",
+   "kind": "showcase",
+   "online": true,
+   "url": "https://frostygamesfest.com/",
+   "recurrence": "annual",
+   "pattern": {
+    "text": "dicembre",
+    "event_months": [
+     12
+    ],
+    "close_month": 10
+   },
+   "requires": [],
+   "stages": [
+    "coming_soon",
+    "demo",
+    "ea"
+   ],
+   "fit": "any",
+   "reach_tier": "media",
+   "odds": "media",
+   "odds_why": "team in maggioranza in Australia o Nuova Zelanda",
+   "cost": "free",
+   "team_only": "team australiani o neozelandesi",
+   "read_on": "2026-10-17"
+  },
+  {
+   "key": "women_led",
+   "name": "Women-led Games",
+   "kind": "showcase",
+   "online": true,
+   "url": "https://www.womenledgames.com/",
+   "recurrence": "annual",
+   "pattern": {
+    "text": "giugno e dicembre; nel 2026 la call SGF chiudeva il 10 aprile",
+    "event_months": [
+     6,
+     12
+    ],
+    "close_month": {
+     "6": 4,
+     "12": 9
+    }
+   },
+   "requires": [],
+   "stages": [
+    "coming_soon",
+    "demo",
+    "ea"
+   ],
+   "fit": "any",
+   "reach_tier": "media",
+   "odds": "media",
+   "odds_why": "riservato a studi guidati da donne",
+   "cost": "free",
+   "team_only": "studi guidati da donne o a maggioranza femminile",
+   "read_on": "2026-10-17"
+  },
+  {
+   "key": "black_voices",
+   "name": "Black Voices in Gaming",
+   "kind": "showcase",
+   "online": true,
+   "url": "https://blackvoicesingaming.com/",
+   "recurrence": "annual",
+   "pattern": {
+    "text": "giugno; nel 2026 scadenza 30 marzo",
+    "event_months": [
+     6
+    ],
+    "close_month": 3
+   },
+   "requires": [],
+   "stages": [
+    "coming_soon",
+    "demo",
+    "ea"
+   ],
+   "fit": "any",
+   "reach_tier": "media",
+   "odds": "media",
+   "odds_why": "riservato a team guidati da sviluppatori neri",
+   "cost": "free",
+   "team_only": "team guidati da sviluppatori neri",
+   "read_on": "2026-10-17"
+  },
+  {
+   "key": "fun_dark_cozy",
+   "name": "The Fun, The Dark & The Cozy",
+   "kind": "steam_fest_3rd",
+   "online": true,
+   "url": "https://store.steampowered.com/curator/45579964/sale/TheFunTheDarkandTheCozy",
+   "recurrence": "annual",
+   "submit_url": "https://docs.google.com/forms/d/e/1FAIpQLSfMH6hblomMQjYNhLGLDFvuoz_OgiU4ZV3U9ds3QUl6X6HHsg/viewform",
+   "editions": [
+    {
+     "label": "2027",
+     "start": null,
+     "end": null,
+     "submission_open": null,
+     "submission_deadline": "2026-11-15",
+     "status": "FATTO",
+     "source": "https://howtomarketagame.com/festivals/",
+     "read_on": "2026-10-17"
+    }
+   ],
+   "pattern": {
+    "text": "fest su Steam a febbraio (2026: 2-9 febbraio); candidature 2027 fino al 15 novembre 2026",
+    "event_months": [
+     2
+    ],
+    "close_month": 11
+   },
+   "requires": [
+    "steam_page"
+   ],
+   "stages": [
+    "coming_soon",
+    "demo"
+   ],
+   "fit": "theme",
+   "match": [
+    "funny",
+    "comedy",
+    "cute",
+    "casual",
+    "cozy"
+   ],
+   "reach_tier": "piccola",
+   "odds": "alta",
+   "odds_why": "275+ giochi nel 2026, gratis, 'Fun' è uno dei tre temi; nel 2026 Catch & Cargo, Athenian Rhapsody",
+   "cost": "free",
+   "reach_note": "pagina di saldo su Steam, 275+ giochi nel 2026",
+   "next_step": "appena la pagina Coming Soon è online, manda il modulo nella categoria 'Fun'",
+   "why_us": "cade 2 settimane prima del Next Fest: wishlist proprio quando servono",
+   "read_on": "2026-10-17"
+  },
+  {
+   "key": "wholesome_kitchen",
+   "name": "Wholesome Kitchen",
+   "kind": "steam_fest_3rd",
+   "online": true,
+   "url": "https://store.steampowered.com/curator/45686865/sale/WholesomeKitchenEvent2026",
+   "recurrence": "annual",
+   "pattern": {
+    "text": "fine aprile-inizio maggio (2026: 24 aprile-9 maggio); candidature chiuse il 20 marzo 2026",
+    "event_months": [
+     4
+    ],
+    "open_month": 2,
+    "close_month": 3
+   },
+   "requires": [
+    "steam_page"
+   ],
+   "stages": [
+    "coming_soon",
+    "demo"
+   ],
+   "fit": "theme",
+   "match": [
+    "food",
+    "cooking",
+    "restaurant"
+   ],
+   "exclude": [
+    "gore"
+   ],
+   "reach_tier": "piccola",
+   "odds": "media",
+   "odds_why": "500+ candidature, quanti presi non si sa; includeva esplicitamente il 'caos in cucina'; nel 2026 My Little Cafe Nightmare, Kokoro Kitchen, Cats & Cups",
+   "cost": "free",
+   "next_step": "da febbraio segui le notizie Steam di Rogue Duck Interactive",
+   "why_us": "cibo e caos al buffet, poche settimane prima dell'EA",
+   "lineup": "https://www.comfycozygaming.com/2026/04/29/wholesome-kitchen-event-cozy-game/",
+   "source": "https://howtomarketagame.com/festivals/",
+   "read_on": "2026-10-17"
+  },
+  {
+   "key": "tiny_teams",
+   "name": "Tiny Teams (Yogscast)",
+   "kind": "steam_fest_3rd",
+   "online": true,
+   "url": "https://www.yogscast.games/tiny-teams-devs",
+   "recurrence": "annual",
+   "deadline_page": "https://www.yogscast.games/tiny-teams-devs",
+   "pattern": {
+    "text": "fest ad agosto con dirette Yogscast (2026: 6-13 agosto), candidature ad aprile (2026: 1-30 aprile)",
+    "event_months": [
+     8
+    ],
+    "open_month": 4,
+    "close_month": 4
+   },
+   "requires": [
+    "steam_page",
+    "trailer"
+   ],
+   "stages": [
+    "coming_soon",
+    "demo",
+    "ea"
+   ],
+   "fit": "any",
+   "reach_tier": "alta",
+   "odds": "media",
+   "odds_why": "~200 giochi scelti su 3.500+ (2026), ma il limite di 5 persone ci mette tra pari",
+   "cost": "free",
+   "reach_note": "dirette dei creator Yogscast; ex partecipanti PlateUp! e PEAK",
+   "cost_note": "gratis, nessuna quota per essere mostrati",
+   "next_step": "ad aprile: trailer sotto i 120 s e AppID",
+   "why_us": "team di 2 persone: è fatto per noi; fisica comica piace agli streamer",
+   "read_on": "2026-10-17"
+  },
+  {
+   "key": "weird_days",
+   "name": "Weird Days: Job Simulator",
+   "kind": "steam_fest_3rd",
+   "online": true,
+   "url": "https://store.steampowered.com/curator/46222062/sale/WeirdDaysJobSimulator-2026",
+   "recurrence": "annual",
+   "pattern": {
+    "text": "fine agosto (2026: 24-31 agosto); candidature chiuse il 5 luglio 2026 secondo HTMAG",
+    "event_months": [
+     8
+    ],
+    "open_month": 6,
+    "close_month": 7
+   },
+   "requires": [
+    "steam_page"
+   ],
+   "stages": [
+    "coming_soon",
+    "demo",
+    "ea",
+    "released"
+   ],
+   "fit": "theme",
+   "match": [
+    "time management",
+    "simulation",
+    "funny",
+    "food"
+   ],
+   "reach_tier": "piccola",
+   "odds": "alta",
+   "odds_why": "102 giochi scelti nel 2026, gratis; lavori strani e ristoranti: un cameriere al buffet ci sta",
+   "cost": "free",
+   "reach_note": "pagina Steam + diretta Twitch, curatori ospiti (No Small Games)",
+   "next_step": "a giugno cerca il bando di Dev Land Marketing",
+   "lineup": "https://nosmallgames.com/2026/08/weird-days-roundup-10-job-sims-that-will-have-you-ready-to-clock-in/",
+   "source": "https://howtomarketagame.com/festivals/",
+   "read_on": "2026-10-17"
+  },
+  {
+   "key": "simfest",
+   "name": "SimFest",
+   "kind": "steam_fest_3rd",
+   "online": true,
+   "url": "https://x.com/SteamSimfest",
+   "recurrence": "annual",
+   "pattern": {
+    "text": "luglio; nel 2026 candidature chiuse il 12 maggio (modulo Google su X @SteamSimfest); tema diverso ogni anno",
+    "event_months": [
+     7
+    ],
+    "open_month": 4,
+    "close_month": 5
+   },
+   "requires": [
+    "steam_page"
+   ],
+   "stages": [
+    "coming_soon",
+    "demo",
+    "ea"
+   ],
+   "fit": "theme",
+   "match": [
+    "time management",
+    "simulation",
+    "management"
+   ],
+   "reach_tier": "media",
+   "odds": "media",
+   "odds_why": "tema che cambia ogni anno (2026: lavoratori e risorse)",
+   "cost": "free",
+   "reach_note": "125+ giochi e copertura stampa",
+   "next_step": "ad aprile controlla il tema 2027 su @SteamSimfest",
+   "source": "https://howtomarketagame.com/festivals/",
+   "read_on": "2026-10-17"
+  },
+  {
+   "key": "cozy_job_sims",
+   "name": "Cozy Job Simulators",
+   "kind": "steam_fest_3rd",
+   "online": true,
+   "url": "https://howtomarketagame.com/festivals/",
+   "recurrence": "annual",
+   "pattern": {
+    "text": "giugno; nel 2026 candidature chiuse il 20 marzo",
+    "event_months": [
+     6
+    ],
+    "close_month": 3
+   },
+   "requires": [
+    "steam_page"
+   ],
+   "stages": [
+    "coming_soon",
+    "demo",
+    "ea"
+   ],
+   "fit": "theme",
+   "match": [
+    "time management",
+    "cute",
+    "casual"
+   ],
+   "reach_tier": "piccola",
+   "odds": "alta",
+   "odds_why": "fest piccolo e gratuito; noi siamo caotici più che cozy",
+   "cost": "free",
+   "source": "https://howtomarketagame.com/festivals/",
+   "read_on": "2026-10-17"
+  },
+  {
+   "key": "cozy_family_fest",
+   "name": "Cozy & Family Friendly Game Fest",
+   "kind": "steam_fest_3rd",
+   "online": true,
+   "url": "https://howtomarketagame.com/festivals/",
+   "recurrence": "annual",
+   "pattern": {
+    "text": "maggio; nel 2026 candidature chiuse il 30 gennaio",
+    "event_months": [
+     5
+    ],
+    "close_month": 1
+   },
+   "requires": [
+    "steam_page"
+   ],
+   "stages": [
+    "coming_soon",
+    "demo",
+    "ea"
+   ],
+   "fit": "theme",
+   "match": [
+    "cute",
+    "casual",
+    "family friendly",
+    "cozy"
+   ],
+   "reach_tier": "piccola",
+   "odds": "alta",
+   "odds_why": "fest piccolo e gratuito per giochi adatti alle famiglie",
+   "cost": "free",
+   "next_step": "a gennaio cerca il bando nella lista di How To Market A Game",
+   "source": "https://howtomarketagame.com/festivals/",
+   "read_on": "2026-10-17"
+  },
+  {
+   "key": "low_budget_big_heart",
+   "name": "Low Budget, Big Heart",
+   "kind": "steam_fest_3rd",
+   "online": true,
+   "url": "https://howtomarketagame.com/festivals/",
+   "recurrence": "annual",
+   "pattern": {
+    "text": "novembre; nel 2026 candidature chiuse il 3 agosto",
+    "event_months": [
+     11
+    ],
+    "close_month": 8
+   },
+   "requires": [
+    "steam_page"
+   ],
+   "stages": [
+    "coming_soon",
+    "demo",
+    "ea"
+   ],
+   "fit": "any",
+   "reach_tier": "piccola",
+   "odds": "alta",
+   "odds_why": "per giochi con budget sotto ~50.000 $",
+   "cost": "free",
+   "team_only": "giochi con budget sotto ~50.000 $",
+   "source": "https://howtomarketagame.com/festivals/",
+   "read_on": "2026-10-17"
+  },
+  {
+   "key": "debut_festival",
+   "name": "Debut Festival",
+   "kind": "steam_fest_3rd",
+   "online": true,
+   "url": "https://howtomarketagame.com/festivals/",
+   "recurrence": "annual",
+   "pattern": {
+    "text": "agosto; nel 2026 candidature chiuse il 20 luglio",
+    "event_months": [
+     8
+    ],
+    "close_month": 7
+   },
+   "requires": [
+    "steam_page"
+   ],
+   "stages": [
+    "coming_soon",
+    "demo",
+    "ea"
+   ],
+   "fit": "any",
+   "reach_tier": "piccola",
+   "odds": "alta",
+   "odds_why": "solo il primo gioco di uno studio",
+   "cost": "free",
+   "team_only": "primo gioco dello studio",
+   "source": "https://howtomarketagame.com/festivals/",
+   "read_on": "2026-10-17"
+  },
+  {
+   "key": "four_is_a_party",
+   "name": "Four is a Party (Daedalic)",
+   "kind": "steam_fest_3rd",
+   "online": true,
+   "url": "https://howtomarketagame.com/festivals/",
+   "recurrence": "annual",
+   "pattern": {
+    "text": "dicembre; nel 2026 candidature chiuse il 7 settembre",
+    "event_months": [
+     12
+    ],
+    "close_month": 9
+   },
+   "requires": [
+    "steam_page"
+   ],
+   "stages": [
+    "coming_soon",
+    "demo",
+    "ea"
+   ],
+   "fit": "any",
+   "requires_fit": [
+    "multiplayer",
+    "co-op",
+    "local co-op",
+    "online co-op",
+    "pvp"
+   ],
+   "reach_tier": "media",
+   "odds": "media",
+   "odds_why": "solo multigiocatore: per noi dopo l'aggiornamento co-op",
+   "cost": "free",
+   "source": "https://howtomarketagame.com/festivals/",
+   "read_on": "2026-10-17"
+  },
+  {
+   "key": "coopaloza",
+   "name": "CO-OPALOOZA",
+   "kind": "steam_fest_3rd",
+   "online": true,
+   "url": "https://howtomarketagame.com/festivals/",
+   "recurrence": "annual",
+   "pattern": {
+    "text": "agosto; nel 2026 candidature chiuse il 17 aprile",
+    "event_months": [
+     8
+    ],
+    "close_month": 4
+   },
+   "requires": [
+    "steam_page"
+   ],
+   "stages": [
+    "coming_soon",
+    "demo",
+    "ea"
+   ],
+   "fit": "any",
+   "requires_fit": [
+    "co-op",
+    "online co-op",
+    "local co-op"
+   ],
+   "reach_tier": "piccola",
+   "odds": "alta",
+   "odds_why": "solo giochi co-op",
+   "cost": "free",
+   "source": "https://howtomarketagame.com/festivals/",
+   "read_on": "2026-10-17"
+  },
+  {
+   "key": "forward_thinking",
+   "name": "Forward Thinking Showcase",
+   "kind": "steam_fest_3rd",
+   "online": true,
+   "url": "https://howtomarketagame.com/festivals/",
+   "recurrence": "annual",
+   "pattern": {
+    "text": "gennaio; candidature fino al 31 ottobre 2026",
+    "event_months": [
+     1
+    ],
+    "close_month": 10
+   },
+   "requires": [
+    "steam_page"
+   ],
+   "stages": [
+    "coming_soon",
+    "demo",
+    "ea"
+   ],
+   "fit": "any",
+   "requires_fit": [
+    "puzzle"
+   ],
+   "reach_tier": "piccola",
+   "odds": "alta",
+   "odds_why": "solo puzzle e giochi da pianificare",
+   "cost": "free",
+   "source": "https://howtomarketagame.com/festivals/",
+   "read_on": "2026-10-17"
+  },
+  {
+   "key": "games_in_italy",
+   "name": "Games in Italy (IIDEA) su Steam",
+   "kind": "italian",
+   "online": true,
+   "url": "https://store.steampowered.com/curator/40319802-Games-In-Italy/sale/gamesinitaly2025",
+   "recurrence": "annual",
+   "pattern": {
+    "text": "saldo su Steam dei giochi italiani a inizio dicembre (2025: 400+ giochi); nessuna pagina 2026 trovata",
+    "event_months": [
+     12
+    ]
+   },
+   "requires": [
+    "steam_page"
+   ],
+   "stages": [
+    "coming_soon",
+    "demo",
+    "ea"
+   ],
+   "fit": "any",
+   "reach_tier": "media",
+   "odds": "alta",
+   "odds_why": "basta essere un team italiano; anche i Coming Soon raccolgono wishlist",
+   "cost": "free",
+   "next_step": "scrivi subito a IIDEA (iideassociation.com): c'è l'edizione di dicembre 2026 e come si entra?",
+   "why_us": "vetrina italiana su Steam a 6 settimane dalla pagina",
+   "team_country": "IT",
+   "read_on": "2026-10-17"
+  },
+  {
+   "key": "italian_awards",
+   "name": "Italian Video Game Awards (IIDEA)",
+   "kind": "italian",
+   "online": true,
+   "url": "https://iideassociation.com/en/",
+   "recurrence": "annual",
+   "pattern": {
+    "text": "premi consegnati a First Playable (Firenze, giugno); candidature online fino a inizio aprile (2026: 10 aprile); categoria opera prima",
+    "event_months": [
+     6
+    ],
+    "close_month": 4
+   },
+   "requires": [
+    "steam_page"
+   ],
+   "stages": [
+    "coming_soon",
+    "demo",
+    "ea"
+   ],
+   "fit": "any",
+   "reach_tier": "piccola",
+   "odds": "media",
+   "odds_why": "pochi candidati per l'opera prima italiana; visibilità soprattutto nel settore",
+   "cost": "free",
+   "next_step": "a marzo controlla il bando IIDEA",
+   "team_country": "IT",
+   "read_on": "2026-10-17"
+  },
+  {
+   "key": "italian_press",
+   "name": "Stampa italiana (Multiplayer.it, Everyeye, IGN Italia)",
+   "kind": "italian",
+   "online": true,
+   "url": "https://multiplayer.it/contatti/",
+   "recurrence": "rolling",
+   "pattern": {
+    "text": "comunicato alla pagina, alla demo e all'EA; Multiplayer.it: redazione@multiplayer.it (comunicati) [DA VERIFICARE]"
+   },
+   "requires": [
+    "steam_page"
+   ],
+   "stages": [
+    "rolling"
+   ],
+   "fit": "any",
+   "reach_tier": "media",
+   "odds": "media",
+   "odds_why": "un team italiano è una notizia locale; nessuna garanzia di pubblicazione",
+   "cost": "free",
+   "why_us": "comunicato breve in italiano con trailer e link",
+   "team_country": "IT",
+   "read_on": "2026-10-17"
+  },
+  {
+   "key": "itch_creator_day",
+   "name": "itch.io Creator Day",
+   "kind": "itch",
+   "online": true,
+   "url": "https://itch.io/updates/what-is-creator-day",
+   "recurrence": "annual",
+   "pattern": {
+    "text": "più volte l'anno, di venerdì, 0 % di commissione per 24 ore; dal 2021 al 2025 sempre il Black Friday (probabile 27 novembre 2026) [DA VERIFICARE]",
+    "event_months": [
+     11
+    ]
+   },
+   "requires": [
+    "itch_page"
+   ],
+   "stages": [
+    "none",
+    "coming_soon",
+    "demo",
+    "ea"
+   ],
+   "fit": "any",
+   "reach_tier": "piccola",
+   "odds": "alta",
+   "odds_why": "nessuna selezione",
+   "cost": "free",
+   "matters_for": "conta solo se vendi su itch: la nostra beta è gratuita",
+   "plan": false,
+   "read_on": "2026-10-17"
+  },
+  {
+   "key": "itch_devlog",
+   "name": "Devlog su itch.io",
+   "kind": "itch",
+   "online": true,
+   "url": "https://itch.io/docs/creators/devlogs",
+   "recurrence": "rolling",
+   "pattern": {
+    "text": "a ogni aggiornamento della beta"
+   },
+   "requires": [
+    "itch_page"
+   ],
+   "stages": [
+    "rolling"
+   ],
+   "fit": "any",
+   "reach_tier": "piccola",
+   "odds": "alta",
+   "odds_why": "nessuna selezione; i devlog compaiono nel feed di chi segue",
+   "cost": "free",
+   "why_us": "un devlog per ogni versione della beta, con link alla wishlist",
+   "read_on": "2026-10-17"
+  },
+  {
+   "key": "r_indiegames",
+   "name": "r/indiegames (clip)",
+   "kind": "reddit_recurring",
+   "online": true,
+   "url": "https://www.reddit.com/r/indiegames/",
+   "recurrence": "weekly",
+   "pattern": {
+    "text": "promozione permessa con immagine, GIF o video e il flair giusto [DA VERIFICARE le regole del giorno]"
+   },
+   "requires": [
+    "steam_page"
+   ],
+   "stages": [
+    "rolling"
+   ],
+   "fit": "any",
+   "reach_tier": "media",
+   "odds": "alta",
+   "odds_why": "nessuna selezione: conta la clip",
+   "cost": "free",
+   "reach_note": "~340.000 iscritti",
+   "why_us": "una clip di 10-20 s a settimana (la torre che crolla)",
+   "read_on": "2026-10-17"
+  },
+  {
+   "key": "r_indiegaming",
+   "name": "r/IndieGaming",
+   "kind": "reddit_recurring",
+   "online": true,
+   "url": "https://www.reddit.com/r/IndieGaming/",
+   "recurrence": "weekly",
+   "pattern": {
+    "text": "autopromozione limitata (fonti secondarie: un post ogni due settimane, uso dell'IA da dichiarare) [DA VERIFICARE]"
+   },
+   "requires": [
+    "steam_page"
+   ],
+   "stages": [
+    "rolling"
+   ],
+   "fit": "any",
+   "reach_tier": "media",
+   "odds": "media",
+   "odds_why": "regole strette sull'autopromozione",
+   "cost": "free",
+   "reach_note": "~529.000 iscritti",
+   "why_us": "un post ogni due settimane, mai lo stesso giorno di r/indiegames",
+   "read_on": "2026-10-17"
+  },
+  {
+   "key": "r_playmygame",
+   "name": "r/playmygame",
+   "kind": "reddit_recurring",
+   "online": true,
+   "url": "https://www.reddit.com/r/playmygame/",
+   "recurrence": "rolling",
+   "pattern": {
+    "text": "serve il link diretto al gioco: adatto alla beta itch [DA VERIFICARE]"
+   },
+   "requires": [
+    "itch_page"
+   ],
+   "stages": [
+    "rolling"
+   ],
+   "fit": "any",
+   "reach_tier": "piccola",
+   "odds": "alta",
+   "odds_why": "nessuna selezione",
+   "cost": "free",
+   "reach_note": "~145.000 iscritti",
+   "why_us": "post con la beta gratuita e richiesta di feedback",
+   "read_on": "2026-10-17"
+  },
+  {
+   "key": "screenshot_saturday",
+   "name": "Screenshot Saturday (r/gamedev e r/gamedevscreens)",
+   "kind": "reddit_recurring",
+   "online": true,
+   "url": "https://www.reddit.com/r/gamedevscreens/",
+   "recurrence": "weekly",
+   "pattern": {
+    "text": "thread del sabato su r/gamedev: le guide non concordano se esista ancora [DA VERIFICARE]; r/gamedevscreens accetta screenshot tutti i giorni"
+   },
+   "requires": [
+    "steam_page"
+   ],
+   "stages": [
+    "rolling"
+   ],
+   "fit": "any",
+   "reach_tier": "piccola",
+   "odds": "alta",
+   "odds_why": "nessuna selezione; pubblico di sviluppatori più che di giocatori",
+   "cost": "free",
+   "why_us": "una GIF a settimana",
+   "weekday": "sabato",
+   "read_on": "2026-10-17"
+  },
+  {
+   "key": "r_indiegamewishlist",
+   "name": "r/IndieGameWishlist",
+   "kind": "reddit_recurring",
+   "online": true,
+   "url": "https://www.reddit.com/r/IndieGameWishlist/",
+   "recurrence": "weekly",
+   "pattern": {
+    "text": "sub dedicato alle wishlist (~8.700 iscritti); thread fissi [DA VERIFICARE]"
+   },
+   "requires": [
+    "steam_page"
+   ],
+   "stages": [
+    "rolling"
+   ],
+   "fit": "any",
+   "reach_tier": "piccola",
+   "odds": "alta",
+   "odds_why": "nessuna selezione, ma pubblico piccolo e fatto soprattutto di sviluppatori",
+   "cost": "free",
+   "read_on": "2026-10-17"
+  },
+  {
+   "key": "curator_connect",
+   "name": "Steam Curator Connect",
+   "kind": "newsletter",
+   "online": true,
+   "url": "https://partner.steamgames.com/doc/marketing/curator_connect",
+   "recurrence": "rolling",
+   "pattern": {
+    "text": "fino a 100 curatori, chiavi gratuite; meglio con la demo"
+   },
+   "requires": [
+    "steam_page",
+    "demo"
+   ],
+   "stages": [
+    "rolling"
+   ],
+   "fit": "any",
+   "reach_tier": "media",
+   "odds": "media",
+   "odds_why": "molti curatori non rispondono; quelli in tema sì",
+   "cost": "free",
+   "why_us": "20-30 curatori in tema (party, physics, cozy, food) alla demo",
+   "read_on": "2026-10-17"
+  },
+  {
+   "key": "wholesome_newsletter",
+   "name": "Wholesome Games: newsletter e curatore",
+   "kind": "newsletter",
+   "online": true,
+   "url": "https://wholesomegames.com/",
+   "recurrence": "monthly",
+   "pattern": {
+    "text": "newsletter il 1° del mese, modulo per stampa e creator; curatore Steam"
+   },
+   "requires": [
+    "steam_page",
+    "trailer"
+   ],
+   "stages": [
+    "rolling"
+   ],
+   "fit": "any",
+   "requires_fit": [
+    "cute",
+    "casual",
+    "cozy",
+    "wholesome"
+   ],
+   "reach_tier": "alta",
+   "odds": "bassa",
+   "odds_why": "molto selettivo",
+   "cost": "free",
+   "plan": false,
+   "read_on": "2026-10-17"
+  },
+  {
+   "key": "indieforgames",
+   "name": "IndieForGames (articolo gratuito)",
+   "kind": "newsletter",
+   "online": true,
+   "url": "https://indieforgames.com/",
+   "recurrence": "rolling",
+   "pattern": {
+    "text": "articolo gratuito e newsletter settimanale [DA VERIFICARE]"
+   },
+   "requires": [
+    "steam_page"
+   ],
+   "stages": [
+    "rolling"
+   ],
+   "fit": "any",
+   "reach_tier": "piccola",
+   "odds": "alta",
+   "odds_why": "accettano quasi tutti, coda lunga",
+   "cost": "free",
+   "read_on": "2026-10-17"
+  },
+  {
+   "key": "indie_streamers",
+   "name": "Streamer indie che accettano segnalazioni (Splattercat, Retromation, Olexa, Nookrium, Wanderbots)",
+   "kind": "stream",
+   "online": true,
+   "url": "https://www.youtube.com/@splattercatgaming",
+   "recurrence": "rolling",
+   "pattern": {
+    "text": "email o Curator Connect; Wanderbots rifiuta i giochi con IA generativa"
+   },
+   "requires": [
+    "steam_page",
+    "demo"
+   ],
+   "stages": [
+    "rolling"
+   ],
+   "fit": "any",
+   "reach_tier": "alta",
+   "odds": "bassa",
+   "odds_why": "ricevono centinaia di email; un video di Olexa ha portato ~1.000 wishlist in 2 giorni (racconto di uno sviluppatore)",
+   "cost": "free",
+   "matters_for": "già nella pipeline dei creator (creators.csv, 06-creators.md)",
+   "plan": false,
+   "read_on": "2026-10-17"
+  },
+  {
+   "key": "pax_east",
+   "name": "PAX East (PAX Rising)",
+   "kind": "showcase",
+   "online": false,
+   "url": "https://east.paxsite.com/",
+   "recurrence": "annual",
+   "pattern": {
+    "text": "fine aprile; candidature di solito ~4 mesi prima [DA VERIFICARE]",
+    "event_months": [
+     4
+    ],
+    "close_month": 12
+   },
+   "requires": [],
+   "stages": [
+    "coming_soon",
+    "demo",
+    "ea"
+   ],
+   "fit": "any",
+   "reach_tier": "alta",
+   "odds": "media",
+   "odds_why": "spazio PAX Rising selezionato; costa",
+   "cost": "paid",
+   "cost_note": "mezzo pod ~1.440 $ (dati 2020) + voli, hotel, visto ESTA, PC: 4.000-7.000 € per due [STIMA]",
+   "where": "Boston (USA)",
+   "matters_for": "contatti e stampa USA; poche wishlist per euro speso",
+   "read_on": "2026-10-17"
+  },
+  {
+   "key": "gamescom_iab",
+   "name": "gamescom Indie Arena Booth",
+   "kind": "showcase",
+   "online": false,
+   "url": "https://home.indiearenabooth.de/submission",
+   "recurrence": "annual",
+   "pattern": {
+    "text": "fine agosto; candidature a marzo, decisioni a maggio [FATTO indiearenabooth.de]",
+    "event_months": [
+     8
+    ],
+    "close_month": 3
+   },
+   "requires": [],
+   "stages": [
+    "coming_soon",
+    "demo",
+    "ea"
+   ],
+   "fit": "any",
+   "reach_tier": "alta",
+   "odds": "media",
+   "odds_why": "selezione; stand a pagamento",
+   "cost": "paid",
+   "cost_note": "stand piccolo 3.337 €, grande 5.337 € + viaggio [FATTO indiearenabooth.de]",
+   "where": "Colonia (Germania)",
+   "matters_for": "include la presenza nell'evento gamescom su Steam",
+   "read_on": "2026-10-17"
+  },
+  {
+   "key": "egx_leftfield",
+   "name": "EGX / MCM London: Leftfield Collection",
+   "kind": "showcase",
+   "online": false,
+   "url": "https://www.egx.net/",
+   "recurrence": "annual",
+   "pattern": {
+    "text": "autunno [DA VERIFICARE]",
+    "event_months": [
+     10
+    ],
+    "close_month": 7
+   },
+   "requires": [],
+   "stages": [
+    "coming_soon",
+    "demo",
+    "ea"
+   ],
+   "fit": "any",
+   "reach_tier": "media",
+   "odds": "bassa",
+   "odds_why": "~300 candidature per ~20 posti gratuiti",
+   "cost": "free",
+   "cost_note": "gratis se scelti; viaggio a carico",
+   "where": "Londra (UK)",
+   "read_on": "2026-10-17"
+  },
+  {
+   "key": "saga_barcelona",
+   "name": "SAGA Barcelona Game Fest (ex Indie Dev Day)",
+   "kind": "showcase",
+   "online": false,
+   "url": "https://sagabarcelona.com/",
+   "recurrence": "annual",
+   "pattern": {
+    "text": "ottobre (2026: 9-11 ottobre)",
+    "event_months": [
+     10
+    ],
+    "close_month": 7
+   },
+   "requires": [],
+   "stages": [
+    "coming_soon",
+    "demo",
+    "ea"
+   ],
+   "fit": "any",
+   "reach_tier": "piccola",
+   "odds": "alta",
+   "odds_why": "stand a pagamento accessibili",
+   "cost": "paid",
+   "cost_note": "stand da 350 € + viaggio",
+   "where": "Barcellona (Spagna)",
+   "read_on": "2026-10-17"
+  },
+  {
+   "key": "mgw_indie_dungeon",
+   "name": "Milan Games Week & Cartoomics: Indie Dungeon",
+   "kind": "italian",
+   "online": false,
+   "url": "https://www.milangamesweek.it/faq/partecipa/indie-dungeon.html",
+   "recurrence": "annual",
+   "pattern": {
+    "text": "fine novembre (2026: 27-29 novembre [DA VERIFICARE]); 10 posti gratuiti con IIDEA, scadenza di solito a settembre (forse già passata)",
+    "event_months": [
+     11
+    ],
+    "close_month": 9
+   },
+   "requires": [],
+   "stages": [
+    "coming_soon",
+    "demo",
+    "ea"
+   ],
+   "fit": "any",
+   "reach_tier": "media",
+   "odds": "media",
+   "odds_why": "10 posti gratuiti selezionati; altrimenti a pagamento",
+   "cost": "free",
+   "cost_note": "gratis se scelti (espositori@fandango-club.com), altrimenti a pagamento [DA VERIFICARE]",
+   "team_country": "IT",
+   "where": "Fiera Milano Rho",
+   "matters_for": "giocatori veri a due passi: utile come test della beta",
+   "read_on": "2026-10-17"
+  },
+  {
+   "key": "svilupparty",
+   "name": "Svilupparty (IPID)",
+   "kind": "italian",
+   "online": false,
+   "url": "https://www.ipid.dev/",
+   "recurrence": "annual",
+   "pattern": {
+    "text": "maggio (2026: 8-10 maggio [FATTO ipid.dev]); per esporre serve l'iscrizione a IPID",
+    "event_months": [
+     5
+    ],
+    "close_month": 3
+   },
+   "requires": [],
+   "stages": [
+    "coming_soon",
+    "demo",
+    "ea"
+   ],
+   "fit": "any",
+   "reach_tier": "piccola",
+   "odds": "alta",
+   "odds_why": "evento della comunità degli sviluppatori italiani",
+   "cost": "paid",
+   "cost_note": "quota di iscrizione IPID [DA VERIFICARE]; ingresso libero",
+   "team_country": "IT",
+   "where": "Bologna",
+   "matters_for": "comunità e altri sviluppatori, non wishlist",
+   "read_on": "2026-10-17"
+  },
+  {
+   "key": "first_playable",
+   "name": "First Playable (IIDEA)",
+   "kind": "italian",
+   "online": false,
+   "url": "https://iideassociation.com/en/",
+   "recurrence": "annual",
+   "pattern": {
+    "text": "giugno (2026: 10-12 giugno), evento B2B",
+    "event_months": [
+     6
+    ],
+    "close_month": 4
+   },
+   "requires": [],
+   "stages": [
+    "coming_soon",
+    "demo",
+    "ea"
+   ],
+   "fit": "any",
+   "reach_tier": "piccola",
+   "odds": "media",
+   "odds_why": "incontri con publisher, non pubblico",
+   "cost": "paid",
+   "cost_note": "[DA VERIFICARE]",
+   "team_country": "IT",
+   "where": "Firenze",
+   "matters_for": "publisher e finanziamenti, non wishlist",
+   "read_on": "2026-10-17"
+  }
+ ]
+}

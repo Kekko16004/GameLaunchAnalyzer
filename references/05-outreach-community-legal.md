@@ -38,6 +38,16 @@ python3 $S/build_creators.py --youtube $RAW/yt_shortlist.json --social $RAW/soci
 7. **Sequenza temporale**: chi contattare quando (settimane prima del festival, giorno del lancio, post-lancio), con un solo follow-up non insistente.
 8. **Dati personali**: nel database solo contatti professionali **pubblici** (email di business, pagina contatti del canale). Niente dati privati; a campagna finita cancella o anonimizza ciò che non serve più (GDPR, se il creator è nello Spazio Economico Europeo).
 
+### Showcase e festival online (`promo_events.py`)
+
+Oltre agli eventi di Steam (`steam_events.py`) esistono decine di vetrine **online e gratuite** che portano wishlist: showcase in diretta (Wholesome Direct, Future Games Show, Day of the Devs, Galaxies…), fest di terzi su Steam (organizzati da curatori o editori, con una pagina di saldo sul negozio), Creator Day e saldi di itch.io, thread fissi di Reddit, newsletter e stream che accettano segnalazioni, scena italiana.
+
+- **Pianifica 8-12 candidature l'anno** a showcase e festival online, **prima quelle in tema col genere e quelle fattibili** (molti giochi presentati, poca selezione, nessuna tassa, line-up passate con giochi piccoli come il tuo). Gli showcase famosi sono tentativi (al massimo 2-3 l'anno): si provano, non sono il piano.
+- `promo_events.py match --launch-dir launch --page <data> --demo <data> --launch <data>` dice quali eventi accettano il gioco nella fase in cui sarà (Coming Soon, demo, Early Access) e perché gli altri no; `deadlines` scrive i passi 👤 "candidati a X entro Y" in `calendar.md` e `TODO.md`, una volta sola, e il report per mese con il **valore** (pubblico × probabilità × tema) e il prossimo passo con la data.
+- Date non pubblicate = **[DA VERIFICARE]** con i mesi abituali; il promemoria cade all'apertura abituale. Le candidature le invia sempre il proprietario.
+- Prepara una volta il materiale che chiedono quasi tutti: trailer di 60-90 s senza musica coperta da copyright, 30 s di gameplay, 4-6 screenshot, descrizione di una riga, link alla pagina Steam e, se c'è, alla demo. Alcuni showcase chiedono l'anteprima esclusiva del trailer: non pubblicarlo altrove prima.
+- **Gli eventi fisici (PAX, gamescom, EGX…) sono facoltativi.** Per un team di 1-3 persone fuori dagli USA costano migliaia di euro tra stand, viaggio e build da fiera e portano soprattutto contatti; prima le vetrine online. Un evento fisico vicino e gratuito (es. un'area indie selezionata in Italia) può valere come test con giocatori veri.
+
 ---
 
 ## FASE 9: community, playtest e kit del test reale
@@ -91,3 +101,9 @@ Etichetta ogni cifra **[DA VERIFICARE]** con fonte dell'autorità fiscale del pa
 **Esempio: Italia** (se confermata nel brief): codice ATECO, regime forfettario o ordinario, contributi INPS (gestione separata o commercianti), partita IVA, scrittura privata tra soci, interviste fiscali Steam. Fonti: INPS, Agenzia delle Entrate. Intervalli, mai valori fissi.
 
 Ogni file termina con TODO nel formato di `references/06-synthesis-output.md`.
+
+---
+
+## Cosa hanno fatto i B che vendono (dal mercato reale)
+
+Prima di scegliere i canali, guarda in `calibration.json` → `marketing` (o `market_tracker.py timeline` sui B vincenti più vicini): quanti video di creator avevano prima e dopo l'uscita, quando è uscito il primo trailer, se c'era una demo e la Next Fest, quanti post Reddit, ogni quanto aggiornavano. I social sono raccolti con `entity_match.py`: conta solo ciò che parla davvero del gioco (precisione misurata su campioni etichettati a mano). TikTok, Instagram e X non si leggono con gli script: le ricerche da fare a mano sono in `launch/ricerche-manuali.md` e i risultati si importano con `market_tracker.py manual --import`.

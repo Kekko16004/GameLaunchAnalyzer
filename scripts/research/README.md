@@ -17,6 +17,7 @@ Reusable tools for launch market research: Steam comparables and reviews, creato
 | `steam_reviews.py` | Real negative/positive Steam reviews with date, playtime, votes, URL, keyword themes | 7 (real critiques) |
 | `roster.py` | Deterministic roster of simulated testers with stable IDs, casting traits and a 10-person jury | 7 |
 | `fg_waves.py` | Validate a focus-group wave, compute score and metrics, delta between waves, timeline | 7 |
+| `wave_kit.py` | Mandatory preparation of every wave: templates (`init`) and checklist (`check`) for the game map, screen map, timed runs, market, gameplay proposals, demo cap | 7 |
 | `yt_research.py` | Search recent videos, group by channel, add subscribers, verify URLs | 8 |
 | `social_verify.py` | Verify TikTok / YouTube (Shorts) / Instagram / Twitch URLs with official endpoints | 8 |
 | `reddit_rules.py` | Subreddit rules, subscribers, self-promotion flags | 9 |
@@ -24,6 +25,12 @@ Reusable tools for launch market research: Steam comparables and reviews, creato
 | `review_corpus.py` | Many real reviews of the comparables AND of the genre: punished/rewarded themes, what they say about your game's features | 2, 7 |
 | `store_bench.py` | Store page and trailer analysis of the comparables (description, GIFs, trailer length, cuts, frames) vs how they performed | 2, 6, 6B |
 | `genre_bench.py` | Genre benchmarks at runtime from public data: distributions, cohorts by year, price bands, demo, visibility bar, your numbers | 2, 5 |
+| `market_tracker.py` | The whole market over time: head (top sellers, most played, tag tops), breakouts, snapshots at +24h/48h/1w/1m/3m, multi-method copy estimates, marketing per game (Steam news, YouTube, Reddit, Twitch) with timelines, manual-check file for SteamDB / TikTok / IG / X | 2, 5, 7C, routine |
+| `top_moves.py` | The 3 moves with most impact now (open issues, real winners' recipe, metro levers, deadlines), written into TODO.md and calendar.md without duplicates | 4, 7, 11, every run |
+| `predictions.py` | Predictions log: every wave and estimate vs what really happened, accuracy over time | 7, 7C, 11 |
+| `market_page.py` | The real-market parts of STATUS.html: header summary, Mercato reale tab, cards in the other tabs | 11 |
+| `entity_match.py` | Does this video / post really talk about this game? Scored entity matching with measured precision | 2, 8 |
+| `cohort_bench.py` | Base rate of the real competition: games released per day, automatic junk filter, contact sheets for strict A/B/C visual grading, outcomes per tier (Boxleiter range, ≥100 / 1,000 / 10,000 copies, "became popular"), what separates winners from losers | 2, 5 |
 | `project_scan.py` | Cold start: reads the project from disk (engine and version, ranked context documents, what other skills left, Steam, media, git, tools, configured MCP servers) | B |
 | `steamdb_assist.py` | SteamDB as a manual lookup: links to open and an append-only record of followers, wishlist rank, player peaks, lowest price (no scraping) | 2, 7C |
 | `watchlist.py` | Comparables and competitors over time: snapshots, growth, discounts, releases, collision with your window | 2, 7C |
@@ -32,6 +39,8 @@ Reusable tools for launch market research: Steam comparables and reviews, creato
 | `metrics_track.py` | Metrics you record and "if... then" contingency scenarios with thresholds, diagnosis and actions | 7C |
 | `calc_econ.py` | Light economic plan: gross to net, break-even, three scenarios, sensitivity | 5 |
 | `wl_track.py` | Weekly wishlist records vs scenarios and pre-mortem tripwires, with alarms | 4, 7B |
+| `steam_events.py` | Steam's official event calendar (seasonal sales, Next Fest, themed fests) from Valve's page with a curated fallback; feeds the launch window, writes dated registration steps and sale warnings into calendar.md / TODO.md | 4, 7C, routine |
+| `promo_events.py` | Non-Steam promotion calendar, mostly online (digital showcases, third-party Steam fests, itch.io, Reddit threads, streams, newsletters, the Italian scene; physical events in a separate optional list): submission windows, cost, requirements, reach and acceptance odds for a small team; matches tags and stage, writes 8-12 dated applications a year into calendar.md / TODO.md, feeds top_moves and window.csv | 4, 8, routine |
 | `launch_window.py` | Competitor calendar for your launch window: weekly crowding score, quietest weeks, where your date stands | 4, 7C |
 | `charts.py`, `report_charts.py` | Inline SVG charts (bars, columns, stacked, bullets) and the chart groups built from the files in `launch/` | 11 |
 | `criticita.py` | Criticalities wave by wave, per gate and as an evolution matrix (status new / persistent / rising / falling / resolved / back), plus a register for other sources (`add`, `close`, `list`) | 7, 11 |
@@ -40,7 +49,9 @@ Reusable tools for launch market research: Steam comparables and reviews, creato
 | `md_enrich.py` | Links between the Markdown documents of `launch/` and a plain-Italian glossary at the end of `REPORT.md` | 11 |
 | `report_html.py` | `REPORT.md` as one illustrated HTML page: charts next to each section | 11 |
 | `charts_export.py` | Every report chart as a standalone `.svg` (for Markdown reports) | 11 |
-| `status_page.py` | One self-contained HTML status page (five tabs, live issue decisions, live TODO) | 11 |
+| `status_page.py` | One self-contained HTML status page (seven tabs incl. Calendario, roadmap, live issue decisions, live TODO, every URL clickable) | 11 |
+| `calendar_view.py` | The Calendario tab (month grids to the launch, day panel, hover preview, 14-day agenda) and the Roadmap of key milestones, used by `status_page.py` | 11 |
+| `weblinks.py` | Bare URLs in the generated pages become short, safe links (new tab, `rel=noopener`), used by `status_page.py` and `report_html.py` | 11 |
 | `todo_track.py` | Keep `TODO.md` alive: list, stats, mark done / reopen, add | 4, 11, routine |
 | `common.py` | Throttled HTTP with retries, JSON/CSV writers (used by all) | – |
 
@@ -113,7 +124,7 @@ Everything is fictional and simulated; the default language weights are **not ma
 
 ## 4b. `fg_waves.py`: focus-group waves, deltas, timeline
 
-The simulated panel judges the game; this tool does the arithmetic, so scores and trends are reproducible. A *wave* is one run of the same roster on one state of the game, stored as `launch/fg/waves/wNN-YYYY-MM-DD.json` (schema in the script's header: per tester `verdict` WISHLIST/SALDI/IGNORO/REFUND, `click`, `pitch_ok`, `issues`; a list of issues with stable keys, severity and recommendation; optional `controls` and, from wave 2, `fixes`).
+The simulated panel judges the game; this tool does the arithmetic, so scores and trends are reproducible. A *wave* is one run of the same roster on one state of the game, stored as `launch/fg/waves/wNN-YYYY-MM-DD.json` (schema in the script's header: per tester `verdict` WISHLIST/SALDI/IGNORO/REFUND, `click`, `pitch_ok`, `issues`; a list of issues with stable keys, severity and recommendation; optional `controls` and, from wave 2, `fixes`). Link with game-developer (`references/dev-link.md`): a fix may carry `gate_dev` (development gate number) and `status` (`risolto` / `da_verificare`), an issue created by a gate carries `from_gate_dev`; both are validated (numbers only) and shown ("nato col gate NN" next to the issue in `metrics`, `delta` and STATUS.html).
 
 ```bash
 python fg_waves.py metrics launch/fg/waves/w01-2026-10-06.json --roster launch/fg/roster.json -o launch/fg/waves/w01-metrics.md
@@ -126,6 +137,24 @@ python fg_waves.py timeline launch/fg/waves --roster launch/fg/roster.json -o la
 - `timeline`: all waves in a folder (`wNN-*.json`) with score trend and sparkline, verdict shares, click, pitch, A/B scores, number of high-severity issues, top issue and Gate A status.
 
 **Limits:** the panel is simulated with the same biases every time, so deltas are directional, not proof; differences of a few points are noise (with N = 54 a percentage carries roughly +-13 points of uncertainty). Confirm important changes with real testers.
+
+## 4b1. `wave_kit.py`: mandatory preparation of every wave
+
+Before the panel judges, every wave gets six files built from the real game (any engine), in `launch/fg/waves/`: `wNN-brief.md` (what is judged, standard + extra tester questions, outputs), `wNN-mappa-gioco.md` (total game map with file references), `wNN-schermate.md` (every screen: how you reach it, when, whether the game tells you, grade *evidente / trovabile / nascosta*), `wNN-runs.md` (3+ simulated runs with mm:ss timestamps and dead spots, fun peaks, frustration, quit points, too much UI, unclear moments), `wNN-mercato.md` (real reviews via `review_corpus.py`, demo-length data, sources), `wNN-proposte-gameplay.md` (proposals with evidence, hours, risk, plus a separate "Riapre la decisione" section) and, optionally, `wNN-limite-beta.md` (what to cut in a free demo/beta).
+
+```bash
+python wave_kit.py init  --launch-dir launch --wave 10 [--date 2026-11-02] [--game "My Game"]   # Italian templates; existing files are never overwritten (reported as skipped)
+python wave_kit.py check --launch-dir launch --wave 10 [--json]                                 # Italian ✅/❌ checklist; exit 1 if something required is missing
+```
+`check` verifies: every file present (limite-beta only warns); the brief's "Cosa si valuta" filled and the nine extra questions present (in the brief or as tester keys in the wave JSON: `hook_lands`, `q_stop_after_runs`, `q_price_full`, `q_memorable`, `q_coop_needed`, `q_bored_minute`, `q_after_demo`, `q_watch_or_play`, `q_lost_moment`); the map has at least 5 file references and filled sections for loop, economy, progression, controls, audio, accessibility (items, hazards, events, HUD, "what is not there" only warn); at least 3 screen rows graded and the three grades explained; at least 3 `## RUN N` sections with 5+ timestamps each and the dead/fun/frustration/quit marks; reviews (review_corpus), demo length and sources in the market file; proposals with hours, risk and evidence and a filled "Riapre la decisione" section. Sections that still hold only the template guidance or `(da compilare)` count as empty. Headings are matched by meaning, so the real wave-9 files of the reference project pass as they are.
+
+`init` also writes `wNN-sintesi.md` (to fill after the panel: every row with the issue key and the proposal ID `P-wNN-n`). **Link with game-developer** (`references/dev-link.md`, project root = the folder above `launch/`, or `--project`): with `docs/design-review/changes-since-wMM.md` (MM = previous wave) the brief gets a "Da ricontrollare" section with the risks the development gates introduced and the design choices they changed; `wNN-mappa-gioco.md`, `wNN-schermate.md`, `wNN-runs.md` start from `game-map.md`, `screen-map.md`, `runs.md` (copied as they are, with "Partita da … (aggiornata al gate NN)"), and the screens file always has the shared ```` ```screens ```` block. Without those files the templates are the usual ones (runs: rows start with the time from the start of the run, shared tags `[MORTO] [TOP] [FRUSTRA] [ABBANDONO] [CONFUSO] [TROPPA-UI:n] [SPIRALE]`).
+```bash
+python wave_kit.py fixes --launch-dir launch --wave 10                       # print the `fixes` of changes-since (as they are, + gate_dev from its table)
+python wave_kit.py fixes --launch-dir launch --wave 10 --write launch/fg/waves/w10-2026-10-25-beta.json   # append the missing ones, never remove or edit
+python wave_kit.py fixes --launch-dir launch --wave 10 --from since.json     # or the output of gate_link.py since --json (issue, what, gate_dev, status)
+```
+Contract items of `check` only **warn**: changes-since present but not cited in the brief, fixes missing from the wave JSON, ```` ```screens ```` block missing / without root / with orphans not marked `hidden-ok`, runs without time-first rows and shared tags, proposals and sintesi without `P-wNN-n` and keys, reopenings not in the `Riapre la decisione: … — prove: … — proposta: … — costo: …` format, issues with `from_gate_dev` not written "nato col gate NN" in the sintesi, `risolto` keys back in the wave without "ricomparso dopo il gate NN".
 
 ## 4c. `review_corpus.py`: real reviews at scale, comparables and genre
 
@@ -156,12 +185,129 @@ Takes the ~100 most reviewed games of the tag(s) (SteamSpy), enriches them with 
 
 **Limit, quote it every time:** the list holds the MOST REVIEWED games of the tag, so the numbers describe the successful tail, not the median game. Reviews per year is a proxy for sales.
 
+## 4e1. `cohort_bench.py`: base rate of new releases at your level
+
+```bash
+python cohort_bench.py volume --days 14                               # games released per day (store search, games only)
+python cohort_bench.py fetch --from 2026-07-15 --to 2026-07-21        # every game of a 7-day window ~3 months ago (resumable)
+python cohort_bench.py filter                                         # automatic junk rules, reason for every exclusion
+python cohort_bench.py sheets --reference <your header_capsule.png>   # contact sheets + grades.csv to fill with A / B / C
+python cohort_bench.py report --mine-price 7.99 --md launch/cohort.md # tiers x outcomes
+python cohort_bench.py report --price-min 5 --price-max 15 --genres casual,simulation,rogue-lite,physics,comedy,party
+```
+Answers "of the games that come out every day, how many are at least at our level, and how many of those sell?". Outputs go to `launch/_raw/cohort/` (`--dir` to change): `volume.json`, `window_<from>_<to>.json`, `apps/<appid>.json` (one cached file per app: re-running `fetch` resumes and only asks what is missing), `cohort.json/.csv`, `filtered.csv`, `headers/`, `sheets/`, `grades.csv`, `report.json`.
+
+- **volume**: store search sorted by release date (`category1=998`, DLC excluded), counts per day; long backoff on 429, and a window that could not be read completely is reported, never cached as complete.
+- **fetch**: finds the window by binary search on the search offset, then `appdetails` (price, genres, screenshots, trailers, descriptions, languages, demo, Early Access, developer) and `appreviews` (total reviews) per game, plus the public review histogram (`appreviewhistogram`) for games with reviews: only reviews written from the release date on are counted, and a 1.0 launch of a game with years of Early Access reviews is marked `graduate` and left out of the base rate as "not new" (found live: an Early Access game from 2018 with 25,000 reviews looked like a July hit). `--no-histogram` skips it; `--steamspy` optional. Separate throttles for the two endpoints (`--rate` 1.6 s for appdetails, which allows ~200 calls per 5 minutes).
+- **filter**: status `keep` / `junk` / `not_new` (graduates) / `missing`. Junk rules: `adult` (Adult Only descriptor or Hentai/NSFW tags), `free_thin` (free with no trailer / few screenshots / tiny description), `thin_page` (no trailer and < 5 screenshots), `flip_dev` (same developer with ≥ 3 titles in the window), `generic_name`, `short_desc`, `shovel_tags`. Thresholds are options.
+- **sheets**: downloads the header capsules and builds numbered, labelled contact sheets (~30 per sheet, your own capsule first as `RIFERIMENTO`). Backend: Pillow if installed, else `ffmpeg`, else an HTML page per sheet (stdlib). `grades.csv` keeps grades already entered when re-run.
+- **report**: per group (all, junk, non junk, A, B, C, A+B, ungraded): median / p75 / p90 reviews, share ≥ 100 / 1,000 / 10,000 copies and ≥ ~$800 gross, each as a range between ×20 and ×60 copies per review; "popular" = ≥ 500 reviews or ≥ 10,000 estimated copies (a definition, say so); "out of 20 at our level"; B-tier winners (≥ `--win-reviews`, default 50) vs losers (< 10) on trailer, screenshots, price, demo, languages, Early Access, publisher; Spearman inside A+B; with `--mine-price` the copies and gross of a typical game of `--mine-grade` (default B).
+
+**Grading rule:** strict. A = clearly above your game, B = about your level, C = below. Your game is **B** unless the evidence says otherwise. **Limits, quote them:** Boxleiter is an order of magnitude; the grading is one rater on one capsule; logged-out search hides adult-only titles and delisted games are gone (junk is a lower bound); one week gives only tens of games per tier. Grading can drift between weeks: on the first real run the B share was 20 % (June) vs 28 % (July), one rater, so real variation and rater drift cannot be told apart; a second rater on a sample is the fix.
+
+## 4e2. Data sources policy and your private keys file
+
+**Used:** official Steam store endpoints (search, appdetails, appreviews, appreviewhistogram), the official Steam Web API (GetNumberOfCurrentPlayers, GetMostPlayedGames, GetNewsForApp), SteamSpy, the YouTube Data API, Reddit (OAuth when `REDDIT_CLIENT_ID`/`REDDIT_CLIENT_SECRET` are set, otherwise the public RSS search, which Reddit often rate-limits with 429), Twitch Helix (only with `TWITCH_CLIENT_ID`/`TWITCH_CLIENT_SECRET`) and Gamalytic's public API (only with `GAMALYTIC_API_KEY`).
+
+**Not scraped, on purpose:** SteamDB (its terms do not allow automated scraping and it sits behind Cloudflare), TikTok, Instagram and X (no official access without login or a paid API). For these the tools write the exact pages and searches to do by hand into `launch/ricerche-manuali.md` (`market_tracker.py manual`), and what you find comes back through a CSV (`market_tracker.py manual --import`). Do not "fix" this with a scraper. Followers and wishlists are not public: only proxies, always labelled as proxies.
+
+**Your private keys file:** `~/.game-launch-strategist/.env` (outside the repository, so it can never be committed). Tools load it at run time; `--env-file PATH` or `GLS_ENV_FILE` point to another file; a variable already set in the environment wins. Keys used: `YOUTUBE_API_KEY`, `STEAM_WEB_API_KEY` (passed to Steam Web API calls when present), `REDDIT_USER_AGENT`, optional `REDDIT_CLIENT_ID`/`REDDIT_CLIENT_SECRET`, `TWITCH_CLIENT_ID`/`TWITCH_CLIENT_SECRET`, `GAMALYTIC_API_KEY`. Only key NAMES are ever printed; values never go into logs, `launch/`, reports or tests (the repository `.gitignore` also excludes `.env` and `*.env` as a safety net). The install record may store the PATH to the file, never its content.
+
+## 4e3. `cohort_bench.py update` / `calibrate`: the skill keeps learning from every release week
+
+```bash
+python cohort_bench.py update --import-dir launch/_raw/cohort --new-weeks 0      # seed the dataset with a cohort already fetched
+python cohort_bench.py update --reference <your header capsule>                 # weekly: last full release week + re-checks at 30/90/180 days
+python cohort_bench.py update --new-weeks 0                                     # after grading: imports grades.csv of the new week
+python cohort_bench.py calibrate                                                # -> ~/.game-launch-strategist/calibration.json
+```
+`update` keeps one CSV per release week in `~/.game-launch-strategist/cohorts/` (`--dataset` to change). A new week is fetched, filtered and turned into contact sheets in `cohorts/_work/<week>/`; the grades written there are imported on the next run and accumulate. Every run re-checks the outcomes of older weeks when they reach 30, 90 and 180 days: reviews written from release to release+N days come from the public weekly review histogram, so a late check still gives the right count. Rate limited (`--rate-reviews`) and with a request budget per run (`--max-requests`); resumable. `store_prior` (0-100, store page only, adapted from GamesTracker's quality score without the review part, since reviews are the outcome) orders capsules and flags thin pages; it never replaces the A/B/C judgment.
+
+`calibrate` writes `calibration.json`: per milestone (d30, d90, d180) and tier (A, B, C, A+B, all new) the reviews and copies quantiles (×20..×60), shares ≥100 / ≥1,000 / ≥10,000 copies and "popular" with 95 % intervals, the same per price band and genre bucket, the B-tier winners-vs-losers factors, recent real B winners and losers as **control capsules** for the waves, the market junk and tier shares, and (when `market_tracker.py` social data exists) the marketing patterns. `primary` is d90 once it covers at least half the d30 sample, otherwise d30 (labelled). `calc_econ.py --calibration --tier B` and the focus-group waves read it.
+
+## 4e4. `market_tracker.py`: the whole market, sales signals, marketing timelines
+
+```bash
+python market_tracker.py discover --top-sellers 25 --most-played 25 --breakouts 15 --tag Casual --tag-top 25
+python market_tracker.py discover --from-dataset B           # the B-tier games of the cohort dataset (for marketing patterns)
+python market_tracker.py add 3808690 --role comp
+python market_tracker.py snapshot --steamspy                  # due snapshots: +24h, +48h, +1 week, +1 month, +3 months (older games: weekly)
+python market_tracker.py snapshot --players-only              # several times a day: the daily peak is the max sample
+python market_tracker.py estimate --md launch/_raw/market_estimates.md
+python market_tracker.py social --role comp --yt-quota 8000   # Steam news + YouTube + Reddit + Twitch, through entity_match
+python market_tracker.py timeline --appid 3808690 --md launch/_raw/timeline.md
+python market_tracker.py manual --role comp                   # writes the SteamDB / TikTok / IG / X checks into launch/ricerche-manuali.md
+python market_tracker.py manual --import found.csv            # platform,url,date,views,likes,appid,note
+python market_tracker.py market --md launch/_raw/market_shape.md
+```
+Data in `~/.game-launch-strategist/market/` (`tracked.json`, append-only `snapshots.csv` and `players.csv`, `social/<appid>.json`, `manual_posts.csv`). Breakouts are the new releases of the last `--days` with the most reviews per day (from the review summary of the release-date search, so no extra calls), at most `--max-price` (default $25, to leave out big-studio launches); free-to-play games and 1.0 launches of old Early Access games can still appear (their timeline shows it). Copies: Boxleiter (reviews ×20..60), SteamSpy owners range (left out when it is the uninformative "0 .. 20,000" bucket), peak players ×30..100 (heuristic); the combined range is the median of the methods, always **[STIMA]**. `manual` rewrites only its own marked section of `ricerche-manuali.md`. Without keys: YouTube and Twitch are skipped with a message, Reddit falls back to RSS.
+
+Ideas and code adapted from **GamesTracker** (https://github.com/Kekko16004/GamesTracker, MIT, the owner's own project): the snapshot schedule, the Steam players and SteamSpy sources, growth / launch-health ideas, the YouTube and Reddit RSS collectors, the manual import. Not ported: its no-login scrapers for TikTok, Instagram and X, and its title-only social search.
+
+## 4e5. `entity_match.py`: only results that really are about the game
+
+A result counts only above a score threshold (50): the exact title as a phrase (or a link to the Steam page) is required; strong signals are the Steam URL / appid, the developer or publisher, an official channel; medium ones are the game's genre words and gaming context words in several languages; a result published before the game existed is rejected; results about another platform with the same name (a Roblox map) lose points. One-word or common-word titles ("Monitor", "SHARKS", "The Wanderer") need two kinds of evidence, unless the platform's own results show the title is distinctive (ambiguity measured on the batch: the share of results with no gaming signal).
+
+Measured on real YouTube results of a bare-title search (what a title-only collector keeps), hand-labelled, 2026-10-13 (`tests/fixtures/entity_match_labels.json`, `entity_match_heldout.json`):
+
+| Sample | Results | Really about the game | Precision before (keep all) | Precision after | Recall after |
+|---|---|---|---|---|---|
+| tuning set, 20 games | 196 | 99 | 0.51 | 1.00 | 0.73 |
+| **held-out set, 12 other games, rules frozen first** | 119 | 76 | **0.64** | **1.00** | **0.91** |
+
+One labeller (the agent that wrote the rules): a second independent labeller would make these figures stronger. `python entity_match.py eval <labels.json>` re-measures.
+
+## 4e5b. The objective "metro": a pre-launch metric built on real outcomes
+
+```bash
+python cohort_bench.py --dir <cohort folder> news            # official Steam news per game (demo, Next Fest, playtest, Coming Soon length)
+python cohort_bench.py metro                                  # fit + out-of-time backtest -> calibration.json["metro"]
+python cohort_bench.py score --features launch/prelaunch.json --md launch/_raw/metro.md -o launch/_raw/metro.json
+python cohort_bench.py score --appid 1234567                  # any game with a store page
+```
+Only what is visible BEFORE release: capsule tier (A/B/C), price, free, trailer and number of videos, screenshots, GIFs in the description, description length, languages, publisher, Early Access, demo / Next Fest / Steam playtest before release and number of official news items (from `ISteamNews`), how long the game was publicly visible before release (first news item -> release, a proxy of the Coming Soon length), crowding of the release day, broad genres. Target: estimated copies (reviews × 35, the geometric middle of Boxleiter 20..60) at 30 days, or at 90 days once the dataset covers it, in bands <100 / 100-1k / 1k-10k / >10k, plus P(≥100), P(≥1k), P(≥10k). Model: three standardized logistic regressions with L2, fitted with plain gradient descent (stdlib), probabilities made monotonic, inputs clipped to ±3 standard deviations (no wild extrapolation). Every factor's weight is shown in words: how many points of P(≥1,000) a typical B game gains when the factor goes from no to yes (or from the 25th to the 75th percentile). **Honest validation:** fit on the older release weeks, test on the newest one; AUC, Brier score against "base rate only", calibration in 4 bins, band accuracy against the most common band; the verdict is "utile", "debole" (read as a range, low confidence) or "non migliore del base rate" (do not use). With one week only, the backtest is impossible and the page says so. Factors that travel together (a demo, its news, a long Coming Soon) share their weight: read them as a group. Not used yet: trailer length (not in appdetails), developer track record (no clean public endpoint), pre-launch YouTube/Reddit coverage (collected only for part of the games; the winners' recipe shows it apart), release month (needs several months). `score` gives the band, the probabilities and the **levers**: how P(≥1k) changes if a missing factor is added (trailer, demo, Next Fest, playtest, 8 languages, 6 months of Coming Soon, news, GIFs, screenshots). The levers feed `top_moves.py`.
+
+## 4e5c. Marketing dossier of any game
+
+```bash
+python cohort_bench.py dossier --appid 3808690                # same as market_tracker.py dossier; -> launch/_raw/dossier/dossier-<appid>.md / .json
+```
+One dated timeline across platforms, every item matched to the game with `entity_match.py`: Steam (official news and events with their kind: demo, Next Fest, playtest, launch, updates; links on the store page; price and players from the snapshots; weekly reviews), YouTube (official channel videos, creator videos with views, Shorts flagged), Reddit (OAuth or public RSS), Twitch (Helix with keys), TikTok **only legitimately**: the official oEmbed of video URLs found in the other sources (title, author; the date is decoded from the video id; views are not exposed), the game's own accounts linked from its store page or website; Instagram and X: links found and manual import (Instagram oEmbed needs a Meta token; the Graph API "Business Discovery" needs your own IG Business account and a Meta app: a future option; the X API is paid). No search-page scraping. Analysis: "what moved the needle" = review spikes (≥ 2× the 4 previous weeks) and the events of the 7 days before (correlation, never causation); the pattern before vs after launch per platform; the cadence of official news. Dossiers are shown in STATUS.html (Mercato reale, competitors) and `calibrate` aggregates the B-tier winners' and losers' social files into the winners' recipe.
+
+## 4e5d. `top_moves.py`, `predictions.py` and the STATUS.html real-market tab
+
+`top_moves.py apply` (every run, before `status_page.py`) computes the 3 moves with most impact now from the open focus-group issues (severity × testers, SIMULATO), the missing steps of the real B-tier winners' recipe (winners% − losers%), the metro levers (points of P(≥1k), merged with the recipe step of the same thing) and the TODO deadlines; at most 2 from the same source. It writes them into `TODO.md` (section "⭐ Le 3 mosse a più impatto", or marks a matching open line "⭐ mossa top") and `calendar.md` (marks a matching open step, or adds a dated 👤/🤖 step in the phase "⭐ Mosse a più impatto" with the next free number), never duplicating, removing the old marks first, and writes `launch/_raw/top_moves.json`.
+
+`predictions.py sync` records the predictions of every wave (wishlist and buy shares, SIMULATO), of the economic plan (wishlists at launch, copies year 1, [STIMA]) and of the real base rate into `launch/predictions.json`; `eval` closes them with real metrics (`real_wishlist_pct`, `real_buy_pct`, `wishlists`, `copies_30d/90d/year1` recorded with `metrics_track.py` / `wl_track.py`) and computes the accuracy over time (a hit = inside the range; points ±10 % or ±10 points for shares).
+
+STATUS.html (`status_page.py`, with `market_page.py`) now opens with a **summary written from the data** (3-7 plain sentences: data freshness first when old, latest wave score and trend [SIMULATO], base rate for our tier and price [STIMA], metro band, open serious issues, the 3 moves, next deadline, prediction accuracy; a status that changes with the situation; the traffic light is a small badge). A sixth tab **Mercato reale** shows the freshness badge (and the update command when older than 30 days), the metro (bands, levers, weights in words, honest backtest), daily releases split by tier per week with the "X out of 20" sentence, outcomes per tier / price / genre with sample sizes, head vs long tail, breakouts against a typical B, the winners' recipe in time order, competitors and comparables measured at 30/90 days like the cohort (`market_tracker.py comps`) with their dossiers, the weekly KPI board against the "if… then" thresholds, predictions vs reality, and the manual-checks checklist from `ricerche-manuali.md`. Cards link the other tabs: Riepilogo "Dove siamo rispetto al mercato reale", Gioco e test "the reality check" (real recent B winners and losers as control capsules), Marketing e store "the winners' recipe with OUR status" (from TODO.md and calendar.md), Piano e soldi "sales scenarios from the real market" next to the calc_econ ones. The page stays offline (no external images or scripts).
+
+## 4e6. Weekly and daily routine
+
+```bash
+# weekly (e.g. Monday): new release week, re-checks, market head, snapshots, calibration
+python cohort_bench.py update --reference <header capsule>     # then grade the new sheets strictly, and:
+python cohort_bench.py update --new-weeks 0
+python market_tracker.py discover --top-sellers 25 --most-played 25 --breakouts 15
+python market_tracker.py snapshot --steamspy
+python market_tracker.py social --role comp --yt-quota 8000
+python cohort_bench.py --dir ~/.game-launch-strategist/cohorts/_work/<new week> news
+python cohort_bench.py calibrate && python cohort_bench.py metro
+python cohort_bench.py score --features launch/prelaunch.json -o launch/_raw/metro.json --md launch/_raw/metro.md
+python market_tracker.py comps                                 # comparables measured like the cohort
+python steam_events.py fetch && python steam_events.py export-window --csv launch/window.csv && python steam_events.py deadlines --launch-dir launch --launch <date>
+python promo_events.py fetch && python promo_events.py export-window --csv launch/window.csv && python promo_events.py deadlines --launch-dir launch --page <date> --demo <date> --launch <date>
+python predictions.py sync && python top_moves.py apply && python status_page.py
+# daily (2-4 times a day): player samples for daily peaks
+python market_tracker.py snapshot --players-only
+```
+
 ## 4f. `watchlist.py`: comparables and competitors over time
 
 ```bash
 python watchlist.py add 1599600 728880 --role comp
 python watchlist.py add 2000000 --role competitor
-python watchlist.py snap                      # whenever you like, weekly is plenty
+python watchlist.py snap [--csv launch/watchlist.csv]   # whenever you like, weekly is plenty
 python watchlist.py report --launch 2027-03-01 --window-days 30 --md launch/watchlist-report.md
 ```
 Append-only snapshots in `launch/watchlist.csv` (store details, review summary, current players from `ISteamUserStats/GetNumberOfCurrentPlayers/v1/`: public endpoints; a missing value means the endpoint answered with `result` other than 1). The report gives reviews and growth over 7 and 30 days, and alerts: a game going viral (gain well above its own median), a discount (with the date it was first seen), a release, a drop in % positive, a player spike, and **a competitor releasing within N days of your launch date** (ALARM). Wishlists and sales of other games are not public.
@@ -171,7 +317,7 @@ Append-only snapshots in `launch/watchlist.csv` (store details, review summary, 
 ```bash
 python project_scan.py --root . -o launch/_raw/project_scan.json --md launch/_raw/project_scan.md
 ```
-Read-only. Looks from the working directory and in the folders above it. **Engine and version**: Unreal (`.uproject`: engine association, enabled plugins incl. the MCP plugin, Steam, maps and asset counts, `gds_ue.py`), Unity (`ProjectVersion.txt`: version, render pipeline, packages, MCP packages, build scenes, GameDeveloperSkill files), Godot (version, name, addons, scenes), GameMaker, Defold, Ren'Py, RPG Maker, Construct, Love2D, Phaser, three.js, Babylon, Bevy, raylib and a few more. **Documents**, ranked (`CLAUDE.md`, `AGENTS.md`, GDD, `GAME_CONTEXT.md`, `GAME_TASKS.md`, README, pitch, roadmap, TODO, notes) with their first heading; build folders (`Intermediate`, `Saved`, `Library`, `node_modules`…) are skipped. **What other skills left**: GDD locked or not, task counts, gates, scene lint, asset ledger, screenshot index, and this skill's own `launch/` state. **Steam and itch**: `steam_appid.txt`, vdf files, `.itch.toml`. **Media**: screenshots, capsules and videos in the usual folders. **Git**: branch, last commits, remote (credentials removed). **Tools**: executables on the PC (names only), MCP servers configured in the project (`.mcp.json` and similar: name, kind and command or host, **never env values or keys**) and whether the Unreal MCP default port answers on localhost (`--no-probe` to skip; the port is a documented default [DA VERIFICARE]). **Genre hints**: keyword counts, to confirm with the owner. What the *chat* can call (MCP tools, skills) is not on disk: the skill checks it from the session (`references/00a-bootstrap.md`).
+Read-only. Looks from the working directory and in the folders above it. **Engine and version**: Unreal (`.uproject`: engine association, enabled plugins incl. the MCP plugin, Steam, maps and asset counts, `gds_ue.py`), Unity (`ProjectVersion.txt`: version, render pipeline, packages, MCP packages, build scenes, GameDeveloperSkill files), Godot (version, name, addons, scenes), GameMaker, Defold, Ren'Py, RPG Maker, Construct, Love2D, Phaser, three.js, Babylon, Bevy, raylib and a few more. **Documents**, ranked (`CLAUDE.md`, `AGENTS.md`, GDD, `GAME_CONTEXT.md`, `GAME_TASKS.md`, README, pitch, roadmap, TODO, notes) with their first heading; build folders (`Intermediate`, `Saved`, `Library`, `node_modules`…) are skipped. **What other skills left**: GDD locked or not, task counts, gates, scene lint, asset ledger, screenshot index, and this skill's own `launch/` state. **Steam and itch**: `steam_appid.txt`, vdf files, `.itch.toml`. **Media**: screenshots, capsules and videos in the usual folders. **Git**: branch, last commits, remote (credentials removed). **Tools**: executables on the PC (names only), MCP servers configured in the project (`.mcp.json` and similar: name, kind and command or host, **never env values or keys**) and whether the Unreal MCP default port answers on localhost (`--no-probe` to skip; the port is a documented default [DA VERIFICARE]). **Link with game-developer** (`dev_link`): `mode` with the same rule as game-developer's `gate_link.py detect` (`linked` = `launch/` and the strategist skill installed, `launch-only` = `launch/` without it, `solo` = no `launch/`), `dev_skill`, `dev_work`, `DECISIONI.md` (count, last D-NNN), `docs/design-review/` (map, screens, runs, `changes-since-wNN.md`, "aggiornata al gate NN"), gates with the machine-readable header (count, last number, date, status, title), gate plans `plan-wNN.md`, and the `contract:` version of `references/dev-link.md` against game-developer's `launch-link.md`. **Genre hints**: keyword counts, to confirm with the owner. What the *chat* can call (MCP tools, skills) is not on disk: the skill checks it from the session (`references/00a-bootstrap.md`).
 
 ## 4f2. `steamdb_assist.py`: SteamDB without scraping
 
@@ -189,6 +335,27 @@ python launch_window.py add --date 2027-03-09 --name "Big Co" --kind big_release
 python launch_window.py plan --launch 2027-03-01 --from 2027-01-15 --to 2027-05-31 --md launch/window.md -o launch/_raw/window.json
 ```
 Reads `launch/watchlist.csv` (competitors followed with `watchlist.py`, release date from the store) and `launch/window.csv` (what you add: `competitor`, `big_release`, `festival`, `sale`, `holiday`, with weight 1-5, source and note). Each week gets a crowding score: the weights of the items near it, discounted by distance (that week 1.0, one week away 0.5, two weeks 0.25). The report ranks the candidate weeks, lists the 5 quietest, and says whether your week is free, average or crowded and what weighs on it. Items without a usable date (for example "Q1 2027") are listed as not counted. **It only knows what is in the list**: public Steam data does not list every upcoming game, so a free week here is not a free week in the world, and the score is a heuristic for comparing weeks [OPINIONE], not a forecast.
+
+## 4f4. `steam_events.py`: Steam's own event calendar
+
+```bash
+python steam_events.py fetch                                  # -> ~/.game-launch-strategist/steam_events.json (live page, else the curated fallback)
+python steam_events.py list --from 2026-10-01 --to 2027-06-30
+python steam_events.py export-window --csv launch/window.csv  # weekly rows, kind sale / festival; replaces only its own rows
+python steam_events.py deadlines --launch-dir launch --launch 2027-05-13 [--next-fest nextfest_feb_2027] [--tags "Simulation"] [--local-coop yes]
+```
+Source: https://partner.steamgames.com/doc/marketing/upcoming_events (public, no login) plus the Next Fest edition pages (registration deadline and milestones). Themed-fest pages answered "Sorry, an error occurred" to anonymous reads on 2026-10-17, so their registration deadline is estimated as about 6 weeks before the start (Valve's general rule on the themed_sales page) and labelled [DA VERIFICARE]. When the main page fails or its layout changes, `scripts/research/data/steam_events_fallback.json` (hand-curated, with `read_on`) is used and the output says so; unpublished dates stay null with a `pattern`. `deadlines` picks the last Next Fest that ends before your launch (registration still open, start at least 3 weeks away), matches themed fests against your store tags (`launch/store_kit.json` + `--tags`; Couch Co-Op only with `--local-coop yes`), warns when the launch falls inside a seasonal sale or Next Fest (ALARM) or too late for the next sale (30-day release cooldown), writes `launch/steam-events.md`, `launch/_raw/steam_events_deadlines.json` (read by `top_moves.py`: "register for fest X by Y" within 45 days) and, without duplicates, the steps in `calendar.md` (phase "📆 Eventi Steam") and `TODO.md`. `launch_window.py plan` adds the same events by itself (`--no-steam-events` to leave them out). Weights [OPINIONE]: seasonal sale 4, Next Fest 4, themed fest 1. Tested offline with synthetic fixtures (`tests/test_steam_events.py`); run live on 2026-10-17 (24 events).
+
+## 4f5. `promo_events.py`: online showcases and festivals outside Steam's own calendar
+
+```bash
+python promo_events.py fetch                                   # -> ~/.game-launch-strategist/promo_events.json (curated file + deadlines re-read where a page prints one)
+python promo_events.py list --online-only [--kind showcase|steam_fest_3rd|itch|reddit_recurring|stream|newsletter|italian]
+python promo_events.py match --launch-dir launch --page 2026-10-31 --itch 2026-11-10 --demo 2026-12-20 --launch 2027-05-13 [--tags "Cozy"] [--all]
+python promo_events.py export-window --csv launch/window.csv   # dated online events as kind festival; never twice with steam_events.py rows
+python promo_events.py deadlines --launch-dir launch --page ... --demo ... --launch ... [--max 12] [--md launch/eventi-online.md] [--replace-todo "festival di terzi"]
+```
+Source: `scripts/research/data/promo_events_fallback.json`, hand-curated from the organisers' pages and Zukowski's festival list (https://howtomarketagame.com/festivals/), every item with URL and `read_on`. Each item has a kind, online or physical, cost, requirements (`steam_page`, `itch_page`, `demo`, `build`, `trailer`, `unreleased`, `released`, `discount`), the stages it accepts (`coming_soon`, `demo`, `ea`, `released`), theme words (`match`, `exclude`, `requires_fit`; `fit: any` for general showcases), `reach_tier` (alta / media / piccola but reliable), `odds` for a small unknown team (bassa / media / alta) with `odds_why` (selectivity, games shown, fees, past line-ups), `next_step`, dated `editions` (only with a source) and a `pattern` with the usual months (`event_months`, `open_month`, `close_month`). Undated windows become reminders at the usual opening month, with the end of the usual closing month as an estimate, always labelled [DA VERIFICARE] / [STIMA]: no day is invented. `fetch` re-reads the `deadline_page` of each item and keeps a date only when a single future date follows a deadline word (status `LETTURA_AUTO`, "to confirm"); unreadable pages leave the curated data. Value score [OPINIONE] = reach (3/2/1) × odds (1/2/3) × fit (2 theme, 1 general), 1-18; priority alta ≥ 6, media ≥ 4; tier "fattibile" when odds are media/alta, "tentativo" (long shot) when bassa. Team-restricted events need `--eligible key` or `--country IT`. `deadlines` plans at most `--max` applications (default 12) in the next 12 months by value, with 2 slots reserved for long shots (odds bassa, score ≥ 3, one edition per show), plus up to 4 recurring habits; each step carries `[id promo:...]` so later runs never duplicate it, and a hand-written step naming the event and a date is respected. It writes `launch/_raw/promo_events_deadlines.json` (top_moves.py: the nearest feasible application with priority alta, 40 points within 21 days, 30 within 45) and the Markdown report (ranked tiers "fattibili" / "vale un tentativo", month by month, habits, discarded with the reason, optional physical events). Tested offline (`tests/test_promo_events.py`, synthetic `tests/fixtures/promo_events_sample.json`).
 
 ## 4g. `plan_steps.py`: the step-by-step calendar
 
@@ -277,6 +444,8 @@ python charts_export.py --launch-dir launch          # launch/charts/*.svg and i
 
 ## 4l. `status_page.py`: status page for the owner, partners or a publisher
 
+**2026-10 update.** Seven tabs: a **Calendario** tab sits between Piano e soldi and Mercato reale (`calendar_view.py`): month grids from the current month (or the oldest overdue item) to the launch with every dated item — steps and dated table rows of `calendar.md` (struck rows skipped, "ogni lunedì dal…" kept as recurring), dated `TODO.md` lines that are not already a step, Next Fest / themed fests / sales / Valve deadlines (`_raw/steam_events_deadlines.json`), showcase application deadlines and air dates (`_raw/promo_events_deadlines.json`), waves already run (`fg/timeline.csv`), the launch and the roadmap milestones — coloured by owner (👤 / 🤖 / both / event), overdue in red, today ringed; click a day for a side panel (details, links, "open the step" link to `#step-N`), hover for a preview, month navigation, owner filter, a 14-day agenda and an "In ritardo" strip. Data travel as JSON inside `<script type="application/json">` with `<`, `>`, `&` escaped; item HTML is built escaped on the Python side. The **Roadmap** (`status.json` → `roadmap`, or guessed from the steps by keywords when missing) is drawn on top of Riepilogo (proportional rail with today + one card per milestone: date, "tra N giorni", what happens, what it needs, done / next / later / late) and, compact, on top of Calendario. The header shows the generation date ("Aggiornato il …") and the analysis date of `status.json` apart. The hero adds **"Cosa manca per passare al livello successivo"** computed from the same rules as the verdict (wave score vs threshold, open high-severity issues, metro P(≥1k) vs 25 % with the top positive levers, overdue steps, stale data, prediction accuracy). Every URL in text (TODO notes, sources, "[FATTO https://…]") becomes a short link (`weblinks.py`, domain + path, new tab), never inside code, attributes or scripts. Tool-written step notes (promo/steam events) are shown as chips (value, "serve", deadline, link), a one-line "→ next step" and collapsible details. Tests: `tests/test_calendar_links.py`.
+
 Reads files already in `launch/` (`status.json`, `issue_status.json`, `calendar.md` with its steps, `TODO.md`, `store_kit.json`, `_raw/contingencies.json` + `metrics.csv`, `fg/timeline.csv` and the wave files, `05b-critiche-reali.md`, `_raw/corpus.json`, `wishlists.csv` + `_raw/wl_plan.json`, `watchlist.csv`, `_raw/econ.json`, `01-dev.md`, the main reports) and writes one self-contained `launch/STATUS.html`. No network requests, no external scripts, light and dark theme, status icons always paired with a word, all text escaped. Everything the owner reads is in plain Italian.
 
 **Layout.** A wide page (max 1400 px, side padding `clamp(16px,3vw,40px)`, still clean at 390 px with tables scrolling inside their card, never the page) with a sticky bar of **five tabs** (WAI-ARIA tablist, arrow keys, last tab remembered in `localStorage` inside try/catch, links to a section in another tab switch tab first, print shows every tab):
@@ -311,6 +480,13 @@ todo_track.py --file launch/TODO.md drop "words of the line" --why "owner decisi
 todo_track.py --file launch/TODO.md add --section "Dev e pilastri" --text "🤖 **Fix X** — 2026-10-20 — 2 h — nessuna — 0 errori"
 ```
 `done` turns `[ ]` into `[x]`, appends "· fatto il DATE (da 🤖, note)" and refreshes `Aggiornato:`; a pattern matching zero or several lines changes nothing and prints the candidates. Rule of the skill: run it after every gate, wave and owner decision.
+
+Link with game-developer (`references/dev-link.md` §4-5): development lines carry `(P-wNN-n, key:<key>[,<key>])` in the action text (parsed as `pid`, `keys`, `approved`); a pattern that is exactly a proposal ID finds the line that owns it, not lines that cite it.
+```
+todo_track.py --file launch/TODO.md approve "P-w10-1" --date 2026-10-19 [--status-file launch/issue_status.json]
+todo_track.py --file launch/TODO.md sync-decisions --decisions DECISIONI.md [--intents launch/00-intenzioni.md] [--write]
+```
+`approve` writes `ok del proprietario DATE` in the Dependencies field (replacing "nessuna", or after a ";", or updating an older date) and, with `--status-file`, moves the line's keys to `in_lavorazione` with a note; owner decisions (accettato, non_problema, pianificato, sospeso) and `risolto` keys are not touched, and neither are the developer's `gate` / `resolved` fields. `sync-decisions` lists the `D-NNN` rows of `DECISIONI.md` cited neither in TODO.md nor in `00-intenzioni.md` (rows whose source is `launch/…` are not copied back) and with `--write` appends them under "Decisioni prese" as `- **Area:** decision (fonte: DECISIONI.md D-NNN, date)`. `DECISIONI.md` is never written.
 
 ## 5. `yt_research.py`: YouTube creators
 
@@ -415,13 +591,19 @@ python build_creators.py --youtube out/yt_shortlist.json --social out/social.jso
 | Tool | Status |
 |---|---|
 | `steam_comps.py`, `yt_research.py` (html backend: search, channels, subs, verify), `social_verify.py` (TikTok, YouTube), `build_creators.py` | Run against the live services on 2026-10-06 (PlateUp! 27,376 reviews at 94.7%, SteamSpy 1–2M owners, Gamalytic 2.39M copies = 87 copies/review; 20 videos, 14 channels, 3/3 subscriber counts; 2 TikToks and 1 Short verified). Re-checked offline after the date-handling changes. |
+| `cohort_bench.py` | Tested offline (`tests/test_cohort_bench.py`, fixture `tests/fixtures/cohort_bench.json`: per-day counts, binary search of the window, resume, every junk rule, HTML sheet fallback, grades kept, Boxleiter ranges, subsets). Run live on 2026-10-13 (14-day volume, 636-game cohort 2026-07-15..21, ffmpeg sheets). |
+| `cohort_bench.py metro` / `score` / `news` / `dossier`, `top_moves.py`, `predictions.py`, `market_page.py` + `status_page.py` | Tested offline (`tests/test_metro_moves_page.py`: planted signal found by the out-of-time backtest, monotonic probabilities, levers, one-week case refused; 3 moves written into TODO.md and calendar.md twice without duplicates and with a valid calendar; predictions sync without duplicates and hit/miss; dossier with TikTok oEmbed and date from the id, accounts from the page only, CDN assets filtered, spikes; STATUS.html summary with old data said first, the Mercato reale tab and the four cards). Run live on 2026-10-13 on Buffet Panic. |
+| `cohort_bench.py update` / `calibrate`, `market_tracker.py`, `entity_match.py` | Tested offline (`tests/test_market_calibrate.py`, `tests/test_entity_match.py`: keys loaded by name and never printed or written, dataset re-checks at 30/90/180 days, calibration and base rates, calc_econ scenarios, snapshot schedule, estimates, social matching, manual file, RSS parsing, marketing patterns; matching precision on two hand-labelled real samples). Run live on 2026-10-13: dataset seeded with the 592-game cohort, calibration written, discover (top sellers, most played, breakouts), snapshots, players, social for 3 comps (YouTube via key; Reddit anonymous RSS answered 429), timeline, manual checks. |
 | `reddit_rules.py` anonymous | `403 Blocked` (expected: OAuth needed). |
 | `yt_research.py --backend api` | Not tested (no `YOUTUBE_API_KEY`). |
 | `steam_tags.py` | Tested offline (the reported Roguelite / Rogue-lite case, hyphen variants, typos, built-in fallback, unverifiable lists). **Not run against live SteamSpy.** |
+| `steam_events.py` | Tested offline (`tests/test_steam_events.py`: sales, fests across the new year, Next Fest editions, edition milestones, fallback on a broken or missing page, merge, weekly window rows, hand rows kept, launch_window auto feed, deadlines, warnings, calendar/TODO written once, top_moves fest move, cp1252). Run live on 2026-10-17. |
+| `promo_events.py` | Tested offline (`tests/test_promo_events.py`: curated file format incl. the real fallback, occurrences from editions and usual months with no invented day, stage / requirement / genre checks, value score and tiers, cap of applications and long shots, fetch deadline parsing and failures, window.csv without duplicates with hand rows or Steam's events, calendar/TODO once with stable ids, generic TODO line superseded, report, top_moves promo move, cp1252). Curated on 2026-10-17. |
 | `launch_window.py`, `charts.py`, `report_charts.py`, `report_html.py`, `charts_export.py` | Tested offline (week scores checked by hand: same week 1.0, one week 0.5, two weeks 0.25; ranking, verdicts, bad rows, cp1252 console; every chart group from a synthetic `launch/` with hostile text, REPORT.html sections, standalone SVGs parsed as XML). Rendered and inspected in Chromium (desktop, phone, dark). |
 | `criticita.py`, `qa.py` | Tested offline on a three-wave life cycle (new, falling, resolved with its fix, back, rising), gates, evolution matrix, the register CLI, the owner's `status.json` formats, Q&A CLI (same question updated), answers computed from data, links that all land on an existing id, tags balanced, publisher audience, escaping. Rendered and checked in Chromium. |
 | `glossary.py`, `md_enrich.py` | Tested offline: tooltip once per section, skipped zones (code, links, headings, summaries, SVG), entities and hostile text kept escaped, no link to the section you are in, every internal link lands on an existing id, tags stay balanced, explanations short and without figures; Markdown links relative from subfolders, idempotent, glossary replaced not duplicated, cp1252 console. Checked in Chromium: tooltip on hover and focus, clamped inside a 390 px screen, link jumps to the section. |
 | `project_scan.py` | Tested offline on synthetic Unreal, Unity (GameDeveloperSkill), Godot and web projects: version and name extraction, document ranking, build folders skipped, artifacts of other skills, parent-folder lookup, **secrets in MCP configs and credentials in the git remote never reach the output**, cp1252 console. Also run on a real skill repository (no engine found, as it should). Not run on a real Unreal or Unity project. |
 | `steamdb_assist.py` | Tested offline (links, parsing of `12,400` / `12.9K`, append-only, delta, no network access). Never contacts steamdb.info by design. |
 | `review_corpus.py`, `store_bench.py`, `genre_bench.py`, `watchlist.py`, `plan_steps.py`, `store_kit.py`, `metrics_track.py`, `calc_econ.py`, `wl_track.py`, `status_page.py` | Tested offline in `tests/` (canned API-shaped answers; real HLS and DASH trailers generated with `ffmpeg` and served locally (duration, cuts, frames, no MP4 present); a console test under cp1252 for the emoji output; arithmetic of the economic plan checked independently; the status page rendered in Chromium at desktop and 390 px width: no horizontal overflow, no script errors, hostile text stays inert). `plan_steps.py` was also checked on a real step list written by the project owner (30 steps, 6 phases). **Not yet run against the live Steam services.** |
+| `wave_kit.py` | Tested offline (`tests/test_wave_kit.py`: seven templates, never overwrite, template-only sections fail, a filled Godot-like wave passes, each required item fails on its own, extra questions found in the JSON keys, limite-beta only warns, `--json`, exit codes, cp1252 console). Run on the real wave 9 of Buffet Panic on 2026-10-18: all ✅. |
 | `steam_reviews.py`, `steam_discover.py`, `roster.py`, `fg_waves.py` | Tested **offline** against canned responses shaped like the documented APIs (paging, duplicate and cursor handling, filters, day-range cap, early stop on recent sort, theme tally, CSV output, tag ranking, roster determinism, stable jury and append-only behaviour, wave validation, metrics, delta and timeline on synthetic waves). **Not yet run against the live Steam endpoints**: do a first run with one app id and check the output before relying on it. |
