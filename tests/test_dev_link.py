@@ -168,7 +168,7 @@ write(os.path.join(W, "w10-sintesi.md"), read(os.path.join(W, "w10-sintesi.md"))
 r_ = wk.check(L, 10)
 assert status(r_, "w10-sintesi.md", "problemi nati da un gate") == "ok" and status(r_, "w10-sintesi.md", "chiavi risolte che tornano") == "ok"
 assert status(r_, "w10-sintesi.md", "righe con chiave e ID") == "ok"
-assert all(i["status"] != "fail" for i in r_["items"] if i["file"] in ("w10-sintesi.md", "w10-2026-10-19-beta.json"))   # contract items only warn
+assert all(i["status"] != "fail" for i in r_["items"] if i["file"] in ("w10-sintesi.md", "w10-2026-10-19-beta.json") and not __import__("re").search(r"ancore|rubrica|valutazione completa", i["label"]))   # contract items only warn (calibration items are required: test_calibration.py)
 
 # ---- fg_waves: from_gate_dev and gate_dev accepted, shown; bad types refused
 wv = fg_waves.load_wave(WJ)

@@ -77,7 +77,12 @@ Se è una beta **senza** piano del gioco completo: valuta come beta e dì chiara
 - Prezzo: filosofia (accessibile, premium, early access), tolleranza agli sconti, prezzi regionali.
 - Soci e ricavi: c'è un accordo scritto? Paese e inquadramento fiscale, commercialista già trovato?
 - Rischio: lanciare presto e iterare, oppure aspettare un prodotto lucido? Early Access sì o no?
-**Cambia:** ordine di pagamento nel calendario, uso del budget, prezzo, tripwire, contingenze economiche.
+- **State pensando a un publisher? sì / no / non so.** (Perché la faccio: cambia chi paga marketing e porting, quanto vi resta di ogni copia e cosa preparare: un publisher chiede numeri, demo e un pitch deck.)
+  - *Sì*: `publisher_scout.py rank` (sotto) e la lista per fasce entra nel calendario.
+  - *No*: lo registri e non ne parli più, salvo che i dati cambino molto (es. una clip virale e una richiesta in arrivo).
+  - *Non so*: **dai tutti e due gli scenari con i numeri**, nel formato del consiglio: (1) **da soli**: ricavo netto per copia di `calc_econ.py`, tutto il rischio e tutto il controllo; (2) **con publisher**: di solito il **30-50 % dei ricavi netti al publisher** dopo che ha recuperato anticipo e spese (in una revisione di 30 contratti indie la media era 60/40 a favore dello sviluppatore, 71 % senza anticipo, 55 % con anticipo; ogni contratto è diverso **[DA VERIFICARE per contratto]**), un eventuale anticipo (soldi subito), più portata di marketing, porting, QA e localizzazione; in cambio date una parte dei ricavi per anni, decisioni su data, prezzo e sconti, a volte i diritti (IP). Il numero che decide è **"quante volte più copie deve farvi vendere il publisher perché vi resti quanto da soli"** (`publisher_scout.py compare`): sopra 3× conviene solo se il publisher porta davvero un pubblico che da soli non raggiungete o se l'anticipo serve a finire il gioco. Poi la lista per fasce (realistico adesso / dopo un passo / difficile / sogno) con la probabilità onesta per invio e il passo concreto: mai "nessuno vi prende", sempre i migliori realistici e cosa sblocca gli altri.
+  - Registra la risposta in `status.json` → `publisher: {"question": "yes|no|dont_know"}` e in `game.publisher_question` di `launch/_raw/publisher_game.json`.
+**Cambia:** ordine di pagamento nel calendario, uso del budget, prezzo, tripwire, contingenze economiche, sezione "Publisher" di STATUS.html.
 
 ### Round 4: canali, community e stile
 - Dove volete stare (TikTok, Shorts, YouTube, Reddit, Discord, itch.io, devlog) e dove non andrete mai.
@@ -157,3 +162,4 @@ In `status.json`: `"product": {"kind": "beta|demo|vertical_slice|full|post_launc
 | non negoziabili | differenziatori ammessi, tagli di scope |
 | scenari "e se…" | contingenze, criteri di stop e pivot |
 | paese e soci | sezione fiscale, accordo tra soci |
+| publisher sì / no / non so | `publisher_scout.py` (lista per fasce, confronto con/senza), `publisher-scout.md`, sezione Publisher di STATUS.html |

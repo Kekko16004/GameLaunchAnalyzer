@@ -1,0 +1,515 @@
+{
+ "meta": {
+  "checked": "2026-10-20",
+  "note": "Self-reported numbers from public dev posts: survivorship-biased (people post when it went well). Surveys (benchmarks) lead; cases are context.",
+  "blocked": [
+   "https://www.reddit.com/r/IndieGameWishlist/comments/1x9p5hx/ (Reddit RSS 429 and WebFetch refuses reddit.com on 2026-10-20; not read: manual step in the project's ricerche-manuali.md)"
+  ]
+ },
+ "records": [
+  {
+   "id": "endless-rails-nf-2026-06",
+   "game": "Endless Rails",
+   "genres": [
+    "train",
+    "simulation"
+   ],
+   "date": "2026-06",
+   "event": "next_fest",
+   "source_url": "https://www.reddit.com/r/IndieGameWishlist/comments/1wt94xc/personal_calendar_19300_wishlists_2_hours_before/",
+   "source_kind": "reddit",
+   "source_date": "2026-06",
+   "checked": "2026-10-20",
+   "confidence": "self_reported",
+   "fest": "Next Fest Jun 2026",
+   "fest_gain": 3000,
+   "wishlists_at_launch": 19300,
+   "what_they_did": [
+    "page ~5 months",
+    "X announcement ~1,000",
+    "Reddit Ads ~1,500",
+    "Train Fest ~1,000",
+    "trailer on Indie Games Hub ~2,000",
+    "personal calendar ~8,000 in the last week"
+   ]
+  },
+  {
+   "id": "the-plant-shop-launch",
+   "game": "The Plant Shop",
+   "genres": [
+    "cozy",
+    "simulation"
+   ],
+   "date": "2026",
+   "event": "launch",
+   "source_url": "https://www.reddit.com/r/IndieGameWishlist/comments/1whydpv/personal_calendar_is_crazy_12000_wishlists/",
+   "source_kind": "reddit",
+   "source_date": "2026",
+   "checked": "2026-10-20",
+   "confidence": "self_reported",
+   "wishlists_at_launch": 12000,
+   "what_they_did": [
+    "page + demo",
+    "creator video 300k views",
+    "Next Fest",
+    "personal calendar"
+   ]
+  },
+  {
+   "id": "dreamingcatdev-launch-2026-07",
+   "game": "DreamingCatDev game",
+   "genres": [],
+   "date": "2026-07",
+   "event": "launch",
+   "source_url": "https://www.reddit.com/r/IndieGameWishlist/comments/1v0b8gy/it_feels_unreal_2024_i_expected_having_2000_for/",
+   "source_kind": "reddit",
+   "source_date": "2026-07",
+   "checked": "2026-10-20",
+   "confidence": "self_reported",
+   "wishlists_at_launch": 10014,
+   "what_they_did": [
+    "page 14 months",
+    "2,263 first month (page, demo, article)",
+    "40-560/month with festivals",
+    "~5,200 in last 2 months (Next Fest + calendar)"
+   ]
+  },
+  {
+   "id": "12k-two-beats-nf-2026-02",
+   "game": "12k with two marketing beats",
+   "genres": [],
+   "date": "2026-02",
+   "event": "next_fest",
+   "source_url": "https://www.reddit.com/r/IndieGameWishlist/comments/1vf9i85/12k_wishlists_with_two_main_marketing_beats/",
+   "source_kind": "reddit",
+   "source_date": "2026-02",
+   "checked": "2026-10-20",
+   "confidence": "self_reported",
+   "fest": "Next Fest Feb 2026",
+   "fest_gain": 3000,
+   "wishlists_at_launch": 12000,
+   "what_they_did": [
+    "teaser on Indie Games Hub (80k views) ~6,000",
+    "page since Dec 2025"
+   ]
+  },
+  {
+   "id": "too-many-balls-launch",
+   "game": "Too Many Balls",
+   "genres": [
+    "roguelite",
+    "arcade"
+   ],
+   "date": "2026",
+   "event": "launch",
+   "source_url": "https://www.reddit.com/r/IndieGameWishlist/comments/1witco4/we_hit_5k_wishlists_game_is_releasing_tomorrow/",
+   "source_kind": "reddit",
+   "source_date": "2026",
+   "checked": "2026-10-20",
+   "confidence": "self_reported",
+   "wishlists_at_launch": 5019,
+   "what_they_did": [
+    "trailer on GameTrailers",
+    "Next Fest",
+    "two big YouTubers by email",
+    "personal calendar"
+   ]
+  },
+  {
+   "id": "vartemal-rts-nf-2026-07",
+   "game": "RTS by vartemal",
+   "genres": [
+    "strategy",
+    "rts"
+   ],
+   "date": "2026-07",
+   "event": "next_fest",
+   "source_url": "https://www.reddit.com/r/IndieGameWishlist/comments/1vn4ys9/no_viral_grow_story_to_5000_wishlists/",
+   "source_kind": "reddit",
+   "source_date": "2026-07",
+   "checked": "2026-10-20",
+   "confidence": "self_reported",
+   "fest": "Next Fest Jul 2026",
+   "wishlists_before": 3000,
+   "wishlists_after": 4450,
+   "what_they_did": [
+    "first year without demo ~1,500",
+    "demo + festivals ~3,000 before the fest"
+   ],
+   "outcome_note": "steady growth, no viral moment; 'before' is the author's approximate figure",
+   "fest_gain": 1450
+  },
+  {
+   "id": "charming-hill-nf-2026-06",
+   "game": "Charming Hill",
+   "genres": [
+    "cozy"
+   ],
+   "date": "2026-06",
+   "event": "next_fest",
+   "source_url": "https://www.reddit.com/r/IndieGameWishlist/comments/1u7o7k9/steam_next_fest_has_started_my_game_entered_with/",
+   "source_kind": "reddit",
+   "source_date": "2026-06",
+   "checked": "2026-10-20",
+   "confidence": "self_reported",
+   "fest": "Next Fest Jun 2026",
+   "wishlists_before": 6000,
+   "what_they_did": [
+    "page < 3 months"
+   ],
+   "outcome_note": "first day of the fest: 'nothing changed'"
+  },
+  {
+   "id": "slots-and-diapers",
+   "game": "Slots & Diapers",
+   "genres": [
+    "roguelite",
+    "comedy",
+    "gambling"
+   ],
+   "date": "2026",
+   "event": "next_fest",
+   "source_url": "https://www.reddit.com/r/IndieGameWishlist/comments/1syth3a/from_85_wishlists_at_next_fest_to_30_away_from_5k/",
+   "source_kind": "reddit",
+   "source_date": "2026",
+   "checked": "2026-10-20",
+   "confidence": "self_reported",
+   "wishlists_before": 85,
+   "what_they_did": [
+    "demo + Next Fest"
+   ],
+   "outcome_note": "entered the fest with 85 and later reached ~4,970 (time span not stated)"
+  },
+  {
+   "id": "hamstr-protocol",
+   "game": "Hamstr Protocol",
+   "genres": [],
+   "date": "2026",
+   "event": "demo",
+   "source_url": "https://www.reddit.com/r/IndieGameWishlist/comments/1w1s60j/2m_youtube_views_but_only_2155_wishlists/",
+   "source_kind": "reddit",
+   "source_date": "2026",
+   "checked": "2026-10-20",
+   "confidence": "self_reported",
+   "demo_players": 4250,
+   "wishlists_after": 2155,
+   "what_they_did": [
+    "demo played by big YouTubers (2M views total)"
+   ],
+   "outcome_note": "views alone did not become wishlists"
+  },
+  {
+   "id": "frost-protocol-article",
+   "game": "Frost Protocol",
+   "genres": [],
+   "date": "2026",
+   "event": "page_live",
+   "source_url": "https://www.reddit.com/r/IndieGameWishlist/comments/1vyr54s/16_months_of_development_and_only_725_wishlists_i/",
+   "source_kind": "reddit",
+   "source_date": "2026",
+   "checked": "2026-10-20",
+   "confidence": "self_reported",
+   "wishlists_before": 725,
+   "wishlists_after": 2200,
+   "what_they_did": [
+    "niche-site article born from a Reddit post"
+   ],
+   "outcome_note": "+~1,500 in 24 h"
+  },
+  {
+   "id": "first-game-100-sales",
+   "game": "First game, 100 sales",
+   "genres": [],
+   "date": "2026",
+   "event": "launch",
+   "source_url": "https://www.reddit.com/r/IndieGameWishlist/comments/1wmg4uf/100_sales_and_40_after_the_release_of_my_first/",
+   "source_kind": "reddit",
+   "source_date": "2026",
+   "checked": "2026-10-20",
+   "confidence": "self_reported",
+   "sales_total": 100,
+   "what_they_did": [
+    "no Coming Soon period",
+    "no Next Fest",
+    "no calendar"
+   ],
+   "outcome_note": "the author lists these as the mistakes"
+  },
+  {
+   "id": "solo-9-months",
+   "game": "Solo game in 9 months",
+   "genres": [],
+   "date": "2025",
+   "event": "launch",
+   "source_url": "https://www.reddit.com/r/SoloDevelopment/comments/1og1fck/ive_released_a_game_in_less_than_9_months_solo/",
+   "source_kind": "reddit",
+   "source_date": "2025",
+   "checked": "2026-10-20",
+   "confidence": "self_reported",
+   "fest_gain": 500,
+   "wishlists_at_launch": 4500,
+   "team_size": 1,
+   "what_they_did": [
+    "press spike ~2,000"
+   ]
+  },
+  {
+   "id": "chess-roguelite-launch",
+   "game": "Chess roguelite",
+   "genres": [
+    "roguelite",
+    "chess"
+   ],
+   "date": "2025",
+   "event": "launch",
+   "source_url": "https://www.reddit.com/r/IndieDev/comments/1p0iu8p/results_after_1_week_since_publishing_the_game_6k/",
+   "source_kind": "reddit",
+   "source_date": "2025",
+   "checked": "2026-10-20",
+   "confidence": "self_reported",
+   "wishlists_at_launch": 12000,
+   "sales_first_week": 616,
+   "outcome_note": "~5 copies per 100 wishlists in week 1 (~6k $ gross)"
+  },
+  {
+   "id": "legacy-of-defense-nf",
+   "game": "Legacy of Defense",
+   "genres": [
+    "tower defense",
+    "strategy"
+   ],
+   "date": "2025",
+   "event": "next_fest",
+   "source_url": "https://www.reddit.com/r/IndieDev/comments/1ozd2lf/how_i_managed_to_gather_25000_wishlists_with/",
+   "source_kind": "reddit",
+   "source_date": "2025",
+   "checked": "2026-10-20",
+   "confidence": "self_reported",
+   "wishlists_before": 20000,
+   "wishlists_after": 20600,
+   "wishlists_at_launch": 25000,
+   "sales_first_month": 10000,
+   "what_they_did": [
+    "page ~12 months before EA"
+   ],
+   "fest_gain": 600
+  },
+  {
+   "id": "demo-explodes-590",
+   "game": "Solo first game (demo breakout)",
+   "genres": [],
+   "date": "2026",
+   "event": "demo",
+   "source_url": "https://www.reddit.com/r/SoloDevelopment/comments/1vldq7y/my_first_game_had_590_wishlists_when_i_released/",
+   "source_kind": "reddit",
+   "source_date": "2026",
+   "checked": "2026-10-20",
+   "confidence": "self_reported",
+   "wishlists_before": 590,
+   "wishlists_after": 70000,
+   "team_size": 1,
+   "outcome_note": "outlier: the demo went viral within a month"
+  },
+  {
+   "id": "blastronaut-nf-2022-02",
+   "game": "Blastronaut",
+   "genres": [
+    "action",
+    "platformer",
+    "survival"
+   ],
+   "date": "2022-02",
+   "event": "next_fest",
+   "source_url": "https://perfoon.itch.io/blastronaut/devlog/352998/devlog-12-steam-festival-results-and-tips",
+   "source_kind": "devlog",
+   "source_date": "2022-02",
+   "checked": "2026-10-20",
+   "confidence": "self_reported",
+   "wishlists_before": 2100,
+   "wishlists_after": 3600,
+   "fest": "Next Fest Feb 2022",
+   "what_they_did": [
+    "second festival",
+    "live stream on day 2 (visits peaked ~1,200/day)"
+   ],
+   "outcome_note": "'around' figures from the devlog",
+   "fest_gain": 1500
+  },
+  {
+   "id": "no-signal-nf",
+   "game": "No Signal",
+   "genres": [
+    "adventure",
+    "point & click"
+   ],
+   "date": "2025",
+   "event": "next_fest",
+   "source_url": "https://exodrifter.itch.io/no-signal/devlog/820067/steam-next-fest-notes",
+   "source_kind": "devlog",
+   "source_date": "2025",
+   "checked": "2026-10-20",
+   "confidence": "self_reported",
+   "wishlists_before": 406,
+   "wishlists_after": 1276,
+   "demo_players": 434,
+   "team_size": 2,
+   "outcome_note": "before derived from 1,276 total minus 870 gained; 147 of the 870 also played the demo",
+   "fest_gain": 870
+  },
+  {
+   "id": "gravity-storm-nf-2025-06",
+   "game": "Gravity Storm",
+   "genres": [
+    "platformer",
+    "shooter"
+   ],
+   "date": "2025-06",
+   "event": "next_fest",
+   "source_url": "https://jampley-dev.itch.io/gravity-storm-demo/devlog/968459/next-fest-recap-gravity-storm",
+   "source_kind": "devlog",
+   "source_date": "2025-06",
+   "checked": "2026-10-20",
+   "confidence": "self_reported",
+   "wishlists_before": 236,
+   "wishlists_after": 464,
+   "fest": "Next Fest Jun 2025",
+   "fest_gain": 228
+  },
+  {
+   "id": "blade-and-burden-nf-2024-10",
+   "game": "Blade and Burden",
+   "genres": [
+    "roguelite"
+   ],
+   "date": "2024-10",
+   "event": "next_fest",
+   "source_url": "https://drock2024.itch.io/blade-and-burden/devlog/823234/steam-next-fest-a-retrospective",
+   "source_kind": "devlog",
+   "source_date": "2024-10",
+   "checked": "2026-10-20",
+   "confidence": "self_reported",
+   "fest_gain": 101,
+   "demo_players": 70,
+   "fest": "Next Fest Oct 2024",
+   "outcome_note": "1,321 visits, 101 wishlists in the fest week"
+  },
+  {
+   "id": "freerunners-nf",
+   "game": "Freerunners",
+   "genres": [],
+   "date": "2025",
+   "event": "next_fest",
+   "source_url": "https://www.steampageanalyzer.com/blog/steam-next-fest-results",
+   "source_kind": "article",
+   "source_date": "2025",
+   "checked": "2026-10-20",
+   "confidence": "self_reported",
+   "wishlists_before": 420,
+   "wishlists_after": 755,
+   "outcome_note": "reported in a third-party roundup",
+   "fest_gain": 335
+  }
+ ],
+ "benchmarks": [
+  {
+   "id": "htmag-nf-2026-02-lt1k",
+   "label": "Next Fest feb 2026, chi entra con meno di 1.000 wishlist: guadagno mediano",
+   "event": "next_fest",
+   "bucket_min": 0,
+   "bucket_max": 999,
+   "median_gain": 322,
+   "n": 182,
+   "source": "How To Market A Game (sondaggio)",
+   "url": "https://howtomarketagame.com/2025/03/26/benchmarks-how-many-wishlists-can-i-get-from-steam-next-fest/",
+   "date": "2026-02"
+  },
+  {
+   "id": "htmag-nf-2026-02-1k-10k",
+   "label": "Next Fest feb 2026, chi entra con 1.000-9.999: guadagno mediano",
+   "event": "next_fest",
+   "bucket_min": 1000,
+   "bucket_max": 9999,
+   "median_gain": 1006,
+   "n": 182,
+   "source": "How To Market A Game (sondaggio)",
+   "url": "https://howtomarketagame.com/2025/03/26/benchmarks-how-many-wishlists-can-i-get-from-steam-next-fest/",
+   "date": "2026-02"
+  },
+  {
+   "id": "htmag-nf-2026-02-10k-100k",
+   "label": "Next Fest feb 2026, chi entra con 10.000-99.999: guadagno mediano",
+   "event": "next_fest",
+   "bucket_min": 10000,
+   "bucket_max": 99999,
+   "median_gain": 5215,
+   "n": 182,
+   "source": "How To Market A Game (sondaggio)",
+   "url": "https://howtomarketagame.com/2025/03/26/benchmarks-how-many-wishlists-can-i-get-from-steam-next-fest/",
+   "date": "2026-02"
+  },
+  {
+   "id": "htmag-nf-2025-1k-7k",
+   "label": "Next Fest 2025, fascia 1.000-6.999 all'ingresso (n = 32): 25° percentile 312, mediana 628, 75° 1.317",
+   "event": "next_fest_2025_table",
+   "value": "312 / 628 / 1.317",
+   "n": 32,
+   "source": "How To Market A Game",
+   "url": "https://howtomarketagame.com/2025/03/26/benchmarks-how-many-wishlists-can-i-get-from-steam-next-fest/",
+   "date": "2025-03"
+  },
+  {
+   "id": "nf-2026-02-overall",
+   "label": "Next Fest feb 2026: guadagno mediano di tutti i rispondenti (70° percentile 1.839)",
+   "value": "+806",
+   "n": 182,
+   "source": "sintesi di ziva.sh sul sondaggio HTMAG",
+   "url": "https://ziva.sh/blogs/steam-next-fest-2026",
+   "date": "2026-02"
+  },
+  {
+   "id": "gdco-nf-2026-02-all",
+   "label": "Next Fest feb 2026: mediana stimata su TUTTE le 3.500+ demo (non solo chi risponde ai sondaggi)",
+   "value": "~+200",
+   "n": 3500,
+   "source": "GameDiscoverCo via ziva.sh",
+   "url": "https://ziva.sh/blogs/steam-next-fest-2026",
+   "date": "2026-02"
+  },
+  {
+   "id": "htmag-demo-early",
+   "label": "Demo uscita mesi prima del fest invece che durante: wishlist del fest",
+   "value": "~2,5×",
+   "n": null,
+   "source": "How To Market A Game",
+   "url": "https://howtomarketagame.com/2025/03/26/benchmarks-how-many-wishlists-can-i-get-from-steam-next-fest/",
+   "date": "2025-03"
+  },
+  {
+   "id": "gdco-first-week",
+   "label": "Copie vendute nella prima settimana per wishlist all'uscita (mediana; 0,10× sopra i 10 $)",
+   "value": "0,15×",
+   "n": null,
+   "source": "GameDiscoverCo",
+   "url": "https://newsletter.gamediscover.co/p/the-state-of-steam-wishlist-conversions",
+   "date": "2025-10-17"
+  },
+  {
+   "id": "htmag-wl-inflation",
+   "label": "Vendite del primo mese per wishlist: giochi 2023-25 contro 2020-22",
+   "value": "circa la metà",
+   "n": 160,
+   "source": "How To Market A Game",
+   "url": "https://howtomarketagame.com/2026/10/13/wishlist-inflation-is-real-but-they-are-still-important/",
+   "date": "2026-10-13"
+  },
+  {
+   "id": "htmag-demo-wl",
+   "label": "Chi gioca la demo e poi mette la wishlist (mediana, giugno 2026); il 68-88 % delle wishlist del fest viene da chi NON l'ha giocata",
+   "value": "19,3 %",
+   "n": null,
+   "source": "How To Market A Game",
+   "url": "https://howtomarketagame.com/2026/06/30/nobody-plays-demos-and-that-is-ok/",
+   "date": "2026-06-30"
+  }
+ ]
+}

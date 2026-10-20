@@ -1,0 +1,5732 @@
+{
+ "meta": {
+  "checked": "2026-10-20",
+  "note": "Curated by hand from public pages; every entry lists sources with dates. Re-verify entries older than 180 days (publisher_scout.py check).",
+  "base_rates": {
+   "very_high": {
+    "low": 0.002,
+    "high": 0.01
+   },
+   "high": {
+    "low": 0.008,
+    "high": 0.03
+   },
+   "medium": {
+    "low": 0.02,
+    "high": 0.07
+   },
+   "low": {
+    "low": 0.05,
+    "high": 0.15
+   }
+  },
+  "base_rates_source": "per-pitch chance for a good-fit pitch [STIMA]: anchored on Raw Fury (< 1 % of 1,500+ pitches a year) and Outersloth (~1.4 % signing rate); medium/low are skill estimates [OPINIONE]",
+  "industry_facts": [
+   {
+    "fact": "Hooded Horse contracts: developers keep 65 % of all revenue; at least $100k of localization and marketing per project.",
+    "url": "https://mcvuk.com/business-news/harnessing-hooded-horse-power-tim-bender-and-snow-rui-on-their-indie-publisher/",
+    "date": "2026-10-20"
+   },
+   {
+    "fact": "Wholesome Games Presents does marketing and biz-dev, usually no funding or QA, and takes a smaller revenue share than average.",
+    "url": "https://wholesomegames.com/",
+    "date": "2026-10-20"
+   },
+   {
+    "fact": "Study of 30 indie contracts: with no advance developers averaged 71% revenue share; with an advance the dev share drops and recoup clauses are near-universal. Example 'good' deal: 60/40 to publisher while recouping a $318k advance, then 60/40 to developer.",
+    "url": "https://www.pcgamer.com/what-a-good-and-bad-indie-game-publishing-deal-looks-like/",
+    "date": "2026-10-20"
+   },
+   {
+    "fact": "Rami Ismail (2026): most common post-recoup split is ~50/50 +/-10%; before recoup 0/100 (dev gets nothing) is increasingly common; publishers recoup the advance plus service costs (marketing, localisation, QA).",
+    "url": "https://ltpf.ramiismail.com/upfronts-guarantees-recoups/",
+    "date": "2026-10-20"
+   },
+   {
+    "fact": "Outersloth fund: ~1.4% signing rate; 50% of revenue until recoup, then 15% (~7 years); developer keeps IP.",
+    "url": "https://github.com/GameDevGrzesiek/GameFunds/blob/main/GameFundingDirectory.md",
+    "date": "2026-10-20"
+   },
+   {
+    "fact": "WINGS Interactive: 50/50 until 1x recoup, then 15% to WINGS; developer keeps IP.",
+    "url": "https://github.com/GameDevGrzesiek/GameFunds/blob/main/GameFundingDirectory.md",
+    "date": "2026-10-20"
+   },
+   {
+    "fact": "No More Robots (Aug 2024): only very cheap or very expensive pitches get signed now; mid budgets rejected; $400k is too much for NMR.",
+    "url": "https://www.gamedeveloper.com/business/-this-is-just-a-death-cycle-no-more-robots-gets-candid-about-the-state-of-indie-publishing",
+    "date": "2026-10-20"
+   },
+   {
+    "fact": "Ravenage CEO: the first five slides of a pitch deck usually decide whether a game fits.",
+    "url": "https://gametyrant.com/news/for-us-game-developers-are-full-fledged-team-members-an-interview-with-elena-morina-ceo-and-founder-of-ravenage-an-indie-game-publisher",
+    "date": "2026-10-20"
+   },
+   {
+    "fact": "Inactive/closed publishers 2024-2025 per directory: Humble Games, Versus Evil, Merge Games, Private Division, Firestoke (Aug 2025), Modern Wolf, PID Games (no releases since Dec 2024).",
+    "url": "https://github.com/GameDevGrzesiek/GameFunds/blob/main/GameFundingDirectory.md",
+    "date": "2026-10-20"
+   },
+   {
+    "fact": "Silver Lining Interactive's Silver Bullet incubator offered indie devs up to $100,000 funding plus publishing, marketing, QA and porting.",
+    "url": "https://gamedev.net/news/4905-silver-lining-interactive-launches-first-title-from-its-development-label/",
+    "date": "2026-10-20"
+   },
+   {
+    "fact": "Raw Fury receives 1,500+ pitches a year and signs less than 1% (under 0.5% in 2021), not counting games their scouts seek out.",
+    "url": "https://gameworldobserver.com/2021/10/19/raw-fury-says-it-receives-over-1500-pitches-year-and-signs-less-than-1-of-those",
+    "date": "2026-10-20"
+   },
+   {
+    "fact": "Lawyer Kellen Voyer's review of 30 non-mobile indie publishing contracts (GDC 2020): average advance USD 318k (100k-2M among deals with an advance); average split 60% dev / 40% publisher; 71% dev in no-advance deals, 55% dev in advance deals; 37-42% use full-stop recoup (dev gets 0 until the advance is repaid); average term ~6.8 years, ~49% auto-renew.",
+    "url": "https://www.pcgamer.com/what-a-good-and-bad-indie-game-publishing-deal-looks-like/",
+    "date": "2026-10-20"
+   },
+   {
+    "fact": "Future Friends Games publishes its terms: 80/20 after recoup with no funding, 70/30 after recoup with up to GBP 100k, or 50/50 from day one; marketing spend not recouped.",
+    "url": "https://futurefriendsgames.com/publishing-support",
+    "date": "2026-10-20"
+   },
+   {
+    "fact": "2024 Steam data (GameDiscoverCo + Gamalytic, games > USD 500): median publisher-backed game USD 16,222 vs USD 3,285 self-published; published games 4x more likely to reach USD 200k+. Selection effect unclear (publishers pick better games).",
+    "url": "https://opgamemarketing.substack.com/p/the-2024-indie-and-aa-game-market",
+    "date": "2026-10-20"
+   },
+   {
+    "fact": "Zukowski: publishers quickly reject games already in Early Access that need money to reach 1.0, because their model is built around promoting the launch.",
+    "url": "https://howtomarketagame.com/wp-content/uploads/2023/05/Zukowski_60MistakesEbookV1.pdf",
+    "date": "2026-10-20"
+   },
+   {
+    "fact": "Zukowski (Unity Q&A, ~Feb 2025): in 2023, 55.5% of the top Steam games had a publisher.",
+    "url": "https://discussions.unity.com/t/unity-community-q-a-how-to-market-a-game-with-chris-zukowski/1593229?page=3",
+    "date": "2026-10-20"
+   },
+   {
+    "fact": "GameDiscoverCo (2026): with USD 500k of publisher money only ~0.6% of January releases would have recouped; with a USD 100k self-published budget only 6.5% break even. The business works for publishers with strong catalogs or small low-budget teams that make something notable.",
+    "url": "https://newsletter.gamediscover.co/p/is-the-game-biz-sustainable-for-the",
+    "date": "2026-10-20"
+   },
+   {
+    "fact": "Graffiti Games' pitch form asks current wishlists, 3 comparable games, budget and time to finish, and a pitch deck: traction is part of the screening.",
+    "url": "https://www.graffitigames.com/contact/pitch-your-game",
+    "date": "2026-10-20"
+   },
+   {
+    "fact": "Rami Ismail on new publishers (2022): make sure the upfront is 130%+ of a well-paid, comfortable budget.",
+    "url": "https://www.gamedeveloper.com/business/youtuber-dunkey-launches-indie-game-publisher-bigmode",
+    "date": "2026-10-20"
+   },
+   {
+    "fact": "PlayWay usually requires an ownership stake in the studios it works with and largely dictates which games get made.",
+    "url": "https://www.gamedeveloper.com/business/what-playway-should-and-shouldn-t-teach-us-about-game-publishing-2",
+    "date": "2026-10-20"
+   },
+   {
+    "fact": "Common trap: recoup only from the developer's share; with a USD 500k advance and 50/50, the game must make USD 1M net before the developer sees royalties. Marketing, QA and localization are often recoupable.",
+    "url": "https://blog.promise.legal/game-publisher-agreements-indie-studios/",
+    "date": "2026-10-20"
+   },
+   {
+    "fact": "Italian games tax credit (MiC/DGCA): 25% of eligible costs, up to EUR 1M a year; only companies with ATECO 62 or 58.2 and share capital/net equity >= EUR 10k; individuals excluded.",
+    "url": "https://cinema.cultura.gov.it/cosa-facciamo/sostegni-economici/linee-di-sostegno/tax-credit/produzione-videogiochi/",
+    "date": "2026-10-20"
+   }
+  ],
+  "pitch_platforms": [
+   {
+    "name": "Big Indie Pitch (Pocket Gamer / Steel Media)",
+    "type": "pitch_event",
+    "url": "https://www.bigindiepitch.com/",
+    "cost": "free entry; some editions need a conference pass (indie discounts)",
+    "what_it_does": "speed-pitch to a panel of publishers/press; top 3 get Pocket Gamer coverage",
+    "fit_for_small_team": true,
+    "deadline_pattern": "many editions a year (London Jan, SF Mar, Barcelona Jun, Seattle Sep, Paris Games Week Oct, Jordan Nov); entries close ~2 weeks before",
+    "sources": [
+     {
+      "url": "https://www.bigindiepitch.com/event/the-big-indie-pitch-pc-console-edition-at-pg-connects-barcelona-2026/",
+      "date": "2026-10-20",
+      "what": "Barcelona 2026 free, entries closed 1 Jun"
+     },
+     {
+      "url": "https://www.bigindiepitch.com/event/the-big-indie-pitch-mobilepcconsole-edition-at-paris-games-week-2026/",
+      "date": "2026-10-20",
+      "what": "Paris Games Week 23 Oct 2026"
+     }
+    ],
+    "unverified": [
+     "in-person attendance required; travel not covered"
+    ]
+   },
+   {
+    "name": "GDC Pitch",
+    "type": "pitch_event",
+    "url": "https://gdconf.com/gdc-pitch/",
+    "cost": "requires GDC Play/International Pavilion exhibitor or Game Changer pass (paid)",
+    "what_it_does": "10 studios pitch on stage: day 1 to publishers, day 2 to investors",
+    "fit_for_small_team": false,
+    "deadline_pattern": "submissions Dec to early Feb; event in March (San Francisco)",
+    "sources": [
+     {
+      "url": "https://gdconf.com/article/these-creators-are-ready-to-showcase-their-games-at-2026-gdc-pitch/",
+      "date": "2026-10-20",
+      "what": "2026 finalists, judges"
+     },
+     {
+      "url": "https://gdconf.com/gdc-pitch/",
+      "date": "2026-10-20",
+      "what": "rules"
+     }
+    ],
+    "unverified": [
+     "2027 dates"
+    ]
+   },
+   {
+    "name": "Global Games Pitch (GDBAY) / Pitch.Games",
+    "type": "matchmaking",
+    "url": "https://globalgamespitch.com/",
+    "cost": "paid passes [DA VERIFICARE prices]",
+    "what_it_does": "online year-round directory of ~144 publishers/investors with filters; contact requests from your game profile",
+    "fit_for_small_team": true,
+    "deadline_pattern": "year-round",
+    "sources": [
+     {
+      "url": "https://globalgamespitch.com/publishers-investors-directory/",
+      "date": "2026-10-20",
+      "what": "directory"
+     },
+     {
+      "url": "https://pitch.games/",
+      "date": "2026-10-20",
+      "what": "'previously GDBAY Global Games Pitch', search 500+ publishers"
+     }
+    ],
+    "unverified": [
+     "cost",
+     "whether Global Games Pitch was replaced by pitch.games"
+    ]
+   },
+   {
+    "name": "Unifiq Games indie publisher & investor database (Google Sheet)",
+    "type": "database",
+    "url": "https://gameworldobserver.com/2023/05/16/indie-game-publishers-database-unifq-games",
+    "cost": "free",
+    "what_it_does": "100+ PC/console publishers with pitch form/email, Steam tags, budget range, communication rating",
+    "fit_for_small_team": true,
+    "deadline_pattern": "n/a (2023, community-updated)",
+    "sources": [
+     {
+      "url": "https://gameworldobserver.com/2023/05/16/indie-game-publishers-database-unifq-games",
+      "date": "2026-10-20",
+      "what": "description"
+     }
+    ],
+    "unverified": [
+     "still maintained in 2026",
+     "sheet URL (linked from the article)"
+    ]
+   },
+   {
+    "name": "Udonis: 50+ indie game publishers accepting submissions",
+    "type": "list",
+    "url": "https://www.blog.udonis.co/mobile-marketing/mobile-games/indie-game-publishers",
+    "cost": "free",
+    "what_it_does": "list with budget hints, hits and what each publisher looks for",
+    "fit_for_small_team": true,
+    "deadline_pattern": "n/a (updated ~early 2026)",
+    "sources": [
+     {
+      "url": "https://www.blog.udonis.co/mobile-marketing/mobile-games/indie-game-publishers",
+      "date": "2026-10-20",
+      "what": "list"
+     }
+    ],
+    "unverified": [
+     "third-party numbers (budgets, revenue)"
+    ]
+   },
+   {
+    "name": "#PitchYaGame",
+    "type": "showcase",
+    "url": "https://pitchyagame.substack.com/p/pitchyagame-saw-1100-indie-games",
+    "cost": "free",
+    "what_it_does": "X/Twitter pitch day; scouts and press browse; spreadsheet of pitched games",
+    "fit_for_small_team": true,
+    "deadline_pattern": "twice a year (June, November)",
+    "sources": [
+     {
+      "url": "https://pitchyagame.substack.com/p/pitchyagame-saw-1100-indie-games",
+      "date": "2026-10-20",
+      "what": "1,100 games pitched"
+     },
+     {
+      "url": "https://en.wikipedia.org/wiki/PitchYaGame",
+      "date": "2026-10-20",
+      "what": "schedule"
+     }
+    ],
+    "unverified": [
+     "2026/2027 dates"
+    ]
+   },
+   {
+    "name": "First Playable (IIDEA), Florence",
+    "type": "matchmaking",
+    "url": "https://iideassociation.com/first-playable-2026-iidea-alza-il-sipario-sul-programma-dellottava-edizione-dellevento-business-dedicato-allindustria-dei-videogiochi/",
+    "cost": "[DA VERIFICARE]; regional calls sometimes cover attendance (e.g. Sardegna)",
+    "what_it_does": "Italian B2B event: meetings with international publishers/investors",
+    "fit_for_small_team": true,
+    "deadline_pattern": "every June (2026: 10-12 June, Florence); registration in spring",
+    "sources": [
+     {
+      "url": "https://iideassociation.com/first-playable-2026-unedizione-da-record-conferma-il-ruolo-centrale-dellevento-per-lindustria-videoludica/",
+      "date": "2026-10-20",
+      "what": "record 2026 edition"
+     },
+     {
+      "url": "https://www.sardegnafilmcommission.it/first-playable-2026",
+      "date": "2026-10-20",
+      "what": "regional call to attend"
+     }
+    ],
+    "unverified": [
+     "cost",
+     "2027 dates"
+    ]
+   },
+   {
+    "name": "Bologna Game Farm",
+    "type": "fund",
+    "url": "https://bolognagamefarm.com/2026/03/26/apre-la-sesta-edizione-del-bando-bologna-game-farm/",
+    "cost": "free",
+    "what_it_does": "public accelerator: up to 8 projects to vertical slice + pitch; 2 teams get EUR 15,000 grant (de minimis)",
+    "fit_for_small_team": true,
+    "deadline_pattern": "biennial; 2026 call 25 Mar - 29 Apr; ONLY Emilia-Romagna residents/companies",
+    "sources": [
+     {
+      "url": "https://www.everyeye.it/notizie/bologna-game-farm-2026-pubblicato-bando-sviluppo-videogiochi-emilia-romagna-868154.html",
+      "date": "2026-10-20",
+      "what": "2026 call"
+     },
+     {
+      "url": "https://first.art-er.it/news/bologna-game-farm-2026",
+      "date": "2026-10-20",
+      "what": "amount and phases"
+     }
+    ],
+    "unverified": [
+     "next edition date"
+    ]
+   },
+   {
+    "name": "Tax credit videogiochi (MiC - DGCA)",
+    "type": "fund",
+    "url": "https://cinema.cultura.gov.it/cosa-facciamo/sostegni-economici/linee-di-sostegno/tax-credit/produzione-videogiochi/",
+    "cost": "free (needs an accountant)",
+    "what_it_does": "25% tax credit on eligible production costs of Italian-nationality games of cultural value",
+    "fit_for_small_team": false,
+    "deadline_pattern": "sessions per year (2025 session until 20 Aug 2026)",
+    "sources": [
+     {
+      "url": "https://cinema.cultura.gov.it/cosa-facciamo/sostegni-economici/linee-di-sostegno/tax-credit/produzione-videogiochi/",
+      "date": "2026-10-20",
+      "what": "requirements: company, ATECO 62/58.2, capital >= EUR 10k, no individuals"
+     },
+     {
+      "url": "https://www.commercialistatelematico.com/articoli/2026/07/tax-credit-videogiochi-2025-domande-entro-il-20-agosto-2026.html",
+      "date": "2026-10-20",
+      "what": "2025 session deadline"
+     }
+    ],
+    "unverified": [
+     "2026 session dates"
+    ]
+   },
+   {
+    "name": "AIV Sidekick (Italy)",
+    "type": "matchmaking",
+    "url": "https://www.aiv01.it/sidekick/",
+    "cost": "paid monthly coaching [DA VERIFICARE]",
+    "what_it_does": "coaching to pitch to publishers/investors or self-publish, access to events",
+    "fit_for_small_team": true,
+    "deadline_pattern": "rolling",
+    "sources": [
+     {
+      "url": "https://www.aiv01.it/sidekick/",
+      "date": "2026-10-20",
+      "what": "service page"
+     }
+    ],
+    "unverified": [
+     "cost"
+    ]
+   }
+  ]
+ },
+ "publishers": [
+  {
+   "languages": [
+    "en"
+   ],
+   "status": "active",
+   "submission_method": "form",
+   "asks_for": [
+    "one-sentence hook",
+    "pitch deck",
+    "playable build",
+    "gameplay video"
+   ],
+   "avoid_genres": [],
+   "deal_stages": [
+    "prototype",
+    "vertical_slice",
+    "demo",
+    "early_access"
+   ],
+   "team_size": [
+    1,
+    10
+   ],
+   "deal_types": [
+    "funding",
+    "marketing",
+    "influencer",
+    "porting"
+   ],
+   "budget_range_usd": null,
+   "rev_share_note": null,
+   "price_band_usd": [
+    5,
+    25
+   ],
+   "platforms": [
+    "pc",
+    "switch",
+    "ps",
+    "xbox"
+   ],
+   "comparables": [
+    {
+     "title": "PlateUp!",
+     "appid": 1599600,
+     "why": "chaotic co-op restaurant"
+    },
+    {
+     "title": "Startenders: Intergalactic Bartending",
+     "appid": 1571380,
+     "why": "physics serving comedy"
+    },
+    {
+     "title": "Dungeons & Degenerate Gamblers",
+     "appid": 2400510,
+     "why": "comedic roguelite"
+    },
+    {
+     "title": "Monster Mop Up",
+     "appid": 2451310,
+     "why": "comedic job sim"
+    }
+   ],
+   "catalog_size": 30,
+   "selectivity": "high",
+   "pitch_stats": null,
+   "min_traction": {
+    "wishlists": 0,
+    "demo": false
+   },
+   "response_reputation": null,
+   "red_flags": [],
+   "notes": "Bristol team of 2-10; signs games 'as fun to watch as to play', promoted by the Yogscast channels. Also runs the Tiny Teams fest (<= 5 people, needs Steam AppID).",
+   "sources": [
+    {
+     "url": "https://www.yogscast.games/publishing",
+     "date": "2026-10-20",
+     "what": "pitch page"
+    },
+    {
+     "url": "https://80.lv/articles/yogscast-games-on-its-publishing-approach-roguelikes-indie-hits",
+     "date": "2026-10-20",
+     "what": "interview: what they sign"
+    },
+    {
+     "url": "https://www.yogscast.games/tiny-teams-devs-1",
+     "date": "2026-10-20",
+     "what": "Tiny Teams rules"
+    },
+    {
+     "url": "https://store.steampowered.com/search/?publisher=Yogscast%20Games",
+     "date": "2026-10-20",
+     "what": "Steam store search by publisher (catalog count and titles)"
+    }
+   ],
+   "unverified": [
+    "budget_range_usd",
+    "rev_share_note",
+    "response_reputation",
+    "team_size"
+   ],
+   "checked": "2026-10-20",
+   "id": "yogscast-games",
+   "name": "Yogscast Games",
+   "hq": "UK",
+   "open_submissions": true,
+   "submission_url": "https://www.yogscast.games/publishing",
+   "genres": [
+    "roguelite",
+    "comedy",
+    "co-op",
+    "party",
+    "casual",
+    "deckbuilding",
+    "cooking",
+    "management",
+    "simulation",
+    "strategy"
+   ],
+   "steam_publisher_names": [
+    "Yogscast Games"
+   ]
+  },
+  {
+   "languages": [
+    "en"
+   ],
+   "status": "active",
+   "submission_method": "form",
+   "asks_for": [
+    "pitch deck",
+    "playable build",
+    "budget",
+    "timeline"
+   ],
+   "avoid_genres": [
+    "sandbox"
+   ],
+   "deal_stages": [
+    "vertical_slice",
+    "demo"
+   ],
+   "team_size": [
+    3,
+    60
+   ],
+   "deal_types": [
+    "funding",
+    "marketing",
+    "porting",
+    "qa",
+    "localization"
+   ],
+   "budget_range_usd": [
+    250000,
+    3000000
+   ],
+   "rev_share_note": null,
+   "price_band_usd": [
+    10,
+    40
+   ],
+   "platforms": [
+    "pc",
+    "switch",
+    "ps",
+    "xbox"
+   ],
+   "comparables": [
+    {
+     "title": "Overcooked! 2",
+     "appid": 728880,
+     "why": "co-op kitchen chaos"
+    },
+    {
+     "title": "Moving Out 2",
+     "appid": 1641700,
+     "why": "physics co-op comedy"
+    },
+    {
+     "title": "Golf With Your Friends",
+     "appid": 431240,
+     "why": "party physics"
+    },
+    {
+     "title": "Placid Plastic Duck Simulator",
+     "appid": 1999360,
+     "why": "small weird hit"
+    }
+   ],
+   "catalog_size": 80,
+   "selectivity": "very_high",
+   "pitch_stats": null,
+   "min_traction": {
+    "wishlists": 0,
+    "demo": false
+   },
+   "response_reputation": null,
+   "red_flags": [],
+   "notes": "Everplay group label; 'Pitch your game' on the homepage; genre-agnostic, high quality bar; mostly funded mid-size teams.",
+   "sources": [
+    {
+     "url": "https://www.team17.com/",
+     "date": "2026-10-20",
+     "what": "homepage 'Pitch your game'"
+    },
+    {
+     "url": "https://www.team17.com/about",
+     "date": "2026-10-20",
+     "what": "about page"
+    },
+    {
+     "url": "https://www.blog.udonis.co/mobile-marketing/mobile-games/indie-game-publishers",
+     "date": "2026-10-20",
+     "what": "third-party: avoids sandbox, strict quality"
+    },
+    {
+     "url": "https://store.steampowered.com/search/?publisher=Team17",
+     "date": "2026-10-20",
+     "what": "Steam store search by publisher (catalog count and titles)"
+    }
+   ],
+   "unverified": [
+    "budget_range_usd",
+    "team_size",
+    "rev_share_note",
+    "response_reputation"
+   ],
+   "checked": "2026-10-20",
+   "id": "team17",
+   "name": "Team17",
+   "hq": "UK",
+   "open_submissions": true,
+   "submission_url": "https://www.team17.com/",
+   "genres": [
+    "co-op",
+    "party",
+    "comedy",
+    "physics",
+    "simulation",
+    "management",
+    "strategy",
+    "action",
+    "casual",
+    "puzzle"
+   ],
+   "steam_publisher_names": [
+    "Team17"
+   ]
+  },
+  {
+   "languages": [
+    "en"
+   ],
+   "status": "active",
+   "submission_method": "form",
+   "asks_for": [
+    "pitch deck",
+    "playable build",
+    "gameplay video 60-90 s"
+   ],
+   "avoid_genres": [],
+   "deal_stages": [
+    "vertical_slice",
+    "demo",
+    "early_access"
+   ],
+   "team_size": [
+    2,
+    40
+   ],
+   "deal_types": [
+    "funding",
+    "marketing",
+    "porting",
+    "qa"
+   ],
+   "budget_range_usd": [
+    250000,
+    1000000
+   ],
+   "rev_share_note": null,
+   "price_band_usd": [
+    10,
+    30
+   ],
+   "platforms": [
+    "pc",
+    "switch",
+    "ps",
+    "xbox"
+   ],
+   "comparables": [
+    {
+     "title": "Human Fall Flat",
+     "appid": 477160,
+     "why": "physics comedy co-op"
+    },
+    {
+     "title": "I Am Fish",
+     "appid": 1472560,
+     "why": "physics comedy"
+    },
+    {
+     "title": "You Suck at Parking",
+     "appid": 837880,
+     "why": "comedy arcade"
+    },
+    {
+     "title": "When Ski Lifts Go Wrong",
+     "appid": 638000,
+     "why": "physics comedy"
+    }
+   ],
+   "catalog_size": 54,
+   "selectivity": "high",
+   "pitch_stats": null,
+   "min_traction": {
+    "wishlists": 0,
+    "demo": false
+   },
+   "response_reputation": null,
+   "red_flags": [
+    "moving to bigger AA/Triple-I projects since 2026: small first games less likely"
+   ],
+   "notes": "Acquired by Nazara (May 2025); in Sept 2026 says it is moving to bigger 'Triple-I'/AA projects (Wyldheart deal).",
+   "sources": [
+    {
+     "url": "https://curvegames.com/",
+     "date": "2026-10-20",
+     "what": "'Pitch to Curve' section"
+    },
+    {
+     "url": "https://www.gamespress.com/en-US/Curve-Games-signals-growth-ambition-with-major-Wyldheart-publishing-de",
+     "date": "2026-10-20",
+     "what": "2026 strategy"
+    },
+    {
+     "url": "https://en.wikipedia.org/wiki/Curve_Games",
+     "date": "2026-10-20",
+     "what": "ownership Nazara 2025"
+    },
+    {
+     "url": "https://store.steampowered.com/search/?publisher=Curve%20Games",
+     "date": "2026-10-20",
+     "what": "Steam store search by publisher (catalog count and titles)"
+    }
+   ],
+   "unverified": [
+    "budget_range_usd",
+    "team_size",
+    "rev_share_note",
+    "response_reputation"
+   ],
+   "checked": "2026-10-20",
+   "id": "curve-games",
+   "name": "Curve Games",
+   "hq": "UK",
+   "open_submissions": true,
+   "submission_url": "https://curvegames.com/",
+   "genres": [
+    "physics",
+    "comedy",
+    "co-op",
+    "party",
+    "casual",
+    "simulation",
+    "roguelite",
+    "strategy"
+   ],
+   "steam_publisher_names": [
+    "Curve Games"
+   ]
+  },
+  {
+   "languages": [
+    "en"
+   ],
+   "status": "active",
+   "submission_method": "form",
+   "asks_for": [
+    "pitch deck",
+    "gameplay video",
+    "playable build"
+   ],
+   "avoid_genres": [],
+   "deal_stages": [
+    "vertical_slice",
+    "demo",
+    "early_access",
+    "released"
+   ],
+   "team_size": [
+    1,
+    30
+   ],
+   "deal_types": [
+    "funding",
+    "marketing",
+    "porting",
+    "caretaker_development"
+   ],
+   "budget_range_usd": null,
+   "rev_share_note": null,
+   "price_band_usd": [
+    5,
+    30
+   ],
+   "platforms": [
+    "pc",
+    "switch",
+    "ps",
+    "xbox"
+   ],
+   "comparables": [
+    {
+     "title": "Chained Together",
+     "appid": 2567870,
+     "why": "co-op physics comedy hit"
+    },
+    {
+     "title": "Make Way",
+     "appid": 1445790,
+     "why": "party chaos"
+    },
+    {
+     "title": "Wobbledogs",
+     "appid": 1424330,
+     "why": "physics comedy"
+    },
+    {
+     "title": "Everything is Crab",
+     "appid": 3526710,
+     "why": "comedic roguelite"
+    }
+   ],
+   "catalog_size": 26,
+   "selectivity": "high",
+   "pitch_stats": null,
+   "min_traction": {
+    "wishlists": 0,
+    "demo": false
+   },
+   "response_reputation": null,
+   "red_flags": [
+    "legal dispute with Victura over Six Days in Fallujah (2026)"
+   ],
+   "notes": "Independent since 2025 (left Sumo, Emona Capital). Two pillars: small indie releases and bigger projects with proven traction. Homepage has 'Come publish with us'.",
+   "sources": [
+    {
+     "url": "https://wearesecretmode.com/",
+     "date": "2026-10-20",
+     "what": "'Come publish with us'"
+    },
+    {
+     "url": "https://www.gamedeveloper.com/business/secret-mode-splits-from-sumo-to-become-independent-publisher",
+     "date": "2026-10-20",
+     "what": "independence 2025"
+    },
+    {
+     "url": "https://indiegamebusiness.com/game-pitching-strategies/",
+     "date": "2026-10-20",
+     "what": "head scout on first-pass screening"
+    },
+    {
+     "url": "https://www.lewissilkin.com/insights/2026/08/18/game-developer-and-publisher-battle-over-step-in-rights-102nq8w",
+     "date": "2026-10-20",
+     "what": "legal dispute"
+    },
+    {
+     "url": "https://store.steampowered.com/search/?publisher=Secret%20Mode",
+     "date": "2026-10-20",
+     "what": "Steam store search by publisher (catalog count and titles)"
+    }
+   ],
+   "unverified": [
+    "open_submissions",
+    "submission_method",
+    "budget_range_usd",
+    "rev_share_note",
+    "team_size"
+   ],
+   "checked": "2026-10-20",
+   "id": "secret-mode",
+   "name": "Secret Mode",
+   "hq": "UK",
+   "open_submissions": null,
+   "submission_url": "https://wearesecretmode.com/",
+   "genres": [
+    "co-op",
+    "comedy",
+    "physics",
+    "simulation",
+    "horror",
+    "puzzle",
+    "cozy",
+    "roguelite",
+    "sports"
+   ],
+   "steam_publisher_names": [
+    "Secret Mode"
+   ]
+  },
+  {
+   "languages": [
+    "en"
+   ],
+   "status": "active",
+   "submission_method": "email",
+   "asks_for": [
+    "email to pitches@tinybuild.com",
+    "GIF under 2 MB",
+    "YouTube trailer interesting in 5 s",
+    "bullet description of what you need",
+    "easy-to-play build"
+   ],
+   "avoid_genres": [],
+   "deal_stages": [
+    "vertical_slice",
+    "demo",
+    "early_access"
+   ],
+   "team_size": [
+    1,
+    50
+   ],
+   "deal_types": [
+    "funding",
+    "marketing",
+    "porting"
+   ],
+   "budget_range_usd": null,
+   "rev_share_note": null,
+   "price_band_usd": [
+    10,
+    30
+   ],
+   "platforms": [
+    "pc",
+    "switch",
+    "ps",
+    "xbox"
+   ],
+   "comparables": [
+    {
+     "title": "Clustertruck",
+     "appid": 397950,
+     "why": "physics chaos"
+    },
+    {
+     "title": "SpiderHeck",
+     "appid": 1329500,
+     "why": "physics party"
+    },
+    {
+     "title": "Happy's Humble Burger Cult",
+     "appid": 3453910,
+     "why": "comedic restaurant"
+    },
+    {
+     "title": "Streets of Rogue",
+     "appid": 512900,
+     "why": "chaotic roguelite"
+    }
+   ],
+   "catalog_size": 125,
+   "selectivity": "high",
+   "pitch_stats": null,
+   "min_traction": {
+    "wishlists": 0,
+    "demo": false
+   },
+   "response_reputation": null,
+   "red_flags": [],
+   "notes": "Official guide: email pitches@tinybuild.com with GIF, trailer, short bullets, build. Annual showcase tinyBuild Connect (Sept 2026): active.",
+   "sources": [
+    {
+     "url": "https://www.tinybuild.com/how-to-pitch-your-game",
+     "date": "2026-10-20",
+     "what": "official pitch guide"
+    },
+    {
+     "url": "https://www.gamespress.com/TINYBUILDS-ANNUAL-PUBLISHER-SHOWCASE-TINYBUILD-CONNECT-IS-BACK-SEPTEMB",
+     "date": "2026-10-20",
+     "what": "tinyBuild Connect 2026"
+    },
+    {
+     "url": "https://store.steampowered.com/search/?publisher=tinyBuild",
+     "date": "2026-10-20",
+     "what": "Steam store search by publisher (catalog count and titles)"
+    }
+   ],
+   "unverified": [
+    "budget_range_usd",
+    "rev_share_note",
+    "team_size",
+    "response_reputation"
+   ],
+   "checked": "2026-10-20",
+   "id": "tinybuild",
+   "name": "tinyBuild",
+   "hq": "US/NL",
+   "open_submissions": true,
+   "submission_url": "https://www.tinybuild.com/how-to-pitch-your-game",
+   "genres": [
+    "comedy",
+    "simulation",
+    "co-op",
+    "party",
+    "physics",
+    "action",
+    "roguelite",
+    "management",
+    "horror"
+   ],
+   "steam_publisher_names": [
+    "tinyBuild"
+   ]
+  },
+  {
+   "languages": [
+    "en"
+   ],
+   "status": "active",
+   "submission_method": "form",
+   "asks_for": [
+    "playable PC build",
+    "pitch deck (core loop, scope, vision)",
+    "launch window",
+    "total dev budget in USD",
+    "trailer or GIFs"
+   ],
+   "avoid_genres": [],
+   "deal_stages": [
+    "vertical_slice",
+    "demo"
+   ],
+   "team_size": [
+    1,
+    30
+   ],
+   "deal_types": [
+    "funding",
+    "marketing",
+    "porting",
+    "qa",
+    "localization"
+   ],
+   "budget_range_usd": null,
+   "rev_share_note": null,
+   "price_band_usd": [
+    10,
+    30
+   ],
+   "platforms": [
+    "pc",
+    "switch",
+    "ps",
+    "xbox"
+   ],
+   "comparables": [
+    {
+     "title": "KuloNiku: Bowl Up!",
+     "appid": 3357960,
+     "why": "cooking arcade"
+    },
+    {
+     "title": "Friends vs Friends",
+     "appid": 1785150,
+     "why": "party"
+    },
+    {
+     "title": "Deep Dish Dungeon",
+     "appid": 2871520,
+     "why": "food roguelite"
+    },
+    {
+     "title": "Dome Keeper",
+     "appid": 1637320,
+     "why": "roguelite"
+    }
+   ],
+   "catalog_size": 90,
+   "selectivity": "very_high",
+   "pitch_stats": "1,500+ pitches a year, signs < 1 % (under 0.5 % in 2021)",
+   "min_traction": {
+    "wishlists": 0,
+    "demo": false
+   },
+   "response_reputation": null,
+   "red_flags": [],
+   "notes": "Pitch form from the contact page; template deck public. They may play a build only once: send the best version.",
+   "sources": [
+    {
+     "url": "https://rawfury.com/talk/",
+     "date": "2026-10-20",
+     "what": "contact page with pitch form"
+    },
+    {
+     "url": "https://rawfury.com/how-to-pitch-to-raw-fury/",
+     "date": "2026-10-20",
+     "what": "what the form asks"
+    },
+    {
+     "url": "https://gameworldobserver.com/2021/10/19/raw-fury-says-it-receives-over-1500-pitches-year-and-signs-less-than-1-of-those",
+     "date": "2026-10-20",
+     "what": "pitch stats"
+    },
+    {
+     "url": "https://store.steampowered.com/search/?publisher=Raw%20Fury",
+     "date": "2026-10-20",
+     "what": "Steam store search by publisher (catalog count and titles)"
+    }
+   ],
+   "unverified": [
+    "budget_range_usd",
+    "rev_share_note",
+    "team_size",
+    "response_reputation"
+   ],
+   "checked": "2026-10-20",
+   "id": "raw-fury",
+   "name": "Raw Fury",
+   "hq": "SE",
+   "open_submissions": true,
+   "submission_url": "https://rawfury.com/talk/",
+   "genres": [
+    "roguelite",
+    "strategy",
+    "adventure",
+    "narrative",
+    "cozy",
+    "action",
+    "party"
+   ],
+   "steam_publisher_names": [
+    "Raw Fury"
+   ]
+  },
+  {
+   "languages": [
+    "en"
+   ],
+   "status": "active",
+   "submission_method": "form",
+   "asks_for": [
+    "gameplay video (YouTube)",
+    "pitch deck URL with demo link",
+    "financial roadmap",
+    "requested funds",
+    "release next year or later"
+   ],
+   "avoid_genres": [],
+   "deal_stages": [
+    "vertical_slice",
+    "demo"
+   ],
+   "team_size": [
+    1,
+    40
+   ],
+   "deal_types": [
+    "funding",
+    "marketing",
+    "porting"
+   ],
+   "budget_range_usd": null,
+   "rev_share_note": null,
+   "price_band_usd": [
+    10,
+    40
+   ],
+   "platforms": [
+    "pc",
+    "switch",
+    "ps",
+    "xbox"
+   ],
+   "comparables": [
+    {
+     "title": "BALL x PIT",
+     "appid": 2062430,
+     "why": "solo-dev roguelite"
+    },
+    {
+     "title": "Stick It to the Stickman",
+     "appid": 2085540,
+     "why": "comedy"
+    },
+    {
+     "title": "Cult of the Lamb",
+     "appid": 1313140,
+     "why": "roguelite with personality"
+    }
+   ],
+   "catalog_size": 158,
+   "selectivity": "very_high",
+   "pitch_stats": null,
+   "min_traction": {
+    "wishlists": 0,
+    "demo": false
+   },
+   "response_reputation": null,
+   "red_flags": [],
+   "notes": "Only pitches releasing next year or later; the build must show the hook. Margin-focused in FY25.",
+   "sources": [
+    {
+     "url": "https://pitch.devolverdigital.com/",
+     "date": "2026-10-20",
+     "what": "pitch portal"
+    },
+    {
+     "url": "https://www.gamedeveloper.com/business/devolver-digital-breaks-down-the-pitching-essentials-at-pax-australia",
+     "date": "2026-10-20",
+     "what": "what they look for"
+    },
+    {
+     "url": "https://store.steampowered.com/search/?publisher=Devolver%20Digital",
+     "date": "2026-10-20",
+     "what": "Steam store search by publisher (catalog count and titles)"
+    }
+   ],
+   "unverified": [
+    "budget_range_usd",
+    "rev_share_note",
+    "team_size",
+    "response_reputation"
+   ],
+   "checked": "2026-10-20",
+   "id": "devolver-digital",
+   "name": "Devolver Digital",
+   "hq": "US",
+   "open_submissions": true,
+   "submission_url": "https://pitch.devolverdigital.com/",
+   "genres": [
+    "action",
+    "roguelite",
+    "comedy",
+    "shooter",
+    "puzzle",
+    "adventure",
+    "physics"
+   ],
+   "steam_publisher_names": [
+    "Devolver Digital"
+   ]
+  },
+  {
+   "languages": [
+    "en"
+   ],
+   "status": "active",
+   "submission_method": "form",
+   "asks_for": [
+    "description",
+    "playable build"
+   ],
+   "avoid_genres": [
+    "comedy",
+    "party",
+    "physics",
+    "first-person"
+   ],
+   "deal_stages": [
+    "vertical_slice",
+    "demo",
+    "early_access"
+   ],
+   "team_size": [
+    1,
+    30
+   ],
+   "deal_types": [
+    "marketing",
+    "localization"
+   ],
+   "budget_range_usd": null,
+   "rev_share_note": "developer keeps 65 % of all revenue (public statement)",
+   "price_band_usd": [
+    15,
+    40
+   ],
+   "platforms": [
+    "pc",
+    "switch",
+    "ps",
+    "xbox"
+   ],
+   "comparables": [
+    {
+     "title": "9 Kings",
+     "appid": 2784470,
+     "why": "small roguelite-strategy"
+    },
+    {
+     "title": "He is Coming",
+     "appid": 2824490,
+     "why": "roguelite autobattler"
+    }
+   ],
+   "catalog_size": 50,
+   "selectivity": "high",
+   "pitch_stats": null,
+   "min_traction": {
+    "wishlists": 0,
+    "demo": false
+   },
+   "response_reputation": null,
+   "red_flags": [],
+   "notes": "Deep strategy/sim/RPG only; signs without traditional decks; >= $100k localization+marketing per game; approach ~1 year before launch.",
+   "sources": [
+    {
+     "url": "https://www.hoodedhorse.com/submit-your-game",
+     "date": "2026-10-20",
+     "what": "developer page"
+    },
+    {
+     "url": "https://mcvuk.com/business-news/harnessing-hooded-horse-power-tim-bender-and-snow-rui-on-their-indie-publisher/",
+     "date": "2026-10-20",
+     "what": "niche focus, 65 % to dev"
+    },
+    {
+     "url": "https://store.steampowered.com/search/?publisher=Hooded%20Horse",
+     "date": "2026-10-20",
+     "what": "Steam store search by publisher (catalog count and titles)"
+    }
+   ],
+   "unverified": [
+    "team_size",
+    "response_reputation"
+   ],
+   "checked": "2026-10-20",
+   "id": "hooded-horse",
+   "name": "Hooded Horse",
+   "hq": "US",
+   "open_submissions": true,
+   "submission_url": "https://www.hoodedhorse.com/submit-your-game",
+   "genres": [
+    "strategy",
+    "simulation",
+    "rpg",
+    "tactics",
+    "management",
+    "city builder"
+   ],
+   "steam_publisher_names": [
+    "Hooded Horse"
+   ]
+  },
+  {
+   "languages": [
+    "en"
+   ],
+   "status": "active",
+   "submission_method": "form",
+   "asks_for": [
+    "pitch form",
+    "playable build",
+    "pitch deck"
+   ],
+   "avoid_genres": [],
+   "deal_stages": [
+    "vertical_slice",
+    "demo",
+    "early_access"
+   ],
+   "team_size": [
+    1,
+    30
+   ],
+   "deal_types": [
+    "funding",
+    "marketing",
+    "qa",
+    "localization",
+    "porting"
+   ],
+   "budget_range_usd": null,
+   "rev_share_note": null,
+   "price_band_usd": [
+    10,
+    30
+   ],
+   "platforms": [
+    "pc",
+    "switch",
+    "ps",
+    "xbox"
+   ],
+   "comparables": [
+    {
+     "title": "Balatro",
+     "appid": 2379780,
+     "why": "solo-dev run-based roguelite"
+    },
+    {
+     "title": "RACCOIN: Coin Pusher Roguelike",
+     "appid": 3784030,
+     "why": "physics-ish roguelike"
+    },
+    {
+     "title": "Dicevaders",
+     "appid": 3917700,
+     "why": "small roguelite"
+    }
+   ],
+   "catalog_size": 20,
+   "selectivity": "high",
+   "pitch_stats": null,
+   "min_traction": {
+    "wishlists": 0,
+    "demo": false
+   },
+   "response_reputation": null,
+   "red_flags": [],
+   "notes": "Balatro publisher; small curated slate; still signing roguelikes (Raccoin).",
+   "sources": [
+    {
+     "url": "https://www.playstack.com/pitch/",
+     "date": "2026-10-20",
+     "what": "pitch page"
+    },
+    {
+     "url": "https://www.pcgamer.com/games/roguelike/playstack-not-content-with-obliterating-my-free-time-via-balatro-is-publishing-another-roguelike-about-coin-pusher-machines/",
+     "date": "2026-10-20",
+     "what": "new roguelike signing"
+    },
+    {
+     "url": "https://store.steampowered.com/search/?publisher=Playstack",
+     "date": "2026-10-20",
+     "what": "Steam store search by publisher (catalog count and titles)"
+    }
+   ],
+   "unverified": [
+    "budget_range_usd",
+    "rev_share_note",
+    "team_size",
+    "response_reputation"
+   ],
+   "checked": "2026-10-20",
+   "id": "playstack",
+   "name": "Playstack",
+   "hq": "UK",
+   "open_submissions": true,
+   "submission_url": "https://www.playstack.com/pitch/",
+   "genres": [
+    "roguelite",
+    "deckbuilding",
+    "puzzle",
+    "action",
+    "co-op",
+    "casual"
+   ],
+   "steam_publisher_names": [
+    "Playstack"
+   ]
+  },
+  {
+   "languages": [
+    "en"
+   ],
+   "status": "active",
+   "submission_method": "platform",
+   "asks_for": [
+    "publishing portal form",
+    "game details and key features"
+   ],
+   "avoid_genres": [],
+   "deal_stages": [
+    "prototype",
+    "vertical_slice",
+    "demo"
+   ],
+   "team_size": [
+    1,
+    30
+   ],
+   "deal_types": [
+    "funding",
+    "marketing",
+    "porting"
+   ],
+   "budget_range_usd": null,
+   "rev_share_note": null,
+   "price_band_usd": [
+    5,
+    30
+   ],
+   "platforms": [
+    "pc",
+    "switch",
+    "ps",
+    "xbox"
+   ],
+   "comparables": [
+    {
+     "title": "In Sink: A Co-op Escape Adventure",
+     "appid": 1858650,
+     "why": "co-op comedy"
+    },
+    {
+     "title": "Space Chef",
+     "appid": 1272290,
+     "why": "cooking comedy"
+    },
+    {
+     "title": "Shift At Midnight",
+     "appid": 3722330,
+     "why": "job sim"
+    }
+   ],
+   "catalog_size": 35,
+   "selectivity": "medium",
+   "pitch_stats": null,
+   "min_traction": {
+    "wishlists": 0,
+    "demo": false
+   },
+   "response_reputation": null,
+   "red_flags": [
+    "in-house Kwalee Labs team laid off in 2026 (third-party publishing apparently continues)"
+   ],
+   "notes": "PC/console label since 2019 (ex-Team17 staff); portal promises a prompt email reply.",
+   "sources": [
+    {
+     "url": "https://www.kwalee.com/publishing/pc-console",
+     "date": "2026-10-20",
+     "what": "publishing portal"
+    },
+    {
+     "url": "https://en.wikipedia.org/wiki/Kwalee",
+     "date": "2026-10-20",
+     "what": "history and 2026 layoffs"
+    },
+    {
+     "url": "https://store.steampowered.com/search/?publisher=Kwalee",
+     "date": "2026-10-20",
+     "what": "Steam store search by publisher (catalog count and titles)"
+    }
+   ],
+   "unverified": [
+    "budget_range_usd",
+    "rev_share_note",
+    "team_size",
+    "deal_stages"
+   ],
+   "checked": "2026-10-20",
+   "id": "kwalee",
+   "name": "Kwalee",
+   "hq": "UK",
+   "open_submissions": true,
+   "submission_url": "https://www.kwalee.com/publishing/pc-console",
+   "genres": [
+    "simulation",
+    "co-op",
+    "comedy",
+    "action",
+    "casual",
+    "management",
+    "party",
+    "cooking"
+   ],
+   "steam_publisher_names": [
+    "Kwalee"
+   ]
+  },
+  {
+   "languages": [
+    "en"
+   ],
+   "status": "uncertain",
+   "submission_method": "unknown",
+   "asks_for": [],
+   "avoid_genres": [],
+   "deal_stages": [
+    "vertical_slice",
+    "demo"
+   ],
+   "team_size": [
+    1,
+    20
+   ],
+   "deal_types": [
+    "funding",
+    "marketing"
+   ],
+   "budget_range_usd": null,
+   "rev_share_note": null,
+   "price_band_usd": [
+    10,
+    25
+   ],
+   "platforms": [
+    "pc",
+    "switch",
+    "ps",
+    "xbox"
+   ],
+   "comparables": [
+    {
+     "title": "Cat Cafe Manager",
+     "appid": null,
+     "why": "cozy management"
+    },
+    {
+     "title": "Dreamscaper",
+     "appid": null,
+     "why": "roguelite"
+    }
+   ],
+   "catalog_size": null,
+   "selectivity": "medium",
+   "pitch_stats": null,
+   "min_traction": {
+    "wishlists": 0,
+    "demo": false
+   },
+   "response_reputation": null,
+   "red_flags": [],
+   "notes": "Raised $10M (2022); published Coromon, Dreamscaper, Cat Cafe Manager. No current pitch page found; Steam search by 'Freedom Games' returned 0 titles.",
+   "sources": [
+    {
+     "url": "https://venturebeat.com/games/freedom-games-raises-10m-to-publish-indie-games/",
+     "date": "2026-10-20",
+     "what": "funding and catalog"
+    }
+   ],
+   "unverified": [
+    "open_submissions",
+    "submission_url",
+    "status",
+    "team_size",
+    "catalog_size"
+   ],
+   "checked": "2026-10-20",
+   "id": "freedom-games",
+   "name": "Freedom Games",
+   "hq": "US",
+   "steam_publisher_names": [
+    "Freedom Games",
+    "Freedom! Games"
+   ],
+   "open_submissions": null,
+   "submission_url": null,
+   "genres": [
+    "rpg",
+    "simulation",
+    "strategy",
+    "cozy",
+    "management",
+    "roguelite"
+   ]
+  },
+  {
+   "languages": [
+    "en"
+   ],
+   "status": "active",
+   "submission_method": "form",
+   "asks_for": [
+    "pitch via the site",
+    "questions to hello@wholesomegames.com"
+   ],
+   "avoid_genres": [
+    "horror"
+   ],
+   "deal_stages": [
+    "vertical_slice",
+    "demo",
+    "early_access"
+   ],
+   "team_size": [
+    1,
+    10
+   ],
+   "deal_types": [
+    "marketing_only",
+    "influencer",
+    "biz_dev"
+   ],
+   "budget_range_usd": null,
+   "rev_share_note": "smaller share than a typical publisher because they do not fund (their statement)",
+   "price_band_usd": [
+    5,
+    20
+   ],
+   "platforms": [
+    "pc",
+    "switch",
+    "ps",
+    "xbox"
+   ],
+   "comparables": [
+    {
+     "title": "Is This Seat Taken?",
+     "appid": null,
+     "why": "cozy puzzle"
+    },
+    {
+     "title": "Minami Lane",
+     "appid": null,
+     "why": "small cozy management"
+    }
+   ],
+   "catalog_size": null,
+   "selectivity": "high",
+   "pitch_stats": "Wholesome Direct 2025: 1,500 submissions, 60 picked (showcase, not publishing)",
+   "min_traction": {
+    "wishlists": 0,
+    "demo": false
+   },
+   "response_reputation": null,
+   "red_flags": [],
+   "notes": "Marketing-only label of 4 people; does not usually fund or do QA. Chaotic physics comedy is a weak fit (cozy focus).",
+   "sources": [
+    {
+     "url": "https://wholesomegames.com/",
+     "date": "2026-10-20",
+     "what": "label and pitch"
+    },
+    {
+     "url": "https://variety.com/2025/gaming/news/wholesome-games-is-this-seat-taken-1236288699/",
+     "date": "2026-10-20",
+     "what": "label titles"
+    }
+   ],
+   "unverified": [
+    "team_size",
+    "catalog_size"
+   ],
+   "checked": "2026-10-20",
+   "id": "wholesome-games",
+   "name": "Wholesome Games Presents",
+   "hq": "US",
+   "steam_publisher_names": [
+    "Wholesome Games Presents",
+    "Wholesome Games"
+   ],
+   "open_submissions": true,
+   "submission_url": "https://wholesomegames.com/",
+   "genres": [
+    "cozy",
+    "casual",
+    "puzzle",
+    "simulation",
+    "cute",
+    "family"
+   ]
+  },
+  {
+   "languages": [
+    "en"
+   ],
+   "status": "active",
+   "submission_method": "form",
+   "asks_for": [
+    "pitch form",
+    "pitch deck",
+    "playable build"
+   ],
+   "avoid_genres": [],
+   "deal_stages": [
+    "vertical_slice",
+    "demo",
+    "early_access"
+   ],
+   "team_size": [
+    2,
+    40
+   ],
+   "deal_types": [
+    "funding",
+    "marketing",
+    "porting",
+    "qa",
+    "localization",
+    "physical"
+   ],
+   "budget_range_usd": [
+    250000,
+    1500000
+   ],
+   "rev_share_note": null,
+   "price_band_usd": [
+    15,
+    35
+   ],
+   "platforms": [
+    "pc",
+    "switch",
+    "ps",
+    "xbox"
+   ],
+   "comparables": [
+    {
+     "title": "KeyWe",
+     "appid": 1242980,
+     "why": "co-op comedy puzzle"
+    },
+    {
+     "title": "Brewmaster",
+     "appid": 1569200,
+     "why": "sim"
+    },
+    {
+     "title": "Little Friends: Puppy Island",
+     "appid": 2172900,
+     "why": "cozy"
+    }
+   ],
+   "catalog_size": 34,
+   "selectivity": "high",
+   "pitch_stats": null,
+   "min_traction": {
+    "wishlists": 0,
+    "demo": false
+   },
+   "response_reputation": null,
+   "red_flags": [],
+   "notes": "EG7 publishing label (ex Sold Out); premium PC/console, long-tail games with roadmaps; three new signings for 2026.",
+   "sources": [
+    {
+     "url": "https://fireshinegames.co.uk/pitch/",
+     "date": "2026-10-20",
+     "what": "pitch page"
+    },
+    {
+     "url": "https://www.gamespress.com/Fireshine-Games-Heads-Into-2026-With-Strong-Additions-to-its-Publishin",
+     "date": "2026-10-20",
+     "what": "2026 signings"
+    },
+    {
+     "url": "https://store.steampowered.com/search/?publisher=Fireshine%20Games",
+     "date": "2026-10-20",
+     "what": "Steam store search by publisher (catalog count and titles)"
+    }
+   ],
+   "unverified": [
+    "budget_range_usd",
+    "rev_share_note",
+    "team_size"
+   ],
+   "checked": "2026-10-20",
+   "id": "fireshine-games",
+   "name": "Fireshine Games",
+   "hq": "UK",
+   "open_submissions": true,
+   "submission_url": "https://fireshinegames.co.uk/pitch/",
+   "genres": [
+    "simulation",
+    "survival",
+    "crafting",
+    "cozy",
+    "co-op",
+    "management",
+    "action"
+   ],
+   "steam_publisher_names": [
+    "Fireshine Games"
+   ]
+  },
+  {
+   "languages": [
+    "en"
+   ],
+   "status": "active",
+   "submission_method": "form",
+   "asks_for": [
+    "pitch deck",
+    "builds",
+    "trailer"
+   ],
+   "avoid_genres": [
+    "family",
+    "vr"
+   ],
+   "deal_stages": [
+    "vertical_slice",
+    "demo"
+   ],
+   "team_size": [
+    1,
+    15
+   ],
+   "deal_types": [
+    "funding",
+    "marketing",
+    "porting",
+    "qa"
+   ],
+   "budget_range_usd": null,
+   "rev_share_note": null,
+   "price_band_usd": [
+    10,
+    25
+   ],
+   "platforms": [
+    "pc",
+    "switch",
+    "ps",
+    "xbox"
+   ],
+   "comparables": [
+    {
+     "title": "Astrea: Six-Sided Oracles",
+     "appid": 1755830,
+     "why": "roguelite deckbuilder"
+    },
+    {
+     "title": "Everafter Falls",
+     "appid": 1416960,
+     "why": "cozy sim"
+    }
+   ],
+   "catalog_size": 64,
+   "selectivity": "medium",
+   "pitch_stats": null,
+   "min_traction": {
+    "wishlists": 0,
+    "demo": false
+   },
+   "response_reputation": null,
+   "red_flags": [],
+   "notes": "Prefers Unity; likes deckbuilders, narrative and unique mechanics ('bonus if spooky'); head of publishing sees hundreds of pitches a year.",
+   "sources": [
+    {
+     "url": "https://www.akuparagames.com/pitch-a-game/",
+     "date": "2026-10-20",
+     "what": "pitch page"
+    },
+    {
+     "url": "https://gamemaker.io/en/blog/indie-game-publishing-2025",
+     "date": "2026-10-20",
+     "what": "2025 tips"
+    },
+    {
+     "url": "https://store.steampowered.com/search/?publisher=Akupara%20Games",
+     "date": "2026-10-20",
+     "what": "Steam store search by publisher (catalog count and titles)"
+    }
+   ],
+   "unverified": [
+    "budget_range_usd",
+    "rev_share_note",
+    "team_size"
+   ],
+   "checked": "2026-10-20",
+   "id": "akupara-games",
+   "name": "Akupara Games",
+   "hq": "US",
+   "open_submissions": true,
+   "submission_url": "https://www.akuparagames.com/pitch-a-game/",
+   "genres": [
+    "deckbuilding",
+    "narrative",
+    "adventure",
+    "puzzle",
+    "roguelite",
+    "horror",
+    "simulation",
+    "cozy"
+   ],
+   "steam_publisher_names": [
+    "Akupara Games"
+   ]
+  },
+  {
+   "languages": [
+    "en"
+   ],
+   "status": "active",
+   "submission_method": "form",
+   "asks_for": [
+    "pitch deck or info"
+   ],
+   "avoid_genres": [],
+   "deal_stages": [
+    "vertical_slice",
+    "demo"
+   ],
+   "team_size": [
+    1,
+    10
+   ],
+   "deal_types": [
+    "funding",
+    "porting",
+    "localization",
+    "marketing",
+    "qa",
+    "physical"
+   ],
+   "budget_range_usd": null,
+   "rev_share_note": null,
+   "price_band_usd": [
+    10,
+    25
+   ],
+   "platforms": [
+    "pc",
+    "switch",
+    "ps",
+    "xbox"
+   ],
+   "comparables": [
+    {
+     "title": "Completely Stretchy",
+     "appid": 1587570,
+     "why": "physics comedy"
+    },
+    {
+     "title": "Grandma, No!",
+     "appid": 2362680,
+     "why": "comedy"
+    },
+    {
+     "title": "Tiny Terry's Turbo Trip",
+     "appid": 2238040,
+     "why": "silly 3D"
+    }
+   ],
+   "catalog_size": 19,
+   "selectivity": "medium",
+   "pitch_stats": null,
+   "min_traction": {
+    "wishlists": 0,
+    "demo": false
+   },
+   "response_reputation": null,
+   "red_flags": [],
+   "notes": "Digital label of Super Rare Games (physical editions are a separate route: publishmygame@superraregames.com). 'Only signs games we personally love'.",
+   "sources": [
+    {
+     "url": "https://www.superrareoriginals.com/",
+     "date": "2026-10-20",
+     "what": "pitch section"
+    },
+    {
+     "url": "https://superraregames.com/pages/developers-publishers",
+     "date": "2026-10-20",
+     "what": "physical releases route"
+    },
+    {
+     "url": "https://store.steampowered.com/search/?publisher=Super%20Rare%20Originals",
+     "date": "2026-10-20",
+     "what": "Steam store search by publisher (catalog count and titles)"
+    }
+   ],
+   "unverified": [
+    "budget_range_usd",
+    "rev_share_note",
+    "team_size",
+    "response_reputation"
+   ],
+   "checked": "2026-10-20",
+   "id": "super-rare-originals",
+   "name": "Super Rare Originals",
+   "hq": "UK",
+   "open_submissions": true,
+   "submission_url": "https://www.superrareoriginals.com/",
+   "genres": [
+    "platformer",
+    "action",
+    "comedy",
+    "arcade",
+    "cute",
+    "roguelite",
+    "physics"
+   ],
+   "steam_publisher_names": [
+    "Super Rare Originals"
+   ]
+  },
+  {
+   "languages": [
+    "en",
+    "zh"
+   ],
+   "status": "active",
+   "submission_method": "form",
+   "asks_for": [
+    "pitch via 'Pitch Your Game' link"
+   ],
+   "avoid_genres": [],
+   "deal_stages": [
+    "vertical_slice",
+    "demo",
+    "finished"
+   ],
+   "team_size": [
+    1,
+    15
+   ],
+   "deal_types": [
+    "marketing",
+    "localization",
+    "china_publishing",
+    "porting"
+   ],
+   "budget_range_usd": null,
+   "rev_share_note": null,
+   "price_band_usd": [
+    5,
+    20
+   ],
+   "platforms": [
+    "pc",
+    "switch",
+    "ps",
+    "xbox"
+   ],
+   "comparables": [
+    {
+     "title": "Lost Castle",
+     "appid": 434650,
+     "why": "co-op roguelite"
+    },
+    {
+     "title": "Jack Axe",
+     "appid": 985780,
+     "why": "small action"
+    }
+   ],
+   "catalog_size": 24,
+   "selectivity": "medium",
+   "pitch_stats": null,
+   "min_traction": {
+    "wishlists": 0,
+    "demo": false
+   },
+   "response_reputation": null,
+   "red_flags": [],
+   "notes": "Taipei; strong on Asia/China reach; offers free consultations.",
+   "sources": [
+    {
+     "url": "https://www.neondoctrine.com/about/",
+     "date": "2026-10-20",
+     "what": "pitch and consultations"
+    },
+    {
+     "url": "https://www.linkedin.com/company/neon-doctrine",
+     "date": "2026-10-20",
+     "what": "company size"
+    },
+    {
+     "url": "https://store.steampowered.com/search/?publisher=Neon%20Doctrine",
+     "date": "2026-10-20",
+     "what": "Steam store search by publisher (catalog count and titles)"
+    }
+   ],
+   "unverified": [
+    "budget_range_usd",
+    "rev_share_note",
+    "team_size",
+    "submission_method"
+   ],
+   "checked": "2026-10-20",
+   "id": "neon-doctrine",
+   "name": "Neon Doctrine",
+   "hq": "TW",
+   "open_submissions": true,
+   "submission_url": "https://www.neondoctrine.com/about/",
+   "genres": [
+    "adventure",
+    "rpg",
+    "horror",
+    "action",
+    "roguelite"
+   ],
+   "steam_publisher_names": [
+    "Neon Doctrine"
+   ]
+  },
+  {
+   "steam_publisher_names": [
+    "Ysbryd Games"
+   ],
+   "hq": "UK/Singapore (remote)",
+   "languages": [
+    "en"
+   ],
+   "status": "active",
+   "open_submissions": true,
+   "submission_url": "https://www.ysbryd.net/",
+   "submission_method": "email",
+   "asks_for": [
+    "email to hello@ysbryd.net (no published checklist)"
+   ],
+   "genres": [
+    "narrative",
+    "rpg",
+    "horror",
+    "cyberpunk",
+    "action",
+    "stylized"
+   ],
+   "avoid_genres": [],
+   "deal_stages": [
+    "vertical_slice",
+    "demo",
+    "finished"
+   ],
+   "team_size": null,
+   "deal_types": [
+    "funding",
+    "qa",
+    "marketing",
+    "porting"
+   ],
+   "budget_range_usd": null,
+   "rev_share_note": "not public [DA VERIFICARE]",
+   "price_band_usd": [
+    10,
+    25
+   ],
+   "platforms": [
+    "pc",
+    "switch",
+    "ps",
+    "xbox"
+   ],
+   "comparables": [],
+   "catalog_size": 11,
+   "selectivity": "very_high",
+   "pitch_stats": null,
+   "min_traction": {
+    "wishlists": 0,
+    "demo": false
+   },
+   "response_reputation": "not public [DA VERIFICARE]",
+   "red_flags": [],
+   "notes": "Tiny boutique catalog (11 on Steam: VA-11 Hall-A, World of Horror, Demonschool 2025, LOVE ETERNAL 2026). Taste-driven 'games with magic'; no physics-comedy titles.",
+   "sources": [
+    {
+     "url": "https://www.ysbryd.net/",
+     "date": "2026-10-20",
+     "what": "official site: contact hello@ysbryd.net, 'games with magic', funding/QA/visibility"
+    },
+    {
+     "url": "https://www.workwithindies.com/work-with/ysbryd-games",
+     "date": "2026-10-20",
+     "what": "small remote team UK/US/Singapore"
+    },
+    {
+     "url": "https://store.steampowered.com/search/?publisher=Ysbryd%20Games",
+     "date": "2026-10-20",
+     "what": "Steam store search by publisher (catalog count + titles)"
+    }
+   ],
+   "unverified": [
+    "deal_stages",
+    "team_size",
+    "budget_range_usd",
+    "rev_share_note",
+    "response_reputation",
+    "price_band_usd"
+   ],
+   "checked": "2026-10-20",
+   "id": "ysbryd-games",
+   "name": "Ysbryd Games"
+  },
+  {
+   "steam_publisher_names": [
+    "Whitethorn Games"
+   ],
+   "hq": "USA (Erie, PA)",
+   "languages": [
+    "en"
+   ],
+   "status": "active",
+   "open_submissions": true,
+   "submission_url": "https://whitethorngames.com/publishing",
+   "submission_method": "email",
+   "asks_for": [
+    "playable demo",
+    "gameplay video/trailer/GIFs",
+    "screenshots",
+    "budget + timeline with monthly burn",
+    "elevator pitch",
+    "tech info (engine, source control)",
+    "team info"
+   ],
+   "genres": [
+    "cozy",
+    "relaxing",
+    "casual",
+    "narrative",
+    "simulation",
+    "puzzle",
+    "accessible"
+   ],
+   "avoid_genres": [
+    "high-stress",
+    "violent"
+   ],
+   "deal_stages": [
+    "prototype",
+    "vertical_slice",
+    "demo",
+    "early_access",
+    "finished"
+   ],
+   "team_size": null,
+   "deal_types": [
+    "funding",
+    "porting",
+    "qa",
+    "accessibility",
+    "localization",
+    "marketing",
+    "distribution"
+   ],
+   "budget_range_usd": null,
+   "rev_share_note": "not public [DA VERIFICARE]",
+   "price_band_usd": [
+    10,
+    25
+   ],
+   "platforms": [
+    "pc",
+    "switch",
+    "ps",
+    "xbox"
+   ],
+   "comparables": [
+    {
+     "title": "BOMBFEST",
+     "appid": 729640,
+     "why": "physics party chaos"
+    },
+    {
+     "title": "Beans: The Coffee Shop Simulator",
+     "appid": 549240,
+     "why": "service job sim"
+    },
+    {
+     "title": "Spray Paint Simulator",
+     "appid": 1811340,
+     "why": "casual sim"
+    },
+    {
+     "title": "Clawsome",
+     "appid": 3517880,
+     "why": "casual arcade"
+    }
+   ],
+   "catalog_size": 29,
+   "selectivity": "high",
+   "pitch_stats": null,
+   "min_traction": {
+    "wishlists": 0,
+    "demo": false
+   },
+   "response_reputation": "not public [DA VERIFICARE]",
+   "red_flags": [],
+   "notes": "Cozy/accessible label (~13 staff). Accepts pitches at any stage; publishes its contract template. Buffet Panic's stress/failure loop is off-brand unless pitched as comedic and accessible.",
+   "sources": [
+    {
+     "url": "https://whitethorngames.com/publishing",
+     "date": "2026-10-20",
+     "what": "official pitch page: email hello@whitethorngames.com, materials list, any stage"
+    },
+    {
+     "url": "https://pitchbook.com/profiles/company/315887-14",
+     "date": "2026-10-20",
+     "what": "13 employees, Erie PA"
+    },
+    {
+     "url": "https://github.com/GameDevGrzesiek/GameFunds/blob/main/GameFundingDirectory.md",
+     "date": "2026-10-20",
+     "what": "community funding/publisher directory (updated Sep 2026)"
+    },
+    {
+     "url": "https://store.steampowered.com/search/?publisher=Whitethorn%20Games",
+     "date": "2026-10-20",
+     "what": "Steam store search by publisher (catalog count + titles)"
+    }
+   ],
+   "unverified": [
+    "team_size",
+    "budget_range_usd",
+    "rev_share_note",
+    "response_reputation",
+    "price_band_usd"
+   ],
+   "checked": "2026-10-20",
+   "id": "whitethorn-games",
+   "name": "Whitethorn Games"
+  },
+  {
+   "steam_publisher_names": [
+    "Daedalic Entertainment"
+   ],
+   "hq": "Germany (Hamburg)",
+   "languages": [
+    "en",
+    "de"
+   ],
+   "status": "restructured",
+   "open_submissions": true,
+   "submission_url": "https://daedalic.com/contact/",
+   "submission_method": "form",
+   "asks_for": [
+    "pitch form on daedalic.com ('Pitch your game')",
+    "scouting@daedalic.com per directory"
+   ],
+   "genres": [
+    "storytelling",
+    "adventure",
+    "strategy",
+    "co-op",
+    "wholesome",
+    "simulation"
+   ],
+   "avoid_genres": [],
+   "deal_stages": [
+    "vertical_slice",
+    "demo",
+    "early_access"
+   ],
+   "team_size": null,
+   "deal_types": [
+    "funding",
+    "marketing",
+    "porting",
+    "qa",
+    "localization"
+   ],
+   "budget_range_usd": null,
+   "rev_share_note": "not public [DA VERIFICARE]",
+   "price_band_usd": [
+    10,
+    30
+   ],
+   "platforms": [
+    "pc",
+    "switch",
+    "ps",
+    "xbox"
+   ],
+   "comparables": [
+    {
+     "title": "Unrailed!",
+     "appid": 1016920,
+     "why": "co-op chaos"
+    },
+    {
+     "title": "Fling to the Finish",
+     "appid": 1054430,
+     "why": "co-op physics racer"
+    },
+    {
+     "title": "Godlike Burger",
+     "appid": 331870,
+     "why": "restaurant roguelike comedy"
+    },
+    {
+     "title": "Crazy Machines 3",
+     "appid": 351920,
+     "why": "physics"
+    }
+   ],
+   "catalog_size": 109,
+   "selectivity": "high",
+   "pitch_stats": null,
+   "min_traction": {
+    "wishlists": 0,
+    "demo": false
+   },
+   "response_reputation": "not public [DA VERIFICARE]",
+   "red_flags": [
+    "stopped internal development June 2023 after Gollum; 25 jobs cut; owned by Nacon [DA VERIFICARE: Nacon financial status]"
+   ],
+   "notes": "Publishing-only since mid-2023 (~35-45 staff). Four stated pillars incl. co-op and wholesome; signed co-op sim Kitman on 2026-10-08.",
+   "sources": [
+    {
+     "url": "https://en.wikipedia.org/wiki/Daedalic_Entertainment",
+     "date": "2026-10-20",
+     "what": "halted internal dev 30 June 2023, Nacon-owned"
+    },
+    {
+     "url": "https://daedalic.prezly.com/daedalic-teams-with-outlier-to-publish-co-op-soccer-sim-kitman",
+     "date": "2026-10-20",
+     "what": "new signing Oct 2026"
+    },
+    {
+     "url": "https://daedalic.com/",
+     "date": "2026-10-20",
+     "what": "pitch your game form; storytelling, strategy, co-op, wholesome"
+    },
+    {
+     "url": "https://github.com/GameDevGrzesiek/GameFunds/blob/main/GameFundingDirectory.md",
+     "date": "2026-10-20",
+     "what": "community funding/publisher directory (updated Sep 2026)"
+    },
+    {
+     "url": "https://store.steampowered.com/search/?publisher=Daedalic%20Entertainment",
+     "date": "2026-10-20",
+     "what": "Steam store search by publisher (catalog count + titles)"
+    }
+   ],
+   "unverified": [
+    "deal_stages",
+    "team_size",
+    "budget_range_usd",
+    "rev_share_note",
+    "response_reputation",
+    "price_band_usd"
+   ],
+   "checked": "2026-10-20",
+   "id": "daedalic",
+   "name": "Daedalic Entertainment"
+  },
+  {
+   "steam_publisher_names": [
+    "Dear Villagers"
+   ],
+   "hq": "France (Montpellier)",
+   "languages": [
+    "en",
+    "fr"
+   ],
+   "status": "active",
+   "open_submissions": true,
+   "submission_url": "https://dearvillagers.com/pitch-your-game/",
+   "submission_method": "form",
+   "asks_for": [
+    "pitch deck",
+    "detailed production plan + budget",
+    "playable build if possible (early prototype ok)"
+   ],
+   "genres": [
+    "adventure",
+    "rpg",
+    "strategy",
+    "action",
+    "roguelite",
+    "narrative"
+   ],
+   "avoid_genres": [
+    "mobile",
+    "f2p",
+    "multiplayer-only"
+   ],
+   "deal_stages": [
+    "prototype",
+    "vertical_slice",
+    "demo",
+    "early_access"
+   ],
+   "team_size": [
+    1,
+    30
+   ],
+   "deal_types": [
+    "funding",
+    "marketing",
+    "porting",
+    "qa",
+    "localization"
+   ],
+   "budget_range_usd": null,
+   "rev_share_note": "not public [DA VERIFICARE]",
+   "price_band_usd": [
+    15,
+    30
+   ],
+   "platforms": [
+    "pc",
+    "switch",
+    "ps",
+    "xbox"
+   ],
+   "comparables": [
+    {
+     "title": "Revita",
+     "appid": 1175460,
+     "why": "roguelite"
+    },
+    {
+     "title": "ScourgeBringer",
+     "appid": 1037020,
+     "why": "roguelite"
+    },
+    {
+     "title": "Big Helmet Heroes",
+     "appid": 2397250,
+     "why": "co-op comedy brawler"
+    }
+   ],
+   "catalog_size": 78,
+   "selectivity": "high",
+   "pitch_stats": null,
+   "min_traction": {
+    "wishlists": 0,
+    "demo": false
+   },
+   "response_reputation": "not public [DA VERIFICARE]",
+   "red_flags": [],
+   "notes": "Plug In Digital label (~20 people). Premium PC with console potential; solid single-player required, multiplayer only on top; small/medium teams. Non-fits redirected to sister label PID Games (directory: no releases since Dec 2024).",
+   "sources": [
+    {
+     "url": "https://dearvillagers.com/pitch-your-game/",
+     "date": "2026-10-20",
+     "what": "official requirements"
+    },
+    {
+     "url": "https://plugindigital.com/pid-dear-villagers-gamescom-2025/",
+     "date": "2026-10-20",
+     "what": "active at Gamescom 2025"
+    },
+    {
+     "url": "https://github.com/GameDevGrzesiek/GameFunds/blob/main/GameFundingDirectory.md",
+     "date": "2026-10-20",
+     "what": "community funding/publisher directory (updated Sep 2026)"
+    },
+    {
+     "url": "https://store.steampowered.com/search/?publisher=Dear%20Villagers",
+     "date": "2026-10-20",
+     "what": "Steam store search by publisher (catalog count + titles)"
+    }
+   ],
+   "unverified": [
+    "budget_range_usd",
+    "rev_share_note",
+    "response_reputation",
+    "price_band_usd"
+   ],
+   "checked": "2026-10-20",
+   "id": "dear-villagers",
+   "name": "Dear Villagers"
+  },
+  {
+   "steam_publisher_names": [
+    "Assemble Entertainment"
+   ],
+   "hq": "Germany (Wiesbaden)",
+   "languages": [
+    "en",
+    "de"
+   ],
+   "status": "active",
+   "open_submissions": true,
+   "submission_url": "mailto:pitch@assembleteam.com",
+   "submission_method": "email",
+   "asks_for": [
+    "pitch email with deck + build/video [DA VERIFICARE: no public checklist]"
+   ],
+   "genres": [
+    "cozy",
+    "roguelite",
+    "roguelike",
+    "strategy",
+    "city builder",
+    "horror",
+    "adventure",
+    "deckbuilder"
+   ],
+   "avoid_genres": [],
+   "deal_stages": [
+    "vertical_slice",
+    "demo",
+    "early_access",
+    "finished"
+   ],
+   "team_size": null,
+   "deal_types": [
+    "marketing",
+    "porting",
+    "qa",
+    "localization",
+    "funding"
+   ],
+   "budget_range_usd": null,
+   "rev_share_note": "not public [DA VERIFICARE]",
+   "price_band_usd": [
+    8,
+    25
+   ],
+   "platforms": [
+    "pc",
+    "switch",
+    "ps",
+    "xbox"
+   ],
+   "comparables": [
+    {
+     "title": "Sticky Business",
+     "appid": 2303350,
+     "why": "cozy shop sim, small-team hit"
+    },
+    {
+     "title": "Orbital Bullet",
+     "appid": 1167680,
+     "why": "roguelite"
+    },
+    {
+     "title": "Paddle Paddle Paddle",
+     "appid": 3570070,
+     "why": "co-op roguelite"
+    },
+    {
+     "title": "Decktamer",
+     "appid": 2870340,
+     "why": "roguelite deckbuilder"
+    }
+   ],
+   "catalog_size": 72,
+   "selectivity": "medium",
+   "pitch_stats": null,
+   "min_traction": {
+    "wishlists": 0,
+    "demo": false
+   },
+   "response_reputation": "not public [DA VERIFICARE]",
+   "red_flags": [
+    "GameFunds directory (Sep 2026) flags low offers, poor revenue shares and minimal marketing: do due diligence, talk to their past devs"
+   ],
+   "notes": "Founded 2016 by Stefan Marcinek (Kalypso co-founder); 50+ indie games; German Developer Award best publisher 2020/2021. Broad genres, many small-team titles.",
+   "sources": [
+    {
+     "url": "https://www.youtube.com/@assembleteam",
+     "date": "2026-10-20",
+     "what": "pitch[at]assembleteam.com"
+    },
+    {
+     "url": "https://80.lv/articles/assemble-entertainment-on-indie-publishing-steam-finding-success-in-2026",
+     "date": "2026-10-20",
+     "what": "2026 interview, values"
+    },
+    {
+     "url": "https://github.com/GameDevGrzesiek/GameFunds/blob/main/GameFundingDirectory.md",
+     "date": "2026-10-20",
+     "what": "community funding/publisher directory (updated Sep 2026)"
+    },
+    {
+     "url": "https://store.steampowered.com/search/?publisher=Assemble%20Entertainment",
+     "date": "2026-10-20",
+     "what": "Steam store search by publisher (catalog count + titles)"
+    }
+   ],
+   "unverified": [
+    "deal_stages",
+    "team_size",
+    "budget_range_usd",
+    "rev_share_note",
+    "response_reputation",
+    "price_band_usd"
+   ],
+   "checked": "2026-10-20",
+   "id": "assemble",
+   "name": "Assemble Entertainment"
+  },
+  {
+   "steam_publisher_names": [
+    "Thunderful Publishing",
+    "Thunderful"
+   ],
+   "hq": "Sweden (Gothenburg)",
+   "languages": [
+    "en"
+   ],
+   "status": "restructured",
+   "open_submissions": true,
+   "submission_url": "https://thunderfulgames.com/pitch-a-game/",
+   "submission_method": "form",
+   "asks_for": [
+    "5-step web form (game info, platforms, ...)"
+   ],
+   "genres": [
+    "action",
+    "platformer",
+    "roguelite",
+    "puzzle",
+    "adventure",
+    "strategy"
+   ],
+   "avoid_genres": [],
+   "deal_stages": [
+    "vertical_slice",
+    "demo",
+    "early_access"
+   ],
+   "team_size": null,
+   "deal_types": [
+    "funding",
+    "marketing",
+    "pr",
+    "qa",
+    "platform relations",
+    "creator outreach"
+   ],
+   "budget_range_usd": null,
+   "rev_share_note": "not public [DA VERIFICARE]",
+   "price_band_usd": [
+    15,
+    30
+   ],
+   "platforms": [
+    "pc",
+    "switch",
+    "ps",
+    "xbox"
+   ],
+   "comparables": [
+    {
+     "title": "Cursed to Golf",
+     "appid": 1726120,
+     "why": "comedic roguelite"
+    },
+    {
+     "title": "Say No! More",
+     "appid": 1191900,
+     "why": "comedy"
+    },
+    {
+     "title": "Paper Cut Mansion",
+     "appid": 1004370,
+     "why": "roguelite"
+    }
+   ],
+   "catalog_size": 24,
+   "selectivity": "high",
+   "pitch_stats": null,
+   "min_traction": {
+    "wishlists": 0,
+    "demo": false
+   },
+   "response_reputation": "not public [DA VERIFICARE]",
+   "red_flags": [
+    "repeated restructurings 2024-2025 (layoffs incl. publishing, Jul 2025)",
+    "Atari acquired 82% (Jul 2025); liquidity SEK 32m at 30 Jun 2025"
+   ],
+   "notes": "Pivoted to third-party publishing (Nov 2024), then cut costs again after Lost in Random: The Eternal Die underperformed. Directory: leans III/AA budgets.",
+   "sources": [
+    {
+     "url": "https://thunderfulgroup.com/news-room/press-releases/2025-07-29-thunderful-group-initiates-restructuring-and-provides-business-update",
+     "date": "2026-10-20",
+     "what": "Jul 2025 restructuring"
+    },
+    {
+     "url": "https://worthplaying.com/article/2025/7/29/news/147016-thunderful-group-restructuring-gets-acquired-by-atari/",
+     "date": "2026-10-20",
+     "what": "Atari 82%"
+    },
+    {
+     "url": "https://thunderfulgames.com/pitch-a-game/",
+     "date": "2026-10-20",
+     "what": "pitch form live 2026"
+    },
+    {
+     "url": "https://github.com/GameDevGrzesiek/GameFunds/blob/main/GameFundingDirectory.md",
+     "date": "2026-10-20",
+     "what": "community funding/publisher directory (updated Sep 2026)"
+    },
+    {
+     "url": "https://store.steampowered.com/search/?publisher=Thunderful%20Publishing",
+     "date": "2026-10-20",
+     "what": "Steam store search by publisher (catalog count + titles)"
+    }
+   ],
+   "unverified": [
+    "deal_stages",
+    "team_size",
+    "budget_range_usd",
+    "rev_share_note",
+    "response_reputation",
+    "price_band_usd"
+   ],
+   "checked": "2026-10-20",
+   "id": "thunderful",
+   "name": "Thunderful Publishing"
+  },
+  {
+   "steam_publisher_names": [
+    "Coatsink"
+   ],
+   "hq": "UK (Sunderland)",
+   "languages": [
+    "en"
+   ],
+   "status": "restructured",
+   "open_submissions": null,
+   "submission_url": "https://www.coatsink.com/partner",
+   "submission_method": "form",
+   "asks_for": [
+    "generic contact form (subject: Business)"
+   ],
+   "genres": [
+    "party",
+    "co-op",
+    "physics",
+    "puzzle",
+    "vr"
+   ],
+   "avoid_genres": [],
+   "deal_stages": [
+    "finished"
+   ],
+   "team_size": null,
+   "deal_types": [
+    "co-development",
+    "porting",
+    "publishing (historic)"
+   ],
+   "budget_range_usd": null,
+   "rev_share_note": "not public [DA VERIFICARE]",
+   "price_band_usd": [
+    15,
+    25
+   ],
+   "platforms": [
+    "pc",
+    "switch",
+    "ps",
+    "xbox",
+    "vr"
+   ],
+   "comparables": [
+    {
+     "title": "Get Packed: Fully Loaded",
+     "appid": 269850,
+     "why": "co-op physics chaos"
+    },
+    {
+     "title": "PHOGS!",
+     "appid": 850320,
+     "why": "co-op physics puzzle"
+    },
+    {
+     "title": "Cake Bash",
+     "appid": 971690,
+     "why": "party brawler"
+    }
+   ],
+   "catalog_size": 15,
+   "selectivity": "very_high",
+   "pitch_stats": null,
+   "min_traction": {
+    "wishlists": 0,
+    "demo": false
+   },
+   "response_reputation": "not public [DA VERIFICARE]",
+   "red_flags": [
+    "Nov 2025: Thunderful cuts 50-60 jobs (half of staff); founders left Aug 2025"
+   ],
+   "notes": "Now mainly a co-development/porting studio inside Thunderful (Atari). No public third-party publishing intake found; its past catalog fits co-op physics.",
+   "sources": [
+    {
+     "url": "https://www.pocketgamer.biz/thunderful-to-cut-around-60-jobs-at-subsidiary-coatsink-as-part-of-major-restructuring-effort/",
+     "date": "2026-10-20",
+     "what": "Nov 2025 layoffs"
+    },
+    {
+     "url": "https://www.pcgamesinsider.biz/news/75350/coatsinks-founders-are-leaving-the-company/",
+     "date": "2026-10-20",
+     "what": "founders leave"
+    },
+    {
+     "url": "https://www.coatsink.com/partner",
+     "date": "2026-10-20",
+     "what": "partner page, contact form only"
+    },
+    {
+     "url": "https://store.steampowered.com/search/?publisher=Coatsink",
+     "date": "2026-10-20",
+     "what": "Steam store search by publisher (catalog count + titles)"
+    }
+   ],
+   "unverified": [
+    "open_submissions",
+    "deal_stages",
+    "team_size",
+    "budget_range_usd",
+    "rev_share_note",
+    "response_reputation",
+    "price_band_usd"
+   ],
+   "checked": "2026-10-20",
+   "id": "coatsink",
+   "name": "Coatsink"
+  },
+  {
+   "steam_publisher_names": [
+    "No More Robots"
+   ],
+   "hq": "UK (Manchester)",
+   "languages": [
+    "en"
+   ],
+   "status": "active",
+   "open_submissions": true,
+   "submission_url": "https://nomorerobots.io/",
+   "submission_method": "email",
+   "asks_for": [
+    "pitch document",
+    "build",
+    "clear idea of needs (money, timeline)"
+   ],
+   "genres": [
+    "simulation",
+    "comedy",
+    "management",
+    "sports",
+    "narrative",
+    "unusual"
+   ],
+   "avoid_genres": [],
+   "deal_stages": [
+    "vertical_slice",
+    "demo",
+    "finished"
+   ],
+   "team_size": [
+    1,
+    10
+   ],
+   "deal_types": [
+    "funding",
+    "marketing",
+    "porting"
+   ],
+   "budget_range_usd": null,
+   "rev_share_note": "not public [DA VERIFICARE]",
+   "price_band_usd": [
+    10,
+    25
+   ],
+   "platforms": [
+    "pc",
+    "switch",
+    "ps",
+    "xbox"
+   ],
+   "comparables": [
+    {
+     "title": "Descenders",
+     "appid": 681280,
+     "why": "procedural runs"
+    },
+    {
+     "title": "Heist Simulator",
+     "appid": 1222290,
+     "why": "comedy sim"
+    },
+    {
+     "title": "Really Illegal Golf",
+     "appid": 4115520,
+     "why": "comedy sports"
+    },
+    {
+     "title": "Thank You For Your Application",
+     "appid": 2881370,
+     "why": "odd sim"
+    }
+   ],
+   "catalog_size": 26,
+   "selectivity": "very_high",
+   "pitch_stats": "Mike Rose (Aug 2024): signed 5 new games in a few months; wants 'cheap' or very expensive projects; $400k is 'too much for me'. No pitch volume published.",
+   "min_traction": {
+    "wishlists": 0,
+    "demo": false
+   },
+   "response_reputation": "not public [DA VERIFICARE]",
+   "red_flags": [],
+   "notes": "12 staff; publishing@nomorerobots.io. Rose wants games he 'has never seen before', not genre copies; strong data-driven marketing reputation.",
+   "sources": [
+    {
+     "url": "https://nomorerobots.io/",
+     "date": "2026-10-20",
+     "what": "publishing@nomorerobots.io; pitch doc + build"
+    },
+    {
+     "url": "https://www.gamedeveloper.com/business/-this-is-just-a-death-cycle-no-more-robots-gets-candid-about-the-state-of-indie-publishing",
+     "date": "2026-10-20",
+     "what": "Aug 2024: budgets, signings"
+    },
+    {
+     "url": "https://80.lv/articles/no-more-robots-on-indie-publishing-platform-strategy",
+     "date": "2026-10-20",
+     "what": "2026 interview: wants novel games"
+    },
+    {
+     "url": "https://github.com/GameDevGrzesiek/GameFunds/blob/main/GameFundingDirectory.md",
+     "date": "2026-10-20",
+     "what": "community funding/publisher directory (updated Sep 2026)"
+    },
+    {
+     "url": "https://store.steampowered.com/search/?publisher=No%20More%20Robots",
+     "date": "2026-10-20",
+     "what": "Steam store search by publisher (catalog count + titles)"
+    }
+   ],
+   "unverified": [
+    "deal_stages",
+    "team_size",
+    "budget_range_usd",
+    "rev_share_note",
+    "response_reputation",
+    "price_band_usd"
+   ],
+   "checked": "2026-10-20",
+   "id": "no-more-robots",
+   "name": "No More Robots"
+  },
+  {
+   "steam_publisher_names": [
+    "Klabater"
+   ],
+   "hq": "Poland (Warsaw)",
+   "languages": [
+    "en",
+    "pl"
+   ],
+   "status": "active",
+   "open_submissions": true,
+   "submission_url": "https://klabater.com/en/submit-your-game/",
+   "submission_method": "form",
+   "asks_for": [
+    "title, genre",
+    "platforms + engine",
+    "release date, time to gold, progress",
+    "what you need",
+    "links to build/trailer/store page",
+    "elevator pitch + USPs"
+   ],
+   "genres": [
+    "tycoon",
+    "management",
+    "simulation",
+    "narrative",
+    "history"
+   ],
+   "avoid_genres": [],
+   "deal_stages": [
+    "demo",
+    "early_access",
+    "finished"
+   ],
+   "team_size": null,
+   "deal_types": [
+    "publishing",
+    "console porting (no pre-payment under a publishing deal)",
+    "marketing"
+   ],
+   "budget_range_usd": null,
+   "rev_share_note": "not public [DA VERIFICARE]",
+   "price_band_usd": [
+    10,
+    25
+   ],
+   "platforms": [
+    "pc",
+    "switch",
+    "ps",
+    "xbox"
+   ],
+   "comparables": [
+    {
+     "title": "Crossroads Inn 2 - Tavern Manager",
+     "appid": 2437940,
+     "why": "hospitality management"
+    },
+    {
+     "title": "Moonshine Inc.",
+     "appid": 1066760,
+     "why": "management"
+    },
+    {
+     "title": "Roarr! The Adventures of Rampage Rex",
+     "appid": 834450,
+     "why": "comedy"
+    }
+   ],
+   "catalog_size": 13,
+   "selectivity": "medium",
+   "pitch_stats": null,
+   "min_traction": {
+    "wishlists": 0,
+    "demo": false
+   },
+   "response_reputation": "not public [DA VERIFICARE]",
+   "red_flags": [],
+   "notes": "Polish developer-publisher focused on tycoons, narrative and history; strong console-porting angle. Hospitality theme overlaps, physics comedy does not.",
+   "sources": [
+    {
+     "url": "https://klabater.com/en/submit-your-game/",
+     "date": "2026-10-20",
+     "what": "official submit form"
+    },
+    {
+     "url": "https://store.steampowered.com/publisher/klabater/about/",
+     "date": "2026-10-20",
+     "what": "focus: tycoons, narrative, history"
+    },
+    {
+     "url": "https://github.com/GameDevGrzesiek/GameFunds/blob/main/GameFundingDirectory.md",
+     "date": "2026-10-20",
+     "what": "community funding/publisher directory (updated Sep 2026)"
+    },
+    {
+     "url": "https://store.steampowered.com/search/?publisher=Klabater",
+     "date": "2026-10-20",
+     "what": "Steam store search by publisher (catalog count + titles)"
+    }
+   ],
+   "unverified": [
+    "deal_stages",
+    "team_size",
+    "budget_range_usd",
+    "rev_share_note",
+    "response_reputation",
+    "price_band_usd"
+   ],
+   "checked": "2026-10-20",
+   "id": "klabater",
+   "name": "Klabater"
+  },
+  {
+   "steam_publisher_names": [
+    "Ravenage Games"
+   ],
+   "hq": "UAE (Dubai) / Georgia (Batumi) - sources differ",
+   "languages": [
+    "en"
+   ],
+   "status": "uncertain",
+   "open_submissions": true,
+   "submission_url": "https://ravenage.games/#pitch",
+   "submission_method": "form",
+   "asks_for": [
+    "pitch deck (first 5 slides decide)",
+    "vertical slice, beta or Early Access build"
+   ],
+   "genres": [
+    "roguelite",
+    "action",
+    "co-op",
+    "tycoon",
+    "deckbuilder",
+    "tower defense",
+    "comedy"
+   ],
+   "avoid_genres": [],
+   "deal_stages": [
+    "vertical_slice",
+    "demo",
+    "early_access"
+   ],
+   "team_size": null,
+   "deal_types": [
+    "funding",
+    "marketing",
+    "full publishing"
+   ],
+   "budget_range_usd": null,
+   "rev_share_note": "not public [DA VERIFICARE]",
+   "price_band_usd": [
+    5,
+    20
+   ],
+   "platforms": [
+    "pc",
+    "switch",
+    "ps",
+    "xbox"
+   ],
+   "comparables": [
+    {
+     "title": "The Crackpet Show",
+     "appid": 1390700,
+     "why": "co-op comedy roguelite"
+    },
+    {
+     "title": "Megaloot",
+     "appid": 2440380,
+     "why": "roguelite"
+    },
+    {
+     "title": "Heretic's Fork",
+     "appid": 2181610,
+     "why": "deckbuilder tower defense"
+    }
+   ],
+   "catalog_size": 18,
+   "selectivity": "medium",
+   "pitch_stats": "CEO interview: quick feedback, mostly negative; the first 5 slides usually decide",
+   "min_traction": {
+    "wishlists": 0,
+    "demo": false
+   },
+   "response_reputation": "not public [DA VERIFICARE]",
+   "red_flags": [
+    "no new signing announcements found for 2025-2026; directory lists status unknown"
+   ],
+   "notes": "Launched 2021 with a stated $20M fund; promises feedback even without a deal. Small-roguelite catalog fits; verify current activity before pitching.",
+   "sources": [
+    {
+     "url": "https://ravenage.games/",
+     "date": "2026-10-20",
+     "what": "Pitch us form, info@ravenage.games"
+    },
+    {
+     "url": "https://mcvuk.com/business-news/publishing/indie-publisher-ravenage-launches-with-20m-investment-pot/",
+     "date": "2026-10-20",
+     "what": "$20M fund; show VS, beta or EA"
+    },
+    {
+     "url": "https://gametyrant.com/news/for-us-game-developers-are-full-fledged-team-members-an-interview-with-elena-morina-ceo-and-founder-of-ravenage-an-indie-game-publisher",
+     "date": "2026-10-20",
+     "what": "CEO on pitch review"
+    },
+    {
+     "url": "https://github.com/GameDevGrzesiek/GameFunds/blob/main/GameFundingDirectory.md",
+     "date": "2026-10-20",
+     "what": "community funding/publisher directory (updated Sep 2026)"
+    },
+    {
+     "url": "https://store.steampowered.com/search/?publisher=Ravenage%20Games",
+     "date": "2026-10-20",
+     "what": "Steam store search by publisher (catalog count + titles)"
+    }
+   ],
+   "unverified": [
+    "status",
+    "team_size",
+    "budget_range_usd",
+    "rev_share_note",
+    "response_reputation",
+    "price_band_usd"
+   ],
+   "checked": "2026-10-20",
+   "id": "ravenage",
+   "name": "Ravenage Games"
+  },
+  {
+   "steam_publisher_names": [
+    "Hitcents"
+   ],
+   "hq": "USA (Bowling Green, KY)",
+   "languages": [
+    "en"
+   ],
+   "status": "uncertain",
+   "open_submissions": null,
+   "submission_url": "https://hitcents.com/publishing",
+   "submission_method": "unknown",
+   "asks_for": [],
+   "genres": [
+    "narrative",
+    "adventure",
+    "fps",
+    "physics comedy",
+    "casual"
+   ],
+   "avoid_genres": [],
+   "deal_stages": [
+    "demo",
+    "finished"
+   ],
+   "team_size": null,
+   "deal_types": [
+    "publishing",
+    "marketing"
+   ],
+   "budget_range_usd": null,
+   "rev_share_note": "not public [DA VERIFICARE]",
+   "price_band_usd": [
+    5,
+    20
+   ],
+   "platforms": [
+    "pc",
+    "switch"
+   ],
+   "comparables": [
+    {
+     "title": "YOLKED - The Egg Game",
+     "appid": 1464010,
+     "why": "physics comedy"
+    },
+    {
+     "title": "Draw a Stickman: EPIC 2",
+     "appid": 403180,
+     "why": "casual"
+    }
+   ],
+   "catalog_size": 15,
+   "selectivity": "medium",
+   "pitch_stats": null,
+   "min_traction": {
+    "wishlists": 0,
+    "demo": false
+   },
+   "response_reputation": "not public [DA VERIFICARE]",
+   "red_flags": [
+    "company now markets itself mainly as AI/software firm; /publishing page returned no content (2026-10-20); acquired by Houchens Industries per PitchBook"
+   ],
+   "notes": "Still released Forgotlings (Feb 2026) as 'an indie game publisher for the curious', but intake for new pitches is unclear.",
+   "sources": [
+    {
+     "url": "https://x.com/Hitcents",
+     "date": "2026-10-20",
+     "what": "X bio: indie publisher + AI solutions; 2023 pinned pitch link hitcents.com/publishing"
+    },
+    {
+     "url": "https://store.steampowered.com/publisher/hitcents",
+     "date": "2026-10-20",
+     "what": "Forgotlings Feb 2026"
+    },
+    {
+     "url": "https://pitchbook.com/profiles/company/92637-01",
+     "date": "2026-10-20",
+     "what": "acquired/merged"
+    },
+    {
+     "url": "https://store.steampowered.com/search/?publisher=Hitcents",
+     "date": "2026-10-20",
+     "what": "Steam store search by publisher (catalog count + titles)"
+    }
+   ],
+   "unverified": [
+    "open_submissions",
+    "submission_url",
+    "deal_stages",
+    "team_size",
+    "budget_range_usd",
+    "rev_share_note",
+    "response_reputation",
+    "price_band_usd"
+   ],
+   "checked": "2026-10-20",
+   "id": "hitcents",
+   "name": "Hitcents"
+  },
+  {
+   "steam_publisher_names": [
+    "Firestoke"
+   ],
+   "hq": "UK (Edinburgh)",
+   "languages": [
+    "en"
+   ],
+   "status": "closed",
+   "open_submissions": false,
+   "submission_url": null,
+   "submission_method": "unknown",
+   "asks_for": [],
+   "genres": [
+    "co-op",
+    "social",
+    "joyful",
+    "casual"
+   ],
+   "avoid_genres": [
+    "violent",
+    "shooter",
+    "deep rpg"
+   ],
+   "deal_stages": [],
+   "team_size": null,
+   "deal_types": [],
+   "budget_range_usd": null,
+   "rev_share_note": "not public [DA VERIFICARE]",
+   "price_band_usd": null,
+   "platforms": [
+    "pc",
+    "switch",
+    "ps",
+    "xbox"
+   ],
+   "comparables": [],
+   "catalog_size": null,
+   "selectivity": "very_high",
+   "pitch_stats": null,
+   "min_traction": {
+    "wishlists": 0,
+    "demo": false
+   },
+   "response_reputation": "not public [DA VERIFICARE]",
+   "red_flags": [
+    "shut down August 2025 (ran out of runway)"
+   ],
+   "notes": "Would have been a strong fit (joyful, co-op), but closed. Its old pitch guide remains a useful reference.",
+   "sources": [
+    {
+     "url": "https://www.gamedeveloper.com/business/indie-publisher-firestoke-shutting-down-despite-being-on-path-towards-profitability-",
+     "date": "2026-10-20",
+     "what": "closure Aug 2025"
+    },
+    {
+     "url": "https://github.com/GameDevGrzesiek/GameFunds/blob/main/GameFundingDirectory.md",
+     "date": "2026-10-20",
+     "what": "community funding/publisher directory (updated Sep 2026)"
+    }
+   ],
+   "unverified": [
+    "catalog_size"
+   ],
+   "checked": "2026-10-20",
+   "id": "firestoke",
+   "name": "Firestoke"
+  },
+  {
+   "steam_publisher_names": [
+    "Mooneye Studios"
+   ],
+   "hq": "Germany (Hamburg)",
+   "languages": [
+    "en",
+    "de"
+   ],
+   "status": "active",
+   "open_submissions": true,
+   "submission_url": "https://www.mooneyestudios.com/publishing",
+   "submission_method": "email",
+   "asks_for": [
+    "contact publishing@mooneyestudios.com (per directory)"
+   ],
+   "genres": [
+    "cozy",
+    "narrative",
+    "adventure",
+    "exploration"
+   ],
+   "avoid_genres": [],
+   "deal_stages": [
+    "vertical_slice",
+    "demo"
+   ],
+   "team_size": null,
+   "deal_types": [
+    "funding",
+    "marketing",
+    "pr",
+    "community",
+    "qa",
+    "localization",
+    "porting"
+   ],
+   "budget_range_usd": null,
+   "rev_share_note": "not public [DA VERIFICARE]",
+   "price_band_usd": [
+    10,
+    25
+   ],
+   "platforms": [
+    "pc",
+    "switch",
+    "ps",
+    "xbox"
+   ],
+   "comparables": [
+    {
+     "title": "Smushi Come Home",
+     "appid": 1740300,
+     "why": "small-team cozy 3D, third-party"
+    }
+   ],
+   "catalog_size": 7,
+   "selectivity": "high",
+   "pitch_stats": null,
+   "min_traction": {
+    "wishlists": 0,
+    "demo": false
+   },
+   "response_reputation": "not public [DA VERIFICARE]",
+   "red_flags": [],
+   "notes": "Developer-publisher of small cozy/narrative games; dev keeps IP and final say. Weak fit for a chaotic physics roguelite.",
+   "sources": [
+    {
+     "url": "https://www.mooneyestudios.com/publishing",
+     "date": "2026-10-20",
+     "what": "official: 'small cozy or narrative games'; services; IP stays with dev"
+    },
+    {
+     "url": "https://github.com/GameDevGrzesiek/GameFunds/blob/main/GameFundingDirectory.md",
+     "date": "2026-10-20",
+     "what": "community funding/publisher directory (updated Sep 2026)"
+    },
+    {
+     "url": "https://store.steampowered.com/search/?publisher=Mooneye%20Studios",
+     "date": "2026-10-20",
+     "what": "Steam store search by publisher (catalog count + titles)"
+    }
+   ],
+   "unverified": [
+    "deal_stages",
+    "team_size",
+    "budget_range_usd",
+    "rev_share_note",
+    "response_reputation",
+    "price_band_usd"
+   ],
+   "checked": "2026-10-20",
+   "id": "mooneye",
+   "name": "Mooneye Studios"
+  },
+  {
+   "steam_publisher_names": [
+    "Chorus Worldwide"
+   ],
+   "hq": "Japan (Tokyo) / UK / Canada",
+   "languages": [
+    "en",
+    "ja"
+   ],
+   "status": "active",
+   "open_submissions": true,
+   "submission_url": "https://chorusworldwide.com/game-submissions/",
+   "submission_method": "form",
+   "asks_for": [
+    "game name",
+    "team name",
+    "email",
+    "video link (YouTube/Vimeo)",
+    "funding required?"
+   ],
+   "genres": [
+    "narrative",
+    "adventure",
+    "puzzle",
+    "action",
+    "visual novel"
+   ],
+   "avoid_genres": [],
+   "deal_stages": [
+    "demo",
+    "finished",
+    "released"
+   ],
+   "team_size": null,
+   "deal_types": [
+    "asia publishing",
+    "console publishing",
+    "localization/culturalization",
+    "global publishing (some)"
+   ],
+   "budget_range_usd": null,
+   "rev_share_note": "not public [DA VERIFICARE]",
+   "price_band_usd": [
+    10,
+    25
+   ],
+   "platforms": [
+    "pc",
+    "switch",
+    "ps",
+    "xbox"
+   ],
+   "comparables": [],
+   "catalog_size": 1,
+   "selectivity": "medium",
+   "pitch_stats": null,
+   "min_traction": {
+    "wishlists": 0,
+    "demo": false
+   },
+   "response_reputation": "not public [DA VERIFICARE]",
+   "red_flags": [],
+   "notes": "Tokyo-based (2-10 staff) East-West bridge: often takes Asia/console rights for released or near-finished indies (Coffee Talk, A Space for the Unbound). Realistic later as Asia/console partner, not as main publisher.",
+   "sources": [
+    {
+     "url": "https://chorusworldwide.com/game-submissions/",
+     "date": "2026-10-20",
+     "what": "submission fields"
+    },
+    {
+     "url": "https://www.gamespress.com/Chorus-Worldwide-Announces-Tokyo-Game-Show-2025-Line-up",
+     "date": "2026-10-20",
+     "what": "TGS 2025 lineup"
+    },
+    {
+     "url": "https://www.linkedin.com/company/chorus-japan",
+     "date": "2026-10-20",
+     "what": "2-10 employees"
+    },
+    {
+     "url": "https://store.steampowered.com/search/?publisher=Chorus%20Worldwide",
+     "date": "2026-10-20",
+     "what": "Steam store search by publisher (catalog count + titles)"
+    }
+   ],
+   "unverified": [
+    "deal_stages",
+    "team_size",
+    "budget_range_usd",
+    "rev_share_note",
+    "response_reputation",
+    "price_band_usd"
+   ],
+   "checked": "2026-10-20",
+   "id": "chorus-worldwide",
+   "name": "Chorus Worldwide"
+  },
+  {
+   "steam_publisher_names": [],
+   "hq": "Italy (Turin)",
+   "languages": [
+    "en",
+    "it"
+   ],
+   "status": "not_publisher",
+   "open_submissions": false,
+   "submission_url": null,
+   "submission_method": "unknown",
+   "asks_for": [],
+   "genres": [
+    "racing",
+    "action"
+   ],
+   "avoid_genres": [],
+   "deal_stages": [],
+   "team_size": null,
+   "deal_types": [
+    "work-for-hire / co-development"
+   ],
+   "budget_range_usd": null,
+   "rev_share_note": "not public [DA VERIFICARE]",
+   "price_band_usd": null,
+   "platforms": [
+    "pc",
+    "ps",
+    "xbox"
+   ],
+   "comparables": [],
+   "catalog_size": 0,
+   "selectivity": "very_high",
+   "pitch_stats": null,
+   "min_traction": {
+    "wishlists": 0,
+    "demo": false
+   },
+   "response_reputation": "not public [DA VERIFICARE]",
+   "red_flags": [],
+   "notes": "NOT a third-party publisher: Italian developer (Redout) that bought back its independence from Embracer (Apr/Jun 2026), 70+ staff, working on big-IP titles. Useful only as Italian industry contact.",
+   "sources": [
+    {
+     "url": "https://www.gamedeveloper.com/business/italian-studio-34bigthings-regains-independence-from-embracer",
+     "date": "2026-10-20",
+     "what": "independence 2026"
+    },
+    {
+     "url": "https://gamesbeat.com/34bigthings-announces-shift-back-to-full-independence/",
+     "date": "2026-10-20",
+     "what": "70+ staff"
+    }
+   ],
+   "unverified": [
+    "open_submissions"
+   ],
+   "checked": "2026-10-20",
+   "id": "34bigthings",
+   "name": "34BigThings"
+  },
+  {
+   "steam_publisher_names": [
+    "Saber Interactive"
+   ],
+   "hq": "USA/global (Beacon Interactive)",
+   "languages": [
+    "en"
+   ],
+   "status": "active",
+   "open_submissions": null,
+   "submission_url": null,
+   "submission_method": "unknown",
+   "asks_for": [],
+   "genres": [
+    "action",
+    "simulation",
+    "aa"
+   ],
+   "avoid_genres": [],
+   "deal_stages": [
+    "vertical_slice",
+    "early_access"
+   ],
+   "team_size": null,
+   "deal_types": [
+    "funding",
+    "full publishing"
+   ],
+   "budget_range_usd": null,
+   "rev_share_note": "not public [DA VERIFICARE]",
+   "price_band_usd": [
+    20,
+    60
+   ],
+   "platforms": [
+    "pc",
+    "ps",
+    "xbox"
+   ],
+   "comparables": [
+    {
+     "title": "Rideshare \"Stimulator\"",
+     "appid": 2366590,
+     "why": "comedy sim"
+    },
+    {
+     "title": "The Knightling",
+     "appid": 1471650,
+     "why": "third-party indie"
+    }
+   ],
+   "catalog_size": 12,
+   "selectivity": "very_high",
+   "pitch_stats": null,
+   "min_traction": {
+    "wishlists": 0,
+    "demo": false
+   },
+   "response_reputation": "not public [DA VERIFICARE]",
+   "red_flags": [],
+   "notes": "AA/AAA group; head of publishing (Jul 2026) 'open to signing deals where the fit is right' but few indie signings. Not realistic for a 2-person 8-10 $ game.",
+   "sources": [
+    {
+     "url": "https://www.pcgamesn.com/indie-games/saber-interactive-indie-publishing",
+     "date": "2026-10-20",
+     "what": "Jul 2026 interview"
+    },
+    {
+     "url": "https://store.steampowered.com/search/?publisher=Saber%20Interactive",
+     "date": "2026-10-20",
+     "what": "Steam store search by publisher (catalog count + titles)"
+    }
+   ],
+   "unverified": [
+    "open_submissions",
+    "submission_url",
+    "team_size",
+    "budget_range_usd",
+    "rev_share_note",
+    "response_reputation",
+    "price_band_usd"
+   ],
+   "checked": "2026-10-20",
+   "id": "saber",
+   "name": "Saber Interactive"
+  },
+  {
+   "steam_publisher_names": [
+    "505 Games"
+   ],
+   "hq": "Italy (Milan) / global",
+   "languages": [
+    "en",
+    "it"
+   ],
+   "status": "active",
+   "open_submissions": true,
+   "submission_url": null,
+   "submission_method": "email",
+   "asks_for": [
+    "contact via community@505games.com per directory [DA VERIFICARE: no official pitch page found]"
+   ],
+   "genres": [
+    "action",
+    "rpg",
+    "simulation",
+    "racing",
+    "aa"
+   ],
+   "avoid_genres": [],
+   "deal_stages": [
+    "vertical_slice",
+    "early_access"
+   ],
+   "team_size": null,
+   "deal_types": [
+    "funding",
+    "full publishing"
+   ],
+   "budget_range_usd": [
+    1000000,
+    null
+   ],
+   "rev_share_note": "not public [DA VERIFICARE]",
+   "price_band_usd": [
+    20,
+    60
+   ],
+   "platforms": [
+    "pc",
+    "ps",
+    "xbox",
+    "switch"
+   ],
+   "comparables": [
+    {
+     "title": "The Magical Mixture Mill",
+     "appid": 1883800,
+     "why": "casual co-op crafting"
+    },
+    {
+     "title": "Serial Cleaners",
+     "appid": 1337920,
+     "why": "stylized"
+    }
+   ],
+   "catalog_size": 67,
+   "selectivity": "very_high",
+   "pitch_stats": null,
+   "min_traction": {
+    "wishlists": 0,
+    "demo": false
+   },
+   "response_reputation": "not public [DA VERIFICARE]",
+   "red_flags": [
+    "Digital Bros cut ~30% of staff (Nov 2023) and refocused on sequels/established IP"
+   ],
+   "notes": "Italian-owned but AA-focused (directory: $1M+ budgets). Still signs (ExeKiller Apr 2026; 'Mayhem A La Carte' 2027 on slate). Dream tier for Buffet Panic.",
+   "sources": [
+    {
+     "url": "https://www.pcgamer.com/505-games-parent-company-lays-off-30-of-its-workforce-says-gamers-really-only-want-sequels-so-thats-what-its-going-to-make/",
+     "date": "2026-10-20",
+     "what": "Nov 2023 restructuring"
+    },
+    {
+     "url": "https://store.steampowered.com/sale/505gamespublishersale2026",
+     "date": "2026-10-20",
+     "what": "2026 slate"
+    },
+    {
+     "url": "https://github.com/GameDevGrzesiek/GameFunds/blob/main/GameFundingDirectory.md",
+     "date": "2026-10-20",
+     "what": "community funding/publisher directory (updated Sep 2026)"
+    },
+    {
+     "url": "https://store.steampowered.com/search/?publisher=505%20Games",
+     "date": "2026-10-20",
+     "what": "Steam store search by publisher (catalog count + titles)"
+    }
+   ],
+   "unverified": [
+    "submission_url",
+    "team_size",
+    "budget_range_usd",
+    "rev_share_note",
+    "response_reputation",
+    "price_band_usd"
+   ],
+   "checked": "2026-10-20",
+   "id": "505-games",
+   "name": "505 Games (Digital Bros)"
+  },
+  {
+   "steam_publisher_names": [
+    "Untold Tales"
+   ],
+   "hq": "Poland (Warsaw)",
+   "languages": [
+    "en",
+    "pl"
+   ],
+   "status": "active",
+   "open_submissions": true,
+   "submission_url": "https://untoldtales.games/pitch-your-game/",
+   "submission_method": "form",
+   "asks_for": [
+    "genre, premise, USPs, competitors",
+    "video URL",
+    "pitch deck URL",
+    "engine, ports",
+    "dev stage, PC gold ETA",
+    "PC funding needed (USD)",
+    "build URL / Steam keys",
+    "hours of gameplay"
+   ],
+   "genres": [
+    "co-op",
+    "party",
+    "simulation",
+    "adventure",
+    "roguelike",
+    "physics comedy",
+    "casual"
+   ],
+   "avoid_genres": [],
+   "deal_stages": [
+    "vertical_slice",
+    "demo",
+    "early_access",
+    "finished"
+   ],
+   "team_size": [
+    1,
+    51
+   ],
+   "deal_types": [
+    "funding",
+    "marketing",
+    "porting",
+    "publishing-as-a-service (Ghost Publishing)"
+   ],
+   "budget_range_usd": null,
+   "rev_share_note": "not public [DA VERIFICARE]",
+   "price_band_usd": [
+    8,
+    25
+   ],
+   "platforms": [
+    "pc",
+    "switch",
+    "ps",
+    "xbox"
+   ],
+   "comparables": [
+    {
+     "title": "Tools Up!",
+     "appid": 1004490,
+     "why": "co-op chaos"
+    },
+    {
+     "title": "Lumberhill",
+     "appid": 976900,
+     "why": "co-op chaos"
+    },
+    {
+     "title": "Bang-On Balls: Chronicles",
+     "appid": 1227650,
+     "why": "physics comedy"
+    },
+    {
+     "title": "Tilt It! Golf",
+     "appid": 4733610,
+     "why": "physics casual"
+    }
+   ],
+   "catalog_size": 58,
+   "selectivity": "medium",
+   "pitch_stats": null,
+   "min_traction": {
+    "wishlists": 0,
+    "demo": false
+   },
+   "response_reputation": "Ghost Publishing track: reply to all submissions within 2 weeks (official page); main pitch form: not stated",
+   "red_flags": [],
+   "notes": "Ex-Techland founders (2020), 11-50 staff. Catalog full of casual co-op chaos and physics comedy: strong genre fit. Pitch form accepts solo devs.",
+   "sources": [
+    {
+     "url": "https://untoldtales.games/pitch-your-game/",
+     "date": "2026-10-20",
+     "what": "form fields, studio size from solo"
+    },
+    {
+     "url": "https://untoldtales.games/ghost-publishing/",
+     "date": "2026-10-20",
+     "what": "publishing-as-a-service, 2-week reply"
+    },
+    {
+     "url": "https://github.com/GameDevGrzesiek/GameFunds/blob/main/GameFundingDirectory.md",
+     "date": "2026-10-20",
+     "what": "community funding/publisher directory (updated Sep 2026)"
+    },
+    {
+     "url": "https://store.steampowered.com/search/?publisher=Untold%20Tales",
+     "date": "2026-10-20",
+     "what": "Steam store search by publisher (catalog count + titles)"
+    }
+   ],
+   "unverified": [
+    "budget_range_usd",
+    "rev_share_note",
+    "price_band_usd"
+   ],
+   "checked": "2026-10-20",
+   "id": "untold-tales",
+   "name": "Untold Tales"
+  },
+  {
+   "steam_publisher_names": [
+    "Ravenscourt"
+   ],
+   "hq": "Germany (Planegg/Munich)",
+   "languages": [
+    "en"
+   ],
+   "status": "restructured",
+   "open_submissions": null,
+   "submission_url": null,
+   "submission_method": "unknown",
+   "asks_for": [],
+   "genres": [
+    "simulation",
+    "casual",
+    "family",
+    "adventure"
+   ],
+   "avoid_genres": [],
+   "deal_stages": [
+    "vertical_slice",
+    "demo"
+   ],
+   "team_size": null,
+   "deal_types": [
+    "funding",
+    "full publishing"
+   ],
+   "budget_range_usd": null,
+   "rev_share_note": "not public [DA VERIFICARE]",
+   "price_band_usd": [
+    15,
+    30
+   ],
+   "platforms": [
+    "pc",
+    "ps",
+    "xbox",
+    "switch"
+   ],
+   "comparables": [
+    {
+     "title": "Bears In Space",
+     "appid": 1309620,
+     "why": "comedy FPS"
+    },
+    {
+     "title": "Floodland",
+     "appid": 1336180,
+     "why": "indie"
+    }
+   ],
+   "catalog_size": 18,
+   "selectivity": "very_high",
+   "pitch_stats": null,
+   "min_traction": {
+    "wishlists": 0,
+    "demo": false
+   },
+   "response_reputation": "not public [DA VERIFICARE]",
+   "red_flags": [
+    "label merged into PLAION publishing (2023); only legacy/Let's Sing releases since"
+   ],
+   "notes": "Indie label effectively folded into PLAION; a pitch would go to PLAION's main publishing arm (no public intake found).",
+   "sources": [
+    {
+     "url": "https://www.gematsu.com/2023/05/plaion-to-merge-deep-silver-prime-matter-and-ravenscourt-under-single-brand",
+     "date": "2026-10-20",
+     "what": "merger 2023"
+    },
+    {
+     "url": "https://store.steampowered.com/search/?publisher=Ravenscourt",
+     "date": "2026-10-20",
+     "what": "Steam store search by publisher (catalog count + titles)"
+    }
+   ],
+   "unverified": [
+    "open_submissions",
+    "submission_url",
+    "deal_stages",
+    "team_size",
+    "budget_range_usd",
+    "rev_share_note",
+    "response_reputation",
+    "price_band_usd"
+   ],
+   "checked": "2026-10-20",
+   "id": "ravenscourt",
+   "name": "Ravenscourt (PLAION)"
+  },
+  {
+   "steam_publisher_names": [
+    "Merge Games"
+   ],
+   "hq": "UK",
+   "languages": [
+    "en"
+   ],
+   "status": "closed",
+   "open_submissions": false,
+   "submission_url": null,
+   "submission_method": "unknown",
+   "asks_for": [],
+   "genres": [
+    "indie",
+    "adventure",
+    "casual"
+   ],
+   "avoid_genres": [],
+   "deal_stages": [],
+   "team_size": null,
+   "deal_types": [],
+   "budget_range_usd": null,
+   "rev_share_note": "not public [DA VERIFICARE]",
+   "price_band_usd": null,
+   "platforms": [
+    "pc"
+   ],
+   "comparables": [],
+   "catalog_size": 2,
+   "selectivity": "very_high",
+   "pitch_stats": null,
+   "min_traction": {
+    "wishlists": 0,
+    "demo": false
+   },
+   "response_reputation": "not public [DA VERIFICARE]",
+   "red_flags": [
+    "absorbed into Maximum Entertainment and closed Sept 2024; catalog sold to Silver Lining Interactive 2025"
+   ],
+   "notes": "Pitch its successor Silver Lining Interactive instead.",
+   "sources": [
+    {
+     "url": "https://www.gamedeveloper.com/business/indie-publisher-merge-games-is-shutting-down",
+     "date": "2026-10-20",
+     "what": "closure"
+    },
+    {
+     "url": "https://gamesbeat.com/maximum-entertainment-divests-merge-games-assets-to-silver-lining/",
+     "date": "2026-10-20",
+     "what": "assets to Silver Lining"
+    }
+   ],
+   "unverified": [],
+   "checked": "2026-10-20",
+   "id": "merge-games",
+   "name": "Merge Games"
+  },
+  {
+   "steam_publisher_names": [
+    "Silver Lining Interactive"
+   ],
+   "hq": "UK",
+   "languages": [
+    "en"
+   ],
+   "status": "active",
+   "open_submissions": true,
+   "submission_url": "mailto:submissions@silverliningint.com",
+   "submission_method": "email",
+   "asks_for": [
+    "pitch per their pitch guide [DA VERIFICARE]"
+   ],
+   "genres": [
+    "comedy",
+    "fps",
+    "management",
+    "cozy",
+    "action",
+    "indie"
+   ],
+   "avoid_genres": [],
+   "deal_stages": [
+    "vertical_slice",
+    "demo",
+    "early_access",
+    "finished"
+   ],
+   "team_size": null,
+   "deal_types": [
+    "publishing",
+    "marketing",
+    "physical",
+    "porting",
+    "qa",
+    "incubator funding up to $100k (Silver Bullet)"
+   ],
+   "budget_range_usd": [
+    0,
+    100000
+   ],
+   "rev_share_note": "not public [DA VERIFICARE]",
+   "price_band_usd": [
+    8,
+    25
+   ],
+   "platforms": [
+    "pc",
+    "switch",
+    "ps",
+    "xbox"
+   ],
+   "comparables": [
+    {
+     "title": "Captain Wayne - Vacation Desperation",
+     "appid": 2319790,
+     "why": "comedy FPS"
+    },
+    {
+     "title": "Definitely Not Fried Chicken",
+     "appid": 1036240,
+     "why": "comedy management"
+    },
+    {
+     "title": "Service with a Shotgun",
+     "appid": 3777020,
+     "why": "service job comedy"
+    },
+    {
+     "title": "The Witch's Bakery",
+     "appid": 2967950,
+     "why": "shop sim"
+    }
+   ],
+   "catalog_size": 40,
+   "selectivity": "medium",
+   "pitch_stats": null,
+   "min_traction": {
+    "wishlists": 0,
+    "demo": false
+   },
+   "response_reputation": "not public [DA VERIFICARE]",
+   "red_flags": [],
+   "notes": "Founded Jan 2025 by the Merge founders; ~20 staff, 'multi-million pound' first year, Outbound (1.5M wishlists). Silver Bullet incubator offered up to $100k (now an in-house label).",
+   "sources": [
+    {
+     "url": "https://www.gamespress.com/Silver-Lining-Interactive-Reports-Breakout-First-Year-and-Expands-2026",
+     "date": "2026-10-20",
+     "what": "2026 results"
+    },
+    {
+     "url": "https://gamedev.net/news/4905-silver-lining-interactive-launches-first-title-from-its-development-label/",
+     "date": "2026-10-20",
+     "what": "Silver Bullet"
+    },
+    {
+     "url": "https://github.com/GameDevGrzesiek/GameFunds/blob/main/GameFundingDirectory.md",
+     "date": "2026-10-20",
+     "what": "community funding/publisher directory (updated Sep 2026)"
+    },
+    {
+     "url": "https://store.steampowered.com/search/?publisher=Silver%20Lining%20Interactive",
+     "date": "2026-10-20",
+     "what": "Steam store search by publisher (catalog count + titles)"
+    }
+   ],
+   "unverified": [
+    "team_size",
+    "rev_share_note",
+    "response_reputation",
+    "submission_url",
+    "price_band_usd"
+   ],
+   "checked": "2026-10-20",
+   "id": "silver-lining",
+   "name": "Silver Lining Interactive"
+  },
+  {
+   "languages": [
+    "en"
+   ],
+   "avoid_genres": [],
+   "budget_range_usd": [
+    0,
+    130000
+   ],
+   "rev_share_note": "Published terms: 80/20 dev/pub after recoup with no funding; 70/30 after recoup with up to GBP 100k funding; or 50/50 from day one. Marketing spend NOT recouped; recoup = localisation, QA, key art, porting.",
+   "pitch_stats": "Team of 15; 'ran out of capacity to reply to everyone'; usually booked a few months ahead",
+   "response_reputation": "Reads every email; replies within 2 weeks only if interested, silence = no (contact page).",
+   "red_flags": [],
+   "checked": "2026-10-20",
+   "id": "future-friends-games",
+   "name": "Future Friends Games",
+   "steam_publisher_names": [
+    "Future Friends Games"
+   ],
+   "hq": "UK",
+   "status": "active",
+   "open_submissions": true,
+   "submission_url": "https://futurefriendsgames.com/contact",
+   "submission_method": "email",
+   "asks_for": [
+    "pitch email with needs, links, build, milestones"
+   ],
+   "genres": [
+    "roguelite",
+    "comedy",
+    "casual",
+    "cozy",
+    "co-op",
+    "simulation",
+    "puzzle",
+    "social"
+   ],
+   "deal_stages": [
+    "concept",
+    "prototype",
+    "vertical_slice",
+    "demo",
+    "finished"
+   ],
+   "team_size": [
+    1,
+    10
+   ],
+   "deal_types": [
+    "funding",
+    "marketing",
+    "pr",
+    "influencer",
+    "trailer",
+    "porting",
+    "qa",
+    "localization",
+    "marketing_only",
+    "self_publishing_support_for_hire"
+   ],
+   "price_band_usd": [
+    5,
+    20
+   ],
+   "platforms": [
+    "pc",
+    "switch",
+    "ps",
+    "xbox"
+   ],
+   "comparables": [
+    {
+     "title": "CloverPit",
+     "appid": 3314790,
+     "why": "roguelite gambling/comedy loop, Italian dev (Panik Arcade), 1M+ copies"
+    },
+    {
+     "title": "Slots & Daggers",
+     "appid": 3631290,
+     "why": "short-run roguelite, one of Buffet Panic's comps"
+    },
+    {
+     "title": "Gourdlets Together",
+     "appid": 3661400,
+     "why": "cozy co-op"
+    },
+    {
+     "title": "STICKER/BALL",
+     "appid": 3537690,
+     "why": "small quirky arcade"
+    }
+   ],
+   "catalog_size": 32,
+   "selectivity": "high",
+   "min_traction": {
+    "wishlists": 0,
+    "demo": false
+   },
+   "notes": "Boutique publisher + in-house PR/marketing agency (Vampire Survivors, Thronefall, CloverPit). Especially keen on unannounced games. Also sells a monthly self-publishing support retainer (paid).",
+   "sources": [
+    {
+     "url": "https://futurefriendsgames.com/publishing-support",
+     "date": "2026-10-20",
+     "what": "deal terms, what they look for (rendered from futurefriendsnew.cargo.site)"
+    },
+    {
+     "url": "https://futurefriendsgames.com/contact",
+     "date": "2026-10-20",
+     "what": "pitches@futurefriendsgames.com, 2-week reply rule"
+    },
+    {
+     "url": "https://store.steampowered.com/search/?publisher=Future%20Friends%20Games",
+     "date": "2026-10-20",
+     "what": "Steam catalog 32 items"
+    },
+    {
+     "url": "https://en.wikipedia.org/wiki/CloverPit",
+     "date": "2026-10-20",
+     "what": "CloverPit by Italian Panik Arcade, 1M+ sold"
+    }
+   ],
+   "unverified": [
+    "team_size",
+    "budget_range_usd (GBP 100k converted, approx)"
+   ]
+  },
+  {
+   "languages": [
+    "en"
+   ],
+   "avoid_genres": [
+    "clones",
+    "already released games"
+   ],
+   "budget_range_usd": null,
+   "rev_share_note": "not public [DA VERIFICARE]",
+   "pitch_stats": null,
+   "response_reputation": "Asks at least a week to play and give feedback (publishing page).",
+   "red_flags": [
+    "publishing page text partly outdated (mobile-first)"
+   ],
+   "checked": "2026-10-20",
+   "id": "noodlecake",
+   "name": "Noodlecake",
+   "steam_publisher_names": [
+    "Noodlecake"
+   ],
+   "hq": "Canada",
+   "status": "active",
+   "open_submissions": true,
+   "submission_url": "https://noodlecake.com/publishing/",
+   "submission_method": "email",
+   "asks_for": [
+    "playable build",
+    "short pitch"
+   ],
+   "genres": [
+    "arcade",
+    "physics",
+    "puzzle",
+    "casual",
+    "roguelite",
+    "platformer",
+    "sports"
+   ],
+   "deal_stages": [
+    "prototype",
+    "vertical_slice",
+    "demo",
+    "finished"
+   ],
+   "team_size": [
+    1,
+    10
+   ],
+   "deal_types": [
+    "publishing",
+    "marketing",
+    "porting"
+   ],
+   "price_band_usd": [
+    5,
+    20
+   ],
+   "platforms": [
+    "pc",
+    "mobile",
+    "switch"
+   ],
+   "comparables": [
+    {
+     "title": "Flick Shot Rogues",
+     "appid": 2427450,
+     "why": "physics roguelite"
+    },
+    {
+     "title": "NUTS",
+     "appid": 768450,
+     "why": "small quirky indie"
+    },
+    {
+     "title": "Tiebreakers",
+     "appid": 4182850,
+     "why": "2026 PC signing"
+    }
+   ],
+   "catalog_size": 14,
+   "selectivity": "medium",
+   "min_traction": {
+    "wishlists": 0,
+    "demo": true
+   },
+   "notes": "Mobile roots (Super Stickman Golf), active on Steam: Jun 2026 deal for Tiebreakers. No games already released on the target platform.",
+   "sources": [
+    {
+     "url": "https://noodlecake.com/publishing/",
+     "date": "2026-10-20",
+     "what": "pitch rules, publishing@noodlecake.com"
+    },
+    {
+     "url": "https://noodlecake.com/noodlecake-and-tiecorp-studio-team-up-to-bring-tiebreakers-to-steam/",
+     "date": "2026-10-20",
+     "what": "Jun 2026 Steam deal"
+    },
+    {
+     "url": "https://store.steampowered.com/publisher/NOODLECAKE",
+     "date": "2026-10-20",
+     "what": "Steam catalog"
+    }
+   ],
+   "unverified": [
+    "team_size",
+    "budget_range_usd",
+    "rev_share_note"
+   ]
+  },
+  {
+   "languages": [
+    "en"
+   ],
+   "avoid_genres": [],
+   "budget_range_usd": null,
+   "rev_share_note": "not public [DA VERIFICARE]",
+   "pitch_stats": null,
+   "response_reputation": null,
+   "red_flags": [],
+   "checked": "2026-10-20",
+   "id": "playtonic-friends",
+   "name": "Playtonic Friends",
+   "steam_publisher_names": [
+    "Playtonic Friends"
+   ],
+   "hq": "UK",
+   "status": "active",
+   "open_submissions": true,
+   "submission_url": "mailto:bizdev@playtonicgames.com",
+   "submission_method": "email",
+   "asks_for": [
+    "pitch",
+    "build"
+   ],
+   "genres": [
+    "platformer",
+    "cozy",
+    "sports",
+    "arcade",
+    "racing",
+    "action",
+    "comedy"
+   ],
+   "deal_stages": [
+    "vertical_slice",
+    "demo"
+   ],
+   "team_size": [
+    2,
+    20
+   ],
+   "deal_types": [
+    "funding",
+    "marketing",
+    "porting",
+    "qa"
+   ],
+   "price_band_usd": [
+    10,
+    30
+   ],
+   "platforms": [
+    "pc",
+    "switch",
+    "ps",
+    "xbox"
+   ],
+   "comparables": [
+    {
+     "title": "Dunk Dunk",
+     "appid": 2410590,
+     "why": "arcade party sports, small team"
+    },
+    {
+     "title": "Lil Gator Game",
+     "appid": 1586800,
+     "why": "cozy comedic hit"
+    },
+    {
+     "title": "A Little Golf Journey",
+     "appid": 1232150,
+     "why": "cozy physics golf"
+    }
+   ],
+   "catalog_size": 14,
+   "selectivity": "high",
+   "min_traction": {
+    "wishlists": 0,
+    "demo": true
+   },
+   "notes": "Label of Playtonic (Yooka-Laylee), launched Feb 2021; 'focus on FUN', no fixed genre.",
+   "sources": [
+    {
+     "url": "https://www.playtonicgames.com/news/introducing-playtonic-friends-and-faqs/",
+     "date": "2026-10-20",
+     "what": "FAQ: pitch at bizdev@playtonicgames.com"
+    },
+    {
+     "url": "https://store.steampowered.com/publisher/PlaytonicFriends/about/",
+     "date": "2026-10-20",
+     "what": "Steam catalog"
+    },
+    {
+     "url": "https://www.gamedeveloper.com/business/playtonic-branches-into-game-publishing-with-playtonic-friends-label",
+     "date": "2026-10-20",
+     "what": "launch 2021"
+    }
+   ],
+   "unverified": [
+    "team_size",
+    "deal_stages",
+    "budget_range_usd",
+    "rev_share_note",
+    "response_reputation"
+   ]
+  },
+  {
+   "languages": [
+    "en"
+   ],
+   "avoid_genres": [],
+   "budget_range_usd": null,
+   "rev_share_note": "not public [DA VERIFICARE]",
+   "pitch_stats": null,
+   "response_reputation": null,
+   "red_flags": [
+    "submissions are non-confidential and may be shown on Mintplay (affiliate crowdfunding platform) under a non-exclusive licence"
+   ],
+   "checked": "2026-10-20",
+   "id": "graffiti-games",
+   "name": "Graffiti Games",
+   "steam_publisher_names": [
+    "Graffiti Games"
+   ],
+   "hq": "USA",
+   "status": "active",
+   "open_submissions": true,
+   "submission_url": "https://www.graffitigames.com/contact/pitch-your-game",
+   "submission_method": "form",
+   "asks_for": [
+    "pitch deck",
+    "gameplay link",
+    "stage",
+    "budget and time to finish",
+    "current wishlists",
+    "3 comparable games",
+    "team bios"
+   ],
+   "genres": [
+    "comedy",
+    "action",
+    "platformer",
+    "metroidvania",
+    "arcade",
+    "adventure"
+   ],
+   "deal_stages": [
+    "prototype",
+    "vertical_slice",
+    "demo"
+   ],
+   "team_size": [
+    1,
+    15
+   ],
+   "deal_types": [
+    "funding",
+    "marketing",
+    "qa",
+    "porting",
+    "localization"
+   ],
+   "price_band_usd": [
+    10,
+    25
+   ],
+   "platforms": [
+    "pc",
+    "switch",
+    "ps",
+    "xbox"
+   ],
+   "comparables": [
+    {
+     "title": "Turnip Boy Commits Tax Evasion",
+     "appid": 1205450,
+     "why": "comedy indie hit from tiny team"
+    },
+    {
+     "title": "Bite the Bullet",
+     "appid": 1075550,
+     "why": "comedy, food theme"
+    },
+    {
+     "title": "Joggernauts",
+     "appid": 747620,
+     "why": "party co-op"
+    }
+   ],
+   "catalog_size": 19,
+   "selectivity": "medium",
+   "min_traction": {
+    "wishlists": 0,
+    "demo": false
+   },
+   "notes": "Form explicitly asks current wishlists and 3 comps.",
+   "sources": [
+    {
+     "url": "https://www.graffitigames.com/contact/pitch-your-game",
+     "date": "2026-10-20",
+     "what": "form fields"
+    },
+    {
+     "url": "https://www.graffitigames.com/graffiti-games-developer-funding-submission-terms-and-conditions",
+     "date": "2026-10-20",
+     "what": "non-confidential, Mintplay licence"
+    },
+    {
+     "url": "https://store.steampowered.com/search/?publisher=Graffiti%20Games",
+     "date": "2026-10-20",
+     "what": "Steam catalog 19"
+    }
+   ],
+   "unverified": [
+    "team_size",
+    "budget_range_usd",
+    "rev_share_note",
+    "response_reputation"
+   ]
+  },
+  {
+   "languages": [
+    "en"
+   ],
+   "avoid_genres": [],
+   "budget_range_usd": [
+    0,
+    300000
+   ],
+   "rev_share_note": "not public [DA VERIFICARE]",
+   "pitch_stats": null,
+   "response_reputation": null,
+   "red_flags": [
+    "laid off part of publishing team Aug 2024 (Wikipedia)"
+   ],
+   "checked": "2026-10-20",
+   "id": "armor-games-studios",
+   "name": "Armor Games Studios",
+   "steam_publisher_names": [
+    "Armor Games Studios"
+   ],
+   "hq": "USA",
+   "status": "restructured",
+   "open_submissions": true,
+   "submission_url": "https://armorgamesstudios.com/publishing",
+   "submission_method": "email",
+   "asks_for": [
+    "game summary",
+    "what you need",
+    "gameplay footage/trailer",
+    "art",
+    "playable demo or 8 keys",
+    "optional: team, schedule, budget"
+   ],
+   "genres": [
+    "casual",
+    "cozy",
+    "simulation",
+    "rpg",
+    "strategy",
+    "puzzle",
+    "comedy"
+   ],
+   "deal_stages": [
+    "prototype",
+    "vertical_slice",
+    "demo"
+   ],
+   "team_size": [
+    1,
+    15
+   ],
+   "deal_types": [
+    "funding",
+    "marketing",
+    "porting"
+   ],
+   "price_band_usd": [
+    10,
+    25
+   ],
+   "platforms": [
+    "pc",
+    "mobile",
+    "switch",
+    "ps",
+    "xbox"
+   ],
+   "comparables": [
+    {
+     "title": "Bear and Breakfast",
+     "appid": 1136370,
+     "why": "cozy comedic management"
+    },
+    {
+     "title": "Snacko",
+     "appid": 1125510,
+     "why": "cozy small team"
+    },
+    {
+     "title": "Kamaeru: A Frog Refuge",
+     "appid": 1978150,
+     "why": "cozy casual"
+    }
+   ],
+   "catalog_size": 52,
+   "selectivity": "medium",
+   "min_traction": {
+    "wishlists": 0,
+    "demo": true
+   },
+   "notes": "pitch@armorgames.com. Budgets reportedly capped ~USD 300k (Udonis, third party).",
+   "sources": [
+    {
+     "url": "https://armorgamesstudios.com/publishing",
+     "date": "2026-10-20",
+     "what": "pitch requirements"
+    },
+    {
+     "url": "https://en.wikipedia.org/wiki/Armor_Games",
+     "date": "2026-10-20",
+     "what": "Aug 2024 layoffs"
+    },
+    {
+     "url": "https://www.blog.udonis.co/mobile-marketing/mobile-games/indie-game-publishers",
+     "date": "2026-10-20",
+     "what": "budget cap ~300k (third party)"
+    }
+   ],
+   "unverified": [
+    "budget_range_usd",
+    "team_size",
+    "rev_share_note"
+   ]
+  },
+  {
+   "languages": [
+    "en"
+   ],
+   "avoid_genres": [],
+   "budget_range_usd": null,
+   "rev_share_note": "not public [DA VERIFICARE]",
+   "pitch_stats": null,
+   "response_reputation": null,
+   "red_flags": [
+    "small Steam catalog; mostly mobile/Apple Arcade history"
+   ],
+   "checked": "2026-10-20",
+   "id": "rogue-games",
+   "name": "Rogue Games, Inc.",
+   "steam_publisher_names": [
+    "Rogue Games, Inc."
+   ],
+   "hq": "USA",
+   "status": "active",
+   "open_submissions": true,
+   "submission_url": "https://rogueco.com/contact/developer/",
+   "submission_method": "form",
+   "asks_for": [
+    "about you and the game",
+    "platforms",
+    "engine",
+    "help wanted (funding, marketing, porting, QA...)"
+   ],
+   "genres": [
+    "arcade",
+    "puzzle",
+    "sports",
+    "comedy",
+    "horror",
+    "casual",
+    "party"
+   ],
+   "deal_stages": [
+    "prototype",
+    "vertical_slice",
+    "demo",
+    "finished"
+   ],
+   "team_size": [
+    1,
+    15
+   ],
+   "deal_types": [
+    "funding",
+    "marketing",
+    "distribution",
+    "porting",
+    "qa",
+    "localization"
+   ],
+   "price_band_usd": [
+    5,
+    20
+   ],
+   "platforms": [
+    "pc",
+    "switch",
+    "ps",
+    "xbox",
+    "mobile"
+   ],
+   "comparables": [
+    {
+     "title": "Fisti-Fluffs",
+     "appid": 1407080,
+     "why": "physics comedy party"
+    },
+    {
+     "title": "Wonderputt Forever",
+     "appid": 1766540,
+     "why": "quirky casual"
+    },
+    {
+     "title": "Super Mega Zero",
+     "appid": 1581880,
+     "why": "small arcade"
+    }
+   ],
+   "catalog_size": 8,
+   "selectivity": "medium",
+   "min_traction": {
+    "wishlists": 0,
+    "demo": false
+   },
+   "notes": "LA-based, VC-backed (third-party profile: ~USD 5.85M raised). Runs Rogue Jam with IGN.",
+   "sources": [
+    {
+     "url": "https://rogueco.com/publishing/",
+     "date": "2026-10-20",
+     "what": "publishing + submit button"
+    },
+    {
+     "url": "https://rogueco.com/contact/developer/",
+     "date": "2026-10-20",
+     "what": "developer form"
+    },
+    {
+     "url": "https://store.steampowered.com/search/?publisher=Rogue%20Games%2C%20Inc.",
+     "date": "2026-10-20",
+     "what": "Steam catalog 8"
+    }
+   ],
+   "unverified": [
+    "team_size",
+    "budget_range_usd",
+    "rev_share_note",
+    "response_reputation"
+   ]
+  },
+  {
+   "languages": [
+    "en"
+   ],
+   "avoid_genres": [],
+   "budget_range_usd": [
+    0,
+    650000
+   ],
+   "rev_share_note": "not public [DA VERIFICARE]",
+   "pitch_stats": null,
+   "response_reputation": null,
+   "red_flags": [],
+   "checked": "2026-10-20",
+   "id": "wired-productions",
+   "name": "Wired Productions",
+   "steam_publisher_names": [
+    "Wired Productions"
+   ],
+   "hq": "UK",
+   "status": "active",
+   "open_submissions": true,
+   "submission_url": "https://wiredproductions.com/pitch/",
+   "submission_method": "form",
+   "asks_for": [
+    "pitch via page form"
+   ],
+   "genres": [
+    "horror",
+    "narrative",
+    "simulation",
+    "management",
+    "arcade",
+    "racing"
+   ],
+   "deal_stages": [
+    "concept",
+    "vertical_slice",
+    "demo",
+    "finished",
+    "released"
+   ],
+   "team_size": [
+    2,
+    30
+   ],
+   "deal_types": [
+    "funding",
+    "publishing",
+    "marketing",
+    "porting"
+   ],
+   "price_band_usd": [
+    15,
+    35
+   ],
+   "platforms": [
+    "pc",
+    "switch",
+    "ps",
+    "xbox"
+   ],
+   "comparables": [
+    {
+     "title": "Arcade Paradise",
+     "appid": 1388870,
+     "why": "comedic management sim"
+    },
+    {
+     "title": "Log Away",
+     "appid": 3468400,
+     "why": "small casual"
+    }
+   ],
+   "catalog_size": 35,
+   "selectivity": "medium",
+   "min_traction": {
+    "wishlists": 0,
+    "demo": false
+   },
+   "notes": "Weak genre fit: catalog leans dark/narrative (Martha Is Dead by Italian LKA). Budget cap ~GBP 500k per Udonis (third party).",
+   "sources": [
+    {
+     "url": "https://wiredproductions.com/pitch/",
+     "date": "2026-10-20",
+     "what": "pitch page"
+    },
+    {
+     "url": "https://store.steampowered.com/search/?publisher=Wired%20Productions",
+     "date": "2026-10-20",
+     "what": "Steam catalog 35"
+    },
+    {
+     "url": "https://www.blog.udonis.co/mobile-marketing/mobile-games/indie-game-publishers",
+     "date": "2026-10-20",
+     "what": "budget cap (third party)"
+    }
+   ],
+   "unverified": [
+    "team_size",
+    "budget_range_usd",
+    "rev_share_note",
+    "asks_for"
+   ]
+  },
+  {
+   "languages": [
+    "en",
+    "es"
+   ],
+   "avoid_genres": [],
+   "budget_range_usd": null,
+   "rev_share_note": "investor + publisher; terms not public [DA VERIFICARE]",
+   "pitch_stats": null,
+   "response_reputation": null,
+   "red_flags": [
+    "VC: expects a studio/IP with a growth plan, not a hobby project"
+   ],
+   "checked": "2026-10-20",
+   "id": "joystick-ventures",
+   "name": "Joystick Ventures",
+   "steam_publisher_names": [
+    "Joystick Ventures"
+   ],
+   "hq": "USA",
+   "status": "active",
+   "open_submissions": true,
+   "submission_url": null,
+   "submission_method": "form",
+   "asks_for": [
+    "playable build or vertical slice",
+    "budget",
+    "timeline",
+    "team track record"
+   ],
+   "genres": [
+    "roguelite",
+    "tactics",
+    "puzzle",
+    "comedy",
+    "platformer",
+    "adventure"
+   ],
+   "deal_stages": [
+    "vertical_slice",
+    "demo"
+   ],
+   "team_size": [
+    2,
+    20
+   ],
+   "deal_types": [
+    "investment",
+    "funding",
+    "publishing",
+    "marketing"
+   ],
+   "price_band_usd": [
+    10,
+    25
+   ],
+   "platforms": [
+    "pc",
+    "switch",
+    "ps",
+    "xbox"
+   ],
+   "comparables": [
+    {
+     "title": "StarVaders",
+     "appid": 2097570,
+     "why": "roguelite deckbuilder"
+    },
+    {
+     "title": "Hell of an Office",
+     "appid": 1640890,
+     "why": "comedic arcade"
+    },
+    {
+     "title": "Toy Tactics",
+     "appid": 1772530,
+     "why": "physics-based comedic tactics"
+    }
+   ],
+   "catalog_size": 15,
+   "selectivity": "high",
+   "min_traction": {
+    "wishlists": 0,
+    "demo": true
+   },
+   "notes": "Fund started 2020 by Xsolla + Nazca; now invests and publishes.",
+   "sources": [
+    {
+     "url": "https://mobidictum.com/joystick-ventures-will-fund-independent-developers/",
+     "date": "2026-10-20",
+     "what": "fund background"
+    },
+    {
+     "url": "https://superscout.co/investor/joystick-ventures",
+     "date": "2026-10-20",
+     "what": "third-party pitch guide"
+    },
+    {
+     "url": "https://store.steampowered.com/search/?publisher=Joystick%20Ventures",
+     "date": "2026-10-20",
+     "what": "Steam catalog 15"
+    }
+   ],
+   "unverified": [
+    "submission_url",
+    "team_size",
+    "budget_range_usd",
+    "rev_share_note"
+   ]
+  },
+  {
+   "languages": [
+    "en"
+   ],
+   "avoid_genres": [],
+   "budget_range_usd": null,
+   "rev_share_note": "not public [DA VERIFICARE]",
+   "pitch_stats": null,
+   "response_reputation": null,
+   "red_flags": [],
+   "checked": "2026-10-20",
+   "id": "panic",
+   "name": "Panic",
+   "steam_publisher_names": [
+    "Panic"
+   ],
+   "hq": "USA",
+   "status": "active",
+   "open_submissions": null,
+   "submission_url": null,
+   "submission_method": "unknown",
+   "asks_for": [],
+   "genres": [
+    "comedy",
+    "narrative",
+    "adventure",
+    "puzzle",
+    "sandbox"
+   ],
+   "deal_stages": [
+    "vertical_slice",
+    "demo"
+   ],
+   "team_size": [
+    1,
+    15
+   ],
+   "deal_types": [
+    "funding",
+    "publishing",
+    "marketing"
+   ],
+   "price_band_usd": [
+    15,
+    30
+   ],
+   "platforms": [
+    "pc",
+    "switch",
+    "ps",
+    "xbox"
+   ],
+   "comparables": [
+    {
+     "title": "Untitled Goose Game",
+     "appid": 837470,
+     "why": "physical slapstick comedy, tiny team"
+    },
+    {
+     "title": "Thank Goodness You're Here!",
+     "appid": 2366980,
+     "why": "absurd comedy"
+    }
+   ],
+   "catalog_size": 11,
+   "selectivity": "very_high",
+   "min_traction": {
+    "wishlists": 0,
+    "demo": true
+   },
+   "notes": "Dream tier: 1-2 PC releases a year, curated; no public pitch page found.",
+   "sources": [
+    {
+     "url": "https://store.steampowered.com/search/?publisher=Panic",
+     "date": "2026-10-20",
+     "what": "Steam catalog 11"
+    }
+   ],
+   "unverified": [
+    "open_submissions",
+    "submission_url",
+    "team_size",
+    "deal_stages"
+   ]
+  },
+  {
+   "languages": [
+    "en"
+   ],
+   "avoid_genres": [
+    "nft",
+    "crypto"
+   ],
+   "budget_range_usd": null,
+   "rev_share_note": "not public [DA VERIFICARE]",
+   "pitch_stats": null,
+   "response_reputation": null,
+   "red_flags": [],
+   "checked": "2026-10-20",
+   "id": "bigmode",
+   "name": "Bigmode",
+   "steam_publisher_names": [
+    "Bigmode"
+   ],
+   "hq": "USA",
+   "status": "active",
+   "open_submissions": true,
+   "submission_url": "https://www.bigmode.com/",
+   "submission_method": "form",
+   "asks_for": [
+    "project description",
+    "team",
+    "what you need from a publisher"
+   ],
+   "genres": [
+    "action",
+    "platformer",
+    "metroidvania",
+    "shooter",
+    "comedy"
+   ],
+   "deal_stages": [
+    "concept",
+    "prototype",
+    "vertical_slice",
+    "demo",
+    "finished"
+   ],
+   "team_size": [
+    1,
+    10
+   ],
+   "deal_types": [
+    "funding",
+    "pr",
+    "qa",
+    "porting",
+    "localization",
+    "merch"
+   ],
+   "price_band_usd": [
+    10,
+    25
+   ],
+   "platforms": [
+    "pc",
+    "switch",
+    "ps",
+    "xbox"
+   ],
+   "comparables": [
+    {
+     "title": "ANIMAL WELL",
+     "appid": 813230,
+     "why": "solo-dev hit (genre unrelated)"
+    }
+   ],
+   "catalog_size": 2,
+   "selectivity": "very_high",
+   "min_traction": {
+    "wishlists": 0,
+    "demo": false
+   },
+   "notes": "Dunkey's label (2022). Tiny catalog, extremely selective. Dream tier.",
+   "sources": [
+    {
+     "url": "https://www.gamedeveloper.com/business/youtuber-dunkey-launches-indie-game-publisher-bigmode",
+     "date": "2026-10-20",
+     "what": "launch, application form"
+    },
+    {
+     "url": "https://store.steampowered.com/search/?publisher=Bigmode",
+     "date": "2026-10-20",
+     "what": "Steam catalog 2"
+    }
+   ],
+   "unverified": [
+    "submission_url (form on site per 2022 coverage)",
+    "team_size",
+    "deal_stages"
+   ]
+  },
+  {
+   "languages": [
+    "en",
+    "zh"
+   ],
+   "avoid_genres": [],
+   "budget_range_usd": null,
+   "rev_share_note": "not public [DA VERIFICARE]",
+   "pitch_stats": null,
+   "response_reputation": "2-4 weeks (their site)",
+   "red_flags": [],
+   "checked": "2026-10-20",
+   "id": "spiral-up-games",
+   "name": "Spiral Up Games",
+   "steam_publisher_names": [
+    "Spiral Up Games"
+   ],
+   "hq": "Singapore",
+   "status": "active",
+   "open_submissions": true,
+   "submission_url": "https://www.spiralupgames.com/",
+   "submission_method": "form",
+   "asks_for": [
+    "demo",
+    "pitch deck"
+   ],
+   "genres": [
+    "rpg",
+    "roguelike",
+    "action",
+    "simulation",
+    "strategy",
+    "tactics"
+   ],
+   "deal_stages": [
+    "demo"
+   ],
+   "team_size": [
+    1,
+    20
+   ],
+   "deal_types": [
+    "funding",
+    "marketing",
+    "china_marketing",
+    "qa",
+    "localization",
+    "community"
+   ],
+   "price_band_usd": [
+    10,
+    25
+   ],
+   "platforms": [
+    "pc"
+   ],
+   "comparables": [
+    {
+     "title": "Roulette Hero",
+     "appid": 3371510,
+     "why": "gambling roguelite"
+    },
+    {
+     "title": "Bang Bang Barrage",
+     "appid": 3003460,
+     "why": "small arcade"
+    }
+   ],
+   "catalog_size": 14,
+   "selectivity": "medium",
+   "min_traction": {
+    "wishlists": 0,
+    "demo": true
+   },
+   "notes": "Strength: Chinese market reach (relevant: Buffet Panic ships Chinese). Funds teams that already have demo + deck.",
+   "sources": [
+    {
+     "url": "https://www.spiralupgames.com/",
+     "date": "2026-10-20",
+     "what": "submit form, funding needs demo+deck, 2-4 weeks"
+    },
+    {
+     "url": "https://globalgamespitch.com/publishers-investors/spiral-up-games/",
+     "date": "2026-10-20",
+     "what": "genre interests"
+    },
+    {
+     "url": "https://store.steampowered.com/search/?publisher=Spiral%20Up%20Games",
+     "date": "2026-10-20",
+     "what": "Steam catalog 14"
+    }
+   ],
+   "unverified": [
+    "team_size",
+    "budget_range_usd",
+    "rev_share_note"
+   ]
+  },
+  {
+   "languages": [
+    "en",
+    "pl"
+   ],
+   "avoid_genres": [],
+   "budget_range_usd": null,
+   "rev_share_note": "usually takes an ownership stake in the studio (Game Developer / GameDiscoverCo)",
+   "pitch_stats": null,
+   "response_reputation": null,
+   "red_flags": [
+    "equity stake in the studio usually required",
+    "central ideas team dictates which games get made",
+    "accusations of store-page spam and fast-follows (e.g. after Manor Lords)"
+   ],
+   "checked": "2026-10-20",
+   "id": "playway",
+   "name": "PlayWay S.A.",
+   "steam_publisher_names": [
+    "PlayWay S.A."
+   ],
+   "hq": "Poland",
+   "status": "active",
+   "open_submissions": null,
+   "submission_url": null,
+   "submission_method": "unknown",
+   "asks_for": [],
+   "genres": [
+    "simulation",
+    "job simulator",
+    "cooking",
+    "management"
+   ],
+   "deal_stages": [
+    "concept",
+    "prototype"
+   ],
+   "team_size": [
+    1,
+    15
+   ],
+   "deal_types": [
+    "equity_stake",
+    "funding",
+    "publishing"
+   ],
+   "price_band_usd": [
+    10,
+    25
+   ],
+   "platforms": [
+    "pc",
+    "switch",
+    "ps",
+    "xbox"
+   ],
+   "comparables": [],
+   "catalog_size": null,
+   "selectivity": "medium",
+   "min_traction": {
+    "wishlists": 0,
+    "demo": false
+   },
+   "notes": "WARNING entry: not recommended for an owner who wants to keep control and IP.",
+   "sources": [
+    {
+     "url": "https://www.gamedeveloper.com/business/what-playway-should-and-shouldn-t-teach-us-about-game-publishing-2",
+     "date": "2026-10-20",
+     "what": "ownership stake, central ideas team"
+    },
+    {
+     "url": "https://howtomarketagame.com/2023/12/22/what-i-respect-about-playway/",
+     "date": "2026-10-20",
+     "what": "model: many pages, develop what gets wishlists"
+    }
+   ],
+   "unverified": [
+    "submission_url",
+    "team_size",
+    "catalog_size"
+   ]
+  },
+  {
+   "languages": [
+    "it",
+    "en"
+   ],
+   "avoid_genres": [],
+   "budget_range_usd": null,
+   "rev_share_note": "not public [DA VERIFICARE]",
+   "pitch_stats": null,
+   "response_reputation": null,
+   "red_flags": [
+    "PitchBook lists it as acquired/merged (unconfirmed)"
+   ],
+   "checked": "2026-10-20",
+   "id": "leonardo-interactive",
+   "name": "Leonardo Interactive",
+   "steam_publisher_names": [
+    "Leonardo Interactive"
+   ],
+   "hq": "Italy",
+   "status": "uncertain",
+   "open_submissions": null,
+   "submission_url": null,
+   "submission_method": "unknown",
+   "asks_for": [],
+   "genres": [
+    "adventure",
+    "horror",
+    "strategy",
+    "simulation"
+   ],
+   "deal_stages": [
+    "vertical_slice",
+    "demo"
+   ],
+   "team_size": [
+    2,
+    30
+   ],
+   "deal_types": [
+    "publishing",
+    "investment"
+   ],
+   "price_band_usd": [
+    15,
+    40
+   ],
+   "platforms": [
+    "pc",
+    "ps",
+    "xbox",
+    "switch"
+   ],
+   "comparables": [
+    {
+     "title": "Hell Architect",
+     "appid": null,
+     "why": "comedic management (closest in catalog)"
+    }
+   ],
+   "catalog_size": null,
+   "selectivity": "medium",
+   "min_traction": {
+    "wishlists": 0,
+    "demo": true
+   },
+   "notes": "Rome-based publisher (Daymare: 1994 Sandcastle, Simon the Sorcerer Origins). Weak genre fit; useful only as an Italian-language contact.",
+   "sources": [
+    {
+     "url": "https://store.steampowered.com/publisher/LeonardoInteractive/",
+     "date": "2026-10-20",
+     "what": "Steam publisher page"
+    },
+    {
+     "url": "https://www.crunchbase.com/organization/leonardo-interactive",
+     "date": "2026-10-20",
+     "what": "company profile"
+    }
+   ],
+   "unverified": [
+    "status",
+    "open_submissions",
+    "submission_url",
+    "team_size",
+    "catalog_size"
+   ]
+  },
+  {
+   "languages": [
+    "it"
+   ],
+   "avoid_genres": [],
+   "budget_range_usd": null,
+   "rev_share_note": "monthly coaching service, not a revenue-share deal [DA VERIFICARE prices]",
+   "pitch_stats": null,
+   "response_reputation": null,
+   "red_flags": [
+    "paid coaching, not funding"
+   ],
+   "checked": "2026-10-20",
+   "id": "aiv-sidekick",
+   "name": "AIV (Accademia Italiana Videogiochi) - Sidekick",
+   "steam_publisher_names": [
+    "Accademia Italiana Videogiochi"
+   ],
+   "hq": "Italy",
+   "status": "active",
+   "open_submissions": true,
+   "submission_url": "https://www.aiv01.it/sidekick/",
+   "submission_method": "form",
+   "asks_for": [
+    "prototype"
+   ],
+   "genres": [
+    "any"
+   ],
+   "deal_stages": [
+    "prototype",
+    "vertical_slice",
+    "demo"
+   ],
+   "team_size": [
+    1,
+    10
+   ],
+   "deal_types": [
+    "coaching",
+    "publisher_introductions",
+    "steam_publishing_help",
+    "events"
+   ],
+   "price_band_usd": null,
+   "platforms": [
+    "pc"
+   ],
+   "comparables": [],
+   "catalog_size": null,
+   "selectivity": "low",
+   "min_traction": {
+    "wishlists": 0,
+    "demo": false
+   },
+   "notes": "Italian school/publisher; Sidekick = monthly coaching for indie teams with a prototype who want to pitch investors/publishers or self-publish on Steam, with access to fairs AIV attends.",
+   "sources": [
+    {
+     "url": "https://www.aiv01.it/sidekick/",
+     "date": "2026-10-20",
+     "what": "Sidekick coaching"
+    },
+    {
+     "url": "https://store.steampowered.com/publisher/AIV",
+     "date": "2026-10-20",
+     "what": "Steam publisher page"
+    }
+   ],
+   "unverified": [
+    "cost",
+    "team_size"
+   ]
+  }
+ ]
+}

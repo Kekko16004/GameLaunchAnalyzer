@@ -17,6 +17,9 @@ tracking: everything is inline, so the file can be attached to an email as is). 
   launch/_raw/econ.json      economic plan (calc_econ.py);  launch/TODO.md and the reports in launch/
   launch/_raw/window.json    launch window: competitor crowding per week (launch_window.py), shown as a table and a chart
   launch/steamdb.csv         numbers read by hand on SteamDB (steamdb_assist.py)
+  launch/_raw/publisher_scout.json   publisher shortlist by tier + with/without comparison (publisher_scout.py); status.json -> publisher.question
+  launch/_raw/social_plan.json, social_learn.json, reddit_trends.json   social plan, what works for this game, Reddit trends (social_content.py, reddit_trends.py)
+  honest odds                one card per decision with its basis and cross-check (honest_odds.py), in Riepilogo
   status.json -> roadmap     key milestones (closed test, Steam Direct, Coming Soon, free beta, demo, Next Fest, launch, 1.0): see calendar_view.py
   Calendario tab             every dated item of calendar.md, TODO.md, Steam and online events, waves (calendar_view.py); every URL is a link (weblinks.py)
   launch/fg/waves/wNN-metrics.md, wNN-delta.md   per-wave reports of the focus group (fg_waves.py)
@@ -40,7 +43,8 @@ Sharing: the page contains strategy. --audience picks what goes in (default priv
   publisher  verdict, numbers, charts, gates, calendar dates, store pages, positioning, platform, focus group;
              no steps, economics, TODO, contingencies, competitors, creators, decision profile or full-game analysis
 Add/remove documents with --include / --exclude (file stems such as 03-pricing) and sections with
---hide economics,todo,calendar,steps,storekit,contingencies,watchlist,intentions,creators,fullgame,charts,steamdb,fgwaves,window,critiques,qa,roadmap
+--hide economics,todo,calendar,steps,storekit,contingencies,watchlist,intentions,creators,fullgame,charts,steamdb,fgwaves,window,critiques,qa,roadmap,
+publisher,social,odds
 (calendar also hides the Calendario tab).
 Publishing the page anywhere is YOUR decision: this tool only writes the local file.
 
@@ -79,12 +83,13 @@ DOCS = {  # stem -> title
     "REPORT": "Report completo", "00-intenzioni": "Intenzioni e decisioni", "04b-store-copy": "Testi dello store e trailer", "05d-contingenze": "Piani di contingenza (se… allora)", "00-brief": "Brief del progetto", "01b-positioning": "Posizionamento", "01-dev": "Audit del prodotto",
     "01c-full-game": "Gioco completo: analisi rapida", "02-platform": "Piattaforme, demo e gate", "03-pricing": "Prezzo ed economia", "05-focusgroup": "Focus group", "05c-premortem": "Pre-mortem",
     "04-clips": "Hook e clip", "03-pricing-calc": "Calcolo economico", "05a-critiche-simulate": "Critiche simulate", "05b-critiche-reali": "Critiche reali (con fonti)", "window": "Finestra di lancio: concorrenti",
-    "06-creators": "Creator", "07-community": "Community e test reale", "08-brand-legal": "Brand, legale e fiscale"}
+    "06-creators": "Creator", "07-community": "Community e test reale", "08-brand-legal": "Brand, legale e fiscale",
+    "publisher-scout": "Publisher: lista per fasce e confronto con/senza", "social-plan": "Piano social (post e ganci)", "clips": "Clip da fare (storyboard)", "case-studies": "Casi reali: cosa hanno fatto giochi come il nostro"}
 AUDIENCES = {
     "private": list(DOCS),
-    "partner": ["REPORT", "00-intenzioni", "01b-positioning", "01c-full-game", "02-platform", "03-pricing", "03-pricing-calc", "04-clips", "05-focusgroup", "05a-critiche-simulate", "05b-critiche-reali", "05c-premortem", "05d-contingenze", "window"],
+    "partner": ["REPORT", "00-intenzioni", "01b-positioning", "01c-full-game", "02-platform", "03-pricing", "03-pricing-calc", "04-clips", "05-focusgroup", "05a-critiche-simulate", "05b-critiche-reali", "05c-premortem", "05d-contingenze", "window", "publisher-scout", "social-plan", "clips", "case-studies"],
     "publisher": ["01b-positioning", "02-platform", "05-focusgroup"]}
-HIDE_BY_AUDIENCE = {"private": set(), "partner": set(), "publisher": {"economics", "todo", "contingencies", "steps", "watchlist", "intentions", "creators", "fullgame", "steamdb", "fgwaves", "critiques", "qa"}}
+HIDE_BY_AUDIENCE = {"private": set(), "partner": set(), "publisher": {"economics", "todo", "contingencies", "steps", "watchlist", "intentions", "creators", "fullgame", "steamdb", "fgwaves", "critiques", "qa", "publisher", "social", "odds"}}
 
 CSS = """
 :root{color-scheme:light;--bg:#f9f9f7;--surface:#fcfcfb;--ink:#0b0b0b;--ink2:#52514e;--muted:#898781;--grid:#e1e0d9;--axis:#c3c2b7;--ring:rgba(11,11,11,.10);
@@ -932,7 +937,8 @@ TAB_INTRO = {"riepilogo": "Il punto della situazione: verdetto, cosa tocca adess
              "docs": "I documenti completi, le domande e risposte e il glossario."}
 DOC_TAB = {"01-dev": "gioco", "05-focusgroup": "gioco", "05a-critiche-simulate": "gioco", "05b-critiche-reali": "gioco", "01c-full-game": "gioco",
            "01b-positioning": "marketing", "04-clips": "marketing", "04b-store-copy": "marketing", "06-creators": "marketing", "07-community": "marketing",
-           "02-platform": "piano", "03-pricing": "piano", "03-pricing-calc": "piano", "05c-premortem": "piano", "05d-contingenze": "piano", "window": "piano"}
+           "02-platform": "piano", "03-pricing": "piano", "03-pricing-calc": "piano", "05c-premortem": "piano", "05d-contingenze": "piano", "window": "piano",
+           "publisher-scout": "piano", "social-plan": "marketing", "clips": "marketing", "case-studies": "piano"}
 GROUP_TAB = {"product": "gioco", "fg": "gioco", "reviews": "gioco", "fullgame": "gioco", "creators": "marketing", "market": "piano", "window": "piano", "econ": "piano", "plan": "piano"}
 
 
@@ -979,6 +985,137 @@ def render_group(g: dict) -> str:
     full = g["key"] in ("product", "reviews")
     return (f'<h2>{esc(g["title"])}</h2><p class="sub">{esc(g["intro"])}</p><div class="cgrid">'
             + "".join(f'<div class="card"{wide if (g.get("wide") or full) else ""}>{c}</div>' for c in g["charts"]) + "</div>")
+
+
+TIER_LABEL = {"realistic_now": ("pass", "Realistico adesso"), "realistic_after": ("warn", "Realistico dopo un passo"), "stretch": ("pending", "Difficile"), "dream": ("na", "Sogno")}
+SOCIAL_NAMES = {"tiktok": "TikTok", "youtube_shorts": "Shorts", "instagram": "Reels", "reddit": "Reddit", "x": "X"}
+
+
+def _raw(root: str, name: str):
+    p = os.path.join(root, "_raw", name)
+    return load_json(p) if os.path.exists(p) else None
+
+
+def publisher_section(root: str, st: dict) -> str | None:
+    """Publisher: the owner's answer (yes / no / don't know), the ranked list by tier and the with/without comparison (publisher_scout.py)."""
+    d = _raw(root, "publisher_scout.json")
+    if not d:
+        return None
+    q = (st.get("publisher") or {}).get("question") or d.get("publisher_question")
+    ans = {"yes": "sì", "no": "no", "dont_know": "non so"}.get(q, q or "non ancora chiesta")
+    c = d.get("counts") or {}
+    rows = []
+    for r in d["rows"][:12]:
+        unlock = f' <span class="note">{esc(r["unlock"])}</span>' if r.get("unlock") and r["tier"] != "realistic_now" else ""
+        rows.append(f'<tr><td>{esc(r["name"])}</td><td>{state(*TIER_LABEL.get(r["tier"], ("info", r["tier"])))}{unlock}</td>'
+                    f'<td class="n">{r["fit"]:.0f}</td><td class="n">{esc(r["band"])}</td><td>{esc(r["next_step"])}</td></tr>')
+    cmp_ = d.get("compare")
+    ctab = ""
+    if cmp_:
+        heads = "".join(f'<th class="n">{esc(p_["label"])}</th><th class="n">serve vendere ×</th>' for p_ in cmp_["profiles"])
+        body = []
+        for s_ in cmp_["scenarios"]:
+            cells = "".join(f'<td class="n">{fmt_n(x["income_low"])} … {fmt_n(x["income_high"])}</td><td class="n">'
+                            + ("basta l'anticipo" if x["breakeven_uplift"] == 0 else esc(x["breakeven_uplift"])) + "</td>" for x in s_["deals"])
+            body.append(f'<tr><td>{esc(s_["name"])}</td><td class="n">{fmt_n(s_["copies"])}</td><td class="n">{fmt_n(s_["alone"])}</td>{cells}</tr>')
+        ctab = (f'<h3>Con o senza publisher: cosa ti resta ($)</h3><div class="wrap"><table><thead><tr><th>Scenario</th><th class="n">Copie</th><th class="n">Da soli</th>{heads}</tr></thead><tbody>{"".join(body)}</tbody></table></div>'
+                '<p class="note">"Serve vendere ×": quante volte più copie deve farti vendere il publisher perché ti resti quanto da solo. Rev share e anticipi cambiano da contratto a contratto [DA VERIFICARE].</p>')
+    pt = d.get("pitch_top") or {}
+    head = (f'<h2>Publisher: sì, no o non so?</h2><div class="card"><p>Risposta del proprietario: <strong>{esc(ans)}</strong>. Realistici adesso: <strong>{c.get("realistic_now", 0)}</strong> · '
+            f'dopo un passo: <strong>{c.get("realistic_after", 0)}</strong> · difficili: {c.get("stretch", 0)} · sogni: {c.get("dream", 0)}.</p>')
+    if pt.get("n"):
+        head += (f"<p>Proponendo il gioco ai primi {pt['n']} realistici, la probabilità di almeno un'offerta è al massimo circa <strong>{round(100 * pt.get('p_any', 0))} %</strong> [STIMA]: "
+                 "il piano resta quello da soli, il publisher è un'opzione in più.</p>")
+    head += "".join(f'<p class="sub">Sblocca di più: <strong>{esc(u["unlock"])}</strong> → {esc(", ".join(u["publishers"][:6]))}</p>' for u in (d.get("unlocks") or [])[:2])
+    return (head + f'<div class="wrap"><table><thead><tr><th>Publisher</th><th>Fascia</th><th class="n">Aderenza</th><th class="n">Per invio [STIMA]</th><th>Prossimo passo</th></tr></thead><tbody>{"".join(rows)}</tbody></table></div>{ctab}'
+            + f'<p class="note">Da <code>publisher_scout.py</code> del {esc(d.get("generated_on", ""))}; dettagli e fonti in publisher-scout.md.</p></div>')
+
+
+def social_section(root: str, today: dt.date) -> str | None:
+    """Social: the next 7 days of planned posts, what works for THIS game (learn) and the Reddit trends (reddit_trends.py)."""
+    pl, ln, rt = _raw(root, "social_plan.json"), _raw(root, "social_learn.json"), _raw(root, "reddit_trends.json")
+    if not (pl or ln or rt):
+        return None
+    N = SOCIAL_NAMES
+    H = ['<h2>Social: piano e cosa funziona</h2><div class="card">']
+    if pl and _raw(root, "social_kit.json"):
+        pl = None                      # the weekly ready-to-post kit (clips_kit_section) replaces the long plan table
+    if pl:
+        nxt = [x for x in pl["posts"] if today <= dt.date.fromisoformat(x["date"]) <= today + dt.timedelta(days=7)]
+        if not nxt:
+            nxt = [x for x in pl["posts"] if dt.date.fromisoformat(x["date"]) >= today][:8]
+        if nxt:
+            H.append("<h3>I prossimi post</h3><div class=\"wrap\"><table><thead><tr><th>Data</th><th>Dove</th><th>Momento</th><th>Testo d'apertura (A / B)</th><th>Fine</th></tr></thead><tbody>"
+                     + "".join(f'<tr><td class="nw">{fmt_date(x["date"])}</td><td>{esc(N.get(x["platform"], x["platform"]))}{(" " + esc(x["subreddit"])) if x.get("subreddit") else ""}</td>'
+                               f'<td>{esc(x["moment"])} {esc(x["moment_label"][:50])}</td><td>{esc(x["hook_a"])} / {esc(x["hook_b"])}</td><td>{esc(x["cta"])}</td></tr>' for x in nxt)
+                     + "</tbody></table></div>")
+    if ln and ln.get("platforms"):
+        H.append('<h3>Cosa funziona per noi (numeri veri)</h3><div class="wrap"><table><thead><tr><th>Dove</th><th class="n">Post</th><th class="n">Visual. mediane</th><th class="n">× il tipico</th><th class="n">Wishlist / 1.000</th></tr></thead><tbody>'
+                 + "".join(f'<tr><td>{esc(N.get(p_["platform"], p_["platform"]))}</td><td class="n">{p_["n"]}</td><td class="n">{fmt_n(p_["median_views"])}</td><td class="n">{esc(p_["vs_typical"])}</td>'
+                           f'<td class="n">{esc(p_["wishlists_per_1k"] if p_["wishlists_per_1k"] is not None else "—")}</td></tr>' for p_ in ln["platforms"])
+                 + "</tbody></table></div>" + (f'<p>Da rifare: {esc(", ".join(w["key"] for w in ln["winners"]))}</p>' if ln.get("winners") else "")
+                 + "".join(f'<p class="note">{esc(w)}</p>' for w in ln.get("warnings", [])))
+    elif pl:
+        H.append('<p class="sub">Nessun post registrato ancora: dopo ogni post <code>social_content.py track add</code> (visualizzazioni, like, wishlist del giorno dopo).</p>')
+    if rt and rt.get("subs"):
+        sug = [x for an in rt["subs"].values() for x in an.get("suggestions", [])][:6]
+        H.append(f'<h3>Reddit questa settimana ({esc(rt.get("generated_on", ""))})</h3><ul>' + "".join(f"<li>{inline(x)}</li>" for x in sug) + "</ul>")
+    elif rt and rt.get("blocked"):
+        H.append(f'<p class="note">Reddit: feed non leggibili il {esc(rt.get("generated_on", ""))} ({esc(", ".join(b["sub"] + " " + b["status"] for b in rt["blocked"][:4]))}): passi manuali in ricerche-manuali.md.</p>')
+    H.append("</div>")
+    return "".join(H)
+
+
+def odds_section(root: str) -> str | None:
+    """Honest odds: one card per decision with basis, label and the cross-check between sources (honest_odds.py)."""
+    import honest_odds as ho
+    cs = ho.cards(root, dt.date.today())
+    if not cs:
+        return None
+    items = []
+    for c in cs:
+        cc = c.get("cross_check") or {}
+        mark = state("pass", "Concordano") if cc.get("agree") else state("warn", "Non concordano") if cc.get("agree") is False else ""
+        items.append(f'<div class="card tile"><div class="l">{esc(c["decision"])}</div><div class="v" style="font-size:1.3rem">{esc(c["odds"])}</div>'
+                     f'<div class="d">{esc(c["label"])} · {esc(c["basis"])}</div>' + (f'<div class="d">{esc("; ".join(c["also"]))}</div>' if c.get("also") else "")
+                     + f'<div class="d"><strong>Cosa la sposta:</strong> {esc(c["moves"])}</div>' + (f'<div class="d">{mark} {esc(cc.get("note", ""))}</div>' if cc.get("note") else "") + "</div>")
+    return '<h2>Probabilità oneste, decisione per decisione</h2><div class="grid g2">' + "".join(items) + "</div>"
+
+
+CLIP_STATE = {"todo": ("pending", "Da registrare"), "recorded": ("warn", "Registrata"), "posted": ("pass", "Pubblicata"), "retired": ("na", "Ritirata")}
+
+
+def clips_kit_section(root: str, today: dt.date) -> str | None:
+    """'Clip da fare' (launch/clips.json, social_kit.py) with status todo / recorded / posted, and this week's ready-to-post kit."""
+    p = os.path.join(root, "clips.json")
+    reg = load_json(p) if os.path.exists(p) else None
+    kits = _raw(root, "social_kit.json")
+    if not (reg or kits):
+        return None
+    H = []
+    if kits and kits.get("kits"):
+        cur = next((k for k in kits["kits"] if dt.date.fromisoformat(k["week"]) <= today < dt.date.fromisoformat(k["week"]) + dt.timedelta(days=7)), None) \
+            or next((k for k in kits["kits"] if dt.date.fromisoformat(k["week"]) > today), None)
+        if cur:
+            rows = []
+            for x in cur["posts"]:
+                if x["kind"] == "video":
+                    when = ", ".join(f'{SOCIAL_NAMES.get(s_["platform"], s_["platform"])} {fmt_date(s_["date"])} {esc(s_["time"])}' for s_ in x["slots"])
+                    rows.append(f'<tr><td>{esc(x["clip"])} {esc(x["title"])}</td><td>{esc(x["hooks"][x["use_hook"]])}</td><td>{when}</td><td>{state(*CLIP_STATE.get(x.get("status"), ("info", x.get("status") or "")))}</td></tr>')
+                else:
+                    rows.append(f'<tr><td>Reddit {esc(x["subreddit"])}</td><td>{esc(x["title"])}</td><td>{fmt_date(x["date"])} {esc(x["time"])}</td><td></td></tr>')
+            H.append(f'<h2>Kit social della settimana</h2><div class="card"><p class="sub">Settimana del {fmt_date(cur["week"])}' + (" · prima della pagina Steam: profilo e prova dei testi d'apertura" if cur.get("pre_page") else " · link Steam con UTM") + "</p>"
+                     f'<div class="wrap"><table><thead><tr><th>Post</th><th>Testo nei primi 2 s</th><th>Dove e quando</th><th>Clip</th></tr></thead><tbody>{"".join(rows)}</tbody></table></div>'
+                     f'<p class="note">Tutto il kit (didascalie, hashtag, regole Reddit, riga per registrare i numeri) in social-kit/kit-{esc(cur["week"])}.md. ~2-3 h a settimana.</p></div>')
+    if reg and reg.get("clips"):
+        cl = reg["clips"]
+        cnt = {k: sum(1 for c in cl if c.get("status") == k) for k in CLIP_STATE}
+        rows = "".join(f'<tr><td>{esc(c["id"])}</td><td>{esc(c["title"])}</td><td>{state(*CLIP_STATE.get(c.get("status"), ("info", c.get("status") or "")))}</td>'
+                       f'<td class="n">{esc(c.get("length_s"))} s</td><td>{esc((c.get("record") or {}).get("scene", ""))}</td><td>{esc(c.get("file") or "—")}</td></tr>' for c in cl)
+        H.append(f'<h2>Clip da fare</h2><div class="card"><p>{len(cl)} clip con storyboard completo · da registrare <strong>{cnt["todo"]}</strong> · registrate {cnt["recorded"]} · pubblicate {cnt["posted"]}.</p>'
+                 f'<div class="wrap"><table><thead><tr><th>Clip</th><th>Cosa</th><th>Stato</th><th class="n">Durata</th><th>Dove si gira</th><th>File</th></tr></thead><tbody>{rows}</tbody></table></div>'
+                 '<p class="note">Storyboard secondo per secondo, inquadrature, testi, audio e come registrarla in clips.md. Stato: <code>social_kit.py set C01 --status recorded --file …</code>.</p></div>')
+    return "".join(H)
 
 
 def build(root: str, audience: str, include: list[str], exclude: list[str], hide: set[str], today: dt.date) -> str:
@@ -1033,6 +1170,11 @@ def build(root: str, audience: str, include: list[str], exclude: list[str], hide
     if plan["phases"] and "steps" not in hide:
         add("riepilogo", now_block(plan, today))
     add("riepilogo", mp.riepilogo_card(mk, fg_rows or []))
+    if "odds" not in hide:
+        try:
+            add("riepilogo", odds_section(root))
+        except Exception as e:  # noqa: BLE001
+            log(f"WARN odds: {e}")
     tiles = key_tiles(st, wl_a, fg_rows, plan, econ, today, hide)
     gates = st.get("gates") or {}
     if tiles:
@@ -1093,6 +1235,10 @@ def build(root: str, audience: str, include: list[str], exclude: list[str], hide
         if c:
             add("marketing", c + ("".join(f'<div class="card" style="margin-top:12px">{x}</div>' for x in G["creators"]["charts"]) if "creators" in G else ""))
 
+    if "social" not in hide:
+        add("marketing", clips_kit_section(root, today))
+        add("marketing", social_section(root, today))
+
     # ---- Piano e soldi
     if plan["phases"] and "steps" not in hide:
         add("piano", steps_section(plan, today) + ("".join(f'<div class="card" style="margin-top:12px">{x}</div>' for x in G["plan"]["charts"]) if "plan" in G else ""))
@@ -1114,6 +1260,8 @@ def build(root: str, audience: str, include: list[str], exclude: list[str], hide
     elif "econ" in G:
         add("piano", render_group(G["econ"]))
     add("piano", mp.piano_card(mk, econ))
+    if "publisher" not in hide:
+        add("piano", publisher_section(root, st))
     add("piano", cont_html)
     if "window" not in hide:
         wsec = window_section(root)

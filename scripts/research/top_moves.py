@@ -157,6 +157,26 @@ def candidates(root: str, today: dt.date, cal: dict | None) -> list[dict]:
                         why=f"la candidatura chiude tra {days} giorni{est}; valore {st.get('score')}/18, possibilità reale di essere presi [OPINIONE]",
                         effect="uno spazio in uno showcase o fest online (pagina del fest, segmento in diretta) [STIMA: dipende dalla selezione]",
                         hours="0,5-1 h", owner="👤", due=st.get("due") or st["deadline"], match=[w for w in re.findall(r"[a-zà-ù]{3,}", st["event"].lower()) if w not in ("the", "and", "fest", "show", "games", "game", "showcase")][:2] or ["candidati"]))
+    # ---- social (social_content.py): repeat what works for THIS game [FATTO on our posts]; keep recording numbers
+    sl = common.load_json(os.path.join(root, "_raw", "social_learn.json")) if os.path.exists(os.path.join(root, "_raw", "social_learn.json")) else None
+    for w in ((sl or {}).get("winners") or [])[:1]:
+        out.append(dict(source="social", key=f"social-win-{w['key']}", title=f"Rifai 3 post con {w['field']} {w['key']} (rende {w['lift']}× la nostra mediana)", score=30,
+                        why=f"sui nostri post registrati {w['key']} fa {w['lift']}× le visualizzazioni mediane (n = {w['n']}) [FATTO, campione piccolo]",
+                        effect="più visualizzazioni a parità di ore; le wishlist si leggono il giorno dopo in Steamworks", hours="2-3 h", owner="👤", due=None, match=["post", w["key"].lower()]))
+    spl = common.load_json(os.path.join(root, "_raw", "social_plan.json")) if os.path.exists(os.path.join(root, "_raw", "social_plan.json")) else None
+    if spl:
+        posted = [p_ for p_ in spl.get("posts", []) if p_.get("date") and p_["date"] <= today.isoformat()]
+        if len(posted) >= 3 and (not sl or (sl.get("n") or 0) < len(posted) // 2):
+            out.append(dict(source="social", key="social-track", title="Registra i numeri dei post usciti (social_content.py track)", score=22,
+                            why=f"{len(posted)} post del piano sono già passati ma i numeri registrati sono {(sl or {}).get('n') or 0}: senza numeri non si capisce cosa rifare",
+                            effect="il piano impara quali momenti e ganci tenere", hours="15 min", owner="👤", due=today.isoformat(), match=["numeri", "post"]))
+    # ---- publisher (publisher_scout.py): the owner said yes / don't know and someone is realistic now
+    pub = common.load_json(os.path.join(root, "_raw", "publisher_scout.json")) if os.path.exists(os.path.join(root, "_raw", "publisher_scout.json")) else None
+    if pub and pub.get("publisher_question") in ("yes", "dont_know") and (pub.get("counts") or {}).get("realistic_now"):
+        top = [r["name"] for r in pub["rows"] if r["tier"] == "realistic_now"][:5]
+        out.append(dict(source="publisher", key="publisher-pitch", title=f"Manda la proposta a {len(top)} publisher realistici ({', '.join(top[:3])}…)", score=18,
+                        why=f"realistici adesso secondo publisher_scout.py; probabilità di almeno un'offerta ≤ {round(100 * pub['pitch_top']['p_any'])} % [STIMA]",
+                        effect="un'opzione in più senza fermare il piano da soli", hours="4-6 h (deck + mail)", owner="👤+🤖", due=None, match=["publisher", "proposta"]))
     # ---- deadlines
     t = tt.parse(os.path.join(root, "TODO.md"))
     for x in (t or {}).get("items", []):

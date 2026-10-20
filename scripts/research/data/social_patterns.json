@@ -1,0 +1,1816 @@
+{
+ "generated": "2026-10-20",
+ "note": "Evidence base for indie game social posts. strength: measured = numbers from data or multiple cases; expert_opinion = practitioner or platform statement; anecdote = single case. Case studies are survivorship-biased: viral hits get written up, flops rarely.",
+ "platforms": {
+  "tiktok": {
+   "patterns": [
+    {
+     "id": "tt-hook-first-second",
+     "rule": "Make the topic and the core mechanic clear in the first 1-3 s; no logo, studio card or slow intro",
+     "kind": "hook",
+     "evidence": "HTMAG: ~1 s to hook; FREERIDE hook within ~3 s; GDCo: topic clear in first second or two; TikTok official: hook ideally within first 5 s",
+     "strength": "measured",
+     "sources": [
+      {
+       "url": "https://howtomarketagame.com/2022/02/07/seven-great-tips-for-marketing-your-indie-game-on-tiktok/",
+       "date": "2026-10-20",
+       "what": "HTMAG 2022-02-07, 'I Just Want to be Single!!' TikTok case"
+      },
+      {
+       "url": "https://howtomarketagame.com/2022/02/14/how-to-go-viral-on-tiktok/",
+       "date": "2026-10-20",
+       "what": "HTMAG 2022-02-14, Farewell North / The Matriarch / FREERIDE cases"
+      },
+      {
+       "url": "https://newsletter.gamediscover.co/p/tiktok-practical-advice-for-big-discovery",
+       "date": "2026-10-20",
+       "what": "GameDiscoverCo 2022-10-10, TikTok practical advice"
+      },
+      {
+       "url": "https://www.tiktok.com/creator-academy/en/article/elements-of-tiktok-video?lang=en",
+       "date": "2026-10-20",
+       "what": "TikTok Creator Academy (official): hook within first 5 s, length diversity"
+      }
+     ]
+    },
+    {
+     "id": "tt-full-loop-10s",
+     "rule": "Show the whole gameplay loop within ~10 s (action, risk, payoff)",
+     "kind": "format",
+     "evidence": "The Matriarch: full loop in ~10 s -> 4.5M views, ~10k wishlists",
+     "strength": "anecdote",
+     "sources": [
+      {
+       "url": "https://howtomarketagame.com/2022/02/14/how-to-go-viral-on-tiktok/",
+       "date": "2026-10-20",
+       "what": "HTMAG 2022-02-14, Farewell North / The Matriarch / FREERIDE cases"
+      }
+     ]
+    },
+    {
+     "id": "tt-short-loopable",
+     "rule": "Keep clips short (~15-30 s) and loopable; loops count as rewatches",
+     "kind": "length",
+     "evidence": "HTMAG tip; Jared Tan study of 1,500+ studio TikToks (via GameDiscoverCo): >50k-view videos average 28 s, >1M average 27 s; presskit: 15-30 s",
+     "strength": "measured",
+     "sources": [
+      {
+       "url": "https://howtomarketagame.com/2022/02/07/seven-great-tips-for-marketing-your-indie-game-on-tiktok/",
+       "date": "2026-10-20",
+       "what": "HTMAG 2022-02-07, 'I Just Want to be Single!!' TikTok case"
+      },
+      {
+       "url": "https://presskit.gg/field-guides/tiktok-indie-game-marketing",
+       "date": "2026-10-20",
+       "what": "presskit.gg TikTok field guide, Feb 2026 (uses HTMAG data)"
+      },
+      {
+       "url": "https://newsletter.gamediscover.co/p/tiktok-practical-advice-for-big-discovery",
+       "date": "2026-10-20",
+       "what": "GameDiscoverCo 2022-10-10, TikTok practical advice"
+      }
+     ]
+    },
+    {
+     "id": "tt-native-not-trailer",
+     "rule": "Make TikTok-native cuts; reposting the YouTube trailer as is performs poorly; raw/homemade beats polished",
+     "kind": "format",
+     "evidence": "Farewell North: reposted trailers 'did quite poorly'; HTMAG, GDCo and presskit: more production value performed worse",
+     "strength": "anecdote",
+     "sources": [
+      {
+       "url": "https://howtomarketagame.com/2022/02/14/how-to-go-viral-on-tiktok/",
+       "date": "2026-10-20",
+       "what": "HTMAG 2022-02-14, Farewell North / The Matriarch / FREERIDE cases"
+      },
+      {
+       "url": "https://howtomarketagame.com/2022/02/07/seven-great-tips-for-marketing-your-indie-game-on-tiktok/",
+       "date": "2026-10-20",
+       "what": "HTMAG 2022-02-07, 'I Just Want to be Single!!' TikTok case"
+      },
+      {
+       "url": "https://newsletter.gamediscover.co/p/tiktok-practical-advice-for-big-discovery",
+       "date": "2026-10-20",
+       "what": "GameDiscoverCo 2022-10-10, TikTok practical advice"
+      },
+      {
+       "url": "https://presskit.gg/field-guides/tiktok-indie-game-marketing",
+       "date": "2026-10-20",
+       "what": "presskit.gg TikTok field guide, Feb 2026 (uses HTMAG data)"
+      }
+     ]
+    },
+    {
+     "id": "tt-short-text-overlay",
+     "rule": "Short punchy on-screen text that states the hook; captions always (many watch muted)",
+     "kind": "text_overlay",
+     "evidence": "Matriarch winning re-edit: shorter clips, 130% speed, shorter text; GDCo: no captions 'highly frowned upon'; TikTok ads help: 5-10 words/s",
+     "strength": "anecdote",
+     "sources": [
+      {
+       "url": "https://howtomarketagame.com/2022/02/14/how-to-go-viral-on-tiktok/",
+       "date": "2026-10-20",
+       "what": "HTMAG 2022-02-14, Farewell North / The Matriarch / FREERIDE cases"
+      },
+      {
+       "url": "https://newsletter.gamediscover.co/p/tiktok-practical-advice-for-big-discovery",
+       "date": "2026-10-20",
+       "what": "GameDiscoverCo 2022-10-10, TikTok practical advice"
+      },
+      {
+       "url": "https://ads.tiktok.com/help/article/creative-best-practices",
+       "date": "2026-10-20",
+       "what": "TikTok Ads Help (official, ads): proposition in first 3 s, hook in first 6 s"
+      }
+     ]
+    },
+    {
+     "id": "tt-sound",
+     "rule": "Use trending audio matching the vibe OR a strong custom track; business accounts cannot use licensed commercial music",
+     "kind": "sound",
+     "evidence": "FREERIDE trending audio 715k views; Matriarch custom soundtrack worked",
+     "strength": "anecdote",
+     "sources": [
+      {
+       "url": "https://howtomarketagame.com/2022/02/14/how-to-go-viral-on-tiktok/",
+       "date": "2026-10-20",
+       "what": "HTMAG 2022-02-14, Farewell North / The Matriarch / FREERIDE cases"
+      },
+      {
+       "url": "https://howtomarketagame.com/2022/02/07/seven-great-tips-for-marketing-your-indie-game-on-tiktok/",
+       "date": "2026-10-20",
+       "what": "HTMAG 2022-02-07, 'I Just Want to be Single!!' TikTok case"
+      }
+     ]
+    },
+    {
+     "id": "tt-cta",
+     "rule": "Always a clear CTA ('Wishlist on Steam' + searchable game name) big on screen ~3 s; bio link needs 1,000 followers on non-business accounts",
+     "kind": "cta",
+     "evidence": "Farewell North 2nd video only asked to follow; FREERIDE: 48% searched Steam by title, 33% via Linktree; UTM tracked only ~10%",
+     "strength": "measured",
+     "sources": [
+      {
+       "url": "https://howtomarketagame.com/2022/02/14/how-to-go-viral-on-tiktok/",
+       "date": "2026-10-20",
+       "what": "HTMAG 2022-02-14, Farewell North / The Matriarch / FREERIDE cases"
+      },
+      {
+       "url": "https://howtomarketagame.com/2022/02/07/seven-great-tips-for-marketing-your-indie-game-on-tiktok/",
+       "date": "2026-10-20",
+       "what": "HTMAG 2022-02-07, 'I Just Want to be Single!!' TikTok case"
+      }
+     ]
+    },
+    {
+     "id": "tt-reply-follow-up",
+     "rule": "After a hit, post fast follow-ups and video replies to comments; re-upload proven hooks",
+     "kind": "community",
+     "evidence": "Farewell North reply videos boosted; Schrodinger's Cat Burglar second wishlist bump from quick follow-up; The Hive reposted similar hooks",
+     "strength": "anecdote",
+     "sources": [
+      {
+       "url": "https://howtomarketagame.com/2022/02/14/how-to-go-viral-on-tiktok/",
+       "date": "2026-10-20",
+       "what": "HTMAG 2022-02-14, Farewell North / The Matriarch / FREERIDE cases"
+      },
+      {
+       "url": "https://acorngames.gg/blog/2025/8/10/the-indie-devs-guide-to-mastering-tiktok-in-2025",
+       "date": "2026-10-20",
+       "what": "Acorn Games 2025-08-10: Schrodinger's Cat Burglar 100k views ~2k wishlists overnight"
+      },
+      {
+       "url": "https://skydome.itch.io/thehive/devlog/1164902/10000-wishlists-in-10-days-what-changed-for-the-hive",
+       "date": "2026-10-20",
+       "what": "The Hive devlog: 10k wishlists in 10 days from tiny accounts (self-reported)"
+      }
+     ]
+    },
+    {
+     "id": "tt-frequency",
+     "rule": "Post 2-5 times a week consistently; one hit a month is a win",
+     "kind": "frequency",
+     "evidence": "Buffer (11.4M TikToks, general): 2-5/week ~+17% views per post vs 1/week; presskit: 2-3/week",
+     "strength": "measured",
+     "sources": [
+      {
+       "url": "https://buffer.com/resources/best-time-to-post-social-media/",
+       "date": "2026-10-20",
+       "what": "Buffer 2026, 52M posts (general social media, not gaming)"
+      },
+      {
+       "url": "https://presskit.gg/field-guides/tiktok-indie-game-marketing",
+       "date": "2026-10-20",
+       "what": "presskit.gg TikTok field guide, Feb 2026 (uses HTMAG data)"
+      }
+     ]
+    },
+    {
+     "id": "tt-explain-basics",
+     "rule": "Young mainstream audience: say what the game is in plain words; co-op/'friendslop', horror, cozy and physical comedy do well; deep strategy struggles",
+     "kind": "format",
+     "evidence": "GDCo/Jestr 2026: TikTok youngest audience, co-op/friendslop thrive, strategy struggles; Snapshot: short-form is #2 discovery channel for under-18 (53.5%)",
+     "strength": "measured",
+     "sources": [
+      {
+       "url": "https://newsletter.gamediscover.co/p/everything-you-want-to-know-about",
+       "date": "2026-10-20",
+       "what": "GameDiscoverCo 2026-04-17, short-form video & games (Jestr data)"
+      },
+      {
+       "url": "https://gamedevreports.substack.com/p/gamediscoverco-how-players-of-different",
+       "date": "2026-10-20",
+       "what": "GameDiscoverCo Steam Fan Snapshot (16,152 players) via GameDevReports, 2026"
+      }
+     ]
+    },
+    {
+     "id": "tt-no-paid",
+     "rule": "Do not buy TikTok ads for wishlists; boost only posts that already perform",
+     "kind": "rules",
+     "evidence": "presskit 2026: paid TikTok bad investment for most indies; HTMAG: ads ~1 wishlist per $1",
+     "strength": "expert_opinion",
+     "sources": [
+      {
+       "url": "https://presskit.gg/field-guides/tiktok-indie-game-marketing",
+       "date": "2026-10-20",
+       "what": "presskit.gg TikTok field guide, Feb 2026 (uses HTMAG data)"
+      },
+      {
+       "url": "https://howtomarketagame.com/2022/09/26/how-many-wishlists-should-i-have-when-i-launch-my-game/",
+       "date": "2026-10-20",
+       "what": "HTMAG 2022-09-26: paid ads ~1 wishlist per $1"
+      }
+     ]
+    },
+    {
+     "id": "tt-steam-page-first",
+     "rule": "Have the Steam page live before posting so spikes become wishlists",
+     "kind": "cta",
+     "evidence": "HTMAG 10-step plan",
+     "strength": "expert_opinion",
+     "sources": [
+      {
+       "url": "https://howtomarketagame.com/2021/07/12/how-to-market-your-indie-game-a-10-step-plan/",
+       "date": "2026-10-20",
+       "what": "HTMAG 10-step plan: Steam page must exist before social posts"
+      }
+     ]
+    }
+   ],
+   "benchmarks": [
+    {
+     "metric": "views per post, small/new account",
+     "good": "10k+ on a post; one hit per month is a win",
+     "typical": "most videos get under 1,000 views",
+     "source": {
+      "url": "https://presskit.gg/field-guides/tiktok-indie-game-marketing",
+      "date": "2026-10-20",
+      "what": "presskit.gg TikTok field guide, Feb 2026 (uses HTMAG data)"
+     },
+     "note": "follower count matters little: each video is judged alone"
+    },
+    {
+     "metric": "wishlists from one viral TikTok",
+     "good": "1,000-2,000 (2022 reports); 100k views ~2k wishlists overnight (2025 agency case)",
+     "typical": "most posts: near zero",
+     "source": {
+      "url": "https://howtomarketagame.com/2022/02/07/seven-great-tips-for-marketing-your-indie-game-on-tiktok/",
+      "date": "2026-10-20",
+      "what": "HTMAG 2022-02-07, 'I Just Want to be Single!!' TikTok case"
+     },
+     "note": "Acorn 2025 case is the high end"
+    },
+    {
+     "metric": "case: 571k views",
+     "good": "~2,900 wishlists (3k -> 6k in a month)",
+     "typical": "n/a",
+     "source": {
+      "url": "https://howtomarketagame.com/2022/02/07/seven-great-tips-for-marketing-your-indie-game-on-tiktok/",
+      "date": "2026-10-20",
+      "what": "HTMAG 2022-02-07, 'I Just Want to be Single!!' TikTok case"
+     },
+     "note": "visual novel, young-audience fit"
+    },
+    {
+     "metric": "case: 950k views",
+     "good": "~830 wishlists from the video, then ~500/day for days",
+     "typical": "n/a",
+     "source": {
+      "url": "https://howtomarketagame.com/2022/02/14/how-to-go-viral-on-tiktok/",
+      "date": "2026-10-20",
+      "what": "HTMAG 2022-02-14, Farewell North / The Matriarch / FREERIDE cases"
+     },
+     "note": "Farewell North"
+    }
+   ],
+   "conversion": [
+    {
+     "what": "wishlists per 1,000 TikTok views (HTMAG cases)",
+     "value": "~0.9 (Farewell North 950k->830) to ~5 (571k->2,900) to ~18 (FREERIDE 715k->13k)",
+     "source": {
+      "url": "https://howtomarketagame.com/2022/02/14/how-to-go-viral-on-tiktok/",
+      "date": "2026-10-20",
+      "what": "HTMAG 2022-02-14, Farewell North / The Matriarch / FREERIDE cases"
+     }
+    },
+    {
+     "what": "consultant estimate",
+     "value": "100k views -> 200-500 wishlists; 1M -> 2,000-8,000 [method unverified]",
+     "source": {
+      "url": "https://gamelaunchguide.com/blog/market-indie-game-tiktok-2026/",
+      "date": "2026-10-20",
+      "what": "consultant blog Feb 2026: 100k views ~200-500 wishlists (method unchecked)"
+     }
+    }
+   ],
+   "flops": [
+    {
+     "why": "reposting the full/polished trailer unchanged",
+     "sources": [
+      {
+       "url": "https://howtomarketagame.com/2022/02/14/how-to-go-viral-on-tiktok/",
+       "date": "2026-10-20",
+       "what": "HTMAG 2022-02-14, Farewell North / The Matriarch / FREERIDE cases"
+      },
+      {
+       "url": "https://newsletter.gamediscover.co/p/tiktok-practical-advice-for-big-discovery",
+       "date": "2026-10-20",
+       "what": "GameDiscoverCo 2022-10-10, TikTok practical advice"
+      },
+      {
+       "url": "https://presskit.gg/field-guides/tiktok-indie-game-marketing",
+       "date": "2026-10-20",
+       "what": "presskit.gg TikTok field guide, Feb 2026 (uses HTMAG data)"
+      }
+     ]
+    },
+    {
+     "why": "slow intro / topic not clear in the first seconds",
+     "sources": [
+      {
+       "url": "https://newsletter.gamediscover.co/p/tiktok-practical-advice-for-big-discovery",
+       "date": "2026-10-20",
+       "what": "GameDiscoverCo 2022-10-10, TikTok practical advice"
+      },
+      {
+       "url": "https://howtomarketagame.com/2026/05/07/2026-tips-for-making-your-tweets-go-viral/",
+       "date": "2026-10-20",
+       "what": "HTMAG 2026-05-07, IndieGameJoe viral tweets, 8 devs reporting wishlists"
+      }
+     ]
+    },
+    {
+     "why": "no CTA or no way to find the game (no bio link, unsearchable name)",
+     "sources": [
+      {
+       "url": "https://howtomarketagame.com/2022/02/14/how-to-go-viral-on-tiktok/",
+       "date": "2026-10-20",
+       "what": "HTMAG 2022-02-14, Farewell North / The Matriarch / FREERIDE cases"
+      }
+     ]
+    },
+    {
+     "why": "boring dev moments (menus, UI alignment); text-heavy or narrative games",
+     "sources": [
+      {
+       "url": "https://presskit.gg/field-guides/tiktok-indie-game-marketing",
+       "date": "2026-10-20",
+       "what": "presskit.gg TikTok field guide, Feb 2026 (uses HTMAG data)"
+      }
+     ]
+    },
+    {
+     "why": "long YouTube-style/documentary videos",
+     "sources": [
+      {
+       "url": "https://newsletter.gamediscover.co/p/tiktok-practical-advice-for-big-discovery",
+       "date": "2026-10-20",
+       "what": "GameDiscoverCo 2022-10-10, TikTok practical advice"
+      }
+     ]
+    }
+   ]
+  },
+  "instagram": {
+   "patterns": [
+    {
+     "id": "ig-original-no-watermark",
+     "rule": "Upload original files: no TikTok/CapCut watermark; re-export clean edits",
+     "kind": "rules",
+     "evidence": "Mosseri 2025 rules: watermarked/reposted content not recommended; from 2026-04-30 accounts that mostly repost others' content lose recommendations",
+     "strength": "expert_opinion",
+     "sources": [
+      {
+       "url": "https://www.dataslayer.ai/blog/instagram-algorithm-2025-complete-guide-for-marketers",
+       "date": "2026-10-20",
+       "what": "secondary summary of Adam Mosseri statements (Jan 2025: watch time, likes, sends; no watermarks; originality)"
+      },
+      {
+       "url": "https://keywordseverywhere.com/news/instagram-algorithm-updates/",
+       "date": "2026-10-20",
+       "what": "Instagram algorithm update tracker (Mosseri statements 2025-2026, originality rule 2026-04-30)"
+      },
+      {
+       "url": "https://howtomarketagame.com/2022/02/14/how-to-go-viral-on-tiktok/",
+       "date": "2026-10-20",
+       "what": "HTMAG 2022-02-14, Farewell North / The Matriarch / FREERIDE cases"
+      }
+     ]
+    },
+    {
+     "id": "ig-signals-sends",
+     "rule": "Optimise for watch time, likes and sends: build the moment people send to a friend",
+     "kind": "hook",
+     "evidence": "Mosseri Jan 2025: top 3 signals watch time, likes, sends (sends matter most for non-followers); GDCo: Reels optimise for shares, often more shares than likes",
+     "strength": "expert_opinion",
+     "sources": [
+      {
+       "url": "https://www.dataslayer.ai/blog/instagram-algorithm-2025-complete-guide-for-marketers",
+       "date": "2026-10-20",
+       "what": "secondary summary of Adam Mosseri statements (Jan 2025: watch time, likes, sends; no watermarks; originality)"
+      },
+      {
+       "url": "https://newsletter.gamediscover.co/p/everything-you-want-to-know-about",
+       "date": "2026-10-20",
+       "what": "GameDiscoverCo 2026-04-17, short-form video & games (Jestr data)"
+      }
+     ]
+    },
+    {
+     "id": "ig-length-under-3min",
+     "rule": "Reels over 3 min are not recommended; keep gameplay clips short (same 15-30 s cuts as TikTok)",
+     "kind": "length",
+     "evidence": "Mosseri rule (limit raised from 90 s to 3 min)",
+     "strength": "expert_opinion",
+     "sources": [
+      {
+       "url": "https://www.dataslayer.ai/blog/instagram-algorithm-2025-complete-guide-for-marketers",
+       "date": "2026-10-20",
+       "what": "secondary summary of Adam Mosseri statements (Jan 2025: watch time, likes, sends; no watermarks; originality)"
+      }
+     ]
+    },
+    {
+     "id": "ig-use-audio",
+     "rule": "Use audio (music or game sound) on every Reel",
+     "kind": "sound",
+     "evidence": "Mosseri 2025 rules list 'use audio'",
+     "strength": "expert_opinion",
+     "sources": [
+      {
+       "url": "https://www.dataslayer.ai/blog/instagram-algorithm-2025-complete-guide-for-marketers",
+       "date": "2026-10-20",
+       "what": "secondary summary of Adam Mosseri statements (Jan 2025: watch time, likes, sends; no watermarks; originality)"
+      }
+     ]
+    },
+    {
+     "id": "ig-visual-cozy-horror",
+     "rule": "Very visual, slightly older audience; cozy, horror and funny physical gameplay share well",
+     "kind": "format",
+     "evidence": "GDCo/Jestr 2026: Reels slightly older, very visual, cozy and horror do well; ~44% of Jestr network views on Instagram (March 2026)",
+     "strength": "measured",
+     "sources": [
+      {
+       "url": "https://newsletter.gamediscover.co/p/everything-you-want-to-know-about",
+       "date": "2026-10-20",
+       "what": "GameDiscoverCo 2026-04-17, short-form video & games (Jestr data)"
+      }
+     ]
+    },
+    {
+     "id": "ig-funny-clips-regular",
+     "rule": "Post short funny gameplay clips regularly, starting before the Steam page goes up",
+     "kind": "frequency",
+     "evidence": "Sledding Game: regular funny clips, best Instagram clip 2.3M views; 15.8k wishlists day 1 and 80k in week 1 of the page",
+     "strength": "anecdote",
+     "sources": [
+      {
+       "url": "https://wnhub.io/news/stores-and-publishing/item-46837",
+       "date": "2026-10-20",
+       "what": "WN Hub 2025, Sledding Game: 2.3M-view Instagram clip, 80k wishlists week 1 of page"
+      }
+     ]
+    },
+    {
+     "id": "ig-crosspost-differs",
+     "rule": "Cross-post the same clip: it can do far better on Reels than on TikTok (or vice versa)",
+     "kind": "format",
+     "evidence": "Fableforge: 6k TikTok views vs 23k+ Instagram (mostly non-followers); The Hive posted everywhere and let platforms decide",
+     "strength": "anecdote",
+     "sources": [
+      {
+       "url": "https://howtomarketagame.com/2022/02/14/how-to-go-viral-on-tiktok/",
+       "date": "2026-10-20",
+       "what": "HTMAG 2022-02-14, Farewell North / The Matriarch / FREERIDE cases"
+      },
+      {
+       "url": "https://skydome.itch.io/thehive/devlog/1164902/10000-wishlists-in-10-days-what-changed-for-the-hive",
+       "date": "2026-10-20",
+       "what": "The Hive devlog: 10k wishlists in 10 days from tiny accounts (self-reported)"
+      }
+     ]
+    },
+    {
+     "id": "ig-raw-ok",
+     "rule": "Raw, imperfect real-person content is favoured over polished/AI-looking content",
+     "kind": "format",
+     "evidence": "Mosseri year-end memo 2025-12-31 (via secondary tracker)",
+     "strength": "expert_opinion",
+     "sources": [
+      {
+       "url": "https://keywordseverywhere.com/news/instagram-algorithm-updates/",
+       "date": "2026-10-20",
+       "what": "Instagram algorithm update tracker (Mosseri statements 2025-2026, originality rule 2026-04-30)"
+      }
+     ]
+    }
+   ],
+   "benchmarks": [
+    {
+     "metric": "creator Reel that moves sales",
+     "good": "millions of views (The Long Drive North 7.8M; Slackers ~100k units after a feature)",
+     "typical": "n/a",
+     "source": {
+      "url": "https://games.gg/news/games-go-viral-on-instagram-reels/",
+      "date": "2026-10-20",
+      "what": "games.gg analysis of 800+ creator Reels (Mavitivo)"
+     },
+     "note": "creator accounts, not dev accounts; views alone don't guarantee sales (Drunk Builder Simulator)"
+    },
+    {
+     "metric": "small dev account, views per Reel",
+     "good": "tens of thousands of non-follower views possible (Fableforge 23k+)",
+     "typical": "[DA VERIFICARE] no measured benchmark found for <1k-follower dev accounts",
+     "source": {
+      "url": "https://howtomarketagame.com/2022/02/14/how-to-go-viral-on-tiktok/",
+      "date": "2026-10-20",
+      "what": "HTMAG 2022-02-14, Farewell North / The Matriarch / FREERIDE cases"
+     },
+     "note": "anecdote"
+    }
+   ],
+   "conversion": [
+    {
+     "what": "Sledding Game page launch after months of Instagram clips",
+     "value": "15.8k wishlists day 1, 80k week 1 (exceptional outlier)",
+     "source": {
+      "url": "https://wnhub.io/news/stores-and-publishing/item-46837",
+      "date": "2026-10-20",
+      "what": "WN Hub 2025, Sledding Game: 2.3M-view Instagram clip, 80k wishlists week 1 of page"
+     }
+    }
+   ],
+   "flops": [
+    {
+     "why": "TikTok-watermarked reposts / accounts that mostly repost",
+     "sources": [
+      {
+       "url": "https://www.dataslayer.ai/blog/instagram-algorithm-2025-complete-guide-for-marketers",
+       "date": "2026-10-20",
+       "what": "secondary summary of Adam Mosseri statements (Jan 2025: watch time, likes, sends; no watermarks; originality)"
+      },
+      {
+       "url": "https://keywordseverywhere.com/news/instagram-algorithm-updates/",
+       "date": "2026-10-20",
+       "what": "Instagram algorithm update tracker (Mosseri statements 2025-2026, originality rule 2026-04-30)"
+      }
+     ]
+    },
+    {
+     "why": "viral views but shallow game -> weak sales",
+     "sources": [
+      {
+       "url": "https://games.gg/news/games-go-viral-on-instagram-reels/",
+       "date": "2026-10-20",
+       "what": "games.gg analysis of 800+ creator Reels (Mavitivo)"
+      }
+     ]
+    }
+   ]
+  },
+  "x": {
+   "patterns": [
+    {
+     "id": "x-lead-gameplay-3s",
+     "rule": "Lead with gameplay or the strongest visual in the first 3-4 s",
+     "kind": "hook",
+     "evidence": "IndieGameJoe tweets analysed by HTMAG 2026; slow intros (Forbidden Solitaire, The Void) stalled at ~11k views",
+     "strength": "measured",
+     "sources": [
+      {
+       "url": "https://howtomarketagame.com/2026/05/07/2026-tips-for-making-your-tweets-go-viral/",
+       "date": "2026-10-20",
+       "what": "HTMAG 2026-05-07, IndieGameJoe viral tweets, 8 devs reporting wishlists"
+      }
+     ]
+    },
+    {
+     "id": "x-1min-recut",
+     "rule": "Recut the trailer into a ~1 min clip; post clips, not the full trailer",
+     "kind": "length",
+     "evidence": "HTMAG 2026: Retro Rewind official trailer 129 views vs 13.7M for a clip-led curator tweet",
+     "strength": "measured",
+     "sources": [
+      {
+       "url": "https://howtomarketagame.com/2026/05/07/2026-tips-for-making-your-tweets-go-viral/",
+       "date": "2026-10-20",
+       "what": "HTMAG 2026-05-07, IndieGameJoe viral tweets, 8 devs reporting wishlists"
+      }
+     ]
+    },
+    {
+     "id": "x-caption-template",
+     "rule": "Caption: '<genre> where you <hook>' + 3 unique features + a question",
+     "kind": "caption",
+     "evidence": "HTMAG 2026 (IndieGameJoe template)",
+     "strength": "expert_opinion",
+     "sources": [
+      {
+       "url": "https://howtomarketagame.com/2026/05/07/2026-tips-for-making-your-tweets-go-viral/",
+       "date": "2026-10-20",
+       "what": "HTMAG 2026-05-07, IndieGameJoe viral tweets, 8 devs reporting wishlists"
+      }
+     ]
+    },
+    {
+     "id": "x-link-in-reply",
+     "rule": "Put the Steam link in a reply, not in the main post; skip hashtags",
+     "kind": "rules",
+     "evidence": "IndieGameJoe suspects links hurt reach; says hashtags no longer matter",
+     "strength": "expert_opinion",
+     "sources": [
+      {
+       "url": "https://howtomarketagame.com/2026/05/07/2026-tips-for-making-your-tweets-go-viral/",
+       "date": "2026-10-20",
+       "what": "HTMAG 2026-05-07, IndieGameJoe viral tweets, 8 devs reporting wishlists"
+      }
+     ]
+    },
+    {
+     "id": "x-emotion",
+     "rule": "Aim at one emotion: humor, fear, nostalgia, curiosity or satisfaction; cute creatures and horror do best",
+     "kind": "hook",
+     "evidence": "HTMAG 2026: horror top (Perceptum ~1.5M views), woodland creatures (Trash Day ~1.5M)",
+     "strength": "measured",
+     "sources": [
+      {
+       "url": "https://howtomarketagame.com/2026/05/07/2026-tips-for-making-your-tweets-go-viral/",
+       "date": "2026-10-20",
+       "what": "HTMAG 2026-05-07, IndieGameJoe viral tweets, 8 devs reporting wishlists"
+      }
+     ]
+    },
+    {
+     "id": "x-render-quality",
+     "rule": "Export cleanly: no blur, stutter or heavy compression",
+     "kind": "format",
+     "evidence": "HTMAG 2026",
+     "strength": "expert_opinion",
+     "sources": [
+      {
+       "url": "https://howtomarketagame.com/2026/05/07/2026-tips-for-making-your-tweets-go-viral/",
+       "date": "2026-10-20",
+       "what": "HTMAG 2026-05-07, IndieGameJoe viral tweets, 8 devs reporting wishlists"
+      }
+     ]
+    },
+    {
+     "id": "x-get-reposted",
+     "rule": "For small accounts the lever is being picked up by curator accounts (e.g. IndieGameJoe), not own followers",
+     "kind": "community",
+     "evidence": "HTMAG 2026: curator's best tweets came even when his audience was smaller; results very spiky",
+     "strength": "anecdote",
+     "sources": [
+      {
+       "url": "https://howtomarketagame.com/2026/05/07/2026-tips-for-making-your-tweets-go-viral/",
+       "date": "2026-10-20",
+       "what": "HTMAG 2026-05-07, IndieGameJoe viral tweets, 8 devs reporting wishlists"
+      }
+     ]
+    },
+    {
+     "id": "x-dev-network",
+     "rule": "Own X followers are mostly other devs: use X for networking/press, not as the main wishlist channel",
+     "kind": "community",
+     "evidence": "HTMAG 2022: CTR terrible, followers are industry; 2025 devs report near-zero reach under 1k followers",
+     "strength": "anecdote",
+     "sources": [
+      {
+       "url": "https://howtomarketagame.com/2022/04/27/elon-bought-twitter-what-should-indie-game-marketers-do/",
+       "date": "2026-10-20",
+       "what": "HTMAG 2022-04-27, Twitter CTR terrible, followers are devs"
+      },
+      {
+       "url": "https://itch.io/t/5454103/should-i-promote-my-game-on-xtwitter-is-it-worth-it",
+       "date": "2026-10-20",
+       "what": "itch.io forum thread, devs on X reach (anecdotes)"
+      }
+     ]
+    }
+   ],
+   "benchmarks": [
+    {
+     "metric": "wishlists per 1,000 views of a viral tweet",
+     "good": "18-21 (DREADMOOR 1.2M->25.4k, Bridgebourn 1M->18.2k)",
+     "typical": "median ~7 (n=8 devs)",
+     "source": {
+      "url": "https://howtomarketagame.com/2026/05/07/2026-tips-for-making-your-tweets-go-viral/",
+      "date": "2026-10-20",
+      "what": "HTMAG 2026-05-07, IndieGameJoe viral tweets, 8 devs reporting wishlists"
+     },
+     "note": "small sample, self-reported attribution"
+    },
+    {
+     "metric": "very viral own-account tweet (2022)",
+     "good": "50-70 wishlists unless the game is very cute",
+     "typical": "single digits",
+     "source": {
+      "url": "https://howtomarketagame.com/2022/02/07/seven-great-tips-for-marketing-your-indie-game-on-tiktok/",
+      "date": "2026-10-20",
+      "what": "HTMAG 2022-02-07, 'I Just Want to be Single!!' TikTok case"
+     },
+     "note": "pre-curator era"
+    },
+    {
+     "metric": "small account reach 2025",
+     "good": "n/a",
+     "typical": "near-zero reach under 1k followers [anecdote]",
+     "source": {
+      "url": "https://itch.io/t/5454103/should-i-promote-my-game-on-xtwitter-is-it-worth-it",
+      "date": "2026-10-20",
+      "what": "itch.io forum thread, devs on X reach (anecdotes)"
+     },
+     "note": "forum anecdotes"
+    }
+   ],
+   "conversion": [
+    {
+     "what": "views -> wishlists, curator tweets",
+     "value": "median 7.15 per 1,000 views; Spearman r=0.95 views vs wishlists",
+     "source": {
+      "url": "https://howtomarketagame.com/2026/05/07/2026-tips-for-making-your-tweets-go-viral/",
+      "date": "2026-10-20",
+      "what": "HTMAG 2026-05-07, IndieGameJoe viral tweets, 8 devs reporting wishlists"
+     }
+    }
+   ],
+   "flops": [
+    {
+     "why": "official trailer as is / slow live-action intro",
+     "sources": [
+      {
+       "url": "https://howtomarketagame.com/2026/05/07/2026-tips-for-making-your-tweets-go-viral/",
+       "date": "2026-10-20",
+       "what": "HTMAG 2026-05-07, IndieGameJoe viral tweets, 8 devs reporting wishlists"
+      }
+     ]
+    },
+    {
+     "why": "generic pixel art without a hook; deep 2D strategy",
+     "sources": [
+      {
+       "url": "https://howtomarketagame.com/2026/05/07/2026-tips-for-making-your-tweets-go-viral/",
+       "date": "2026-10-20",
+       "what": "HTMAG 2026-05-07, IndieGameJoe viral tweets, 8 devs reporting wishlists"
+      }
+     ]
+    },
+    {
+     "why": "relying on own follower count",
+     "sources": [
+      {
+       "url": "https://howtomarketagame.com/2026/05/07/2026-tips-for-making-your-tweets-go-viral/",
+       "date": "2026-10-20",
+       "what": "HTMAG 2026-05-07, IndieGameJoe viral tweets, 8 devs reporting wishlists"
+      },
+      {
+       "url": "https://howtomarketagame.com/2022/04/27/elon-bought-twitter-what-should-indie-game-marketers-do/",
+       "date": "2026-10-20",
+       "what": "HTMAG 2022-04-27, Twitter CTR terrible, followers are devs"
+      }
+     ]
+    }
+   ]
+  },
+  "reddit": {
+   "patterns": [
+    {
+     "id": "rd-gif-genre-hook-verbs",
+     "rule": "Post an edited 15-30 s GIF/video: genre first, then the hook, the verbs, a threat, a glory shot; no logo, pans or cinematics",
+     "kind": "format",
+     "evidence": "Laysara: 30 s re-edited clip on r/gaming -> 3.2M views, 73k upvotes, ~11k wishlists in 24 h (~30k in a week)",
+     "strength": "anecdote",
+     "sources": [
+      {
+       "url": "https://howtomarketagame.com/2022/01/10/how-a-two-person-team-earned-11000-wishlists-with-one-reddit-post/",
+       "date": "2026-10-20",
+       "what": "HTMAG 2022-01-10, Laysara r/gaming 3.2M views / 11k wishlists"
+      },
+      {
+       "url": "https://www.steampageanalyzer.com/blog/reddit-indie-game-marketing",
+       "date": "2026-10-20",
+       "what": "steampageanalyzer.com 2026-09-07, Reddit for indie games (members checked 2026-07-02)"
+      }
+     ]
+    },
+    {
+     "id": "rd-personal-title",
+     "rule": "Personal-story title ('I spent a year... with a friend') beats salesy titles; never 'wishlist now'",
+     "kind": "caption",
+     "evidence": "HTMAG Laysara; steampageanalyzer: bare 'wishlist my game' posts get buried",
+     "strength": "anecdote",
+     "sources": [
+      {
+       "url": "https://howtomarketagame.com/2022/01/10/how-a-two-person-team-earned-11000-wishlists-with-one-reddit-post/",
+       "date": "2026-10-20",
+       "what": "HTMAG 2022-01-10, Laysara r/gaming 3.2M views / 11k wishlists"
+      },
+      {
+       "url": "https://www.steampageanalyzer.com/blog/reddit-indie-game-marketing",
+       "date": "2026-10-20",
+       "what": "steampageanalyzer.com 2026-09-07, Reddit for indie games (members checked 2026-07-02)"
+      }
+     ]
+    },
+    {
+     "id": "rd-no-link-in-post",
+     "rule": "Don't put the Steam link in the post unless the sub allows it; give it in a comment or when asked",
+     "kind": "rules",
+     "evidence": "HTMAG follow-up: don't link unless asked; some summaries say r/indiegames bans store links",
+     "strength": "expert_opinion",
+     "sources": [
+      {
+       "url": "https://howtomarketagame.com/2022/01/10/how-a-two-person-team-earned-11000-wishlists-with-one-reddit-post/",
+       "date": "2026-10-20",
+       "what": "HTMAG 2022-01-10, Laysara r/gaming 3.2M views / 11k wishlists"
+      },
+      {
+       "url": "https://www.threadotter.com/subreddit-rules/indiegames",
+       "date": "2026-10-20",
+       "what": "Thread Otter r/indiegames self-promo summary"
+      }
+     ]
+    },
+    {
+     "id": "rd-10-percent",
+     "rule": "Build a real account history first (~10% self-promo guideline); mods check history; automod can remove a post by mistake",
+     "kind": "rules",
+     "evidence": "Laysara post auto-removed then restored; steampageanalyzer: you can't fake it with drive-by comments",
+     "strength": "anecdote",
+     "sources": [
+      {
+       "url": "https://howtomarketagame.com/2022/01/10/how-a-two-person-team-earned-11000-wishlists-with-one-reddit-post/",
+       "date": "2026-10-20",
+       "what": "HTMAG 2022-01-10, Laysara r/gaming 3.2M views / 11k wishlists"
+      },
+      {
+       "url": "https://www.steampageanalyzer.com/blog/reddit-indie-game-marketing",
+       "date": "2026-10-20",
+       "what": "steampageanalyzer.com 2026-09-07, Reddit for indie games (members checked 2026-07-02)"
+      }
+     ]
+    },
+    {
+     "id": "rd-genre-subs",
+     "rule": "Match the sub to the genre before size: genre subs convert like organic wishlists; giant subs (r/gaming) for rare breakouts",
+     "kind": "community",
+     "evidence": "steampageanalyzer 2026 vs HTMAG 2022 disagree on size vs fit; Gnomes ~3,000 wishlists from genre/local subs without a viral post",
+     "strength": "anecdote",
+     "sources": [
+      {
+       "url": "https://www.steampageanalyzer.com/blog/reddit-indie-game-marketing",
+       "date": "2026-10-20",
+       "what": "steampageanalyzer.com 2026-09-07, Reddit for indie games (members checked 2026-07-02)"
+      },
+      {
+       "url": "https://howtomarketagame.com/2022/01/10/how-a-two-person-team-earned-11000-wishlists-with-one-reddit-post/",
+       "date": "2026-10-20",
+       "what": "HTMAG 2022-01-10, Laysara r/gaming 3.2M views / 11k wishlists"
+      },
+      {
+       "url": "https://howtomarketagame.com/2025/08/13/gnomes-tower-defense-with-10-month-dev-time-hits-367484/",
+       "date": "2026-10-20",
+       "what": "HTMAG 2025-08-13, Gnomes: ~3,000 wishlists from Reddit posts before demo"
+      }
+     ]
+    },
+    {
+     "id": "rd-local-and-angle-subs",
+     "rule": "Use angle subs: local city/country sub, engine/tech sub, art sub",
+     "kind": "community",
+     "evidence": "Gnomes: r/brisbane among most popular posts; r/rust_gamedev, r/PixelArt",
+     "strength": "anecdote",
+     "sources": [
+      {
+       "url": "https://howtomarketagame.com/2025/08/13/gnomes-tower-defense-with-10-month-dev-time-hits-367484/",
+       "date": "2026-10-20",
+       "what": "HTMAG 2025-08-13, Gnomes: ~3,000 wishlists from Reddit posts before demo"
+      }
+     ]
+    },
+    {
+     "id": "rd-postmortem-numbers",
+     "rule": "Postmortems with real numbers do well on r/gamedev and r/IndieDev (karma, press pickup), not as direct wishlist drivers",
+     "kind": "format",
+     "evidence": "steampageanalyzer 2026",
+     "strength": "expert_opinion",
+     "sources": [
+      {
+       "url": "https://www.steampageanalyzer.com/blog/reddit-indie-game-marketing",
+       "date": "2026-10-20",
+       "what": "steampageanalyzer.com 2026-09-07, Reddit for indie games (members checked 2026-07-02)"
+      }
+     ]
+    },
+    {
+     "id": "rd-flair-footage",
+     "rule": "On r/indiegames: correct flair and inline footage are mandatory; no 'would you play this?' titles",
+     "kind": "rules",
+     "evidence": "Thread Otter / threadfox summaries 2026",
+     "strength": "expert_opinion",
+     "sources": [
+      {
+       "url": "https://www.threadotter.com/subreddit-rules/indiegames",
+       "date": "2026-10-20",
+       "what": "Thread Otter r/indiegames self-promo summary"
+      },
+      {
+       "url": "https://threadfox.vip/rules/for/games",
+       "date": "2026-10-20",
+       "what": "threadfox rule index, rules read 2026-09-24..2026-10-14"
+      }
+     ]
+    },
+    {
+     "id": "rd-test-first",
+     "rule": "Test GIF+title combos on easier platforms first, then post the winner to Reddit",
+     "kind": "format",
+     "evidence": "HTMAG",
+     "strength": "expert_opinion",
+     "sources": [
+      {
+       "url": "https://howtomarketagame.com/2022/01/10/how-a-two-person-team-earned-11000-wishlists-with-one-reddit-post/",
+       "date": "2026-10-20",
+       "what": "HTMAG 2022-01-10, Laysara r/gaming 3.2M views / 11k wishlists"
+      }
+     ]
+    },
+    {
+     "id": "rd-timing",
+     "rule": "Post in US morning (~8-11 am ET) on large subs, as a tiebreaker only",
+     "kind": "posting_time",
+     "evidence": "steampageanalyzer 2026 (opinion)",
+     "strength": "expert_opinion",
+     "sources": [
+      {
+       "url": "https://www.steampageanalyzer.com/blog/reddit-indie-game-marketing",
+       "date": "2026-10-20",
+       "what": "steampageanalyzer.com 2026-09-07, Reddit for indie games (members checked 2026-07-02)"
+      }
+     ]
+    }
+   ],
+   "benchmarks": [
+    {
+     "metric": "wishlists from a successful (non-viral) post",
+     "good": "100-150",
+     "typical": "0-150",
+     "source": {
+      "url": "https://www.steampageanalyzer.com/blog/reddit-indie-game-marketing",
+      "date": "2026-10-20",
+      "what": "steampageanalyzer.com 2026-09-07, Reddit for indie games (members checked 2026-07-02)"
+     },
+     "note": "Power of Ten: +30-40/day for a few days"
+    },
+    {
+     "metric": "viral r/gaming post",
+     "good": "~11k wishlists in 24 h",
+     "typical": "rare",
+     "source": {
+      "url": "https://howtomarketagame.com/2022/01/10/how-a-two-person-team-earned-11000-wishlists-with-one-reddit-post/",
+      "date": "2026-10-20",
+      "what": "HTMAG 2022-01-10, Laysara r/gaming 3.2M views / 11k wishlists"
+     },
+     "note": "Laysara had ~1,800 wishlists before"
+    },
+    {
+     "metric": "cumulative grind without virality",
+     "good": "~3,000 wishlists from many posts pre-demo",
+     "typical": "n/a",
+     "source": {
+      "url": "https://howtomarketagame.com/2025/08/13/gnomes-tower-defense-with-10-month-dev-time-hits-367484/",
+      "date": "2026-10-20",
+      "what": "HTMAG 2025-08-13, Gnomes: ~3,000 wishlists from Reddit posts before demo"
+     },
+     "note": "Gnomes"
+    }
+   ],
+   "conversion": [
+    {
+     "what": "Laysara views -> wishlists",
+     "value": "~3.4 per 1,000 views in 24 h",
+     "source": {
+      "url": "https://howtomarketagame.com/2022/01/10/how-a-two-person-team-earned-11000-wishlists-with-one-reddit-post/",
+      "date": "2026-10-20",
+      "what": "HTMAG 2022-01-10, Laysara r/gaming 3.2M views / 11k wishlists"
+     }
+    },
+    {
+     "what": "wishlist quality depends on source: festival-heavy wishlists converted 1.9% day 1 vs ~12% median (Power of Ten)",
+     "value": "source-dependent",
+     "source": {
+      "url": "https://www.steampageanalyzer.com/blog/reddit-indie-game-marketing",
+      "date": "2026-10-20",
+      "what": "steampageanalyzer.com 2026-09-07, Reddit for indie games (members checked 2026-07-02)"
+     }
+    }
+   ],
+   "flops": [
+    {
+     "why": "bare store link or 'wishlist now' text post",
+     "sources": [
+      {
+       "url": "https://www.steampageanalyzer.com/blog/reddit-indie-game-marketing",
+       "date": "2026-10-20",
+       "what": "steampageanalyzer.com 2026-09-07, Reddit for indie games (members checked 2026-07-02)"
+      }
+     ]
+    },
+    {
+     "why": "posting the same game too often (removals/bans on r/IndieGaming)",
+     "sources": [
+      {
+       "url": "https://www.steampageanalyzer.com/blog/reddit-indie-game-marketing",
+       "date": "2026-10-20",
+       "what": "steampageanalyzer.com 2026-09-07, Reddit for indie games (members checked 2026-07-02)"
+      },
+      {
+       "url": "https://www.threadotter.com/subreddit-rules/indiegaming",
+       "date": "2026-10-20",
+       "what": "Thread Otter r/IndieGaming self-promo summary"
+      }
+     ]
+    },
+    {
+     "why": "new account with no history; drive-by comments right before promo",
+     "sources": [
+      {
+       "url": "https://www.steampageanalyzer.com/blog/reddit-indie-game-marketing",
+       "date": "2026-10-20",
+       "what": "steampageanalyzer.com 2026-09-07, Reddit for indie games (members checked 2026-07-02)"
+      }
+     ]
+    }
+   ]
+  },
+  "youtube_shorts": {
+   "patterns": [
+    {
+     "id": "ys-first-frame",
+     "rule": "Win the first frame and first second: 'viewed vs swiped away' measures cover + first second; aim well above 50%",
+     "kind": "hook",
+     "evidence": "YouTube Studio metric; third-party: >70% viewed is strong, <30% dies [no official benchmark]",
+     "strength": "expert_opinion",
+     "sources": [
+      {
+       "url": "https://1of10.com/blog/youtube-shorts-analytics/",
+       "date": "2026-10-20",
+       "what": "1of10: no official Shorts benchmarks; 'viewed vs swiped away' metric explained"
+      },
+      {
+       "url": "https://growcreator.pro/blog/viewed-vs-swiped-away-youtube-shorts",
+       "date": "2026-10-20",
+       "what": "viewed vs swiped away explained (third-party)"
+      },
+      {
+       "url": "https://vidiq.com/blog/post/youtube-shorts-algorithm/",
+       "date": "2026-10-20",
+       "what": "vidIQ 2026: Shorts tested on seed audience; swipe-away stops distribution (third-party)"
+      }
+     ]
+    },
+    {
+     "id": "ys-seed-test",
+     "rule": "Each Short is tested on a small seed audience; weak retention stops distribution, so one idea per Short",
+     "kind": "format",
+     "evidence": "vidIQ 2026 (third-party)",
+     "strength": "expert_opinion",
+     "sources": [
+      {
+       "url": "https://vidiq.com/blog/post/youtube-shorts-algorithm/",
+       "date": "2026-10-20",
+       "what": "vidIQ 2026: Shorts tested on seed audience; swipe-away stops distribution (third-party)"
+      }
+     ]
+    },
+    {
+     "id": "ys-length",
+     "rule": "Shorts can run up to 3 min (vertical/square, since 2024-10-15) but gameplay clips should stay short",
+     "kind": "length",
+     "evidence": "YouTube official blog 2024-10-03",
+     "strength": "measured",
+     "sources": [
+      {
+       "url": "https://blog.youtube/news-and-events/tall-updates-coming-to-shorts/",
+       "date": "2026-10-20",
+       "what": "YouTube official blog 2024-10-03: Shorts up to 3 min from 2024-10-15"
+      },
+      {
+       "url": "https://newsletter.gamediscover.co/p/tiktok-practical-advice-for-big-discovery",
+       "date": "2026-10-20",
+       "what": "GameDiscoverCo 2022-10-10, TikTok practical advice"
+      }
+     ]
+    },
+    {
+     "id": "ys-niche-ok",
+     "rule": "Shorts audience overlaps Reddit: niche/hardcore and roguelite games can break out; commenters are more critical and compare with other games",
+     "kind": "format",
+     "evidence": "GDCo/Jestr 2026; ~34% of Jestr network views on Shorts",
+     "strength": "measured",
+     "sources": [
+      {
+       "url": "https://newsletter.gamediscover.co/p/everything-you-want-to-know-about",
+       "date": "2026-10-20",
+       "what": "GameDiscoverCo 2026-04-17, short-form video & games (Jestr data)"
+      }
+     ]
+    },
+    {
+     "id": "ys-pair-longform",
+     "rule": "Use Shorts for reach, pair with long-form (devlog/trailer) which converts better",
+     "kind": "format",
+     "evidence": "itch 2-person team: long trailer 9k views -> +300 wishlists (~33/1k); Shorts examples ~4-5/1k",
+     "strength": "anecdote",
+     "sources": [
+      {
+       "url": "https://squigalug.itch.io/control-yourself/devlog/910174/youtube-vs-tiktok-raising-your-games-profile",
+       "date": "2026-10-20",
+       "what": "itch devlog: Shorts ~500 views / TikTok ~250, views stop when feed stops"
+      },
+      {
+       "url": "https://script2shorts.app/blog/get-more-game-downloads",
+       "date": "2026-10-20",
+       "what": "vendor blog (sells Shorts tool): unnamed examples, view->store visit 0.5-2%"
+      }
+     ]
+    },
+    {
+     "id": "ys-crosspost-clean",
+     "rule": "Cross-post TikTok cuts without watermark, staggered by a day or two",
+     "kind": "rules",
+     "evidence": "presskit 2026",
+     "strength": "expert_opinion",
+     "sources": [
+      {
+       "url": "https://presskit.gg/field-guides/tiktok-indie-game-marketing",
+       "date": "2026-10-20",
+       "what": "presskit.gg TikTok field guide, Feb 2026 (uses HTMAG data)"
+      }
+     ]
+    },
+    {
+     "id": "ys-longform-discovery",
+     "rule": "Long-form YouTube is the #1 discovery channel for Steam players (57%); short-form 37.5%",
+     "kind": "community",
+     "evidence": "GameDiscoverCo Steam Fan Snapshot (16,152 players)",
+     "strength": "measured",
+     "sources": [
+      {
+       "url": "https://gamedevreports.substack.com/p/gamediscoverco-how-players-of-different",
+       "date": "2026-10-20",
+       "what": "GameDiscoverCo Steam Fan Snapshot (16,152 players) via GameDevReports, 2026"
+      }
+     ]
+    }
+   ],
+   "benchmarks": [
+    {
+     "metric": "views per Short, small dev channel",
+     "good": "thousands+",
+     "typical": "a few hundred (one dev: ~500 on Shorts vs ~250 on TikTok); views stop when the feed stops showing it",
+     "source": {
+      "url": "https://squigalug.itch.io/control-yourself/devlog/910174/youtube-vs-tiktok-raising-your-games-profile",
+      "date": "2026-10-20",
+      "what": "itch devlog: Shorts ~500 views / TikTok ~250, views stop when feed stops"
+     },
+     "note": "anecdote"
+    },
+    {
+     "metric": "viewed vs swiped away",
+     "good": ">70%",
+     "typical": "~50%",
+     "source": {
+      "url": "https://1of10.com/blog/youtube-shorts-analytics/",
+      "date": "2026-10-20",
+      "what": "1of10: no official Shorts benchmarks; 'viewed vs swiped away' metric explained"
+     },
+     "note": "creator-reported, YouTube publishes no benchmark"
+    }
+   ],
+   "conversion": [
+    {
+     "what": "Shorts views -> wishlists (vendor examples)",
+     "value": "~4 per 1,000 (800k->3,200; 2.1M->8,000) [vendor, unnamed games]",
+     "source": {
+      "url": "https://script2shorts.app/blog/get-more-game-downloads",
+      "date": "2026-10-20",
+      "what": "vendor blog (sells Shorts tool): unnamed examples, view->store visit 0.5-2%"
+     }
+    },
+    {
+     "what": "view -> store visit",
+     "value": "0.5-2% [vendor estimate]",
+     "source": {
+      "url": "https://script2shorts.app/blog/get-more-game-downloads",
+      "date": "2026-10-20",
+      "what": "vendor blog (sells Shorts tool): unnamed examples, view->store visit 0.5-2%"
+     }
+    }
+   ],
+   "flops": [
+    {
+     "why": "slow first second / unclear cover frame -> swiped away",
+     "sources": [
+      {
+       "url": "https://growcreator.pro/blog/viewed-vs-swiped-away-youtube-shorts",
+       "date": "2026-10-20",
+       "what": "viewed vs swiped away explained (third-party)"
+      },
+      {
+       "url": "https://vidiq.com/blog/post/youtube-shorts-algorithm/",
+       "date": "2026-10-20",
+       "what": "vidIQ 2026: Shorts tested on seed audience; swipe-away stops distribution (third-party)"
+      }
+     ]
+    },
+    {
+     "why": "strategy / less visual games struggle on short-form",
+     "sources": [
+      {
+       "url": "https://newsletter.gamediscover.co/p/everything-you-want-to-know-about",
+       "date": "2026-10-20",
+       "what": "GameDiscoverCo 2026-04-17, short-form video & games (Jestr data)"
+      }
+     ]
+    }
+   ]
+  }
+ },
+ "cross_platform": [
+  {
+   "finding": "Short-form video is a key discovery channel for 36-37.5% of Steam players, 53.5% of under-18s; long-form YouTube 57%, Steam 55.8%",
+   "sources": [
+    {
+     "url": "https://gamedevreports.substack.com/p/gamediscoverco-how-players-of-different",
+     "date": "2026-10-20",
+     "what": "GameDiscoverCo Steam Fan Snapshot (16,152 players) via GameDevReports, 2026"
+    },
+    {
+     "url": "https://newsletter.gamediscover.co/p/everything-you-want-to-know-about",
+     "date": "2026-10-20",
+     "what": "GameDiscoverCo 2026-04-17, short-form video & games (Jestr data)"
+    }
+   ]
+  },
+  {
+   "finding": "The same clip performs very differently per platform: post everywhere, judge per platform",
+   "sources": [
+    {
+     "url": "https://howtomarketagame.com/2022/02/14/how-to-go-viral-on-tiktok/",
+     "date": "2026-10-20",
+     "what": "HTMAG 2022-02-14, Farewell North / The Matriarch / FREERIDE cases"
+    },
+    {
+     "url": "https://skydome.itch.io/thehive/devlog/1164902/10000-wishlists-in-10-days-what-changed-for-the-hive",
+     "date": "2026-10-20",
+     "what": "The Hive devlog: 10k wishlists in 10 days from tiny accounts (self-reported)"
+    }
+   ]
+  },
+  {
+   "finding": "Viral breakouts in the cases had the Steam page live and a clear CTA",
+   "sources": [
+    {
+     "url": "https://howtomarketagame.com/2021/07/12/how-to-market-your-indie-game-a-10-step-plan/",
+     "date": "2026-10-20",
+     "what": "HTMAG 10-step plan: Steam page must exist before social posts"
+    },
+    {
+     "url": "https://howtomarketagame.com/2022/02/14/how-to-go-viral-on-tiktok/",
+     "date": "2026-10-20",
+     "what": "HTMAG 2022-02-14, Farewell North / The Matriarch / FREERIDE cases"
+    }
+   ]
+  },
+  {
+   "finding": "Spikes are rare and luck-heavy; repeat proven hooks quickly instead of new ideas each time",
+   "sources": [
+    {
+     "url": "https://presskit.gg/field-guides/tiktok-indie-game-marketing",
+     "date": "2026-10-20",
+     "what": "presskit.gg TikTok field guide, Feb 2026 (uses HTMAG data)"
+    },
+    {
+     "url": "https://skydome.itch.io/thehive/devlog/1164902/10000-wishlists-in-10-days-what-changed-for-the-hive",
+     "date": "2026-10-20",
+     "what": "The Hive devlog: 10k wishlists in 10 days from tiny accounts (self-reported)"
+    }
+   ]
+  },
+  {
+   "finding": "Views-to-wishlists ranges ~1-20 per 1,000 views across platforms; median ~7 for curator tweets",
+   "sources": [
+    {
+     "url": "https://howtomarketagame.com/2026/05/07/2026-tips-for-making-your-tweets-go-viral/",
+     "date": "2026-10-20",
+     "what": "HTMAG 2026-05-07, IndieGameJoe viral tweets, 8 devs reporting wishlists"
+    },
+    {
+     "url": "https://howtomarketagame.com/2022/02/14/how-to-go-viral-on-tiktok/",
+     "date": "2026-10-20",
+     "what": "HTMAG 2022-02-14, Farewell North / The Matriarch / FREERIDE cases"
+    },
+    {
+     "url": "https://howtomarketagame.com/2022/01/10/how-a-two-person-team-earned-11000-wishlists-with-one-reddit-post/",
+     "date": "2026-10-20",
+     "what": "HTMAG 2022-01-10, Laysara r/gaming 3.2M views / 11k wishlists"
+    }
+   ]
+  }
+ ],
+ "subreddits": [
+  {
+   "sub": "r/indiegames",
+   "subscribers_approx": 340436,
+   "self_promo_rules": "Promotion allowed only with gameplay footage inline (image/GIF/video) and the correct flair (Promotion/Upcoming/Video...); no 'would you play this?' titles; store/social link policy differs between summaries; about the game, not the dev process",
+   "what_performs": "Strong opening seconds in GIF/video; 'Promotion' is the most used flair (see own RSS scan of top posts)",
+   "fit_for_physics_comedy_roguelite": "high",
+   "sources": [
+    {
+     "url": "https://threadfox.vip/rules/for/games",
+     "date": "2026-10-20",
+     "what": "threadfox rule index, rules read 2026-09-24..2026-10-14"
+    },
+    {
+     "url": "https://www.threadotter.com/subreddit-rules/indiegames",
+     "date": "2026-10-20",
+     "what": "Thread Otter r/indiegames self-promo summary"
+    },
+    {
+     "url": "https://www.steampageanalyzer.com/blog/reddit-indie-game-marketing",
+     "date": "2026-10-20",
+     "what": "steampageanalyzer.com 2026-09-07, Reddit for indie games (members checked 2026-07-02)"
+    }
+   ],
+   "unverified": [
+    "link policy",
+    "exact flair list"
+   ]
+  },
+  {
+   "sub": "r/IndieDev",
+   "subscribers_approx": 454445,
+   "self_promo_rules": "Dev-to-dev, few strict rules; sidebar per summary: GIFs/images get attention, bare Steam/YouTube links don't; capsule comparison posts only on Wednesdays",
+   "what_performs": "Progress posts, before/after, milestones, transparent postmortems",
+   "fit_for_physics_comedy_roguelite": "medium",
+   "sources": [
+    {
+     "url": "https://threadfox.vip/rules/for/games",
+     "date": "2026-10-20",
+     "what": "threadfox rule index, rules read 2026-09-24..2026-10-14"
+    },
+    {
+     "url": "https://www.steampageanalyzer.com/blog/reddit-indie-game-marketing",
+     "date": "2026-10-20",
+     "what": "steampageanalyzer.com 2026-09-07, Reddit for indie games (members checked 2026-07-02)"
+    }
+   ],
+   "unverified": [
+    "Wednesday capsule rule",
+    "promo rule text"
+   ]
+  },
+  {
+   "sub": "r/gamedev",
+   "subscribers_approx": 2066539,
+   "self_promo_rules": "Not for showcasing projects ('Relevant Content'); links only for postmortems/analytics/feedback; showcase goes to r/indiegames, r/playmygame, r/gamedevscreens",
+   "what_performs": "Postmortems with real numbers (karma, press pickup), not wishlists",
+   "fit_for_physics_comedy_roguelite": "low",
+   "sources": [
+    {
+     "url": "https://threadfox.vip/rules/for/games",
+     "date": "2026-10-20",
+     "what": "threadfox rule index, rules read 2026-09-24..2026-10-14"
+    },
+    {
+     "url": "https://www.steampageanalyzer.com/blog/reddit-indie-game-marketing",
+     "date": "2026-10-20",
+     "what": "steampageanalyzer.com 2026-09-07, Reddit for indie games (members checked 2026-07-02)"
+    }
+   ],
+   "unverified": [
+    "Screenshot Saturday thread still running"
+   ]
+  },
+  {
+   "sub": "r/IndieGaming",
+   "subscribers_approx": 529359,
+   "self_promo_rules": "Self-promo limited: account >= 1 week with history, one submission every 2 weeks (per summary); no bare store pages/direct downloads; declare GenAI; repeat posts of the same game removed",
+   "what_performs": "One quality post per milestone; low-effort 'wishlist my game' posts get buried",
+   "fit_for_physics_comedy_roguelite": "high",
+   "sources": [
+    {
+     "url": "https://threadfox.vip/rules/for/games",
+     "date": "2026-10-20",
+     "what": "threadfox rule index, rules read 2026-09-24..2026-10-14"
+    },
+    {
+     "url": "https://www.threadotter.com/subreddit-rules/indiegaming",
+     "date": "2026-10-20",
+     "what": "Thread Otter r/IndieGaming self-promo summary"
+    },
+    {
+     "url": "https://www.steampageanalyzer.com/blog/reddit-indie-game-marketing",
+     "date": "2026-10-20",
+     "what": "steampageanalyzer.com 2026-09-07, Reddit for indie games (members checked 2026-07-02)"
+    }
+   ],
+   "unverified": [
+    "exact frequency rule",
+    "GenAI declaration rule"
+   ]
+  },
+  {
+   "sub": "r/gaming",
+   "subscribers_approx": 47319782,
+   "self_promo_rules": "Strictest filter; dev posts must stand on their own as content; guidelines on bandwagons/brigades; automod removals happen",
+   "what_performs": "Highest ceiling: Laysara 30 s clip + personal title -> 3.2M views, ~11k wishlists",
+   "fit_for_physics_comedy_roguelite": "medium",
+   "sources": [
+    {
+     "url": "https://threadfox.vip/rules/for/games",
+     "date": "2026-10-20",
+     "what": "threadfox rule index, rules read 2026-09-24..2026-10-14"
+    },
+    {
+     "url": "https://howtomarketagame.com/2022/01/10/how-a-two-person-team-earned-11000-wishlists-with-one-reddit-post/",
+     "date": "2026-10-20",
+     "what": "HTMAG 2022-01-10, Laysara r/gaming 3.2M views / 11k wishlists"
+    },
+    {
+     "url": "https://www.steampageanalyzer.com/blog/reddit-indie-game-marketing",
+     "date": "2026-10-20",
+     "what": "steampageanalyzer.com 2026-09-07, Reddit for indie games (members checked 2026-07-02)"
+    }
+   ],
+   "unverified": [
+    "current self-promo rule text"
+   ]
+  },
+  {
+   "sub": "r/IndieGameWishlist",
+   "subscribers_approx": 8765,
+   "self_promo_rules": "No promotion rule listed in the index (the sub exists for wishlist promotion and dev data posts)",
+   "what_performs": "Dev data posts (wishlists before/after Next Fest, launch numbers); small audience, mostly devs",
+   "fit_for_physics_comedy_roguelite": "medium",
+   "sources": [
+    {
+     "url": "https://threadfox.vip/rules/for/games",
+     "date": "2026-10-20",
+     "what": "threadfox rule index, rules read 2026-09-24..2026-10-14"
+    }
+   ],
+   "unverified": [
+    "rules",
+    "audience composition"
+   ]
+  },
+  {
+   "sub": "r/roguelites",
+   "subscribers_approx": null,
+   "self_promo_rules": "[DA VERIFICARE] rules not found in any summary",
+   "what_performs": "Genre audience match; Gnomes used it for playtester recruiting and the demo launch post",
+   "fit_for_physics_comedy_roguelite": "high",
+   "sources": [
+    {
+     "url": "https://howtomarketagame.com/2025/08/13/gnomes-tower-defense-with-10-month-dev-time-hits-367484/",
+     "date": "2026-10-20",
+     "what": "HTMAG 2025-08-13, Gnomes: ~3,000 wishlists from Reddit posts before demo"
+    }
+   ],
+   "unverified": [
+    "subscribers_approx",
+    "self_promo_rules"
+   ]
+  },
+  {
+   "sub": "r/roguelikes",
+   "subscribers_approx": 113163,
+   "self_promo_rules": "Self-promo restricted: about once per three months, with further conditions (truncated in the index)",
+   "what_performs": "Dev diaries with strong audience match; audience leans to traditional roguelikes",
+   "fit_for_physics_comedy_roguelite": "medium",
+   "sources": [
+    {
+     "url": "https://threadfox.vip/rules/for/games",
+     "date": "2026-10-20",
+     "what": "threadfox rule index, rules read 2026-09-24..2026-10-14"
+    },
+    {
+     "url": "https://www.steampageanalyzer.com/blog/reddit-indie-game-marketing",
+     "date": "2026-10-20",
+     "what": "steampageanalyzer.com 2026-09-07, Reddit for indie games (members checked 2026-07-02)"
+    }
+   ],
+   "unverified": [
+    "full conditions"
+   ]
+  },
+  {
+   "sub": "r/playmygame",
+   "subscribers_approx": 144884,
+   "self_promo_rules": "Requires a free playable build with a direct link; pure trailers removed",
+   "what_performs": "Free demo/beta posts with a clear feedback ask",
+   "fit_for_physics_comedy_roguelite": "high",
+   "sources": [
+    {
+     "url": "https://threadfox.vip/rules/for/games",
+     "date": "2026-10-20",
+     "what": "threadfox rule index, rules read 2026-09-24..2026-10-14"
+    },
+    {
+     "url": "https://www.steampageanalyzer.com/blog/reddit-indie-game-marketing",
+     "date": "2026-10-20",
+     "what": "steampageanalyzer.com 2026-09-07, Reddit for indie games (members checked 2026-07-02)"
+    }
+   ],
+   "unverified": []
+  },
+  {
+   "sub": "r/CozyGamers",
+   "subscribers_approx": null,
+   "self_promo_rules": "[DA VERIFICARE] rules not found; genre-sub rules vary (some ban store links, some have promo threads, some 1 self-post/month)",
+   "what_performs": "Cozy aesthetic; fits only if the game is framed as cozy",
+   "fit_for_physics_comedy_roguelite": "low",
+   "sources": [
+    {
+     "url": "https://www.steampageanalyzer.com/blog/reddit-indie-game-marketing",
+     "date": "2026-10-20",
+     "what": "steampageanalyzer.com 2026-09-07, Reddit for indie games (members checked 2026-07-02)"
+    }
+   ],
+   "unverified": [
+    "subscribers_approx",
+    "self_promo_rules"
+   ]
+  },
+  {
+   "sub": "r/Games",
+   "subscribers_approx": 3578106,
+   "self_promo_rules": "Self-promo strict; a weekly 'Indie Sunday' dev format is reported but not confirmed",
+   "what_performs": "Not covered",
+   "fit_for_physics_comedy_roguelite": "low",
+   "sources": [
+    {
+     "url": "https://threadfox.vip/rules/for/games",
+     "date": "2026-10-20",
+     "what": "threadfox rule index, rules read 2026-09-24..2026-10-14"
+    },
+    {
+     "url": "https://www.steampageanalyzer.com/blog/reddit-indie-game-marketing",
+     "date": "2026-10-20",
+     "what": "steampageanalyzer.com 2026-09-07, Reddit for indie games (members checked 2026-07-02)"
+    }
+   ],
+   "unverified": [
+    "Indie Sunday rules"
+   ]
+  },
+  {
+   "sub": "r/pcgaming",
+   "subscribers_approx": 3800000,
+   "self_promo_rules": "News-oriented: announcements and launches, not dev diaries",
+   "what_performs": "Launch/announcement news",
+   "fit_for_physics_comedy_roguelite": "low",
+   "sources": [
+    {
+     "url": "https://www.steampageanalyzer.com/blog/reddit-indie-game-marketing",
+     "date": "2026-10-20",
+     "what": "steampageanalyzer.com 2026-09-07, Reddit for indie games (members checked 2026-07-02)"
+    }
+   ],
+   "unverified": [
+    "self_promo_rules"
+   ]
+  },
+  {
+   "sub": "r/pcmasterrace",
+   "subscribers_approx": 15000000,
+   "self_promo_rules": "Meme-literate PC audience; tone matters",
+   "what_performs": "Dev posts occasionally break out",
+   "fit_for_physics_comedy_roguelite": "low",
+   "sources": [
+    {
+     "url": "https://www.steampageanalyzer.com/blog/reddit-indie-game-marketing",
+     "date": "2026-10-20",
+     "what": "steampageanalyzer.com 2026-09-07, Reddit for indie games (members checked 2026-07-02)"
+    }
+   ],
+   "unverified": [
+    "self_promo_rules"
+   ]
+  },
+  {
+   "sub": "r/DestroyMyGame",
+   "subscribers_approx": 64342,
+   "self_promo_rules": "Only your own trailer/footage; flair by dev stage; no promotional/clickbait titles or URLs in titles; feedback is blunt on purpose",
+   "what_performs": "Trailer/clip testing before posting elsewhere",
+   "fit_for_physics_comedy_roguelite": "medium",
+   "sources": [
+    {
+     "url": "https://threadfox.vip/rules/for/games",
+     "date": "2026-10-20",
+     "what": "threadfox rule index, rules read 2026-09-24..2026-10-14"
+    },
+    {
+     "url": "https://www.steampageanalyzer.com/blog/reddit-indie-game-marketing",
+     "date": "2026-10-20",
+     "what": "steampageanalyzer.com 2026-09-07, Reddit for indie games (members checked 2026-07-02)"
+    }
+   ],
+   "unverified": []
+  },
+  {
+   "sub": "r/gamedevscreens",
+   "subscribers_approx": 101688,
+   "self_promo_rules": "No promotion rule listed; WIP screenshots/clips, promo-tolerant",
+   "what_performs": "WIP clips, dev diaries",
+   "fit_for_physics_comedy_roguelite": "medium",
+   "sources": [
+    {
+     "url": "https://threadfox.vip/rules/for/games",
+     "date": "2026-10-20",
+     "what": "threadfox rule index, rules read 2026-09-24..2026-10-14"
+    },
+    {
+     "url": "https://www.steampageanalyzer.com/blog/reddit-indie-game-marketing",
+     "date": "2026-10-20",
+     "what": "steampageanalyzer.com 2026-09-07, Reddit for indie games (members checked 2026-07-02)"
+    }
+   ],
+   "unverified": []
+  },
+  {
+   "sub": "r/itchio",
+   "subscribers_approx": 61716,
+   "self_promo_rules": "No promotion rule listed",
+   "what_performs": "itch.io releases (free beta)",
+   "fit_for_physics_comedy_roguelite": "medium",
+   "sources": [
+    {
+     "url": "https://threadfox.vip/rules/for/games",
+     "date": "2026-10-20",
+     "what": "threadfox rule index, rules read 2026-09-24..2026-10-14"
+    }
+   ],
+   "unverified": [
+    "rules"
+   ]
+  }
+ ],
+ "posting_times": {
+  "generated": "2026-10-20",
+  "note": "Posting time is a tiebreaker: studies disagree; measure with your own data.",
+  "items": [
+   {
+    "platform": "tiktok",
+    "finding": "Best single slots Sunday 9 am, Monday 1 pm; evenings 6-11 pm strongest; Saturday best day, Wednesday worst",
+    "scope": "general social media (Buffer 2026, 7.1M TikToks)",
+    "source": {
+     "url": "https://buffer.com/resources/best-time-to-post-social-media/",
+     "date": "2026-10-20",
+     "what": "Buffer 2026, 52M posts (general social media, not gaming)"
+    }
+   },
+   {
+    "platform": "tiktok",
+    "finding": "2-5 posts/week ~+17% views per post vs once a week",
+    "scope": "general (Buffer, 11.4M TikToks)",
+    "source": {
+     "url": "https://buffer.com/resources/best-time-to-post-social-media/",
+     "date": "2026-10-20",
+     "what": "Buffer 2026, 52M posts (general social media, not gaming)"
+    }
+   },
+   {
+    "platform": "tiktok",
+    "finding": "Upload ~8 am or 2 pm PST; one dev saw 4k views in 6 h at the wrong time vs 4k in 30 min at the right time",
+    "scope": "gaming anecdote (HTMAG 2022)",
+    "source": {
+     "url": "https://howtomarketagame.com/2022/02/07/seven-great-tips-for-marketing-your-indie-game-on-tiktok/",
+     "date": "2026-10-20",
+     "what": "HTMAG 2022-02-07, 'I Just Want to be Single!!' TikTok case"
+    }
+   },
+   {
+    "platform": "tiktok",
+    "finding": "Noon CET possibly helped (dev unsure)",
+    "scope": "gaming anecdote (HTMAG 2022)",
+    "source": {
+     "url": "https://howtomarketagame.com/2022/02/14/how-to-go-viral-on-tiktok/",
+     "date": "2026-10-20",
+     "what": "HTMAG 2022-02-14, Farewell North / The Matriarch / FREERIDE cases"
+    }
+   },
+   {
+    "platform": "tiktok",
+    "finding": "2-3 posts/week, 1-2 h/week budget; consistency over volume",
+    "scope": "gaming guide (presskit 2026)",
+    "source": {
+     "url": "https://presskit.gg/field-guides/tiktok-indie-game-marketing",
+     "date": "2026-10-20",
+     "what": "presskit.gg TikTok field guide, Feb 2026 (uses HTMAG data)"
+    }
+   },
+   {
+    "platform": "instagram",
+    "finding": "Evenings 6-11 pm strongest; top slots Thu 9 am, Wed 12 pm, Wed 6 pm (sample size stated inconsistently)",
+    "scope": "general (Buffer 2026)",
+    "source": {
+     "url": "https://buffer.com/resources/best-time-to-post-social-media/",
+     "date": "2026-10-20",
+     "what": "Buffer 2026, 52M posts (general social media, not gaming)"
+    }
+   },
+   {
+    "platform": "x",
+    "finding": "Curator account posts 1-2 game pitches/day and replies to comments",
+    "scope": "gaming (HTMAG 2026)",
+    "source": {
+     "url": "https://howtomarketagame.com/2026/05/07/2026-tips-for-making-your-tweets-go-viral/",
+     "date": "2026-10-20",
+     "what": "HTMAG 2026-05-07, IndieGameJoe viral tweets, 8 devs reporting wishlists"
+    }
+   },
+   {
+    "platform": "reddit",
+    "finding": "US morning ~8-11 am ET for large subs (tiebreaker); ~1 post per sub per month outside dedicated threads",
+    "scope": "gaming guide (steampageanalyzer 2026)",
+    "source": {
+     "url": "https://www.steampageanalyzer.com/blog/reddit-indie-game-marketing",
+     "date": "2026-10-20",
+     "what": "steampageanalyzer.com 2026-09-07, Reddit for indie games (members checked 2026-07-02)"
+    }
+   },
+   {
+    "platform": "youtube_shorts",
+    "finding": "Stagger cross-posts by a day or two after TikTok",
+    "scope": "gaming guide (presskit 2026)",
+    "source": {
+     "url": "https://presskit.gg/field-guides/tiktok-indie-game-marketing",
+     "date": "2026-10-20",
+     "what": "presskit.gg TikTok field guide, Feb 2026 (uses HTMAG data)"
+    }
+   },
+   {
+    "platform": "all",
+    "finding": "Studies disagree (Sprout Social: avoid weekends on TikTok; Buffer: Saturday best)",
+    "scope": "general",
+    "source": {
+     "url": "https://frameos.studio/blog/best-time-to-post-on-tiktok",
+     "date": "2026-10-20",
+     "what": "comparison of 5 TikTok timing studies (Buffer vs Sprout disagree)"
+    }
+   }
+  ]
+ },
+ "blocked_sources": [
+  {
+   "url": "https://www.reddit.com/r/indiegames/about/rules",
+   "status": "WebFetch refuses reddit.com; old.reddit.com rules page answers 302 (redirect, likely login/block)",
+   "manual_step": "Open each sub's About/Rules in a browser and copy rule titles into launch/_raw/subreddits_rules_manual.md, or set REDDIT_CLIENT_ID/SECRET and run reddit_rules.py"
+  },
+  {
+   "url": "https://www.reddit.com/r/roguelites/about/rules",
+   "status": "same block; no third-party summary found",
+   "manual_step": "Read the r/roguelites sidebar by hand: self-promo frequency, flair, link rules"
+  },
+  {
+   "url": "https://www.reddit.com/r/CozyGamers/about/rules",
+   "status": "same block; no third-party summary found",
+   "manual_step": "Read the sidebar by hand"
+  },
+  {
+   "url": "https://www.reddit.com/r/Games/wiki/rules",
+   "status": "Indie Sunday rules not confirmed",
+   "manual_step": "Check the r/Games wiki for the Indie Sunday format and day"
+  },
+  {
+   "url": "https://www.tiktok.com/creator-academy/en/article/elements-of-tiktok-video?lang=en",
+   "status": "read only through a search summary",
+   "manual_step": "Optional: read Creator Academy articles in a browser"
+  }
+ ]
+}

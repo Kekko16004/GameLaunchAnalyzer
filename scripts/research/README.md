@@ -53,6 +53,12 @@ Reusable tools for launch market research: Steam comparables and reviews, creato
 | `calendar_view.py` | The Calendario tab (month grids to the launch, day panel, hover preview, 14-day agenda) and the Roadmap of key milestones, used by `status_page.py` | 11 |
 | `weblinks.py` | Bare URLs in the generated pages become short, safe links (new tab, `rel=noopener`), used by `status_page.py` and `report_html.py` | 11 |
 | `todo_track.py` | Keep `TODO.md` alive: list, stats, mark done / reopen, add | 4, 11, routine |
+| `publisher_scout.py` | Publisher shortlist for a game from the curated `data/publishers.json` (sources and date per entry): fit (declared genres + real Steam catalog via store search and SteamSpy tags, stage, wishlists, team, price, platform, region), tiers realistic now / after X / stretch / dream with per-pitch odds and next step, never "nobody"; with/without publisher on calc_econ numbers (break-even copies multiplier); `check` for stale entries | 0A, 5, 8 |
+| `case_studies.py` | Real launch / Next Fest records from dev posts and post-mortems (source URL + date) plus survey benchmarks; `bench` (Next Fest gain entering with N), `tripwires` into calendar.md, `query`, `add` / `import` into the private file | 2, 4, 7C |
+| `reddit_trends.py` | What performs on a subreddit now: formats and title hooks of top vs new posts (lift), from public RSS (OAuth API when keys exist); no bypass of 403/429 | 6, 9 |
+| `social_content.py` | Evidence-based social module: patterns per platform with strength and sources, small-account benchmarks, post planner (moments → calendar per platform with A/B hooks, CTA by date, subreddit rules and cooldowns, weekly steps in calendar.md), post tracker (manual or CSV export) and `learn` (what works for THIS game, fed back into the plan and top_moves) | 6, 8, 9 |
+| `social_kit.py` | Weekly ready-to-post kit (3 cross-posted clips + 1 Reddit post: exact clip or storyboard, A/B hook texts, caption, hashtags, day/time, CTA by date, Steam link with UTM, one-line why with source, 5-minute logging line) and the clip registry with full storyboards and status (todo / recorded / posted); next week's kit is rebuilt from what worked | 6, 8 |
+| `honest_odds.py` | One honest-odds card per decision (copies, publisher, Next Fest, social, simulated vs real) with basis, label, what moves it and a cross-check when two sources disagree; shown in STATUS.html | 11 |
 | `common.py` | Throttled HTTP with retries, JSON/CSV writers (used by all) | – |
 
 ---

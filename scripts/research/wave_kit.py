@@ -29,7 +29,10 @@ Commands:
                                      write the templates, never overwrite (ROOT default: the folder above launch/)
   check --launch-dir launch --wave N [--json] [--project ROOT]
                                      Italian checklist; exit 1 if a required item is missing (limite-beta, the
-                                     contract items and the sintesi only warn)
+                                     contract items and the sintesi only warn). REQUIRED in every wave: the full-game
+                                     evaluation (brief section, genre rubric weights, map redone for this wave, changes-since
+                                     cited when it exists) and the calibration anchors; after the panel the wave JSON needs
+                                     3+ anchors inside tolerance (or re-judged) and the 6 rubric dimensions on every tester.
   fixes --launch-dir launch --wave N [--from FILE] [--write WAVE.json] [--project ROOT]
                                      the `fixes` array from changes-since (.md) or `gate_link.py since --json` (.json);
                                      --write appends the missing ones to the wave JSON (never removes or edits a fix)
@@ -193,6 +196,18 @@ def _t_brief(n: int, date: str, game: str, root: str | None = None, launch_dir: 
 ## Cosa si valuta
 > Tipo di prodotto (beta / demo / gioco completo), build, cosa è cambiato per il proprietario, materiali (pagina store, trailer, capsule).
 {PLACEHOLDER}
+
+## Valutazione completa del gioco (obbligatoria, ogni ondata)
+> Ogni ondata giudica **tutto il gioco**, anche quando ha un tema: mappa del gioco rifatta su questa build, tutte le schermate, le run a tempi, tutto ciò che è cambiato dall'ultima ondata (`changes-since`). Ogni tester dà un voto da 1 a 10 alle 6 dimensioni della rubrica (gameplay e feel · grafica, stile e audio · contenuto e rigiocabilità · chiarezza e UX · prezzo e valore · clip, social e co-op), poi il verdetto. Il voto complessivo usa i **pesi del genere** (`fg_waves.py weights --genre <genere> --corpus <corpus.json>`). I tester giudicano come **giocatori veri del genere**, non come critici a caccia di difetti (`references/04-focus-group.md` 7.0e).
+- Pesi della rubrica (genere, pesi, fonte): {PLACEHOLDER}
+
+## Ancore di calibrazione (giochi veri, giudicati alla cieca con la stessa rubrica)
+> Almeno 3, **le stesse a ogni ondata**: 2+ successi veri del genere e 1 gioco debole, ognuno con la fascia attesa calcolata dalle sue recensioni vere (`fg_waves.py anchor-band --positive P --reviews N`, con data). Se un'ancora esce dalla fascia (o si sposta dall'ondata prima) di più di 8 punti, si **ricalibra prima di pubblicare**.
+{PLACEHOLDER}
+
+## Tema dell'ondata (facoltativo)
+> Un tema in più (es. difficoltà, negozio, trailer). Si aggiunge alla valutazione completa, **non la sostituisce**; nel JSON dell'ondata: `"focus": {{"theme": "..."}}`. Se non c'è, scrivi "nessuno".
+nessuno
 
 {_recheck_section(n, root, launch_dir)}
 ## Preparazione dell'ondata (obbligatoria, prima dei giudizi)
@@ -754,6 +769,54 @@ def check_link(r: "Report", launch_dir: str, n: int, root: str, texts: dict) -> 
                  + " → riaprile (`aperto`, nota \"ricomparso dopo il gate NN\") e scrivilo nella sintesi", False)
 
 
+def check_full_evaluation(r: "Report", launch_dir: str, n: int, root: str, brief: str) -> None:
+    """Every wave is a full-game evaluation (+ an optional focus theme): required items, they fail."""
+    fn = fname(n, "brief")
+    full = body_until_next(brief, r"valutazione completa")
+    r.ok(fn, "valutazione completa del gioco (non solo il tema)", full is not None and bool(re.search(r"rubrica|dimension", full or "", re.I)),
+         "manca la sezione \"Valutazione completa del gioco\": ogni ondata giudica tutto il gioco, il tema si aggiunge (`wave_kit.py init`)")
+    r.ok(fn, "pesi della rubrica del genere", full is not None and PLACEHOLDER not in full and bool(re.search(r"\d[.,]\d", full or "")),
+         "scrivi genere, pesi e fonte (`fg_waves.py weights --genre ... --corpus ...`)")
+    anc = body_until_next(brief, r"ancore di calibrazione")
+    lines = content_lines(anc or "")
+    r.ok(fn, "ancore di calibrazione (giochi veri, almeno 3)", len(lines) >= 3 and any(re.search(r"debol|weak", l, re.I) for l in lines),
+         "elenca almeno 3 ancore: 2+ successi veri del genere e 1 gioco debole, con la fascia dalle recensioni vere")
+    cs_path, _ = load_changes_since(root, n, launch_dir)
+    if cs_path:
+        r.ok(fn, "cambiamenti dall'ultima ondata nel brief (changes-since)", os.path.basename(cs_path) in brief,
+             f"il brief deve citare `{os.path.basename(cs_path)}`: la valutazione completa include tutto ciò che è cambiato")
+
+
+def check_calibration(r: "Report", launch_dir: str, n: int) -> None:
+    """Wave JSON after the panel: anchors (3+, hit and weak, inside tolerance) and the genre rubric on every tester."""
+    js = _wave_jsons(wave_dir(launch_dir), n)
+    if not js:
+        return
+    try:
+        import fg_waves
+    except ImportError:
+        return
+    main = [(p, w) for p, w in js if str(w.get("stage") or "").lower() != "full" and not p.endswith("-full.json")] or js
+    p, w = main[0]
+    fn = os.path.basename(p)
+    cal = fg_waves.calibration(w)
+    r.ok(fn, "ancore di calibrazione giudicate (3+, successo e debole)", bool(cal and cal["enough"]),
+         "nel JSON servono `anchors` con fascia e verdetti: almeno 3, con un successo vero e un gioco debole")
+    if cal:
+        bad = [a["name"] for a in cal["anchors"] if a["flag"]]
+        if cal["drift"] and cal["rejudged"]:
+            r.add(fn, "ancore dentro la tolleranza", "warn", f"deriva anche dopo la ricalibrazione ({', '.join(map(str, bad))}): pubblicare il punteggio normalizzato e dirlo")
+        else:
+            r.ok(fn, "ancore dentro la tolleranza", not cal["drift"],
+                 f"DERIVA ({', '.join(map(str, bad))}, panel {cal['direction']}): ricalibrare PRIMA di pubblicare, poi `\"calibration_rejudged\": true`")
+    rb = (w.get("rubric") or {}).get("weights") or {}
+    okw = set(rb) == set(fg_waves.DIMS) and abs(sum(float(v) for v in rb.values()) - 1) <= 0.02
+    r.ok(fn, "rubrica del genere con i 6 pesi (somma 1)", okw, "`rubric.weights` con gameplay, art, content, clarity, value, social (somma 1)")
+    miss = [t.get("id") for t in w.get("testers", []) if not all(isinstance((t.get("dims") or {}).get(d), (int, float)) for d in fg_waves.DIMS)]
+    r.ok(fn, "valutazione completa: ogni tester vota le 6 dimensioni", not miss,
+         f"{len(miss)} tester senza tutte le dimensioni ({', '.join(map(str, miss[:6]))}): il tema non sostituisce la valutazione completa")
+
+
 def check(launch_dir: str, n: int, project: str | None = None) -> dict:
     d = wave_dir(launch_dir)
     r = Report()
@@ -766,6 +829,7 @@ def check(launch_dir: str, n: int, project: str | None = None) -> dict:
     if exists("brief"):
         t = texts["brief"]
         r.ok(fname(n, "brief"), "cosa si valuta", filled(body_until_next(t, r"cosa si valuta")), "sezione \"Cosa si valuta\" vuota")
+        check_full_evaluation(r, launch_dir, n, project_root(launch_dir, project), t)
     keys_text = ""
     for p in sorted(glob.glob(os.path.join(d, f"w{n:02d}-*.json"))):
         try:
@@ -782,6 +846,8 @@ def check(launch_dir: str, n: int, project: str | None = None) -> dict:
     # game map
     if exists("mappa-gioco"):
         t, fn = texts["mappa-gioco"], fname(n, "mappa-gioco")
+        r.ok(fn, "mappa rifatta per questa ondata", bool(re.search(rf"ondata\s*{n}\b|\bw{n:02d}\b", t, re.I)),
+             f"il titolo deve dire \"Ondata {n}\": la mappa si rifà (o si verifica) sulla build di questa ondata, non si copia la vecchia")
         refs = len(FILE_REF.findall(t))
         r.ok(fn, f"riferimenti ai file ({refs})", refs >= 5, "servono almeno 5 riferimenti `percorso` o `percorso:riga`" if refs < 5 else "")
         secs = sections(t)
@@ -845,6 +911,7 @@ def check(launch_dir: str, n: int, project: str | None = None) -> dict:
         r.ok(fn, "prove di mercato", bool(re.search(r"prov[ae]|mercato|fonte|recension", main, re.I)), "ogni proposta porta una prova di mercato con fonte")
 
     check_link(r, launch_dir, n, project_root(launch_dir, project), texts)
+    check_calibration(r, launch_dir, n)
 
     # demo / beta cap (optional)
     if exists("limite-beta", required=False):

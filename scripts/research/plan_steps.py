@@ -150,6 +150,78 @@ def fmt(s: dict, today: dt.date) -> str:
     return f"{s['n']:>2}. {st} {who} {re.sub(r'[*`]', '', s['text'])[:110]}" + (f"  (entro {s['due']})" if s["due"] else "")
 
 
+def add_block(path: str, prefix: str, heading: str, steps: list[dict]) -> int:
+    """Append steps under a `### <heading>` block of the steps section (created at its end if missing; the heading line is
+    refreshed with today's text). Each step: dict(who, text, due, note, key). Idempotent: a step whose `[id key]`, or whose
+    bold title, is already on a step line of the file is skipped. Returns how many steps were added (0 if no steps section).
+    Shared by the tools that feed the calendar (case_studies.py, social_content.py)."""
+    import os
+    if not os.path.exists(path):
+        return 0
+    raw = open(path, encoding="utf-8").read().replace("\r", "")
+    lines = raw.split("\n")
+    if not any(SECTION.match(ln) for ln in lines):
+        return 0
+    plan_ = parse(raw)
+    low_steps = [ln.lower() for ln in lines if STEP.match(ln) or ln.lstrip().startswith("- ")]
+    nmax = max((s_["n"] for s_ in all_steps(plan_)), default=0)
+    add = []
+    for st in steps:
+        key = st.get("key")
+        m = re.search(r"\*\*(.+?)\*\*", st.get("text") or "")
+        title = m.group(1).lower() if m else None
+        if (key and any(f"[id {key}]".lower() in ln for ln in low_steps)) or (title and any(title in ln for ln in low_steps if STEP.match(ln))):
+            continue
+        nmax += 1
+        add.append(f"{nmax}. [ ] {st.get('who', '👤')} {st['text']}" + (f" · 📅 {st['due']}" if st.get("due") else ""))
+        note = (st.get("note") or "") + (f" [id {key}]" if key else "")
+        if note.strip():
+            add.append(f"   - {note.strip()}")
+    if not add:
+        return 0
+    head_txt = f"### {heading}"
+    head = next((k for k, ln in enumerate(lines) if ln.startswith(f"### {prefix}")), None)
+    if head is None:
+        sec = next(k for k, ln in enumerate(lines) if SECTION.match(ln))
+        end = next((k for k in range(sec + 1, len(lines)) if lines[k].startswith("## ")), len(lines))
+        while end > sec + 1 and not lines[end - 1].strip():
+            end -= 1
+        lines[end:end] = [head_txt] + add
+    else:
+        lines[head] = head_txt
+        end = next((k for k in range(head + 1, len(lines)) if lines[k].startswith("#")), len(lines))
+        while end > head + 1 and not lines[end - 1].strip():
+            end -= 1
+        lines[end:end] = add
+    with open(path, "w", encoding="utf-8", newline="\n") as f:
+        f.write("\n".join(lines))
+    return sum(1 for x in add if re.match(r"^\d+\.", x))
+
+
+def upsert_section(path: str, prefix: str, heading: str, body: str, after_prefix: str | None = None) -> bool:
+    """Replace (or add) a `### <heading>` block with `body`, up to the next heading. New blocks go at the end of the `##`
+    section whose title starts with `after_prefix`, else at the end of the file. Idempotent."""
+    import os
+    if not os.path.exists(path):
+        return False
+    lines = open(path, encoding="utf-8").read().replace("\r", "").split("\n")
+    block = [f"### {heading}", ""] + body.rstrip("\n").split("\n") + [""]
+    head = next((k for k, ln in enumerate(lines) if ln.startswith(f"### {prefix}")), None)
+    if head is not None:
+        end = next((k for k in range(head + 1, len(lines)) if lines[k].startswith("#")), len(lines))
+        lines[head:end] = block
+    else:
+        sec = next((k for k, ln in enumerate(lines) if after_prefix and ln.startswith("## ") and ln[3:].strip().startswith(after_prefix)), None)
+        if sec is None:
+            lines += [""] + block
+        else:
+            end = next((k for k in range(sec + 1, len(lines)) if lines[k].startswith("## ")), len(lines))
+            lines[end:end] = block
+    with open(path, "w", encoding="utf-8", newline="\n") as f:
+        f.write("\n".join(lines))
+    return True
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--calendar", default="launch/calendar.md"); ap.add_argument("--today")

@@ -54,7 +54,7 @@ assert status(res, "w03-limite-beta.md", "proposta del limite") == "warn"     # 
 assert all(i["status"] != "fail" for i in res["items"] if i["file"] == "w03-limite-beta.md")
 
 # ---- a filled wave (generic, Godot-like paths) passes
-MAP = "# Mappa\n\n" + "\n\n".join(f"## {i}. {h}\n- voce reale `{p}` [FATTO]\n- altra voce `src/game/{i}.gd:12`" for i, (h, p) in enumerate([
+MAP = "# Ondata 3 — Mappa\n\n" +"\n\n".join(f"## {i}. {h}\n- voce reale `{p}` [FATTO]\n- altra voce `src/game/{i}.gd:12`" for i, (h, p) in enumerate([
     ("Il giro del gioco", "scenes/main.tscn"), ("Economia", "data/economy.json"), ("Progressione e sblocchi", "src/meta.gd"),
     ("Oggetti e potenziamenti", "data/items.tres"), ("Ostacoli e nemici", "src/enemies/"), ("Eventi", "src/events.gd"),
     ("HUD e testi a schermo", "ui/hud.tscn"), ("Comandi", "project.godot"), ("Accessibilità", "src/options.gd"), ("Audio", "audio/bus_layout.tres"),
@@ -91,6 +91,8 @@ PROPOSALS = """# Proposte
 - Prove: 19 % delle positive citano gli amici. Consiglio: non riaprire.
 """
 BRIEF = brief.replace("(da compilare)", "Demo gratuita, build 0.4, pagina store e trailer.", 1)
+BRIEF = BRIEF.replace("- Pesi della rubrica (genere, pesi, fonte): (da compilare)", "- Pesi della rubrica: roguelite, gameplay 0,35 · grafica 0,10 · contenuto 0,25 · chiarezza 0,10 · valore 0,10 · social 0,10 (fg_waves.py weights)", 1)
+BRIEF = BRIEF.replace("(da compilare)\n\n## Tema", "- Balatro (successo) 80,7-94,7\n- Brotato (successo) 79-93\n- Gioco Debole (debole) 8-22\n\n## Tema", 1)
 for n, t in [("w03-brief.md", BRIEF), ("w03-mappa-gioco.md", MAP), ("w03-schermate.md", SCREENS), ("w03-runs.md", RUNS),
              ("w03-mercato.md", MARKET), ("w03-proposte-gameplay.md", PROPOSALS)]:
     write(n, t)
