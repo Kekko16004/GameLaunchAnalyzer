@@ -3,7 +3,8 @@
 
 Why: a fresh chat knows nothing. The skill must not depend on what was said before, nor assume that the project is a "generic
 game". This scan reads the disk (read-only, nothing is written unless you pass -o/--md) and reports:
-  engine        Unreal (.uproject), Unity (ProjectSettings/ProjectVersion.txt), Godot (project.godot), GameMaker, Defold, Love2D,
+  engine        Unreal (.uproject), Unity (ProjectSettings/ProjectVersion.txt), Godot (project.godot), Nucleon (project.ncproject),
+                GameMaker, Defold, Love2D,
                 Ren'Py, RPG Maker, Construct, and web/native frameworks (Phaser, three.js, Bevy, raylib, ...), with the version and
                 engine-specific facts (plugins, render pipeline, scenes, Steamworks, MCP plugin enabled, GameDeveloperSkill files)
   docs          the Markdown/text files that explain the game, ranked (CLAUDE.md, AGENTS.md, GDD, GAME_CONTEXT, GAME_TASKS, README,
@@ -139,6 +140,34 @@ def detect_godot(path: str) -> dict:
                 scenes=count_ext(root, (".tscn",)), scripts=count_ext(root, (".gd", ".cs")), steam=any("steam" in a.lower() for a in addons) or os.path.exists(os.path.join(root, "steam_appid.txt")))
 
 
+def detect_nucleon(path: str) -> dict:
+    """Nucleon Engine (project.ncproject, a Lua table): engine facts + what game-developer left (GDS harnesses, telemetry)."""
+    root, txt = os.path.dirname(path), read(path, 100000)
+    pick = lambda key: (re.search(rf'(?m)\b{key}\s*=\s*"([^"]*)"', txt) or [None, None])[1]
+    gfx = (re.search(r"graphics\s*=\s*\{([^}]*)\}", txt) or [None, ""])[1]
+    gpick = lambda key: (re.search(rf'\b{key}\s*=\s*"([^"]*)"', gfx) or [None, None])[1]
+    content, scripts_dir = os.path.join(root, "Content"), os.path.join(root, "Content", "Scripts")
+    scripts = sorted(f for f in os.listdir(scripts_dir) if f.endswith(".lua")) if os.path.isdir(scripts_dir) else []
+    ui_dir = os.path.join(root, "UI")
+    tele = os.path.join(root, "Saved", "telemetry")
+    cfg = read(os.path.join(root, "Config", "BuildConfigurations.lua"))
+    return dict(engine="nucleon", version=None, name=pick("name") or os.path.basename(root), project_file=path,
+                project_version=pick("projectVersion"), company=pick("company"), startup_level=pick("startupLevel"),
+                graphics_api=gpick("api"), lighting=gpick("lighting"), gi=gpick("globalIllumination"),
+                levels=count_ext(content, (".nclevel",)) if os.path.isdir(content) else 0,
+                actors=count_ext(content, (".ncactor",)) if os.path.isdir(content) else 0,
+                blueprints=count_ext(content, (".ncbp",)) if os.path.isdir(content) else 0,
+                scripts=scripts[:40], verb_tests=[f for f in scripts if f.startswith("test_")],
+                ui_documents=sorted(f for f in os.listdir(ui_dir) if f.endswith(".rml"))[:20] if os.path.isdir(ui_dir) else [],
+                landscapes=count_ext(content, (".land",)) if os.path.isdir(content) else 0,
+                build_configs=re.findall(r'name\s*=\s*"([^"]+)"', cfg)[:10],
+                has_gds=os.path.exists(os.path.join(scripts_dir, "gds_test.lua")),
+                gds_capture=os.path.exists(os.path.join(scripts_dir, "gds_capture.lua")),
+                telemetry_sessions=len(glob.glob(os.path.join(tele, "*.csv"))),
+                mcp="built into the editor (Editor Preferences > AI; game-developer drives it with scripts/ncli.py)",
+                steam=bool(re.search(r"steam", txt + cfg, re.I)) or os.path.exists(os.path.join(root, "steam_appid.txt")))
+
+
 def detect_other(root: str) -> list[dict]:
     out = []
     for pat, engine in (("*.yyp", "gamemaker"), ("game.project", "defold"), ("*.rmmzproject", "rpgmaker-mz"), ("*.rmmvproject", "rpgmaker-mv"), ("*.c3p", "construct"), ("game/script.rpy", "renpy"), ("conf.lua", "love2d")):
@@ -183,6 +212,8 @@ def find_engines(root: str) -> list[dict]:
                     seen.add(path); found.append(detect_unreal(path))
                 elif f == "project.godot" and path not in seen:
                     seen.add(path); found.append(detect_godot(path))
+                elif f.endswith(".ncproject") and path not in seen:
+                    seen.add(path); found.append(detect_nucleon(path))
             if os.path.basename(d) == "ProjectSettings" and "ProjectVersion.txt" in files:
                 path = os.path.join(d, "ProjectVersion.txt")
                 if path not in seen:

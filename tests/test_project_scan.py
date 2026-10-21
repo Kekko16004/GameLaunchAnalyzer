@@ -61,6 +61,17 @@ assert eu["build_scenes"][0].endswith("MainMenu.unity") and set(eu["mcp_packages
 # ---- Godot, web framework, nothing
 go = tempfile.mkdtemp(); W(go, "project.godot", 'config/name="Dungeon Hop"\nconfig/features=PackedStringArray("4.3", "Forward Plus")\n'); W(go, "addons/godot_mcp/plugin.cfg", ""); W(go, "main.gd", ""); W(go, "main.tscn", "")
 eg = ps.scan(go, 10, probe=False)["engines"][0]; assert eg["engine"] == "godot" and eg["version"] == "4.3" and eg["name"] == "Dungeon Hop" and eg["mcp_addons"] == ["godot_mcp"] and eg["scenes"] == 1
+# ---- Nucleon (project.ncproject, Lua table) with the game-developer harnesses and telemetry
+nc = tempfile.mkdtemp()
+W(nc, "project.ncproject", 'return {\n  version = 1,\n  name = "Ember Glade",\n  projectVersion = "0.3.0",\n  startupLevel = "Content/Levels/Main.nclevel",\n'
+  '  graphics = {api = "d3d12", lighting = "modern", quality = "High", globalIllumination = "lumen"},\n}\n')
+W(nc, "Content/Levels/Main.nclevel", "return {}"); W(nc, "Content/Actors/Player.ncactor", "return {}"); W(nc, "Content/Landscape/glade.land", "x")
+W(nc, "Content/Scripts/game.lua", ""); W(nc, "Content/Scripts/gds_test.lua", ""); W(nc, "Content/Scripts/test_move.lua", ""); W(nc, "Content/Scripts/gds_capture.lua", "")
+W(nc, "UI/menu.rml", "<rml/>"); W(nc, "Saved/telemetry/a.csv", "t,event\n"); W(nc, "Config/BuildConfigurations.lua", 'return {list = {{name = "Shipping"}}}')
+en = ps.scan(nc, 10, probe=False)["engines"][0]
+assert en["engine"] == "nucleon" and en["name"] == "Ember Glade" and en["project_version"] == "0.3.0" and en["graphics_api"] == "d3d12", en
+assert en["lighting"] == "modern" and en["levels"] == 1 and en["actors"] == 1 and en["landscapes"] == 1 and en["has_gds"] and en["gds_capture"]
+assert en["verb_tests"] == ["test_move.lua"] and en["ui_documents"] == ["menu.rml"] and en["telemetry_sessions"] == 1 and en["build_configs"] == ["Shipping"]
 web = tempfile.mkdtemp(); W(web, "package.json", '{"name": "tiny-game", "dependencies": {"phaser": "^3.80.0"}}')
 assert ps.scan(web, 10, probe=False)["engines"][0]["engine"] == "phaser"
 cv = tempfile.mkdtemp(); W(cv, "index.html", "<html><title>Snake</title><canvas id=c></canvas><script src=game.js></script></html>"); W(cv, "game.js", "const g=c.getContext('2d')")
