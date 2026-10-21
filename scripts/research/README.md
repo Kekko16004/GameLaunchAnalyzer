@@ -24,6 +24,7 @@ Reusable tools for launch market research: Steam comparables and reviews, creato
 | `build_creators.py` | Merge everything into a prioritised creators CSV | 8 |
 | `review_corpus.py` | Many real reviews of the comparables AND of the genre: punished/rewarded themes, what they say about your game's features | 2, 7 |
 | `store_bench.py` | Store page and trailer analysis of the comparables (description, GIFs, trailer length, cuts, frames) vs how they performed | 2, 6, 6B |
+| `trailer_kit.py` | Trailer system: tool versions (brag, HyperFrames, ffmpeg), full measurement of any trailer (file or Steam HLS URL: all cuts, shot length per third, LUFS/true peak, frozen and black stretches, tempo), competitor table, storyboard checks, LONG master prompt + negative prompt + storyboard + asset plan + credits ledger + recording brief + QA list (+ Trailer tab of STATUS.html), automatic QA of a render, blind viewer panel with real anchors, code-made SFX/music sketches | Trailer, 6 |
 | `genre_bench.py` | Genre benchmarks at runtime from public data: distributions, cohorts by year, price bands, demo, visibility bar, your numbers | 2, 5 |
 | `market_tracker.py` | The whole market over time: head (top sellers, most played, tag tops), breakouts, snapshots at +24h/48h/1w/1m/3m, multi-method copy estimates, marketing per game (Steam news, YouTube, Reddit, Twitch) with timelines, manual-check file for SteamDB / TikTok / IG / X | 2, 5, 7C, routine |
 | `top_moves.py` | The 3 moves with most impact now (open issues, real winners' recipe, metro levers, deadlines), written into TODO.md and calendar.md without duplicates | 4, 7, 11, every run |
@@ -181,6 +182,22 @@ python store_bench.py analyze pages.json --md store_bench.md
 Per game, automatically: short and long description length and words, GIFs, other images, looping videos, headings, bullets, screenshots, trailers, languages, achievements, categories, demo, price; trailer **duration** (Steam now serves HLS `.m3u8` and DASH `.mpd` trailers instead of MP4: the tool classifies the URLs in the store answer by extension, reads the duration from the playlist or MPD, falls back to `ffprobe` and to the old MP4 header read for legacy files; `trailer_kind` and `trailer_formats` say what was found); with `ffmpeg` installed also time to first cut, cuts in the first 5 s and average shot length of the first 30 s, plus frames at 0/2/5/10/20/30 s in `--frames-dir`. Outcome: reviews, % positive and reviews per year since release. `analyze` gives quartiles, the best third vs the rest (medians) and Spearman correlations with log(reviews per year) and % positive, always with n.
 
 **Limits:** the tool measures pacing; **what the hook is** must be judged by looking at the frames. Correlations over a few comparables are hints, not proof (budget, genre, timing, luck). Servers that ignore HTTP Range give no MP4 duration; without `ffmpeg` there are no cuts or frames (HLS and DASH need `ffmpeg` for cuts). Not yet checked against the live Steam CDN.
+
+## 4d-bis. `trailer_kit.py`: the trailer system (references/08-trailer.md)
+
+```bash
+python trailer_kit.py tools --spec launch/trailer/v3/trailer.json                     # brag / hyperframes / ffmpeg versions into the spec
+python trailer_kit.py measure "<steam HLS url>" --name "Balatro" --appid 2379780 -o launch/_raw/trailer_v3/measured.json
+python trailer_kit.py bench launch/_raw/trailer_v3/store_pages_trailer.json --measured launch/_raw/trailer_v3/measured.json --spec launch/trailer/v3/trailer.json --md bench.md -o bench.json
+python trailer_kit.py check launch/trailer/v3/trailer.json                            # storyboard rules, exit 1 on errors
+python trailer_kit.py build launch/trailer/v3/trailer.json --bench bench.json         # PROMPT.md, storyboard, assets, ledger, brief, QA, kit.json
+python trailer_kit.py qa render.mp4 --spec launch/trailer/v3/trailer.json --format main --md qa.md
+python trailer_kit.py panel init --spec ... --render render.mp4 --out-dir launch/trailer/v3/panel ; python trailer_kit.py panel score results.json --key .../panel-key.json
+python trailer_kit.py synth whoosh out.wav --seed 1 --ledger launch/trailer/v3/credits-ledger.csv --credit "Studio"
+```
+Knowledge base: `data/trailer_craft.json` (rules paraphrased from Derek Lieu, How To Market A Game, GameDiscoverCo, Steamworks docs and platform guides, each with URL, date and strength; platform specs; negative base list; clean asset sources). The single source of truth of a trailer is `launch/trailer/<v>/trailer.json`; `status_page.py` shows the newest `kit.json` in the **Trailer** tab (copy button for the prompt, storyboard cards, competitor table, QA).
+
+**Limits:** it measures (cuts, loudness, stillness, tempo ±3 BPM with possible octave errors) but cannot judge whether a hook is funny or a shot readable; scene detection misses cuts between near-identical shots; safe zones and -14 LUFS are third-party references, not official specs; Steam's AI-disclosure rules for code-made assets are [DA VERIFICARE]. The panel refuses to run without a real render.
 
 ## 4e. `genre_bench.py`: genre benchmarks from public data
 

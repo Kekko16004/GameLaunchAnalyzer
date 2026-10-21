@@ -1,0 +1,937 @@
+{
+ "generated": "2026-10-21",
+ "note": "Trailer-craft knowledge base for game-launch-strategist (references/08-trailer.md, trailer_kit.py). Every rule is PARAPHRASED from the source, never copied. 'date' = day the source was consulted; 'published' = the source's own date when known. strength: platform_doc = the platform's own documentation; measured = numbers from data or many cases; expert_opinion = a recognised practitioner; third_party = blog/tool guides, not official; internal = the owner's own decisions or notes for this project (only when the trailer kit is applied to that project). Re-verify platform specs before every render: they change.",
+ "rules": [
+  {
+   "id": "hook-gameplay-5s",
+   "topic": "hook",
+   "rule": "Real gameplay on screen within the first 5 seconds; no studio, engine or publisher logos before it, no slow environment pans with 'in a world...' text.",
+   "rule_it": "Gioco vero entro 5 secondi; niente loghi di studio o motore all'inizio, niente panoramiche lente con frasi a effetto.",
+   "strength": "expert_opinion",
+   "applies_to": [
+    "main",
+    "short",
+    "vertical"
+   ],
+   "check": "first_gameplay_s<=5",
+   "sources": [
+    {
+     "url": "https://howtomarketagame.com/2025/03/10/when-should-i-post-my-steam-coming-soon-page/",
+     "date": "2026-10-21",
+     "published": "2025-03-10",
+     "what": "How To Market A Game (Chris Zukowski): trailer rules for the Coming Soon page"
+    },
+    {
+     "url": "https://newsletter.gamediscover.co/p/game-trailers-breaking-down-a-key",
+     "date": "2026-10-21",
+     "published": "2022-09-19",
+     "what": "GameDiscoverCo: the slow-burn trailer mistake, viewers skip ahead and leave"
+    },
+    {
+     "url": "https://www.derek-lieu.com/blog/2023/2/12/how-to-optimize-a-game-trailer-for-social-media",
+     "date": "2026-10-21",
+     "published": "2023-02-12",
+     "what": "Derek Lieu: the 'thumbstopper' opening, no logos or slow establishing shots"
+    }
+   ]
+  },
+  {
+   "id": "hook-first-cut-3s",
+   "topic": "hook",
+   "rule": "The first shot changes (cut or decisive action beat) by about 3 s. Measured twice: 24 comparables on 2026-10-07 (best third median 2.9 s vs rest 6.9 s) and 14 genre trailers measured in full on 2026-10-21 (7 most-reviewed: median first cut 2.4 s, average shot 1.9 s; the other 7: 7.7 s and 3.4 s). Correlation, not proof: budget and genre confound it.",
+   "rule_it": "Il primo taglio (o un colpo di scena chiaro) arriva entro circa 3 secondi: i giochi che vendono di più tagliano prima.",
+   "strength": "measured",
+   "applies_to": [
+    "main",
+    "short",
+    "vertical"
+   ],
+   "check": "first_cut_s<=3",
+   "sources": [
+    {
+     "url": "launch/_raw/store_bench.md",
+     "date": "2026-10-07",
+     "published": "2026-10-07",
+     "what": "store_bench.py on 24 comparables (correlation weak, rho 0.17: an indication, not a law)"
+    },
+    {
+     "url": "launch/_raw/trailer_v3/trailer_bench.md",
+     "date": "2026-10-21",
+     "published": "2026-10-21",
+     "what": "trailer_kit.py measure on 14 Steam trailers (full-length cuts, loudness, tempo)"
+    }
+   ]
+  },
+  {
+   "id": "hook-late-game-first",
+   "topic": "hook",
+   "rule": "Open with footage from deep into a session (hours, not minutes): the busiest, most developed state of the game, so viewers instantly recognise 'one of those games'.",
+   "rule_it": "Apri con il gioco 'avanzato' (sala piena, torre alta), non con i primi minuti: chi guarda deve capire subito che tipo di gioco è.",
+   "strength": "expert_opinion",
+   "applies_to": [
+    "main",
+    "short",
+    "vertical"
+   ],
+   "sources": [
+    {
+     "url": "https://www.derek-lieu.com/blog/2023/2/12/how-to-optimize-a-game-trailer-for-social-media",
+     "date": "2026-10-21",
+     "published": "2023-02-12",
+     "what": "Derek Lieu: first shot from hours into the game"
+    },
+    {
+     "url": "https://www.derek-lieu.com/blog/2022/8/1/the-first-shot-of-the-game-trailer",
+     "date": "2026-10-21",
+     "published": "2022-08-01",
+     "what": "Derek Lieu: 'gameplay grab bag' opening shows the mid/late game"
+    }
+   ]
+  },
+  {
+   "id": "hook-oner-three-acts",
+   "topic": "hook",
+   "rule": "A strong opening can be one uncut take of the basic loop with a three-act shape: set-up, conflict, consequence (often a comic failure). It feels raw and honest; a random chunk of play without the loop is weak.",
+   "rule_it": "Un'apertura forte può essere una sola ripresa senza tagli con inizio, problema e conseguenza (spesso un disastro comico).",
+   "strength": "expert_opinion",
+   "applies_to": [
+    "main",
+    "vertical"
+   ],
+   "sources": [
+    {
+     "url": "https://www.derek-lieu.com/blog/2022/8/1/the-first-shot-of-the-game-trailer",
+     "date": "2026-10-21",
+     "published": "2022-08-01",
+     "what": "Derek Lieu: four ways to open, the Spelunky 'oner'"
+    }
+   ]
+  },
+  {
+   "id": "hook-genre-before-speed",
+   "topic": "structure",
+   "rule": "Establish the bedrock (what kind of game, what the player does) in the first 5-10 s before cutting faster; secondary features (cosmetics, modes, extras) come later because they multiply the core, they are not the core.",
+   "rule_it": "Prima si capisce cosa si fa nel gioco, poi si accelera; gli extra (costumi, modalità) vengono dopo.",
+   "strength": "expert_opinion",
+   "applies_to": [
+    "main"
+   ],
+   "sources": [
+    {
+     "url": "https://www.derek-lieu.com/blog/2026/8/4/game-trailer-makeover-sheepherds",
+     "date": "2026-10-21",
+     "published": "2026-08-04",
+     "what": "Derek Lieu, Sheepherds trailer makeover: first shot goes straight into the core action"
+    }
+   ]
+  },
+  {
+   "id": "structure-tutorial",
+   "topic": "structure",
+   "rule": "Treat the trailer as a tutorial: one readable idea per shot, verbs and their results, then escalate from context to simple ideas to depth and finally scope.",
+   "rule_it": "Il trailer insegna il gioco: un'idea per inquadratura, cosa fai e cosa succede, poi sempre più difficile e ricco.",
+   "strength": "expert_opinion",
+   "applies_to": [
+    "main"
+   ],
+   "sources": [
+    {
+     "url": "https://www.derek-lieu.com/blog/2018/2/3/game-trailers-as-tutorials-part-1-of-3",
+     "date": "2026-10-21",
+     "published": "2018-02-03",
+     "what": "Derek Lieu: game trailers as tutorials"
+    }
+   ]
+  },
+  {
+   "id": "structure-90s-shape",
+   "topic": "structure",
+   "rule": "Shape for a store trailer: thumbstopper (~1-10 s, a few clips of the loop and its depth), intro of the core verbs (~10-15 s), escalation (~40 s), climax of breadth and scope (~20-30 s), then title and call to action. Scale the parts down for 45-60 s.",
+   "rule_it": "Forma tipo: aggancio, cosa si fa, crescita, momento più forte, titolo e invito all'azione.",
+   "strength": "expert_opinion",
+   "applies_to": [
+    "main"
+   ],
+   "sources": [
+    {
+     "url": "https://www.derek-lieu.com/blog/2023/2/12/how-to-optimize-a-game-trailer-for-social-media",
+     "date": "2026-10-21",
+     "published": "2023-02-12",
+     "what": "Derek Lieu: 90 s structure and 30 s cutdown"
+    }
+   ]
+  },
+  {
+   "id": "length-under-90",
+   "topic": "length",
+   "rule": "Keep a store trailer under ~90 s unless very skilled; a 30-60 s gameplay trailer is enough for most indies (HTMAG: can be ~30 s). Comparables: median 79.8 s, best third 78.2 s, Balatro 38.6 s, PEAK 57 s, How to Fish 59 s.",
+   "rule_it": "Sotto i 90 secondi; per un indie bastano 45-60 secondi di gioco vero.",
+   "strength": "expert_opinion",
+   "applies_to": [
+    "main"
+   ],
+   "check": "duration_s<=90",
+   "sources": [
+    {
+     "url": "https://www.derek-lieu.com/blog/2020/11/16/how-to-think-about-pacing-in-a-trailer",
+     "date": "2026-10-21",
+     "published": "2020-11-16",
+     "what": "Derek Lieu: under ~90 s"
+    },
+    {
+     "url": "https://howtomarketagame.com/2025/03/10/when-should-i-post-my-steam-coming-soon-page/",
+     "date": "2026-10-21",
+     "published": "2025-03-10",
+     "what": "HTMAG: a trailer can be about 30 s"
+    },
+    {
+     "url": "launch/_raw/store_bench.md",
+     "date": "2026-10-07",
+     "published": "2026-10-07",
+     "what": "store_bench.py, 24 comparables"
+    }
+   ]
+  },
+  {
+   "id": "pacing-move-on",
+   "topic": "pacing",
+   "rule": "Move on before the viewer thinks 'I get it, what else?'; vary shot and section lengths; when a kind of content repeats, cut between varied examples quickly.",
+   "rule_it": "Cambia inquadratura prima che chi guarda si annoi; durate varie; se mostri cose simili, tagli più veloci.",
+   "strength": "expert_opinion",
+   "applies_to": [
+    "main",
+    "short",
+    "vertical"
+   ],
+   "sources": [
+    {
+     "url": "https://www.derek-lieu.com/blog/2020/11/16/how-to-think-about-pacing-in-a-trailer",
+     "date": "2026-10-21",
+     "published": "2020-11-16",
+     "what": "Derek Lieu: pacing"
+    }
+   ]
+  },
+  {
+   "id": "pacing-threes",
+   "topic": "pacing",
+   "rule": "Group similar images in threes at most; make the third different or a transition into the next section.",
+   "rule_it": "Al massimo tre immagini simili di fila; la terza diversa o che porta alla parte dopo.",
+   "strength": "expert_opinion",
+   "applies_to": [
+    "main"
+   ],
+   "check": "max_similar_run<=3",
+   "sources": [
+    {
+     "url": "https://www.derek-lieu.com/blog/2020/11/16/how-to-think-about-pacing-in-a-trailer",
+     "date": "2026-10-21",
+     "published": "2020-11-16",
+     "what": "Derek Lieu: montages in threes"
+    }
+   ]
+  },
+  {
+   "id": "pacing-climax-breathe",
+   "topic": "pacing",
+   "rule": "After the climax give a slower beat so the audience can breathe; an earned quiet moment can linger. Mix close shots for impact with wide shots for context.",
+   "rule_it": "Dopo il momento più forte, una pausa che fa respirare; alterna primi piani e campi larghi.",
+   "strength": "expert_opinion",
+   "applies_to": [
+    "main"
+   ],
+   "sources": [
+    {
+     "url": "https://www.derek-lieu.com/blog/2020/11/16/how-to-think-about-pacing-in-a-trailer",
+     "date": "2026-10-21",
+     "published": "2020-11-16",
+     "what": "Derek Lieu: climax and release"
+    }
+   ]
+  },
+  {
+   "id": "audio-music-arc",
+   "topic": "audio",
+   "rule": "Pick music with a dramatic arc and variety; sync key visual moments to it and let its build and release carry the climax. Bridge sections with a match cut, a carried movement or a sound cue.",
+   "rule_it": "Musica con un crescendo; i momenti chiave cadono sul ritmo; le parti si legano con un movimento o un suono.",
+   "strength": "expert_opinion",
+   "applies_to": [
+    "main",
+    "short",
+    "vertical"
+   ],
+   "sources": [
+    {
+     "url": "https://www.derek-lieu.com/blog/2020/11/16/how-to-think-about-pacing-in-a-trailer",
+     "date": "2026-10-21",
+     "published": "2020-11-16",
+     "what": "Derek Lieu: music and transitions"
+    }
+   ]
+  },
+  {
+   "id": "steam-first-trailer-gameplay",
+   "topic": "steam",
+   "rule": "Valve recommends that the first trailer on the store page is primarily gameplay, often with the in-game HUD visible; the first two valid trailers show before the screenshots.",
+   "rule_it": "Steam consiglia che il primo trailer della pagina sia soprattutto gioco, spesso con l'interfaccia visibile; i primi due trailer vengono prima degli screenshot.",
+   "strength": "platform_doc",
+   "applies_to": [
+    "main"
+   ],
+   "sources": [
+    {
+     "url": "https://partner.steamgames.com/doc/store/trailer",
+     "date": "2026-10-21",
+     "published": null,
+     "what": "Steamworks documentation: Trailers"
+    }
+   ]
+  },
+  {
+   "id": "steam-muted-viewing",
+   "topic": "steam",
+   "rule": "Viewers may watch without any audio (Steam's own warning; third-party guides say the first store trailer autoplays muted): every beat must read with the sound off, text carries the meaning, audio only adds.",
+   "rule_it": "Molti guardano senza audio: il trailer deve capirsi a volume zero; il suono aggiunge, non spiega.",
+   "strength": "platform_doc",
+   "applies_to": [
+    "main",
+    "short",
+    "vertical",
+    "gif"
+   ],
+   "check": "reads_muted",
+   "sources": [
+    {
+     "url": "https://partner.steamgames.com/doc/store/trailer",
+     "date": "2026-10-21",
+     "published": null,
+     "what": "Steamworks: customers may be watching without audio"
+    },
+    {
+     "url": "https://presskit.gg/field-guides/game-trailers-screenshots-guide",
+     "date": "2026-10-21",
+     "published": null,
+     "what": "presskit.gg: first trailer autoplays muted (third-party, [DA VERIFICARE] on the live store)"
+    }
+   ]
+  },
+  {
+   "id": "steam-microtrailer",
+   "topic": "steam",
+   "rule": "Steam builds a 6-second looping microtrailer from six 1-second segments of the first visible trailer and it cannot be customised: avoid long cards, black frames and static UI anywhere, because any second may be picked.",
+   "rule_it": "Steam crea da solo un mini-trailer di 6 secondi prendendo 6 pezzi da 1 secondo: ogni secondo del trailer deve essere bello e chiaro (niente nero, niente schermate ferme lunghe).",
+   "strength": "platform_doc",
+   "applies_to": [
+    "main"
+   ],
+   "check": "no_static_over_1s",
+   "sources": [
+    {
+     "url": "https://partner.steamgames.com/doc/store/trailer",
+     "date": "2026-10-21",
+     "published": null,
+     "what": "Steamworks: microtrailers"
+    }
+   ]
+  },
+  {
+   "id": "steam-discovery-10s",
+   "topic": "steam",
+   "rule": "In the Discovery Queue shoppers may give a game less than 10 s: the first 5-10 s alone must sell genre, tone and the unique verb.",
+   "rule_it": "Nella coda di scoperta di Steam si decide in meno di 10 secondi.",
+   "strength": "platform_doc",
+   "applies_to": [
+    "main"
+   ],
+   "sources": [
+    {
+     "url": "https://partner.steamgames.com/doc/store/trailer",
+     "date": "2026-10-21",
+     "published": null,
+     "what": "Steamworks: Discovery Queue note"
+    }
+   ]
+  },
+  {
+   "id": "steam-specs",
+   "topic": "spec",
+   "rule": "Upload the highest resolution up to 1920x1080, 30 or 60 fps, 5,000+ kbps, H.264 video + AAC audio in .mp4/.mov, 16:9 preferred, 44.1 or 48 kHz audio; a custom thumbnail must be a 1920x1080 frame of the video itself without text.",
+   "rule_it": "File per Steam: 1920x1080, 60 fps, almeno 5.000 kbps, H.264 + AAC, mp4; miniatura presa dal video, senza testo.",
+   "strength": "platform_doc",
+   "applies_to": [
+    "main"
+   ],
+   "check": "spec_steam",
+   "sources": [
+    {
+     "url": "https://partner.steamgames.com/doc/store/trailer",
+     "date": "2026-10-21",
+     "published": null,
+     "what": "Steamworks: trailer specs and thumbnails"
+    }
+   ]
+  },
+  {
+   "id": "steam-no-future-content",
+   "topic": "steam",
+   "rule": "Valve's review asks to remove trailers that show incomplete content or content planned for later: only show what is in the build the page promises (for a demo/beta page: what the demo contains, or label it).",
+   "rule_it": "Steam fa togliere i trailer che mostrano cose non ancora nel gioco: si mostra solo ciò che c'è.",
+   "strength": "platform_doc",
+   "applies_to": [
+    "main",
+    "short",
+    "vertical"
+   ],
+   "sources": [
+    {
+     "url": "https://partner.steamgames.com/doc/store/review_process",
+     "date": "2026-10-21",
+     "published": null,
+     "what": "Steamworks: Review Process (read via search summary, [DA VERIFICARE] exact wording)"
+    }
+   ]
+  },
+  {
+   "id": "in-engine-honest",
+   "topic": "honesty",
+   "rule": "Everything in-engine and representative; a moment may be staged in the engine for the camera, but never a fake CG trailer. Shoppers check that it is not an asset flip: a real trailer is proof of care.",
+   "rule_it": "Tutto girato nel gioco vero; si può preparare una scena per la ripresa, mai un video finto.",
+   "strength": "expert_opinion",
+   "applies_to": [
+    "main",
+    "short",
+    "vertical"
+   ],
+   "sources": [
+    {
+     "url": "https://howtomarketagame.com/2025/03/10/when-should-i-post-my-steam-coming-soon-page/",
+     "date": "2026-10-21",
+     "published": "2025-03-10",
+     "what": "HTMAG: in-engine, no fake CG; asset flippers don't make trailers"
+    }
+   ]
+  },
+  {
+   "id": "one-strong-trailer",
+   "topic": "steam",
+   "rule": "Make the first trailer gameplay-focused and useful for both PR and the store; don't pile up trailers on the page without removing old ones.",
+   "rule_it": "Un trailer di gioco forte, usato sia per la stampa sia per la pagina; non accumulare trailer vecchi.",
+   "strength": "expert_opinion",
+   "applies_to": [
+    "main"
+   ],
+   "sources": [
+    {
+     "url": "https://newsletter.gamediscover.co/p/game-trailers-breaking-down-a-key",
+     "date": "2026-10-21",
+     "published": "2022-09-19",
+     "what": "GameDiscoverCo"
+    }
+   ]
+  },
+  {
+   "id": "social-cutdown-native",
+   "topic": "social",
+   "rule": "Make a ~30 s cutdown with one or two full loops of the key verbs, upload natively on each platform (autoplay on phones), add a one-line pitch in the post and a link to the store page; add .srt captions where dialogue exists.",
+   "rule_it": "Versione da 30 secondi con uno o due giri completi del gioco, caricata direttamente su ogni social, con una frase che dice cos'è e il link Steam.",
+   "strength": "expert_opinion",
+   "applies_to": [
+    "short",
+    "vertical"
+   ],
+   "sources": [
+    {
+     "url": "https://www.derek-lieu.com/blog/2023/2/12/how-to-optimize-a-game-trailer-for-social-media",
+     "date": "2026-10-21",
+     "published": "2023-02-12",
+     "what": "Derek Lieu: social media optimisation"
+    }
+   ]
+  },
+  {
+   "id": "vertical-hook-1s",
+   "topic": "social",
+   "rule": "On TikTok/Shorts/Reels the hook must land in about 1-3 s; short and loopable (studio clips with many views average ~27-28 s).",
+   "rule_it": "Sui social verticali l'aggancio è nel primo secondo o due; video corti che si ripetono bene.",
+   "strength": "measured",
+   "applies_to": [
+    "vertical"
+   ],
+   "check": "first_cut_s<=2",
+   "sources": [
+    {
+     "url": "https://www.derek-lieu.com/blog/2022/8/1/the-first-shot-of-the-game-trailer",
+     "date": "2026-10-21",
+     "published": "2022-08-01",
+     "what": "Derek Lieu: 1-3 s on TikTok"
+    },
+    {
+     "url": "data/social_patterns.json#tt-hook-first-second",
+     "date": "2026-10-20",
+     "published": null,
+     "what": "skill evidence base (HTMAG, GameDiscoverCo, TikTok Creator Academy)"
+    },
+    {
+     "url": "data/social_patterns.json#tt-short-loopable",
+     "date": "2026-10-20",
+     "published": null,
+     "what": "Jared Tan study via GameDiscoverCo: 27-28 s averages"
+    }
+   ]
+  },
+  {
+   "id": "vertical-safe-zone",
+   "topic": "social",
+   "rule": "On a 1080x1920 frame keep text and key action out of the platform UI: about 130 px top, 484 px bottom, 44 px left, 140 px right (most-quoted values; not official TikTok numbers, longer captions eat more of the bottom).",
+   "rule_it": "Nei video verticali niente testo vicino ai bordi: lascia libero in alto, molto in basso (didascalia) e a destra (pulsanti).",
+   "strength": "third_party",
+   "applies_to": [
+    "vertical"
+   ],
+   "check": "safe_zone",
+   "sources": [
+    {
+     "url": "https://cadenus.io/resources/blog/tiktok-safe-zone/",
+     "date": "2026-10-21",
+     "published": "2026",
+     "what": "Cadenus: TikTok safe zone template in pixels"
+    },
+    {
+     "url": "https://wildandfreetools.com/blog/vertical-video-safe-zones-guide-2026/",
+     "date": "2026-10-21",
+     "published": "2026",
+     "what": "Vertical safe zones TikTok/Reels/Shorts"
+    }
+   ]
+  },
+  {
+   "id": "vertical-specs",
+   "topic": "spec",
+   "rule": "One 1080x1920 9:16 H.264/AAC master serves TikTok, YouTube Shorts (Short if up to 180 s) and Reels (recommended to new audiences only up to 3 min; feed crops to 4:5, so keep key content in the centre).",
+   "rule_it": "Un solo file verticale 1080x1920 va bene per TikTok, Shorts e Reels; il centro dell'immagine deve contenere l'azione.",
+   "strength": "third_party",
+   "applies_to": [
+    "vertical"
+   ],
+   "check": "spec_vertical",
+   "sources": [
+    {
+     "url": "https://learn.headliner.app/hc/en-us/articles/34164986965271-Social-Media-Video-Length-Limits-2026",
+     "date": "2026-10-21",
+     "published": "2026",
+     "what": "Social media video length limits 2026"
+    },
+    {
+     "url": "https://zeely.ai/blog/how-long-can-instagram-reels-be/",
+     "date": "2026-10-21",
+     "published": "2026",
+     "what": "Reels length and recommendation limit"
+    }
+   ]
+  },
+  {
+   "id": "audio-loudness",
+   "topic": "audio",
+   "rule": "Master to about -14 LUFS integrated with true peak at or below -1 dBTP: YouTube-style players turn louder files down (never up), so louder only loses dynamics. It is a practical reference, not an official upload spec. Genre trailers measured 2026-10-21 range from -10.8 to -21.1 LUFS (median of the 7 most-reviewed -13.5).",
+   "rule_it": "Volume finale circa -14 LUFS con picchi sotto -1 dBTP: più forte non serve, le piattaforme abbassano.",
+   "strength": "third_party",
+   "applies_to": [
+    "main",
+    "short",
+    "vertical"
+   ],
+   "check": "loudness",
+   "sources": [
+    {
+     "url": "https://apu.software/youtube-audio-loudness-target/",
+     "date": "2026-10-21",
+     "published": null,
+     "what": "APU Software: -14 LUFS is a reference, not an official YouTube spec"
+    },
+    {
+     "url": "https://en.wikipedia.org/wiki/EBU_R_128",
+     "date": "2026-10-21",
+     "published": null,
+     "what": "EBU R128: -1 dBTP peak ceiling"
+    },
+    {
+     "url": "launch/_raw/trailer_v3/trailer_bench.md",
+     "date": "2026-10-21",
+     "published": "2026-10-21",
+     "what": "trailer_kit.py measure, 14 Steam trailers"
+    }
+   ]
+  },
+  {
+   "id": "text-legible-phone",
+   "topic": "text",
+   "rule": "Text cards and captions must be readable on a phone: short (3-6 words), on screen at least ~0.3 s per word fully settled, cap height at least ~4% of frame height (wide) / ~3% (vertical, 1920 px), strong contrast; one text element at a time.",
+   "rule_it": "Scritte corte e grandi, leggibili sul telefono, ferme abbastanza da leggerle, una alla volta.",
+   "strength": "expert_opinion",
+   "applies_to": [
+    "main",
+    "short",
+    "vertical"
+   ],
+   "check": "text_legibility",
+   "sources": [
+    {
+     "url": "tools/release/trailer/storyboard_v2.md",
+     "date": "2026-10-17",
+     "published": "2026-10-17",
+     "what": "Buffet Panic! v1 trailer study: 0.3 s/word hold that the owner judged readable (internal practice)"
+    },
+    {
+     "url": "https://www.derek-lieu.com/blog/2023/2/12/how-to-optimize-a-game-trailer-for-social-media",
+     "date": "2026-10-21",
+     "published": "2023-02-12",
+     "what": "Derek Lieu: viewers read a one-line pitch faster than they watch"
+    }
+   ]
+  },
+  {
+   "id": "no-static-ui",
+   "topic": "pacing",
+   "rule": "No static menu or UI screen held for more than ~1 s without something moving or being chosen: menus are shown as an action (a click, a card flipping, a number changing), never as a still.",
+   "rule_it": "Mai un menu fermo per più di un secondo: si mostra solo mentre succede qualcosa (un clic, un numero che cambia).",
+   "strength": "expert_opinion",
+   "applies_to": [
+    "main",
+    "short",
+    "vertical",
+    "gif"
+   ],
+   "check": "no_static_over_1s",
+   "sources": [
+    {
+     "url": "https://www.derek-lieu.com/blog/2018/2/3/game-trailers-as-tutorials-part-1-of-3",
+     "date": "2026-10-21",
+     "published": "2018-02-03",
+     "what": "Derek Lieu: show interactions and their results"
+    },
+    {
+     "url": "https://partner.steamgames.com/doc/store/trailer",
+     "date": "2026-10-21",
+     "published": null,
+     "what": "Steamworks microtrailer sampling (any second can be picked)"
+    }
+   ]
+  },
+  {
+   "id": "cta-end",
+   "topic": "cta",
+   "rule": "End on the title and one clear call to action that matches the date (before the store page: follow; with the page: 'Wishlist on Steam'; with a demo: 'Play the free demo'); hold the end card 3-4 s, no more.",
+   "rule_it": "Finale: titolo e un solo invito chiaro adatto al momento (Wishlist su Steam, demo gratis), tenuto 3-4 secondi.",
+   "strength": "expert_opinion",
+   "applies_to": [
+    "main",
+    "short",
+    "vertical"
+   ],
+   "check": "end_card_s",
+   "sources": [
+    {
+     "url": "https://www.derek-lieu.com/blog/2023/2/12/how-to-optimize-a-game-trailer-for-social-media",
+     "date": "2026-10-21",
+     "published": "2023-02-12",
+     "what": "Derek Lieu: teaser ends with title and call to action"
+    },
+    {
+     "url": "launch/fg/waves/w09-sintesi.md",
+     "date": "2026-10-18",
+     "published": "2026-10-18",
+     "what": "simulated panel on trailer v2: end card too long (SIMULATO, ranks issues only)"
+    }
+   ]
+  },
+  {
+   "id": "gif-loop",
+   "topic": "gif",
+   "rule": "Store-page GIFs/looping videos: 3-8 s of one verb and its result, seamless loop (last frame flows into the first), no text needed, under the platform size limit; the best comparables use more looping videos in the description (median 7.5 vs 3.5).",
+   "rule_it": "Le GIF della pagina: 3-8 secondi di una sola azione con il suo risultato, che si ripete senza scatti.",
+   "strength": "measured",
+   "applies_to": [
+    "gif"
+   ],
+   "sources": [
+    {
+     "url": "launch/_raw/store_bench.md",
+     "date": "2026-10-07",
+     "published": "2026-10-07",
+     "what": "store_bench.py: looping_videos median best third 7.5 vs rest 3.5 (rho 0.34, moderate)"
+    }
+   ]
+  },
+  {
+   "id": "ai-disclosure",
+   "topic": "legal",
+   "rule": "Steam's content survey asks developers to disclose pre-generated AI content that appears in the game OR in marketing material and the store page (efficiency tools such as code assistants are exempt; update reported 2026-01-16). Whether code-written procedural audio/images count is not stated: check the live Steamworks page and let the owner decide.",
+   "rule_it": "Steam chiede di dichiarare i contenuti generati con l'AI anche nel marketing (trailer, pagina). Se musica o immagini fatte con codice contino non è scritto: va controllato sulla pagina ufficiale e deciso dal proprietario.",
+   "strength": "third_party",
+   "applies_to": [
+    "main",
+    "short",
+    "vertical",
+    "gif"
+   ],
+   "sources": [
+    {
+     "url": "https://www.gamedeveloper.com/business/valve-tweaks-and-clarifies-ai-disclosure-rules-for-steam",
+     "date": "2026-10-21",
+     "published": "2026-01-16",
+     "what": "Game Developer: Valve clarifies AI disclosure rules ([DA VERIFICARE] on the current Steamworks page)"
+    }
+   ]
+  },
+  {
+   "id": "licence-clean",
+   "topic": "legal",
+   "rule": "Use only CC0, CC-BY (with credit in the description/credits ledger) or licences that explicitly allow commercial video use; never CC-BY-NC, 'personal use', unknown or Content-ID-registered tracks; log every file in a credits ledger with URL, licence and date.",
+   "rule_it": "Solo musica, suoni e immagini con licenza pulita (CC0 o CC-BY con credito), mai 'non commerciale'; ogni file nel registro dei crediti.",
+   "strength": "platform_doc",
+   "applies_to": [
+    "main",
+    "short",
+    "vertical",
+    "gif"
+   ],
+   "check": "ledger",
+   "sources": [
+    {
+     "url": "https://freesound.org/help/faq/",
+     "date": "2026-10-21",
+     "published": null,
+     "what": "Freesound FAQ: CC0, BY, BY-NC (no commercial use)"
+    },
+    {
+     "url": "https://pixabay.com/service/license-summary/",
+     "date": "2026-10-21",
+     "published": null,
+     "what": "Pixabay Content License: free, no attribution, no standalone redistribution"
+    }
+   ]
+  }
+ ],
+ "specs": {
+  "steam": {
+   "max_res": "1920x1080",
+   "fps": [
+    30,
+    60
+   ],
+   "min_kbps": 5000,
+   "codec": "H.264 + AAC",
+   "container": [
+    ".mp4",
+    ".mov",
+    ".wmv"
+   ],
+   "aspect": "16:9",
+   "audio_hz": [
+    44100,
+    48000
+   ],
+   "microtrailer": "6 x 1 s from first trailer, not customisable",
+   "thumbnail": "1920x1080 frame from the video, no text",
+   "verified": "2026-10-21",
+   "source": "https://partner.steamgames.com/doc/store/trailer"
+  },
+  "vertical": {
+   "res": "1080x1920",
+   "aspect": "9:16",
+   "safe_px": {
+    "top": 130,
+    "bottom": 484,
+    "left": 44,
+    "right": 140
+   },
+   "shorts_max_s": 180,
+   "reels_recommend_max_s": 180,
+   "verified": "2026-10-21",
+   "source": "third-party guides (see rules vertical-safe-zone, vertical-specs)"
+  },
+  "loudness": {
+   "integrated_lufs": -14,
+   "tolerance_lu": 1.0,
+   "true_peak_dbtp": -1.0,
+   "verified": "2026-10-21",
+   "source": "third-party reference (rule audio-loudness)"
+  },
+  "text": {
+   "min_cap_height_wide": 0.04,
+   "min_cap_height_vertical": 0.03,
+   "s_per_word": 0.3,
+   "max_words_card": 6
+  },
+  "pacing": {
+   "first_cut_max_s": 3.0,
+   "vertical_first_cut_max_s": 2.0,
+   "first_gameplay_max_s": 5.0,
+   "static_max_s": 1.0,
+   "end_card_s": [
+    3.0,
+    4.0
+   ],
+   "max_similar_run": 3
+  }
+ },
+ "negative_base": [
+  "studio, engine or publisher logos before the first gameplay frame",
+  "slow establishing pan of an empty environment with 'in a world...' text",
+  "random or automatic zooms, Ken Burns pushes, punch-ins that the edit did not motivate",
+  "shaky handheld fake camera, dutch angles without reason",
+  "any menu, shop or UI screen held still for more than 1 second",
+  "black frames, fades to black inside the first 10 seconds",
+  "cuts in the middle of an action before it resolves",
+  "the same gag or sticker repeated more than twice",
+  "two text elements on screen at the same time",
+  "text that relies on sound to make sense; dialogue-only beats",
+  "voice-over or narration",
+  "footage of features not in the build the page promises",
+  "pre-rendered CG or mock-up footage presented as gameplay",
+  "clipping or interpenetration of characters and props, characters cut by the frame edge in a way that hides their head",
+  "UI prompts, debug overlays, FPS counters, editor gizmos, cursor of the OS",
+  "watermarks, stock-footage looks, generic 'epic' trailer music, risers with no payoff",
+  "audio louder than -13 LUFS integrated or peaks above -1 dBTP",
+  "personal names, team names or credits other than the official credit line",
+  "any mention of AI, generative tools or how the trailer was made",
+  "fake review quotes, awards or press logos that do not exist",
+  "a URL typed in the video",
+  "end card longer than 4 seconds"
+ ],
+ "asset_sources": [
+  {
+   "name": "The game's own audio and art (already licensed in the project ledger)",
+   "url": "ASSET-LEDGER.md",
+   "kind": [
+    "music",
+    "sfx",
+    "image"
+   ],
+   "licence": "per ledger line",
+   "commercial": true,
+   "attribution": "per ledger",
+   "notes": "First choice: the trailer sounds like the game. Copy the ledger line into the trailer credits ledger.",
+   "verified": "2026-10-21"
+  },
+  {
+   "name": "Kenney",
+   "url": "https://kenney.nl/assets",
+   "kind": [
+    "sfx",
+    "music",
+    "image"
+   ],
+   "licence": "CC0",
+   "commercial": true,
+   "attribution": "not required",
+   "notes": "UI, impact, casino, jingles packs; brag bundles a Kenney SFX subset.",
+   "verified": "2026-10-21"
+  },
+  {
+   "name": "OpenGameArt",
+   "url": "https://opengameart.org/",
+   "kind": [
+    "music",
+    "sfx",
+    "image"
+   ],
+   "licence": "per asset (filter CC0)",
+   "commercial": true,
+   "attribution": "depends: CC0 none, CC-BY credit, CC-BY-SA share-alike",
+   "notes": "Filter by licence; avoid GPL/CC-BY-SA for trailer music to keep it simple.",
+   "verified": "2026-10-21"
+  },
+  {
+   "name": "Freesound",
+   "url": "https://freesound.org/",
+   "kind": [
+    "sfx"
+   ],
+   "licence": "CC0 / CC-BY / CC-BY-NC per sound",
+   "commercial": "CC0 and BY only",
+   "attribution": "BY: title, author, link, licence",
+   "notes": "Never BY-NC. Search with the licence filter.",
+   "verified": "2026-10-21"
+  },
+  {
+   "name": "Pixabay (music, sfx, images)",
+   "url": "https://pixabay.com/service/license-summary/",
+   "kind": [
+    "music",
+    "sfx",
+    "image"
+   ],
+   "licence": "Pixabay Content License (not CC)",
+   "commercial": true,
+   "attribution": "not required",
+   "notes": "No standalone redistribution; some music is registered with Content ID by uploaders: check the track page, keep the licence certificate. [DA VERIFICARE] per track.",
+   "verified": "2026-10-21"
+  },
+  {
+   "name": "Poly Haven",
+   "url": "https://polyhaven.com/license",
+   "kind": [
+    "image",
+    "texture",
+    "hdri"
+   ],
+   "licence": "CC0",
+   "commercial": true,
+   "attribution": "not required",
+   "notes": "Backgrounds/textures for cards.",
+   "verified": "2026-10-21"
+  },
+  {
+   "name": "brag bundled music (ende.app Happy Beats / Business Moves)",
+   "url": "https://ende.app/en",
+   "kind": [
+    "music"
+   ],
+   "licence": "[DA VERIFICARE] (brag README: verify licence before publishing)",
+   "commercial": "[DA VERIFICARE]",
+   "attribution": "[DA VERIFICARE]",
+   "notes": "Corporate-happy tone; use only after the licence is confirmed in writing.",
+   "verified": "2026-10-21"
+  },
+  {
+   "name": "incompetech (Kevin MacLeod)",
+   "url": "https://incompetech.com/music/royalty-free/licenses/",
+   "kind": [
+    "music"
+   ],
+   "licence": "CC-BY 4.0",
+   "commercial": true,
+   "attribution": "required in the description",
+   "notes": "Conflicts with a 'single credit only' brand rule (credit must appear in the description): prefer CC0.",
+   "verified": "2026-10-21"
+  },
+  {
+   "name": "Procedural, made in code by the team",
+   "url": "scripts/research/trailer_kit.py synth",
+   "kind": [
+    "music",
+    "sfx"
+   ],
+   "licence": "own work (credit: the studio)",
+   "commercial": true,
+   "attribution": "studio credit",
+   "notes": "Deterministic synthesis (no models). Whether Steam counts code-written assets as 'AI content' is [DA VERIFICARE]: the owner decides.",
+   "verified": "2026-10-21"
+  }
+ ],
+ "avoid_sources": [
+  {
+   "what": "AI music, voice or image generators (incl. TTS and music models offered by media tools)",
+   "why": "generative AI output: Steam disclosure required and against an owner rule of 'no AI mention'"
+  },
+  {
+   "what": "Commercial songs, YouTube Audio Library outside YouTube, TikTok in-app sounds in a store trailer",
+   "why": "licence limited to a platform or unclear for a commercial trailer"
+  },
+  {
+   "what": "CC-BY-NC, 'free for personal use', unknown-licence downloads",
+   "why": "not usable commercially"
+  }
+ ]
+}

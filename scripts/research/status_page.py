@@ -19,11 +19,12 @@ tracking: everything is inline, so the file can be attached to an email as is). 
   launch/steamdb.csv         numbers read by hand on SteamDB (steamdb_assist.py)
   launch/_raw/publisher_scout.json   publisher shortlist by tier + with/without comparison (publisher_scout.py); status.json -> publisher.question
   launch/_raw/social_plan.json, social_learn.json, reddit_trends.json   social plan, what works for this game, Reddit trends (social_content.py, reddit_trends.py)
+  launch/trailer/<v>/kit.json   Trailer tab: copyable master + negative prompt, storyboard cards, competitor trailers, QA (trailer_kit.py build)
   honest odds                one card per decision with its basis and cross-check (honest_odds.py), in Riepilogo
   status.json -> roadmap     key milestones (closed test, Steam Direct, Coming Soon, free beta, demo, Next Fest, launch, 1.0): see calendar_view.py
   Calendario tab             every dated item of calendar.md, TODO.md, Steam and online events, waves (calendar_view.py); every URL is a link (weblinks.py)
   launch/fg/waves/wNN-metrics.md, wNN-delta.md   per-wave reports of the focus group (fg_waves.py)
-Layout: a sticky bar of TABS (Riepilogo · Gioco e test · Marketing e store · Piano e soldi · Calendario · Mercato reale · Documenti; pure CSS + a few lines
+Layout: a sticky bar of TABS (Riepilogo · Gioco e test · Marketing e store · Trailer · Piano e soldi · Calendario · Mercato reale · Documenti; pure CSS + a few lines
 of inline JS, the last tab is remembered in localStorage), a wide page (up to 1400 px) that still works at 390 px. Riepilogo holds
 the verdict with the Go/No-Go gates at a glance, the "Adesso" box (whose turn it is), key numbers, alerts and trends.
 Live state: launch/issue_status.json (the owner's decision on every focus-group issue, see criticita.py) is shown as a badge with its
@@ -44,7 +45,7 @@ Sharing: the page contains strategy. --audience picks what goes in (default priv
              no steps, economics, TODO, contingencies, competitors, creators, decision profile or full-game analysis
 Add/remove documents with --include / --exclude (file stems such as 03-pricing) and sections with
 --hide economics,todo,calendar,steps,storekit,contingencies,watchlist,intentions,creators,fullgame,charts,steamdb,fgwaves,window,critiques,qa,roadmap,
-publisher,social,odds
+publisher,social,odds,trailer
 (calendar also hides the Calendario tab).
 Publishing the page anywhere is YOUR decision: this tool only writes the local file.
 
@@ -77,6 +78,7 @@ import watchlist as wlist
 import wl_track as wl
 import calendar_view as cv
 import weblinks
+import trailer_kit as tk
 
 MONTHS = "gen feb mar apr mag giu lug ago set ott nov dic".split()
 DOCS = {  # stem -> title
@@ -89,7 +91,7 @@ AUDIENCES = {
     "private": list(DOCS),
     "partner": ["REPORT", "00-intenzioni", "01b-positioning", "01c-full-game", "02-platform", "03-pricing", "03-pricing-calc", "04-clips", "05-focusgroup", "05a-critiche-simulate", "05b-critiche-reali", "05c-premortem", "05d-contingenze", "window", "publisher-scout", "social-plan", "clips", "case-studies"],
     "publisher": ["01b-positioning", "02-platform", "05-focusgroup"]}
-HIDE_BY_AUDIENCE = {"private": set(), "partner": set(), "publisher": {"economics", "todo", "contingencies", "steps", "watchlist", "intentions", "creators", "fullgame", "steamdb", "fgwaves", "critiques", "qa", "publisher", "social", "odds"}}
+HIDE_BY_AUDIENCE = {"private": set(), "partner": set(), "publisher": {"economics", "todo", "contingencies", "steps", "watchlist", "intentions", "creators", "fullgame", "steamdb", "fgwaves", "critiques", "qa", "publisher", "social", "odds", "trailer"}}
 
 CSS = """
 :root{color-scheme:light;--bg:#f9f9f7;--surface:#fcfcfb;--ink:#0b0b0b;--ink2:#52514e;--muted:#898781;--grid:#e1e0d9;--axis:#c3c2b7;--ring:rgba(11,11,11,.10);
@@ -924,6 +926,7 @@ def key_tiles(st: dict, wl_a, fg_rows, plan: dict, econ, today: dt.date, hide: s
 TABS = [("riepilogo", "Riepilogo", '<path d="M3 3h5v5H3zM10 3h5v5h-5zM3 10h5v5H3zM10 10h5v5h-5z"/>'),
         ("gioco", "Gioco e test", '<path d="M4 6h10a2 2 0 012 2v3a2 2 0 01-2 2h-1.5L11 11H7l-1.5 2H4a2 2 0 01-2-2V8a2 2 0 012-2zM6 8v2M5 9h2M12 9h.5"/>'),
         ("marketing", "Marketing e store", '<path d="M3 7v4h2l5 3V4L5 7zM13 6.5a3 3 0 010 5"/>'),
+        ("trailer", "Trailer", '<path d="M2 4h14v10H2zM2 7h14M5 4l1.5 3M9 4l1.5 3M13 4l1.5 3M7.5 9.5v3l2.6-1.5z"/>'),
         ("piano", "Piano e soldi", '<path d="M3 4h12v11H3zM3 7h12M6 2v3M12 2v3M6 10h2M10 10h2M6 12.5h2"/>'),
         ("calendario", "Calendario", '<path d="M3 4h12v11H3zM3 7.5h12M6 2v3M12 2v3"/><circle cx="7" cy="11" r="1.2" fill="currentColor"/><path d="M10 11h2.5"/>'),
         ("mercato", "Mercato reale", '<path d="M3 15V9M7 15V5M11 15V8M15 15V3M2 15.5h14"/>'),
@@ -931,6 +934,7 @@ TABS = [("riepilogo", "Riepilogo", '<path d="M3 3h5v5H3zM10 3h5v5h-5zM3 10h5v5H3
 TAB_INTRO = {"riepilogo": "Il punto della situazione: verdetto, cosa tocca adesso, numeri chiave e andamento.",
              "gioco": "Il gioco e i test: pilastri, criticità ondata per ondata con le tue decisioni, focus group, recensioni reali dei giochi simili.",
              "marketing": "Come si presenta il gioco: posizionamento, pagine store da copiare, clip, creator, community.",
+             "trailer": "Il trailer: prompt completo da copiare (positivo e negativo), storyboard a schede (una per inquadratura: tempo, cosa si vede, camera, testo, audio, come girarla), trailer dei concorrenti misurati e controlli di qualità.",
              "piano": "Quando e quanto: passi in ordine, TODO, cancelli, date, economia, piani se… allora, concorrenti e finestra di lancio.",
              "calendario": "Tutte le date in un colpo d'occhio: traguardi, passi tuoi e di Claude, scadenze di Steam e degli showcase, ondate del focus group, fino al lancio.",
              "mercato": "Il mercato vero, non simulato: quanti giochi escono, quanti sono al nostro livello, quanti vendono, cosa hanno fatto i vincenti, il metro oggettivo, concorrenti, KPI e previsioni contro realtà.",
@@ -1238,6 +1242,8 @@ def build(root: str, audience: str, include: list[str], exclude: list[str], hide
     if "social" not in hide:
         add("marketing", clips_kit_section(root, today))
         add("marketing", social_section(root, today))
+    if "trailer" not in hide:
+        add("trailer", tk.status_section(root, esc, copy_btn))
 
     # ---- Piano e soldi
     if plan["phases"] and "steps" not in hide:
