@@ -1,6 +1,6 @@
 # Contratto game-developer ⇄ game-launch-strategist
 
-contract: gdl-v2 · 2026-10-18
+contract: gdl-v3 · 2026-10-21
 
 > **Documento condiviso.** Questo stesso testo, identico, sta in `game-developer/references/launch-link.md` e in `game-launch-strategist/references/dev-link.md`. Si cambia in tutte e due le copie insieme, alzando la versione (`gdl-v3`…). Se all'avvio le due righe `contract:` non coincidono, la skill lo dice al proprietario una volta e segue la regola più prudente delle due.
 > I percorsi sono relativi alla radice del progetto del gioco; gli script si indicano con la cartella della skill (`<game-developer>/scripts/…`, `<launch>/scripts/research/…`).
@@ -106,6 +106,12 @@ Il launch poi rigenera `STATUS.html` (è suo). Il dev non lancia mai gli script 
 
 ### 6.3 Regole su `issue_status.json` (lato dev)
 `apply-status` fa solo questo: chiavi in `closes` → `status: risolto`, `resolved: <data del gate>`; chiavi in `verify` → `status: da_verificare`; a tutte e due `gate: docs/gates/NN-slug.md` e in testa alla `note` "Gate NN (data): titolo. · " (la nota vecchia resta). Non tocca mai chiavi `accettato` / `non_problema` / `pianificato` / `sospeso`, non crea chiavi nuove (le crea il launch con l'ondata), non chiude niente da un gate che non è PASS. Fa una copia `.bak` prima di scrivere.
+
+### 6.4 Dati di test reale e catture (qualsiasi motore)
+- **Telemetria** (opt-in del giocatore, kit di playtest): `docs/playtest/telemetry.json` scritto da `<game-developer>/scripts/telemetry_report.py` (sessioni, tempo di gioco, dove si smette, morti per zona e causa, tempo al primo obiettivo, zone mai visitate). Per il launch è **test reale**: va con le critiche reali, **mai** mescolata con quelle del focus group simulato; cita la data e il numero di sessioni. Niente telemetria = si dice, non si stima.
+- **Catture per store e trailer**: ogni cartella `captures/<nome>/` ha `manifest.json`; ogni file ha `produced: real-play | seed:<n> | debug-spawn:<regola> | staged:<cosa>`. Allo store vanno solo `real-play` / `seed`; una `staged` solo con ok del proprietario (riga in `DECISIONI.md`). Nucleon: `ncli.py capture plan.json` (in Play vero, regole non toccate); Unity: lo strumento di cattura del blocco E.
+- **Prestazioni**: la riga `perf:` del gate (p95 contro `1000/targetFps`, sulla GPU vera) è il dato da usare per i requisiti della pagina store e per i rischi di recensione ("gira male"); `perf: skipped: software renderer` = dato mancante, non "va bene".
+- Il launch legge questi file in sola lettura (§3) e non li rigenera.
 
 ## 7. Header dei gate di sviluppo (formato fisso, leggibile da macchina)
 

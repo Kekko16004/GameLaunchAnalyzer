@@ -1,4 +1,4 @@
-"""Strategist side of the game-developer contract (references/dev-link.md, gdl-v2): wave_kit init from docs/design-review
+"""Strategist side of the game-developer contract (references/dev-link.md, gdl-v3): wave_kit init from docs/design-review
 (brief "Da ricontrollare" from changes-since, map / screens / runs copied, shared ```screens block, shared run tags), the
 changes-since parser and `fixes` (as-is, never removing a fix), the contract warnings of `check` (not cited, fixes missing,
 orphans, run tags, P-wNN-n IDs and keys, reopenings in the §4.3 format, "nato col gate" / "ricomparso dopo il gate"),
@@ -254,7 +254,7 @@ assert dl_["mode"] in ("linked", "launch-only") and dl_["launch_dir"] and dl_["d
 assert dl_["gates_with_header"] == {"count": 1, "last": 57, "last_date": "2026-10-19", "last_status": "PASS", "last_title": "Scheda Stasera", "last_file": "57-stasera.md"}, dl_
 assert dl_["gate_plans"] == ["plan-w10.md"] and dl_["decisions"] == {"path": "DECISIONI.md", "count": 4, "last": "D-015"}
 assert dl_["design_review"]["latest_changes_since"] == "changes-since-w09.md" and dl_["design_review"]["map_gate"] == 57 and dl_["design_review"]["runs"]
-assert dl_["contract"]["ours"] == "gdl-v2"
+assert dl_["contract"]["ours"] == "gdl-v3"
 assert ps.dev_link(tempfile.mkdtemp())["mode"] == "solo"
 md = ps.to_md(ps.scan(d, 10, probe=False))
 assert "Collegamento con game-developer" in md and "gate 57" in md

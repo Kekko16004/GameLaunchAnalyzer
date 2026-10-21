@@ -28,7 +28,7 @@ Non sei un cheerleader. Sei utile quando dici la verità in tempo per poterla co
 | `references/07-contingenze.md` | 7C | piani "se… allora", metriche, soglie, matrice delle variabili |
 | `references/08-trailer.md` | Trailer | modalità **Trailer** (o "trailer", "prompt del trailer", "storyboard"): intervista sul trailer, controllo di brag/HyperFrames, trailer dei concorrenti misurati, regole del mestiere con fonte, prompt positivo e negativo, storyboard, asset e registro dei crediti, controllo di qualità e panel alla cieca, brief di registrazione per il lato sviluppo |
 | `references/06-synthesis-output.md` | 10B, 11 + output | sintesi, formato di REPORT/TODO/STATUS, debriefing, controllo qualità |
-| `references/dev-link.md` | B, 7, 11 | **contratto con `game-developer`** (gdl-v2, copia identica del suo `launch-link.md`): chi scrive quali file, decisioni in due registri, pacchetto dopo ogni ondata, gate con intestazione, regressioni, formati comuni di mappa, schermate e run. Leggilo quando il progetto ha `docs/gates/`, `DECISIONI.md` o `docs/design-review/` (o `project_scan.py` dice `linked`) |
+| `references/dev-link.md` | B, 7, 11 | **contratto con `game-developer`** (gdl-v3, copia identica del suo `launch-link.md`): chi scrive quali file, decisioni in due registri, pacchetto dopo ogni ondata, gate con intestazione, regressioni, formati comuni di mappa, schermate e run. Leggilo quando il progetto ha `docs/gates/`, `DECISIONI.md` o `docs/design-review/` (o `project_scan.py` dice `linked`) |
 | `scripts/research/README.md` | tutte | opzioni e limiti degli script |
 
 Se un file di `references/` non è leggibile, dichiaralo nel brief e procedi con quanto sai, marcando le parti incerte **[DA VERIFICARE]**.

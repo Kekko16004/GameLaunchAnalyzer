@@ -15,7 +15,7 @@ real reviews), for any engine (Unity, Unreal, Godot, custom), in launch/fg/waves
   wNN-limite-beta.md        (optional) what to cut / limit in a free demo or beta
   wNN-sintesi.md            (output, filled after the panel) every row with the issue key and the proposal ID P-wNN-n
 
-Link with game-developer (references/dev-link.md, contract gdl-v2). When the game project has docs/design-review/:
+Link with game-developer (references/dev-link.md, contract gdl-v3). When the game project has docs/design-review/:
   - the brief gets a "Da ricontrollare" section filled from docs/design-review/changes-since-wMM.md (the risks the
     development gates introduced, the design choices they changed); MM = the previous wave;
   - wNN-mappa-gioco.md, wNN-schermate.md, wNN-runs.md start from game-map.md, screen-map.md, runs.md (copied as they are,
