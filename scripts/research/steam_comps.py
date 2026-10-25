@@ -15,14 +15,39 @@ from __future__ import annotations
 
 import argparse
 import os
-from common import http_get, log, read_list, safe_json, set_rate, ts_to_date, write_csv, write_json
+import re
+from common import get_text, http_get, log, read_list, safe_json, set_rate, ts_to_date, write_csv, write_json
+
+_REV_RE = re.compile(r"(\d{1,3})% of the ([\d,]+) user reviews for this (?:game|demo|software)")
+
+
+def reviews_from_store_page(appid: int) -> dict:
+    """Fallback when /appreviews redirects to the store home (seen 2026-10-24): read the summary line
+    "NN% of the N,NNN user reviews for this game are positive" from the public store page (age cookies, no login).
+    The first match is the all-time summary for all languages."""
+    try:
+        h = get_text(f"https://store.steampowered.com/app/{appid}/?l=english",
+                     headers={"Cookie": "birthtime=631152001; lastagecheckage=1-January-1990; wants_mature_content=1"})
+    except Exception as e:  # noqa: BLE001
+        log(f"WARN store page {appid}: {e}")
+        return {}
+    m = _REV_RE.search(h)
+    if not m:
+        return {}
+    total = int(m.group(2).replace(",", ""))
+    return {"total_reviews": total, "total_positive": round(total * int(m.group(1)) / 100),
+            "review_score_desc": None, "_source": "store_page"}
 
 
 def fetch_app(appid: int, cc: str, lang: str, use_spy: bool, use_gam: bool, multipliers: list[int]) -> dict:
     d = safe_json(f"https://store.steampowered.com/api/appdetails?appids={appid}&cc={cc}&l={lang}")
     d = (d.get(str(appid)) or {}).get("data") or {}
     r = safe_json(f"https://store.steampowered.com/appreviews/{appid}?json=1&language=all&purchase_type=all"
-                  f"&num_per_page=0&filter=all").get("query_summary") or {}
+                  f"&num_per_page=0&filter=all", default={}).get("query_summary") or {}
+    src = "appreviews" if r.get("total_reviews") is not None else None
+    if src is None:
+        r = reviews_from_store_page(appid)
+        src = r.get("_source") or "missing"
     po = d.get("price_overview") or {}
     rd = d.get("release_date") or {}
     total, pos = r.get("total_reviews"), r.get("total_positive")
@@ -37,6 +62,7 @@ def fetch_app(appid: int, cc: str, lang: str, use_spy: bool, use_gam: bool, mult
         screenshots=len(d.get("screenshots") or []), header_image=d.get("header_image"),
         reviews_total=total, reviews_positive=pos,
         pct_positive=round(100 * pos / total, 1) if total else None, review_score_desc=r.get("review_score_desc"),
+        reviews_source=src,
     )
     # Boxleiter: copies ~= total reviews x multiplier (rule of thumb; 30 = conservative, 60 = optimistic)
     for m in multipliers:

@@ -1,0 +1,47 @@
+{
+  "$comment": "Manifest of the skillkit installer (installer/install.mjs). Skills are installed once in ~/.agents/skills, hosts that do not read that folder get a link, external dependencies come from their GitHub repos at the latest commit.",
+  "id": "game-launch-strategist",
+  "name": "game-launch-strategist",
+  "version": "2.0.0",
+  "repo": "https://github.com/Kekko16004/GameLaunchAnalyzer.git",
+  "brand": {
+    "mark": "[▶]",
+    "accent": "#8f7cf6",
+    "tagline": { "it": "strategia di lancio con dati reali", "en": "launch strategy on real data" }
+  },
+  "hooks": "installer/hooks.mjs",
+  "requires": [
+    { "id": "node", "label": "Node.js", "min": "18", "required": true,
+      "install": { "win": "winget install --id OpenJS.NodeJS.LTS -e --accept-source-agreements --accept-package-agreements", "mac": "brew install node", "linux": "sudo apt install -y nodejs npm" } },
+    { "id": "git", "label": "git", "required": false, "offer": true,
+      "why": { "it": "aggiornamenti (senza: zip da GitHub)", "en": "updates (without: GitHub zip)" },
+      "install": { "win": "winget install --id Git.Git -e --accept-source-agreements --accept-package-agreements", "mac": "xcode-select --install", "linux": "sudo apt install -y git" } },
+    { "id": "python", "cmds": ["python", "python3", "py"], "label": "Python", "min": "3.9", "required": false, "offer": true,
+      "why": { "it": "script di ricerca (Steam, recensioni, creator, report)", "en": "research scripts (Steam, reviews, creators, reports)" },
+      "install": { "win": "winget install --id Python.Python.3.12 -e --accept-source-agreements --accept-package-agreements", "mac": "brew install python", "linux": "sudo apt install -y python3" } }
+  ],
+  "skills": [
+    {
+      "name": "game-launch-strategist",
+      "path": ".",
+      "legacy": ["game_launch_strategist", "launch-strategist", "gamelaunchstrategist"],
+      "exclude": ["installer", "tests", "commands", "docs", "README.md", "INSTALL.md", "CHANGELOG.md", "skillkit.json",
+                  "install.bat", "install.sh", "install.ps1", "installer.bat", "update.bat", "update.sh", "update.ps1",
+                  ".gitignore", ".gitattributes", ".github", ".terminalmcp", "*.m4s", "*.bak", "*.bak2", "*.orig", "*.pyc", ".env", "*.env"]
+    }
+  ],
+  "commands": [
+    { "name": "game-launch-strategist", "file": "commands/game-launch-strategist.md", "onlyHosts": ["gemini"] }
+  ],
+  "commandMarker": "game-launch-strategist|game_launch_strategist",
+  "components": [
+    {
+      "id": "game-developer",
+      "kind": "skillkit",
+      "repo": "https://github.com/Kekko16004/GameDeveloperSkill.git",
+      "label": { "it": "game-developer", "en": "game-developer" },
+      "hint": { "it": "dall'idea alla vertical slice; le due skill si passano il lavoro (contratto gdl)", "en": "idea to vertical slice; the two skills hand work to each other (gdl contract)" },
+      "recommended": "ifInstalled"
+    }
+  ]
+}

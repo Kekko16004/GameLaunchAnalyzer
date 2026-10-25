@@ -56,35 +56,32 @@ Principles: honest verdicts, every number carries a source or a label (`[FATTO]`
 
 ## Install
 
-Requirements: Python ≥ 3.9 (standard library only) for the research scripts.
-
-```bash
-# Linux / macOS
-./install.sh                 # interactive; or --all, --claude, --antigravity, --kilo, --agents, --codex
-./install.sh --all --mode copy   # copy instead of symlink
-./install.sh --uninstall
-```
+Requirements: [Node.js 18+](https://nodejs.org) for the installer (`install.bat` offers to install it with winget), Python ≥ 3.9 (standard library only) for the research scripts, git recommended.
 
 ```bat
-:: Windows
-installer.bat
-:: or: powershell -ExecutionPolicy Bypass -File install.ps1 -All
+install.bat                         :: interactive: detected hosts preselected (arrows, space, enter)
+install.bat --yes                   :: no questions: every detected host (alias -Quiet / -All)
+install.bat --hosts claude,codex    :: only these hosts
+install.bat --test                  :: also run the unit tests (tests/run_all.py)
+install.bat --dry-run               :: show what would change, write nothing
+install.bat --dev                   :: the installed skill is a link to this folder (live edits)
+update.bat                          :: git pull + reinstall with the saved choices (add --test for the tests)
+node installer\install.mjs doctor [--fix]   :: check the install, repair it
+node installer\install.mjs uninstall        :: remove only what the installer created
 ```
 
-**Codex**: `--codex` (PowerShell: `-Codex`) installs the skill in `$CODEX_HOME/skills` (default `~/.codex/skills`) and the command as a prompt in `~/.codex/prompts`, used as `/prompts:game-launch-strategist` [verify the paths against your Codex version]. Where an environment lacks a tool the skill uses (structured questions, sub-agents, tool search), `SKILL.md` says what to do instead.
+macOS / Linux: `./install.sh`, `./update.sh` with the same options.
 
-Only `SKILL.md`, `references/` and `scripts/` are installed, plus the `/game-launch-strategist` slash command. In `link` mode (default) edits to this repository are picked up immediately (`SKILL.md` is a symlink with Developer Mode on, otherwise a copy that `update.bat` refreshes). Every install records its choices in `~/.game-launch-strategist/install.json`; `install.ps1 -Reuse` repeats them without questions.
+How it works (the same installer as [GameDeveloperSkill](https://github.com/Kekko16004/GameDeveloperSkill) and [DesignerSkill](https://github.com/Kekko16004/DesignerSkill)):
 
-## Update (one click)
+- **One copy.** `SKILL.md`, `references/` and `scripts/` go to `~/.agents/skills/game-launch-strategist`, the folder Codex, Gemini CLI, Cursor, OpenCode, Kilo, Windsurf, Copilot and Roo already read. Claude Code (`~/.claude/skills`), Antigravity (`~/.gemini/config/skills`) and Cline get a link to it (a junction on Windows, no admin needed).
+- **No duplicates.** Older copies in host folders (`~/.codex/skills`, `~/.kilo/skills`, `~/.kilocode/skills`, …) and the legacy names are moved to `~/.agents/skillkit/backup/<date>/`, never deleted. The extra slash commands the old installer wrote (Kilo, Antigravity workflows, Codex prompts) are removed.
+- **Slash command.** In Claude Code, Codex, Kilo and the others the skill itself is `/game-launch-strategist`. Only Gemini CLI, which has no skill commands, gets `commands/game-launch-strategist.md` as a TOML command.
+- **Checks.** Finds the real Python 3.9+ and compiles every research script without running it. `--test` also runs the offline unit tests.
+- **game-developer.** The installer offers [game-developer](https://github.com/Kekko16004/GameDeveloperSkill) as an optional module, preselected when it is already installed; game-developer's installer offers this skill the same way. After the vertical slice the two skills hand work to each other through `references/dev-link.md` (contract `gdl-v3`).
+- **Receipt.** `~/.agents/skillkit/game-launch-strategist.json` keeps hosts and choices for `update`, `doctor` and `uninstall`. Hosts installed later are added on the next update.
 
-```bat
-update.bat              :: download from GitHub, check the scripts, reinstall in every IDE with the last choices, verify
-update.bat -Test        :: also run the unit tests before installing
-update.bat -NoSelf      :: no download, only reinstall        update.bat -NoInstall   :: download only
-update.bat -Mode copy   :: install as copies                  update.bat -Branch dev  :: follow another branch
-```
-
-What it does: (0) installed copies that differ from this folder (edits made inside an IDE's skills folder) are saved to `~/.game-launch-strategist/backups/<date>/` before anything is overwritten; (1) `git pull --ff-only --autostash`, or the latest zip from GitHub if this folder is not a git clone (the previous files are backed up); (2) finds Python 3.9+, compiles every script; (3) `install.ps1 -Reuse` (first time: every IDE found on the PC); (4) checks that every installed `SKILL.md` matches. Exit code 1 if anything needs a look; the warnings are listed at the end.
+From inside the installed skill an agent updates with `node scripts/update.mjs`.
 
 ## Use
 
@@ -106,8 +103,9 @@ references/
   07-contingenze.md           phase 7C: "if... then" plans, metrics, variable matrix
 scripts/research/             research, planning and monitoring tools (see its README)
 tests/                        offline tests (python tests/run_all.py)
-commands/                     slash command
-install.sh / install.ps1 / installer.bat
+commands/                     slash command (Gemini CLI)
+installer/                    skillkit installer (Node, zero dependencies), manifest in skillkit.json
+install.bat · update.bat      Windows; install.sh · update.sh for macOS / Linux
 ```
 
 `SKILL.md` is loaded whenever the skill triggers; each phase file is read only when that phase runs.

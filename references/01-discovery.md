@@ -141,6 +141,19 @@ Per ciascun comparabile completa a mano le colonne che gli script non danno: `vi
 - Incrocia con Gamalytic e, se disponibili, SteamDB o VG Insights. Se `copies_per_review` di Gamalytic cade fuori da 30-60 (in un test su un titolo cooperativo molto venduto era 87), allarga l'intervallo e spiegalo.
 - Ogni stima porta il suo margine di errore e l'etichetta **[STIMA]**.
 
+### 2.3b Verifica dei casi virali ("X wishlist in Y giorni")
+
+Un caso auto-dichiarato entra nel piano solo dopo questo controllo (circa 30-45 minuti, solo fonti pubbliche, niente login né aggiramenti):
+1. **Follower Steam**: `https://steamcommunity.com/games/<appid>/memberslistxml/?xml=1`, campo `memberCount` (coincide con i follower: verificato su Hamster Hunter, 3.385 = Gamalytic) oppure Gamalytic `followers`. SteamDB solo a mano (`steamdb_assist.py`), mai con script.
+2. **Wishlist dai follower**: follower × 7-15 (fino a 20 per generi forti), mediana ~10-12 (GameDiscoverCo, sondaggi 2021 e 2023). Se le wishlist dichiarate superano 20× i follower, scrivi "fuori forchetta" e i due motivi possibili (traffico da video brevi che segue poco / numero gonfiato o lordo). Etichetta [STIMA].
+3. **Giocatori**: API pubblica `ISteamUserStats/GetNumberOfCurrentPlayers` (ora) + picco da SteamDB (estratto o lettura manuale) con la data: il picco è **prima o dopo** il festival, il featuring, i creator grandi?
+4. **Recensioni** del gioco e della demo (numero e %), confrontate con quanto dichiarato.
+5. **Pubblico di partenza**: iscritti e follower dei canali dello sviluppatore, numero di video già pubblicati, giochi precedenti. "In 2 settimane" senza il pubblico di partenza non è un benchmark.
+6. **Storia dello sviluppatore**: post precedenti con numeri (RSS pubblico di Reddit) contro i dati Steam dei giochi precedenti (recensioni × 30-60, Gamalytic). Se un gioco precedente con lo stesso metodo è andato male, scrivilo.
+7. **Spinte esterne**: publisher su Steam; creator grandi (`yt_research.py`, con data rispetto al picco); stampa; Next Fest e "Top Demos"; pubblicità (Meta Ad Library, TikTok Commercial Content Library: lettura manuale, altrimenti [DA VERIFICARE]).
+8. **Verdetto** in tre righe: cosa è [FATTO], cosa è [STIMA], cosa resta [DA VERIFICARE]; poi i motori in ordine con la confidenza.
+Il caso va in `case_studies.py add` con un campo note "verificato il AAAA-MM-GG: …" e, se il numero principale non regge, **non** entra nei benchmark del Next Fest.
+
 ### 2.4 Dati di mercato del genere
 
 Post-mortem recenti; conversione wishlist→vendita (default prudente **[DA VERIFICARE]** 0,10-0,30× nel primo anno per un indie piccolo); ritmo di accumulo delle wishlist organiche; tasso di completamento della demo; quanti giochi simili escono al mese e che soglia di qualità serve per emergere. Le distribuzioni per anno, prezzo e demo vengono da `genre_bench.py` (2.0), con il limite della coda alta.
@@ -193,6 +206,14 @@ Output: **`launch/01b-positioning.md`**. È il filtro più importante: se il gio
    - **Non scontato**: i comparabili non lo hanno, o lo fanno peggio, e non è copiabile in un mese.
 
    Distingui un **differenziatore** da una *feature* (ce l'hanno tutti) e dal *polish* (qualità, non identità). Se ne trovi meno di tre, scrivilo.
+3b. **Ancora di familiarità** (cosa il pubblico conosce già e ama, da mostrare **prima** della novità). I differenziatori dicono perché il gioco è diverso; l'ancora dice perché a qualcuno dovrebbe importare in 2 secondi. Caso Mortuus (2026-10): perk e mystery box di COD Zombies come terreno noto, poi le meccaniche nuove; il reel più forte è stato "Remember this? I made it first person" su un vecchio gioco flash (Boxhead), idea presa dai commenti.
+   Trova 3-5 ancore di tipi diversi e scrivile in tabella `| Ancora | Tipo | Chi la riconosce | Come entra in un gancio | Rischio |`:
+   - **gioco classico o nostalgico** (flash, browser, mobile, anni 2000) che il gioco "rifà" da un'altra prospettiva;
+   - **meccanica amata del genere** (es. perk, mystery box, carte, slot);
+   - **situazione di vita reale** (un lavoro, una festa, un incubo comune);
+   - **cultura o luogo** (famiglia, tradizione, cibo);
+   - **gioco famoso del momento** per il confronto ("X but…").
+   Regole: (a) non usare come ancora un **concorrente diretto** (sembra un clone: va nel test del punto 4); (b) prima di mostrare immagini di un altro gioco, controllo diritti e marchi (Fase 10); (c) ogni ancora va provata con 1-2 copioni (Fase 6, 2b) e tenuta solo se i numeri la premiano (`social_content.py learn`).
 4. **Test "perché dovrei giocarlo invece di [comparabile]?"**: per ognuno dei 3 comparabili più vicini scrivi, dal punto di vista di un giocatore scettico, la risposta in due frasi. Voto: **[PASS]** (ragione vera, chiara, visibile), **[MARGINAL]**, **[FAIL]**.
 5. **Test del twist**: se il gioco si descrive come "X incontra Y", verifica che Y cambi davvero il modo di giocare e non sia solo estetica.
 6. **Mappa di posizionamento** testuale su due assi rilevanti per il genere (complessità/accessibilità, tono, ritmo): comparabili contro il gioco, lo spazio libero e se qualcuno lo vuole.
