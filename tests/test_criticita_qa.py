@@ -7,7 +7,7 @@ sys.path.insert(0, R)
 import common
 def no_net(*a, **k): raise AssertionError("must not use the network")
 common.http_get = no_net
-import criticita as cr, qa, status_page as sp, report_html as rh, glossary as gl
+import criticita as cr, qa, status_page as sp, glossary as gl
 
 HOSTILE = "<img src=x onerror=alert(1)>"
 d = tempfile.mkdtemp(); os.makedirs(os.path.join(d, "fg", "waves")); os.makedirs(os.path.join(d, "_raw"))
@@ -100,7 +100,4 @@ for who in ("private", "partner"):
 pub = sp.build(d, "publisher", [], [], set(), today)
 assert "Criticità, ondata per ondata" not in pub and "Domande e risposte" not in pub and "Meglio itch" not in pub
 assert "Domande e risposte" not in sp.build(d, "private", [], [], {"qa"}, today) and "Criticità, ondata per ondata" not in sp.build(d, "private", [], [], {"critiques"}, today)
-open(os.path.join(d, "REPORT.md"), "w", encoding="utf-8").write("# R\n\n## 5. Critiche e ondate\ntesto\n\n## 9. Piano\nx\n")
-rep = rh.build(d, today, set())
-assert rep.index("data-crit") > rep.index("5. Critiche e ondate") and rep.index("data-crit") < rep.index("9. Piano") and 'grid-column:1/-1' in rep and "Criticità × ondata" in rep
 print("ALL CRITICITA_QA TESTS PASSED")

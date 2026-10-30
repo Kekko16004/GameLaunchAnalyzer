@@ -5,7 +5,7 @@ sys.path.insert(0, R)
 import common
 def no_net(*a, **k): raise AssertionError("launch_window must not use the network")
 common.http_get = no_net
-import launch_window as lw, report_charts as rc, report_html as rh
+import launch_window as lw, report_charts as rc
 D = dt.date
 
 # ---- arithmetic: launch Monday 2027-03-01, week midpoint = Thursday 03-04
@@ -61,5 +61,4 @@ gs = {g["key"]: g for g in rc.groups(d, D(2026, 10, 7))}
 assert "window" in gs and len(gs["window"]["charts"]) == 2, list(gs)
 html = "".join(gs["window"]["charts"]); assert "Quanto è affollata ogni settimana" in html and "la tua settimana" in html and "Cosa pesa sulla tua settimana" in html and "NaN" not in html
 assert "Settimana dal 2027-03-01 (la tua)" in html
-page = rh.build(d, D(2026, 10, 7), set()); assert page.index("Quanto è affollata ogni settimana") > page.index("Piano piattaforme") and "Quadro d'insieme" not in page
 print("ALL LAUNCH_WINDOW TESTS PASSED")

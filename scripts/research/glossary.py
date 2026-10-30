@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Plain-Italian explanations and internal links for the HTML reports (status_page.py, report_html.py).
+"""Plain-Italian explanations and internal links for the HTML reports (status_page.py).
 
 Two things, applied to the text of a page (never to code, links, buttons, headings, summaries, SVG):
   1. a short explanation of a term the first time it appears in each section, shown as a tooltip on hover, keyboard focus or tap

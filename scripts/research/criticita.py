@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Criticalities ("criticità"), wave by wave, gate by gate, with their evolution. Used by status_page.py and report_html.py.
+"""Criticalities ("criticità"), wave by wave, gate by gate, with their evolution. Used by status_page.py.
 
 Sources, merged:
   1. the focus-group wave files (launch/fg/waves/wNN-*.json, same files fg_waves.py reads): the issues each wave found, how many

@@ -2,7 +2,7 @@
 """Export every report chart as a standalone .svg (light colors) into launch/charts/, plus launch/charts/index.md.
 
 Markdown cannot draw charts, so this lets REPORT.md and the other reports embed them: `![Pilastri](charts/product-1.svg)`
-(open the .md in any viewer that shows images). Same data as REPORT.html and STATUS.html: built from files in launch/.
+(open the .md in any viewer that shows images). Same data as the "Quadro d'insieme" of STATUS.html: built from files in launch/.
 
   python charts_export.py [--launch-dir launch] [--out launch/charts]
 """

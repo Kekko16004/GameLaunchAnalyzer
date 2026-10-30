@@ -4,7 +4,7 @@
 `groups(root, today)` returns the available chart groups as [{key, title, intro, charts:[html]}], in reading order:
 product (pillars, issues), focus group, market (comparables, genre, trailers), real reviews, economics, plan (steps by
 phase), creators, full game. A group whose source file is missing is simply absent. Used by status_page.py (section
-"Quadro d'insieme"), report_html.py (REPORT.html) and charts_export.py (one .svg per chart, for the Markdown reports).
+"Quadro d'insieme") and charts_export.py (one .svg per chart, for the Markdown reports).
 """
 from __future__ import annotations
 

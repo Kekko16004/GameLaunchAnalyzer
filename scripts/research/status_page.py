@@ -31,7 +31,7 @@ Live state: launch/issue_status.json (the owner's decision on every focus-group 
 note wherever issues appear (criticalities per wave and per gate, evolution matrix, top-issues chart, convergence table of the
 documents, verdict risks, real-review themes) and splits "Da fare adesso" from "Già deciso". TODO.md is read live (todo_track.py
 marks lines done): open / done per section, and a warning when it was not updated after the latest wave or decision.
-Charts ("Quadro d'insieme") come from report_charts.py; the same charts next to the text of the report are in report_html.py.
+Charts ("Quadro d'insieme") come from report_charts.py; the same charts are exported as .svg for the Markdown reports by charts_export.py.
   launch/criticita.csv       criticalities from other sources (real test, reviews, pre-mortem): criticita.py add
   launch/qa.json             your questions and the answers given (qa.py add); status.json -> qa and critiques_by_wave are read too
   launch/issue_status.json   the owner's decisions on the issues (aperto, in_lavorazione, da_verificare, risolto, pianificato, accettato, non_problema)
@@ -434,7 +434,7 @@ def timeline_section(root: str):
 
 # ----------------------------------------------------------------------------- other sources
 def read_todos(root: str):
-    """(open items, done count, open hours) from TODO.md: kept for report_html / qa. The full live view is todo_section()."""
+    """(open items, done count, open hours) from TODO.md: kept for qa. The full live view is todo_section()."""
     t = tt.parse(os.path.join(root, "TODO.md"))
     if not t:
         return [], 0, 0.0
@@ -884,7 +884,7 @@ def waves_section(root: str) -> str | None:
 
 
 def key_tiles(st: dict, wl_a, fg_rows, plan: dict, econ, today: dt.date, hide: set) -> list:
-    """The key numbers shown on top of STATUS.html and REPORT.html: (label, value, note)."""
+    """The key numbers shown on top of STATUS.html: (label, value, note)."""
     tiles = []
     if wl_a and "current" in wl_a:
         vel = wl_a.get("velocity_4w")
@@ -1358,7 +1358,7 @@ def build(root: str, audience: str, include: list[str], exclude: list[str], hide
     label = {"private": "Uso interno", "partner": "Per i soci", "publisher": "Per il publisher"}[audience]
     return (f'<!doctype html><html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Stato del lancio, {esc(name)}</title>'
             f'<style>{CSS}{mp.CSS}{CSS_POLISH}{cv.CSS}</style></head><body><main><div class="top"><div><h1>{esc(name)}: stato del lancio</h1><p class="sub">Aggiornato il {fmt_date(today.isoformat())}{(" · analisi del " + fmt_date(st["updated"])) if st.get("updated") and str(st["updated"])[:10] != today.isoformat() else ""} · {esc(label)}'
-            f'{" · modalità " + esc(st["mode"]) if st.get("mode") else ""}{" · valutato come: " + esc(product.get("label") or product.get("kind")) if product.get("kind") or product.get("label") else ""}</p><p class="sub">Questo è il <strong>cruscotto</strong>: cosa fare, numeri, pagine da copiare, piani. Il testo completo del report, con i grafici accanto a ogni sezione, è in <a href="REPORT.html">REPORT.html</a>.</p></div><button class="theme" id="theme" type="button" aria-label="Tema chiaro/scuro" title="Tema chiaro/scuro"><span aria-hidden="true">◐</span> Tema</button></div>'
+            f'{" · modalità " + esc(st["mode"]) if st.get("mode") else ""}{" · valutato come: " + esc(product.get("label") or product.get("kind")) if product.get("kind") or product.get("label") else ""}</p><p class="sub">Questo è il <strong>cruscotto</strong>: cosa fare, numeri, pagine da copiare, piani. Il testo completo del report è in <code>REPORT.md</code>, con i grafici in <code>charts/*.svg</code>.</p></div><button class="theme" id="theme" type="button" aria-label="Tema chiaro/scuro" title="Tema chiaro/scuro"><span aria-hidden="true">◐</span> Tema</button></div>'
             + nav + "".join(panels) + f'<footer class="note">Pagina generata da <code>status_page.py</code> il {today.isoformat()} da file locali, senza richieste di rete. Il focus group è simulato: non è un dato di mercato. '
             f'Cifre con fonte nei documenti; ciò che è etichettato [DA VERIFICARE] resta da verificare.</footer></main><script>{JS}{gl.JS}{cr.JS}{qamod.JS}{cv.JS}</script></body></html>')
 

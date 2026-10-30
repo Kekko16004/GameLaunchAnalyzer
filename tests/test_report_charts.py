@@ -1,4 +1,4 @@
-"""Charts: report_charts groups from launch/ files, REPORT.html with charts next to their sections, STATUS.html chart block,
+"""Charts: report_charts groups from launch/ files, STATUS.html chart block,
 standalone .svg export, hostile text stays inert, nothing touches the network, missing files are simply skipped."""
 import os, sys, json, csv, tempfile, subprocess, datetime as dt, re
 R = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "scripts", "research")
@@ -6,7 +6,7 @@ sys.path.insert(0, R)
 import common
 def no_net(*a, **k): raise AssertionError("charts must not use the network")
 common.http_get = no_net
-import charts as C, report_charts as rc, report_html as rh, status_page as sp
+import charts as C, report_charts as rc, status_page as sp
 
 HOSTILE = "<img src=x onerror=alert(1)>"
 def build_launch(d, full=True):
@@ -46,25 +46,6 @@ assert "Feedback del successo" in allhtml and "Non regge" in allhtml and "18 h" 
 pr = rc.pillar_rows(d); assert [r["name"] for r in pr][:2] == ["Loop", "Feedback del successo"] and pr[0]["hours"] is None and pr[1]["hours"] == (18.0, 18.0)   # "0" hours is not credible: words instead
 assert "NaN" not in allhtml and "inf" not in allhtml.lower().replace("information", "")
 
-# REPORT.html: each group sits in its section, nothing is lost, hostile text inert
-page = rh.build(d, today, set())
-assert page.startswith("<!doctype html>") and "<script src" not in page and "http://" not in re.sub(r"http://www\.w3\.org/2000/svg", "", page)
-assert HOSTILE not in page and "&lt;img src=x onerror=alert(1)&gt;" in page
-secs = {str(i): part for i, part in enumerate(page.split('<details class="card doc sec" id="')[1:])}   # section chunks (chart table views have their own <details>)
-audit = next(v for k, v in secs.items() if "Audit dev" in v); assert "Pilastri del genere" in audit and "Cosa farebbero i tester" not in audit
-crit = next(v for k, v in secs.items() if "Critiche e ondate" in v); assert "Cosa farebbero i tester" in crit and "Di cosa si lamentano" in crit
-mkt = next(v for k, v in secs.items() if "Mercato, comparabili" in v); assert "Il genere per anno" in mkt and "Dal prezzo a quanto resta" in mkt
-assert "Avanzamento per fase" in next(v for v in secs.values() if "calendario" in v)
-assert "creator per piattaforma" in next(v for v in secs.values() if "Creator e community" in v)
-assert "Dalla beta al gioco completo" in next(v for v in secs.values() if "Beta oggi" in v)
-assert "Verdetto: Giallo" in page and "Quadro d'insieme" not in page      # every group found its section
-assert "Wishlist contro" not in page and "Punteggio del focus group" in page
-assert "Pilastri del genere" not in rh.build(d, today, {"product"})
-# groups that match no section go to the top block
-d2 = tempfile.mkdtemp(); build_launch(d2); open(os.path.join(d2, "REPORT.md"), "w", encoding="utf-8").write("# R\n\n## Solo testo\nx\n")
-assert "Quadro d'insieme" in rh.build(d2, today, set()) and "Pilastri del genere" in rh.build(d2, today, set())
-try: rh.build(tempfile.mkdtemp(), today, set()); raise AssertionError("missing REPORT.md accepted")
-except SystemExit as e: assert "REPORT.md" in str(e)
 
 # STATUS.html carries the block, publisher gets only the public-safe groups
 sp_page = sp.build(d, "partner", [], [], set(), today)
@@ -152,13 +133,12 @@ def check_page(page, label):
     assert page.count('data-def="') >= page.count("<abbr"), label
 for who in ("private", "partner", "publisher"):
     check_page(sp.build(dd, who, [], [], set(), today), "status " + who)
-check_page(rh.build(dd, today, set()), "report")
 pg = sp.build(dd, "private", [], [], set(), today)
 assert "wishlist" in pg.lower() and 'abbr.g' in pg and "gl" not in re.findall(r"<abbr[^>]*>(\w+)</abbr>", pg)[:0]
 assert "<b>One</b>" not in pg and "&lt;b&gt;One&lt;/b&gt;" in pg
-rep_page = rh.build(dd, today, set())
-plain = re.sub(r"<[^>]+>", "", rep_page)
-assert all(k in plain for k in ("Punteggio focus group", "Break-even", "Gate superati", "Passi fatti"))   # same key numbers on top of both pages
-assert 'href="REPORT.html"' in pg and 'href="STATUS.html"' in rh.build(dd, today, set())    # each page points to the other
+plain = re.sub(r"<[^>]+>", "", pg)
+assert all(k in plain for k in ("Punteggio focus group", "Break-even", "Gate superati", "Passi fatti"))   # key numbers on top of STATUS.html
+assert "REPORT.html" not in pg    # REPORT.html is no longer generated: no link to it
+import subprocess as _sp; _r = _sp.run([sys.executable, os.path.join(R, "report_html.py")], capture_output=True, text=True); assert _r.returncode == 0 and "REPORT.html non si genera più" in _r.stdout   # deprecation stub exits 0
 
 print("ALL REPORT_CHARTS TESTS PASSED")

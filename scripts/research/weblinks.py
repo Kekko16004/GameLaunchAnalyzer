@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Clickable web links for the generated HTML pages (STATUS.html, REPORT.html).
+"""Clickable web links for the generated HTML pages (STATUS.html).
 
 linkify_html(html) walks already-escaped HTML and:
   * turns every bare http(s) URL in TEXT into <a href target=_blank rel="noopener noreferrer"> with a short readable label

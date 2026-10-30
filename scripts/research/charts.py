@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Inline SVG charts, stdlib only, shared by status_page.py, report_html.py and charts_export.py.
+"""Inline SVG charts, stdlib only, shared by status_page.py and charts_export.py.
 
 Every function returns an HTML string: <div class="chart"> with an <svg> (colors are CSS variables, so the same chart
 follows the light/dark theme of the page), invisible hit areas for the hover tooltip (the page script reads data-tip /
