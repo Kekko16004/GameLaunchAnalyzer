@@ -1,0 +1,126 @@
+{
+ "argv": [
+  "youtube",
+  "search",
+  "Everyone's Tier List",
+  "--limit",
+  "6"
+ ],
+ "at": 1793700227.9519513,
+ "date": "2026-11-03",
+ "envelope": {
+  "schema_version": 1,
+  "ok": true,
+  "channel": "youtube",
+  "action": "search",
+  "backend": "yt-dlp",
+  "items": [
+   {
+    "title": "Billionaire House Tier List",
+    "url": "https://www.youtube.com/watch?v=z_3LPJZXawE",
+    "author": "jack pockets",
+    "published_at": null,
+    "text": "Mansions. Tiny homes. Underground bunkers. These are the epic and unusual dwellings of the world's richest humans.",
+    "raw": {
+     "id": "z_3LPJZXawE",
+     "duration": 639,
+     "view_count": 9785434,
+     "like_count": null,
+     "channel_id": "UCuiD8QF3BdtT5EkVYSCvnkA",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "The Afterlife Tierlist",
+    "url": "https://www.youtube.com/watch?v=qK3btTCaFqY",
+    "author": "Duncan Clarke",
+    "published_at": null,
+    "text": "... possible scenarios after we die in a tierlist. Patreon: https://www.patreon.com/duncanclarke Twitter: https://twitter.com/duncanc_ ...",
+    "raw": {
+     "id": "qK3btTCaFqY",
+     "duration": 2191,
+     "view_count": 4783262,
+     "like_count": null,
+     "channel_id": "UCiQtkTO-jrzkNx6G6E7AMfw",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "An Exceptionally Brief Tier List Of The Bloons TD6 Monkeys",
+    "url": "https://www.youtube.com/watch?v=ewjDQKhBsJs",
+    "author": "Davey Gunface",
+    "published_at": null,
+    "text": "This could've been a YouTube Short honestly All of the links! The Link Tree™: https://linktr.ee/daveygunface Patreon: ...",
+    "raw": {
+     "id": "ewjDQKhBsJs",
+     "duration": 17207,
+     "view_count": 779474,
+     "like_count": null,
+     "channel_id": "UCMe_tF-TJp43yy_JZl9w0KQ",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "I Made Smash's 1st Ever Tier List 100% Accurate",
+    "url": "https://www.youtube.com/watch?v=OmafJXJYOBY",
+    "author": "TCNick3",
+    "published_at": null,
+    "text": "tier list gaming -- Follow me on twitter!!: https://twitter.com/tcnick3 Join the discord!: https://discord.gg/QNF3vQR Follow me on insta ...",
+    "raw": {
+     "id": "OmafJXJYOBY",
+     "duration": 1413,
+     "view_count": 281951,
+     "like_count": null,
+     "channel_id": "UCYtfdbMQhzo-uIThGm0hQuQ",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "Pokemon Generation 3 In-game Tier List: Mudkip is Love, Mudkip is Life. | This is my Swamp(ert)",
+    "url": "https://www.youtube.com/watch?v=eXYWXicUxMI",
+    "author": "Imported Cheese",
+    "published_at": null,
+    "text": "I heard you guys like Mudkips, so break out those trumpets and don your swimsuits, it's time to tackle the Ruby & Sapphire ...",
+    "raw": {
+     "id": "eXYWXicUxMI",
+     "duration": 5326,
+     "view_count": 128403,
+     "like_count": null,
+     "channel_id": "UCJk1N0u-EoSCLY8RV_aoZ1Q",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "Daisy Makes A TIER LIST in Minecraft!",
+    "url": "https://www.youtube.com/watch?v=JEDnHl2Sslw",
+    "author": "Ethobot",
+    "published_at": null,
+    "text": "Daisy Makes A TIER LIST in Minecraft! Ethobot, Daisy, Cherri, and Barry RATE EVERYONE on the Minecraft Server on a Tier List!",
+    "raw": {
+     "id": "JEDnHl2Sslw",
+     "duration": 1459,
+     "view_count": 759227,
+     "like_count": null,
+     "channel_id": "UCzrlI6MuQz0IzprmuUZb8-Q",
+     "tags": null,
+     "categories": null
+    }
+   }
+  ],
+  "meta": {
+   "elapsed_ms": 1796,
+   "attempts": [
+    {
+     "backend": "yt-dlp",
+     "result": "ok"
+    }
+   ]
+  },
+  "error": null
+ }
+}

@@ -1,0 +1,110 @@
+{
+ "argv": [
+  "youtube",
+  "search",
+  "Koromi trailer",
+  "--limit",
+  "5"
+ ],
+ "at": 1793700193.9473174,
+ "date": "2026-11-03",
+ "envelope": {
+  "schema_version": 1,
+  "ok": true,
+  "channel": "youtube",
+  "action": "search",
+  "backend": "yt-dlp",
+  "items": [
+   {
+    "title": "Koromi - Official Gameplay Trailer",
+    "url": "https://www.youtube.com/watch?v=enS37hBtHk8",
+    "author": "GameTrailers",
+    "published_at": null,
+    "text": "Watch the Gameplay Trailer for Koromi, a 3D action platformer developed by Super Seeded. Players will master the game's free ...",
+    "raw": {
+     "id": "enS37hBtHk8",
+     "duration": 89,
+     "view_count": 229045,
+     "like_count": null,
+     "channel_id": "UCJx5KP-pCUmL9eZUv-mIcNw",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "Koromi - Official Trailer",
+    "url": "https://www.youtube.com/watch?v=A_ao6D5xcQY",
+    "author": "Indie Games Hub",
+    "published_at": null,
+    "text": "Koromi is a grappling-based 3D platformer where building and conserving momentum is key. Swing through blooming and poetic ...",
+    "raw": {
+     "id": "A_ao6D5xcQY",
+     "duration": 89,
+     "view_count": 27454,
+     "like_count": null,
+     "channel_id": "UCt8CJiye87FMbEwt0npPMuQ",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "KUROMI'S PRETTY JOURNEY | Anime Trailer",
+    "url": "https://www.youtube.com/watch?v=oTGOTDdUkNI",
+    "author": "Hello Kitty and Friends",
+    "published_at": null,
+    "text": "Kuromi and her friends are embarking on an adventure filled with smiles, tears, thrills and so much more! Support Kuromi as she ...",
+    "raw": {
+     "id": "oTGOTDdUkNI",
+     "duration": 15,
+     "view_count": 459045,
+     "like_count": null,
+     "channel_id": "UCQBOAYwPdqzr1TxmjT-91Sg",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "My Melody & Kuromi | Official Trailer | Netflix",
+    "url": "https://www.youtube.com/watch?v=3oKamSmjono",
+    "author": "Netflix Anime",
+    "published_at": null,
+    "text": "A stop-motion animation series starring My Melody and Kuromi, two globally popular Sanrio characters, is born! My Melody is a ...",
+    "raw": {
+     "id": "3oKamSmjono",
+     "duration": 115,
+     "view_count": 1289118,
+     "like_count": null,
+     "channel_id": "UCBSs9x2KzSLhyyA9IKyt4YA",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "A Day in the Life with Kuromi | Season 1 Trailer",
+    "url": "https://www.youtube.com/watch?v=eliuHTCu280",
+    "author": "Hello Kitty and Friends",
+    "published_at": null,
+    "text": "Get ready, Kuromi is here with her very own show! The NEW show premieres at 1PM PST on October 2nd! Join us for this brand ...",
+    "raw": {
+     "id": "eliuHTCu280",
+     "duration": 20,
+     "view_count": 41177,
+     "like_count": null,
+     "channel_id": "UCQBOAYwPdqzr1TxmjT-91Sg",
+     "tags": null,
+     "categories": null
+    }
+   }
+  ],
+  "meta": {
+   "elapsed_ms": 1782,
+   "attempts": [
+    {
+     "backend": "yt-dlp",
+     "result": "ok"
+    }
+   ]
+  },
+  "error": null
+ }
+}

@@ -1,0 +1,126 @@
+{
+ "argv": [
+  "youtube",
+  "search",
+  "Author Sim",
+  "--limit",
+  "6"
+ ],
+ "at": 1793700217.256679,
+ "date": "2026-11-03",
+ "envelope": {
+  "schema_version": 1,
+  "ok": true,
+  "channel": "youtube",
+  "action": "search",
+  "backend": "yt-dlp",
+  "items": [
+   {
+    "title": "Author Sim #letsplay | Living My Best Novelist Life! Write Books In This Life Sim  #SteamNextFest",
+    "url": "https://www.youtube.com/watch?v=HwENv6eZ8U0",
+    "author": "KitamariePlays",
+    "published_at": null,
+    "text": "Have you ever dreamed of becoming a world-renowned author? Now's your chance! Study masterpieces from other authors, craft ...",
+    "raw": {
+     "id": "HwENv6eZ8U0",
+     "duration": 1823,
+     "view_count": 97,
+     "like_count": null,
+     "channel_id": "UCcDVqfcKZDTUH9UsKrs6AJA",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "Author Sim - Official Gameplay Demo Release Date Trailer",
+    "url": "https://www.youtube.com/watch?v=FO_CSULtTzw",
+    "author": "GameTrailers",
+    "published_at": null,
+    "text": "Take a look at the Gameplay Demo Release Date Trailer for Author Sim, an author simulation management game developed by ...",
+    "raw": {
+     "id": "FO_CSULtTzw",
+     "duration": 57,
+     "view_count": 13156,
+     "like_count": null,
+     "channel_id": "UCJx5KP-pCUmL9eZUv-mIcNw",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "Author Sim | Game Release Trailer | 4",
+    "url": "https://www.youtube.com/watch?v=KeYSU37ktTM",
+    "author": "EssyTheSlug",
+    "published_at": null,
+    "text": "Author Sim is officially out on Steam with a 10% launch discount:* https://store.steampowered.com/app/4168210/Author_Sim/ ...",
+    "raw": {
+     "id": "KeYSU37ktTM",
+     "duration": 61,
+     "view_count": 57,
+     "like_count": null,
+     "channel_id": "UCXMbOJosV8Ha2NsNfVxzpvQ",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "Author Sim [Full Demo]",
+    "url": "https://www.youtube.com/watch?v=NGdLqDKfBhI",
+    "author": "Dr. HzDonut",
+    "published_at": null,
+    "text": "I write words now.",
+    "raw": {
+     "id": "NGdLqDKfBhI",
+     "duration": 1715,
+     "view_count": 10,
+     "like_count": null,
+     "channel_id": "UCW92zPLl8BD6sLE3F5CNjyg",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "Author Sim | Game Announcement Trailer | 1",
+    "url": "https://www.youtube.com/watch?v=rJLcs2VoTAM",
+    "author": "EssyTheSlug",
+    "published_at": null,
+    "text": "Game Description* Have you ever dreamed of becoming a world-renowned author? Now's your chance! Study masterpieces from ...",
+    "raw": {
+     "id": "rJLcs2VoTAM",
+     "duration": 55,
+     "view_count": 97,
+     "like_count": null,
+     "channel_id": "UCXMbOJosV8Ha2NsNfVxzpvQ",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "Author Sim - Can you become a successful author?",
+    "url": "https://www.youtube.com/watch?v=YdgNab6UjeA",
+    "author": "Life's Hidden Nook ",
+    "published_at": null,
+    "text": "Welcome to The Hidden Nook - Have you ever dreamed of becoming a world-renowned author? Now's your chance!",
+    "raw": {
+     "id": "YdgNab6UjeA",
+     "duration": 1243,
+     "view_count": 41,
+     "like_count": null,
+     "channel_id": "UCaDPGvjgLPKWJeQMQCLcmQQ",
+     "tags": null,
+     "categories": null
+    }
+   }
+  ],
+  "meta": {
+   "elapsed_ms": 1703,
+   "attempts": [
+    {
+     "backend": "yt-dlp",
+     "result": "ok"
+    }
+   ]
+  },
+  "error": null
+ }
+}

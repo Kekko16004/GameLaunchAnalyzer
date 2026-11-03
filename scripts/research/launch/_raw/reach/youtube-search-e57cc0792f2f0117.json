@@ -1,0 +1,126 @@
+{
+ "argv": [
+  "youtube",
+  "search",
+  "BOMBANANA",
+  "--limit",
+  "6"
+ ],
+ "at": 1793700231.6866372,
+ "date": "2026-11-03",
+ "envelope": {
+  "schema_version": 1,
+  "ok": true,
+  "channel": "youtube",
+  "action": "search",
+  "backend": "yt-dlp",
+  "items": [
+   {
+    "title": "UN CIECO, un SORDO ed un MUTO DISINNESCANO BOMBE!! Bombanana ITA",
+    "url": "https://www.youtube.com/watch?v=iyqj0DNtGrE",
+    "author": "ItsNico17",
+    "published_at": null,
+    "text": "Se vuoi supportare il canale puoi abbonarti al seguente link ...",
+    "raw": {
+     "id": "iyqj0DNtGrE",
+     "duration": 2343,
+     "view_count": 118051,
+     "like_count": null,
+     "channel_id": "UCrlAHt1h5uiW5rlh2W9kxGQ",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "THE MOST INCREDIBLE RUN EVER ON BOMBANANA !!",
+    "url": "https://www.youtube.com/watch?v=SwPr02AKu6M",
+    "author": "Blur Indietro",
+    "published_at": null,
+    "text": "Twitch → https://www.twitch.tv/tumblurr\nInstagram → https://www.instagram.com/blurs7/\nYT → https://www.youtube.com/channel ...",
+    "raw": {
+     "id": "SwPr02AKu6M",
+     "duration": 672,
+     "view_count": 48947,
+     "like_count": null,
+     "channel_id": "UC8EqYRyY-oKKtIIKwBxyLfg",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "We are BLIND, DEAF and MUTE in Bombanana",
+    "url": "https://www.youtube.com/watch?v=haRpt5RjCfI",
+    "author": "SSundee",
+    "published_at": null,
+    "text": "Today we try and defuse a bomb with 3 idiots that are deaf, blind and mute! Friends in the Video ⭑ @MisterCrainer ⭑ @Lookumz ...",
+    "raw": {
+     "id": "haRpt5RjCfI",
+     "duration": 1066,
+     "view_count": 910496,
+     "like_count": null,
+     "channel_id": "UCke6I9N4KfC968-yRcd5YRg",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "SIAMO TORNATI per DISINNESCARE BOMBE - Bombanana Full Gameplay ITA",
+    "url": "https://www.youtube.com/watch?v=SdH7hMUDgoE",
+    "author": "RickyGayming",
+    "published_at": null,
+    "text": "Puoi beccarmi sia dall'indiano che mangio pollo al curry che in live su twitch dalle 18 alle 23! link del gioco: ...",
+    "raw": {
+     "id": "SdH7hMUDgoE",
+     "duration": 11409,
+     "view_count": 15712,
+     "like_count": null,
+     "channel_id": "UCd-pMqmPvcw7QOSR771A_kA",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "BOMBANANA È UN OTTIMO MODO PER ROVINARE LE AMICIZIE",
+    "url": "https://www.youtube.com/watch?v=a-MooqavDIo",
+    "author": "WILDCAT",
+    "published_at": null,
+    "text": "BLDBLZ: https://www.bldblz.com/\nGrazie per aver guardato il video! Metti MI PIACE se ti è piaciuto!\n\nSeguimi su Twitter: http ...",
+    "raw": {
+     "id": "a-MooqavDIo",
+     "duration": 3907,
+     "view_count": 362968,
+     "like_count": null,
+     "channel_id": "UC-kOXc3gBwksVfmndSEz7jg",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "QUESTI *NUOVI* LIVELLI sono IMPOSSIBILI.. Bombanana #2",
+    "url": "https://www.youtube.com/watch?v=VxadMkB4JVc",
+    "author": "ItsNico17",
+    "published_at": null,
+    "text": "Se vuoi supportare il canale puoi abbonarti al seguente link ...",
+    "raw": {
+     "id": "VxadMkB4JVc",
+     "duration": 3577,
+     "view_count": 42958,
+     "like_count": null,
+     "channel_id": "UCrlAHt1h5uiW5rlh2W9kxGQ",
+     "tags": null,
+     "categories": null
+    }
+   }
+  ],
+  "meta": {
+   "elapsed_ms": 1937,
+   "attempts": [
+    {
+     "backend": "yt-dlp",
+     "result": "ok"
+    }
+   ]
+  },
+  "error": null
+ }
+}

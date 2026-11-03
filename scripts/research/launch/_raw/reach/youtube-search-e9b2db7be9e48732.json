@@ -1,0 +1,126 @@
+{
+ "argv": [
+  "youtube",
+  "search",
+  "Endless Rails",
+  "--limit",
+  "6"
+ ],
+ "at": 1793700213.734261,
+ "date": "2026-11-03",
+ "envelope": {
+  "schema_version": 1,
+  "ok": true,
+  "channel": "youtube",
+  "action": "search",
+  "backend": "yt-dlp",
+  "items": [
+   {
+    "title": "We Completely BROKE This Survival Roguelike! - Endless Rails",
+    "url": "https://www.youtube.com/watch?v=LnLVOd_olh4",
+    "author": "Ultra C",
+    "published_at": null,
+    "text": "Subscribe! http://bit.ly/UltraCSubscribe Go check out our VOD channel! https://www.youtube.com/UltraContent Support us on ...",
+    "raw": {
+     "id": "LnLVOd_olh4",
+     "duration": 1579,
+     "view_count": 5645,
+     "like_count": null,
+     "channel_id": "UCCWXUcrqb9TTnNszgQenL2w",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "This Is Basically BROTATO... But With TRAINS! - Endless Rails",
+    "url": "https://www.youtube.com/watch?v=acQv8ABCkRM",
+    "author": "ProRogueBear",
+    "published_at": null,
+    "text": "Endless Rails takes the familiar survivor-like formula and puts it on tracks, literally. Think Brotato with trains and carriages, where ...",
+    "raw": {
+     "id": "acQv8ABCkRM",
+     "duration": 2601,
+     "view_count": 67584,
+     "like_count": null,
+     "channel_id": "UC9uHL5MeIA_IwSddagpwHSA",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "Endless Rails Review ● Is This Game Worth It? Crucial Info (Endless Rails Gameplay)",
+    "url": "https://www.youtube.com/watch?v=Of-WD669yFg",
+    "author": "Max Dixon",
+    "published_at": null,
+    "text": "Endless Rails is an isometric bullet heaven roguelite where you must protect a moving train as it rolls through a dangerous, ...",
+    "raw": {
+     "id": "Of-WD669yFg",
+     "duration": 406,
+     "view_count": 557,
+     "like_count": null,
+     "channel_id": "UCoe-mi_wr1Yu_AAHlqgjO7w",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "Endless Rails - Official Launch Trailer",
+    "url": "https://www.youtube.com/watch?v=7UaIv8Gmw-g",
+    "author": "Indie Games Hub",
+    "published_at": null,
+    "text": "Endless Rails is OUT NOW on PC. Steam: https://store.steampowered.com/app/4601120/Endless_Rails/ Protect your train with ...",
+    "raw": {
+     "id": "7UaIv8Gmw-g",
+     "duration": 49,
+     "view_count": 32023,
+     "like_count": null,
+     "channel_id": "UCt8CJiye87FMbEwt0npPMuQ",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "ENDLESS RAILS Gameplay [4K PC ULTRA] - RTX 4090",
+    "url": "https://www.youtube.com/watch?v=psF9a6P0NLE",
+    "author": "GabeHype",
+    "published_at": null,
+    "text": "Protect your train with your drones as it rolls through a monster-infested wasteland. Reach new stations to buy new weapons, ...",
+    "raw": {
+     "id": "psF9a6P0NLE",
+     "duration": 2400,
+     "view_count": 537,
+     "like_count": null,
+     "channel_id": "UCg9gLKJZNrGHi_eYWHn_MYw",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "An Awesome Isometric Bullet Heaven Roguelite On Rails- Endless Rails- Beating First Boss/Wave 15",
+    "url": "https://www.youtube.com/watch?v=DstAg3-6OkU",
+    "author": "Crohnie Gamer",
+    "published_at": null,
+    "text": "Time to protect your train on Endless Rails with the help of drones and upgrades in a monster infested wasteland. Reach new ...",
+    "raw": {
+     "id": "DstAg3-6OkU",
+     "duration": 6362,
+     "view_count": 188,
+     "like_count": null,
+     "channel_id": "UCj7dMfU5kb7GGNio_Gjj1uw",
+     "tags": null,
+     "categories": null
+    }
+   }
+  ],
+  "meta": {
+   "elapsed_ms": 1734,
+   "attempts": [
+    {
+     "backend": "yt-dlp",
+     "result": "ok"
+    }
+   ]
+  },
+  "error": null
+ }
+}

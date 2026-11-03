@@ -1,0 +1,126 @@
+{
+ "argv": [
+  "youtube",
+  "search",
+  "Village 51 game",
+  "--limit",
+  "6"
+ ],
+ "at": 1793700271.2489989,
+ "date": "2026-11-03",
+ "envelope": {
+  "schema_version": 1,
+  "ok": true,
+  "channel": "youtube",
+  "action": "search",
+  "backend": "yt-dlp",
+  "items": [
+   {
+    "title": "Village 51 | Official Kickstarter Trailer",
+    "url": "https://www.youtube.com/watch?v=XSxEOByDE8o",
+    "author": "Village 51",
+    "published_at": null,
+    "text": "Support Village 51 on Kickstarter: https://www.kickstarter.com/projects/karmanstudios/1883505230?ref=8jryqp&token=ce7645ae ...",
+    "raw": {
+     "id": "XSxEOByDE8o",
+     "duration": 266,
+     "view_count": 6829,
+     "like_count": null,
+     "channel_id": "UCcd3whcn5jVM8bhBrwMdJfg",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "Village 51 - Official Trailer",
+    "url": "https://www.youtube.com/watch?v=Iv0Tv_Hne1g",
+    "author": "Indie Games Hub",
+    "published_at": null,
+    "text": "Village 51 is a survival and farm management game where you must build a farm from the ground up in a hostile world. During the ...",
+    "raw": {
+     "id": "Iv0Tv_Hne1g",
+     "duration": 137,
+     "view_count": 89082,
+     "like_count": null,
+     "channel_id": "UCt8CJiye87FMbEwt0npPMuQ",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "VIllage 51 - Official Launch Trailer",
+    "url": "https://www.youtube.com/watch?v=Oirw4jVpYzA",
+    "author": "Village 51",
+    "published_at": null,
+    "text": "Welcome to Village 51. Build your farm, raise animals, gather resources, and explore a mysterious valley where something ...",
+    "raw": {
+     "id": "Oirw4jVpYzA",
+     "duration": 137,
+     "view_count": 1741,
+     "like_count": null,
+     "channel_id": "UCcd3whcn5jVM8bhBrwMdJfg",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "Village 51 - Official Trailer",
+    "url": "https://www.youtube.com/watch?v=qu0xhTT-p6k",
+    "author": "GameVortex",
+    "published_at": null,
+    "text": "Welcome to GameVortex! You are watching: Village 51 - Official Trailer Get ready for the latest game trailers, cinematic teasers, ...",
+    "raw": {
+     "id": "qu0xhTT-p6k",
+     "duration": 137,
+     "view_count": 63,
+     "like_count": null,
+     "channel_id": "UC1OtJ8j7RDlk82hI0prYriQ",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "Taking a Deeper Look at Village 51",
+    "url": "https://www.youtube.com/watch?v=IH6F_ZFe5wE",
+    "author": "Althrimir Reacts",
+    "published_at": null,
+    "text": "I am taking a deeper look at Village 51 by Karman Studios. It is a farm managing RPG where you build your farm, explore and ...",
+    "raw": {
+     "id": "IH6F_ZFe5wE",
+     "duration": 521,
+     "view_count": 8,
+     "like_count": null,
+     "channel_id": "UC2GhWnL8FJioqKRremVGCHg",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "Village 51: Farm by Day, Fight by Night | Steam Game",
+    "url": "https://www.youtube.com/watch?v=8lDUs9tk-ro",
+    "author": "FrameRate Kelly",
+    "published_at": null,
+    "text": null,
+    "raw": {
+     "id": "8lDUs9tk-ro",
+     "duration": 39,
+     "view_count": 9,
+     "like_count": null,
+     "channel_id": "UCKAjofrmGpRHlq6taHeAdqQ",
+     "tags": null,
+     "categories": null
+    }
+   }
+  ],
+  "meta": {
+   "elapsed_ms": 2045,
+   "attempts": [
+    {
+     "backend": "yt-dlp",
+     "result": "ok"
+    }
+   ]
+  },
+  "error": null
+ }
+}

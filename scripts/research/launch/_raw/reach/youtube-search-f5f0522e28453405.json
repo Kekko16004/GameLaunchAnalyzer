@@ -1,0 +1,126 @@
+{
+ "argv": [
+  "youtube",
+  "search",
+  "Ormod Directive",
+  "--limit",
+  "6"
+ ],
+ "at": 1793700274.6280634,
+ "date": "2026-11-03",
+ "envelope": {
+  "schema_version": 1,
+  "ok": true,
+  "channel": "youtube",
+  "action": "search",
+  "backend": "yt-dlp",
+  "items": [
+   {
+    "title": "ORMOD: Directive - Official Announcement Trailer",
+    "url": "https://www.youtube.com/watch?v=vvOLMWjO-U0",
+    "author": "GameTrailers",
+    "published_at": null,
+    "text": "Take a look at the ORMOD: Directive announcement trailer for this upcoming open-world survival FPS game. ORMOD: Directive ...",
+    "raw": {
+     "id": "vvOLMWjO-U0",
+     "duration": 92,
+     "view_count": 30029,
+     "like_count": null,
+     "channel_id": "UCJx5KP-pCUmL9eZUv-mIcNw",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "First Look at ORMOD: Directive Open World Survival Sandbox!",
+    "url": "https://www.youtube.com/watch?v=4r9lAorShHg",
+    "author": "ProRogueBear",
+    "published_at": null,
+    "text": "ORMOD: Directive is an ambitious open-world survival sandbox that lets you decide exactly how you want to play. Whether you ...",
+    "raw": {
+     "id": "4r9lAorShHg",
+     "duration": 5607,
+     "view_count": 14702,
+     "like_count": null,
+     "channel_id": "UC9uHL5MeIA_IwSddagpwHSA",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "ORMOD: Directive - Biggest Update Yet",
+    "url": "https://www.youtube.com/watch?v=U8Xa-m0TlTo",
+    "author": "ORMOD: Directive",
+    "published_at": null,
+    "text": "ORMOD: DIRECTIVE - Biggest Update Yet Join the Discord to get your chance on joining the playtest or sign up on Steam!",
+    "raw": {
+     "id": "U8Xa-m0TlTo",
+     "duration": 106,
+     "view_count": 23598,
+     "like_count": null,
+     "channel_id": "UCrlbQYkdNWM8m2yd03vflqQ",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "I Built My First Base… Then I Had to ABANDON IT in This New Survival Game!",
+    "url": "https://www.youtube.com/watch?v=VrYMNNi_S98",
+    "author": "Kage848",
+    "published_at": null,
+    "text": "ORMOD: Directive Gameplay Let's Play - Shape your own survival experience in an infinite open-world sandbox. Customize world ...",
+    "raw": {
+     "id": "VrYMNNi_S98",
+     "duration": 2691,
+     "view_count": 70158,
+     "like_count": null,
+     "channel_id": "UCY6c18sccqyFL6PS5KVpicw",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "ORMOD: Directive - Playtest 4 Showcase",
+    "url": "https://www.youtube.com/watch?v=cuC-8RgsUGM",
+    "author": "ORMOD: Directive",
+    "published_at": null,
+    "text": "ORMOD: DIRECTIVE - Biggest Update Yet Join the Discord to get your chance on joining the playtest or sign up on Steam!",
+    "raw": {
+     "id": "cuC-8RgsUGM",
+     "duration": 105,
+     "view_count": 4970,
+     "like_count": null,
+     "channel_id": "UCrlbQYkdNWM8m2yd03vflqQ",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "The Day AI Went Too Far... A New Immersive Survival Game",
+    "url": "https://www.youtube.com/watch?v=r8AZypG3uB4",
+    "author": "PartiallyRoyal",
+    "published_at": null,
+    "text": "Welcome to ORMOD: Directive a New Top Survival Game of 2026 - Shape your own survival experience in an infinite open-world ...",
+    "raw": {
+     "id": "r8AZypG3uB4",
+     "duration": 3883,
+     "view_count": 318940,
+     "like_count": null,
+     "channel_id": "UC-wXkB3v0N9MB2Y9rR2Pbkg",
+     "tags": null,
+     "categories": null
+    }
+   }
+  ],
+  "meta": {
+   "elapsed_ms": 1641,
+   "attempts": [
+    {
+     "backend": "yt-dlp",
+     "result": "ok"
+    }
+   ]
+  },
+  "error": null
+ }
+}

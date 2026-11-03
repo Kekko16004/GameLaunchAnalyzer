@@ -1,0 +1,126 @@
+{
+ "argv": [
+  "youtube",
+  "search",
+  "Headcutter game",
+  "--limit",
+  "6"
+ ],
+ "at": 1793700260.0728471,
+ "date": "2026-11-03",
+ "envelope": {
+  "schema_version": 1,
+  "ok": true,
+  "channel": "youtube",
+  "action": "search",
+  "backend": "yt-dlp",
+  "items": [
+   {
+    "title": "Airwiggles Audio Challenge '26 | 'HEADCUTTER' Sound Redesign",
+    "url": "https://www.youtube.com/watch?v=hOWp_0Orz9o",
+    "author": "cc0001 ",
+    "published_at": null,
+    "text": "The seventh clip from #AAC26 is from the game HEADCUTTER. This sci-fi spaghetti western FPS with brutal combat, destructible ...",
+    "raw": {
+     "id": "hOWp_0Orz9o",
+     "duration": 7,
+     "view_count": 79,
+     "like_count": null,
+     "channel_id": "UC8MeWXkknGfWZoI1-AX4hkw",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "AAC26 - Day 07 - HEADCUTTER",
+    "url": "https://www.youtube.com/watch?v=dFcZaaxLc8Y",
+    "author": "Dmitriy Sirosh | Game Audio & Sound Design",
+    "published_at": null,
+    "text": "Airwiggles Audio Challenge 2026. https://www.airwiggles.com/c/competitions/aac26-day-07-headcutter Mondays are brutal, ...",
+    "raw": {
+     "id": "dFcZaaxLc8Y",
+     "duration": 7,
+     "view_count": 16,
+     "like_count": null,
+     "channel_id": "UCGL57HO5FZ-G9fOkERKP2ZQ",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "ZOMBIES IN SPACELAND EASTER EGG GUIDE: \"HEADCUTTER\" TUTORIAL (Infinite Warfare Zombies WonderWeapon)",
+    "url": "https://www.youtube.com/watch?v=7eQnW6eyIbE",
+    "author": "MrRoflWaffles",
+    "published_at": null,
+    "text": "HOW TO GET THE HEADCUTTER! ZOMBIES IN SPACELAND FULL EASTER EGG GUIDE FOR THE HEAD-CUTTER WONDER ...",
+    "raw": {
+     "id": "7eQnW6eyIbE",
+     "duration": 359,
+     "view_count": 707689,
+     "like_count": null,
+     "channel_id": "UCzH3H8sRfqH3rEVZcpTV2Cw",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "Headcutter - Official Reveal Trailer | Latin American Games Showcase SGF Edition 2026",
+    "url": "https://www.youtube.com/watch?v=URBFACopKWg",
+    "author": "GameTrailers",
+    "published_at": null,
+    "text": "Check out the Reveal Trailer for Headcutter, a sci-fi retro first-person boomer shooter developed by Devpetrichor. Players will ...",
+    "raw": {
+     "id": "URBFACopKWg",
+     "duration": 66,
+     "view_count": 9642,
+     "like_count": null,
+     "channel_id": "UCJx5KP-pCUmL9eZUv-mIcNw",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "headcutter vs tyrant - drawing cartoons 2",
+    "url": "https://www.youtube.com/watch?v=-tQ9yLcUBaA",
+    "author": "J animation",
+    "published_at": null,
+    "text": "animate using drawing cartoons 2 subscribe!!",
+    "raw": {
+     "id": "-tQ9yLcUBaA",
+     "duration": 57,
+     "view_count": 3907,
+     "like_count": null,
+     "channel_id": "UCnkro9Yqnc00fat38PoHbkw",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "ZOMBIES IN SPACELAND ALL PARTS TUTORIAL! Face Melter | Head Cutter | Shredder | Dischord |",
+    "url": "https://www.youtube.com/watch?v=xAAVFbecdK8",
+    "author": "CodeNamePizza",
+    "published_at": null,
+    "text": "Here is a Guide / Tutorial on all the locations to all the parts to every Ray Gun & Wonder Weapon in Zombies in Spaceland Easter ...",
+    "raw": {
+     "id": "xAAVFbecdK8",
+     "duration": 613,
+     "view_count": 1856016,
+     "like_count": null,
+     "channel_id": "UCWyPmQ5E-Bh1-RPZ-zsLnLQ",
+     "tags": null,
+     "categories": null
+    }
+   }
+  ],
+  "meta": {
+   "elapsed_ms": 1657,
+   "attempts": [
+    {
+     "backend": "yt-dlp",
+     "result": "ok"
+    }
+   ]
+  },
+  "error": null
+ }
+}

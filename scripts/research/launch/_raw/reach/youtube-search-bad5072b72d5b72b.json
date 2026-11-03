@@ -1,0 +1,126 @@
+{
+ "argv": [
+  "youtube",
+  "search",
+  "Ignite the Depths",
+  "--limit",
+  "6"
+ ],
+ "at": 1793700238.9791136,
+ "date": "2026-11-03",
+ "envelope": {
+  "schema_version": 1,
+  "ok": true,
+  "channel": "youtube",
+  "action": "search",
+  "backend": "yt-dlp",
+  "items": [
+   {
+    "title": "A Fresh Dungeon Crawling RPG That's Looking Good! - Ignite the Depths",
+    "url": "https://www.youtube.com/watch?v=EtfANubq4YM",
+    "author": "Splattercatgaming",
+    "published_at": null,
+    "text": "Ignite the Depths gameplay with splat! Let's Play Ignite the Depths and check out a game where you'll dive deep down into ...",
+    "raw": {
+     "id": "EtfANubq4YM",
+     "duration": 1916,
+     "view_count": 175692,
+     "like_count": null,
+     "channel_id": "UC8nZUXCwCTffxthKLtOp6ng",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "Ignite the Depths - Official Announcement Trailer",
+    "url": "https://www.youtube.com/watch?v=_eIjv3stW34",
+    "author": "Indie Games Hub",
+    "published_at": null,
+    "text": "Ignite the Depths is a cooperative hack-and-slash dungeon crawler set across three hand-crafted dimensions. Venture into the ...",
+    "raw": {
+     "id": "_eIjv3stW34",
+     "duration": 67,
+     "view_count": 158899,
+     "like_count": null,
+     "channel_id": "UCt8CJiye87FMbEwt0npPMuQ",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "New Co-Op Dungeon Crawler and It Is Punishing - Ignite the Depths",
+    "url": "https://www.youtube.com/watch?v=d9-NK_hrF-M",
+    "author": "CrateUp and ItsRitchieW",
+    "published_at": null,
+    "text": "Ignite the Depths is a dark fantasy co-op dungeon crawler for up to four players, with no forced PvP and no extraction. You pick a ...",
+    "raw": {
+     "id": "d9-NK_hrF-M",
+     "duration": 2712,
+     "view_count": 23448,
+     "like_count": null,
+     "channel_id": null,
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "Ignite The Depths Is The Dark Fantasy Game I Needed",
+    "url": "https://www.youtube.com/watch?v=gLrlTBsjjaQ",
+    "author": "Arc Knight",
+    "published_at": null,
+    "text": "Socials!⚔️ ‣ Business email: Arcknight@amg.gg ‣ Twitter: https://x.com/arturontheradio ‣ Twitch: ...",
+    "raw": {
+     "id": "gLrlTBsjjaQ",
+     "duration": 590,
+     "view_count": 23512,
+     "like_count": null,
+     "channel_id": "UCWfNj9tBpLwq03-SamlaAeQ",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "If You LIKED Dark and Darker & Hexen TRY - Ignite the Depths - Playtest 1.01",
+    "url": "https://www.youtube.com/watch?v=1n40iOdzvHc",
+    "author": "Chrisp44s",
+    "published_at": null,
+    "text": "Ignite the Depths is an upcoming first-person, dark-fantasy cooperative dungeon crawler developed by SK Studios. Expected to ...",
+    "raw": {
+     "id": "1n40iOdzvHc",
+     "duration": 2484,
+     "view_count": 15096,
+     "like_count": null,
+     "channel_id": "UCx1ITC9BKDR8CyOllvQNghw",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "This Dungeon Crawler Feels Like a Forgotten Classic! | Ignite the Depths",
+    "url": "https://www.youtube.com/watch?v=KGW9VDvuMII",
+    "author": "Mr Feudal",
+    "published_at": null,
+    "text": "Steam Next Fest has brought us another interesting game, and this time we're diving into **Ignite the Depths**, a dark fantasy ...",
+    "raw": {
+     "id": "KGW9VDvuMII",
+     "duration": 2605,
+     "view_count": 10385,
+     "like_count": null,
+     "channel_id": "UC_P7vfa3uSWqHrSkcHv_hgA",
+     "tags": null,
+     "categories": null
+    }
+   }
+  ],
+  "meta": {
+   "elapsed_ms": 1719,
+   "attempts": [
+    {
+     "backend": "yt-dlp",
+     "result": "ok"
+    }
+   ]
+  },
+  "error": null
+ }
+}

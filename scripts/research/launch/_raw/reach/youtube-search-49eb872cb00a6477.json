@@ -1,0 +1,126 @@
+{
+ "argv": [
+  "youtube",
+  "search",
+  "Polystrike",
+  "--limit",
+  "6"
+ ],
+ "at": 1793700256.6246166,
+ "date": "2026-11-03",
+ "envelope": {
+  "schema_version": 1,
+  "ok": true,
+  "channel": "youtube",
+  "action": "search",
+  "backend": "yt-dlp",
+  "items": [
+   {
+    "title": "Polystrike - Official Gameplay Reveal Trailer",
+    "url": "https://www.youtube.com/watch?v=tcwQjMt04II",
+    "author": "GameTrailers",
+    "published_at": null,
+    "text": "Take a look at the Gameplay Reveal Trailer for Polystrike, a competitive top-down tactical shooter developed by Robin ...",
+    "raw": {
+     "id": "tcwQjMt04II",
+     "duration": 76,
+     "view_count": 15630,
+     "like_count": null,
+     "channel_id": "UCJx5KP-pCUmL9eZUv-mIcNw",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "POLYSTRIKE - Official Trailer",
+    "url": "https://www.youtube.com/watch?v=zJNIGe_kyhw",
+    "author": "Indie Games Hub",
+    "published_at": null,
+    "text": "POLYSTRIKE is a competitive top-down tactical shooter where information, positioning and teamwork matter more than raw ...",
+    "raw": {
+     "id": "zJNIGe_kyhw",
+     "duration": 76,
+     "view_count": 63770,
+     "like_count": null,
+     "channel_id": "UCt8CJiye87FMbEwt0npPMuQ",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "PolyStrike - de_dust 2 from CS 1.6 on Source 2 - 4K",
+    "url": "https://www.youtube.com/watch?v=Qph2SQJTwU4",
+    "author": "Mark Mocherad",
+    "published_at": null,
+    "text": "PolyStrike: De_dust 2 (CS 1.6) on Source 2 Twitter: https://twitter.com/markmocherad You can support me: ...",
+    "raw": {
+     "id": "Qph2SQJTwU4",
+     "duration": 159,
+     "view_count": 3128,
+     "like_count": null,
+     "channel_id": "UCBm1UsV7I2UF6fLQkCMI3uA",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "How to play PolyStrike",
+    "url": "https://www.youtube.com/watch?v=DO6e8Sv_7sw",
+    "author": "Mark Mocherad",
+    "published_at": null,
+    "text": "How to install PolyStrike STEAM LINK: https://steamcommunity.com/sharedfiles/filedetails/?id=2053031118 POLYSTRIKE ...",
+    "raw": {
+     "id": "DO6e8Sv_7sw",
+     "duration": 90,
+     "view_count": 2347,
+     "like_count": null,
+     "channel_id": "UCBm1UsV7I2UF6fLQkCMI3uA",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "PolyStrike - fy_pool_day | 4k",
+    "url": "https://www.youtube.com/watch?v=DaggRb5CBQk",
+    "author": "Mark Mocherad",
+    "published_at": null,
+    "text": "Counter Strike fy_pool_day map for PolyStrike in lowpoly style Support me! - https://www.patreon.com/mocherad More about ...",
+    "raw": {
+     "id": "DaggRb5CBQk",
+     "duration": 59,
+     "view_count": 654,
+     "like_count": null,
+     "channel_id": "UCBm1UsV7I2UF6fLQkCMI3uA",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "PolyStrike Gameplay Trailer | Low-Poly Multiplayer FPS",
+    "url": "https://www.youtube.com/watch?v=B18OzQa9WfQ",
+    "author": "Fotbiler",
+    "published_at": null,
+    "text": "PolyStrike is a fast-paced low-poly multiplayer FPS focused on short, competitive online arena matches. Jump into the Training ...",
+    "raw": {
+     "id": "B18OzQa9WfQ",
+     "duration": 301,
+     "view_count": 403,
+     "like_count": null,
+     "channel_id": "UCidtwNnpmz9uS6uf_YVxRkA",
+     "tags": null,
+     "categories": null
+    }
+   }
+  ],
+  "meta": {
+   "elapsed_ms": 2000,
+   "attempts": [
+    {
+     "backend": "yt-dlp",
+     "result": "ok"
+    }
+   ]
+  },
+  "error": null
+ }
+}

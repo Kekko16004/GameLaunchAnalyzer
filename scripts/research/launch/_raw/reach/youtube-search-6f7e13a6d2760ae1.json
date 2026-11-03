@@ -1,0 +1,126 @@
+{
+ "argv": [
+  "youtube",
+  "search",
+  "A Thousand Cloys",
+  "--limit",
+  "6"
+ ],
+ "at": 1793700220.7802813,
+ "date": "2026-11-03",
+ "envelope": {
+  "schema_version": 1,
+  "ok": true,
+  "channel": "youtube",
+  "action": "search",
+  "backend": "yt-dlp",
+  "items": [
+   {
+    "title": "A Game Where You Unlock the Skill Tree by Exploring the Map!",
+    "url": "https://www.youtube.com/watch?v=GgNWUT_OUsE",
+    "author": "Idle cub",
+    "published_at": null,
+    "text": "A Thousand Cloys Review Gameplay First Impression ▻DISCORD Discord: https://www.discord.gg/67Nu6Aa22S ▻TWITCH ...",
+    "raw": {
+     "id": "GgNWUT_OUsE",
+     "duration": 5549,
+     "view_count": 66816,
+     "like_count": null,
+     "channel_id": "UCDD9T_c6VD6g1yRXPXW5stw",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "A Thousand Cloys Demo - A GREAT Gnorp-like Incremental  Harvesting Game!",
+    "url": "https://www.youtube.com/watch?v=VjOIs3Tky_U",
+    "author": "WeeRascal",
+    "published_at": null,
+    "text": "A need a new toaster, man...",
+    "raw": {
+     "id": "VjOIs3Tky_U",
+     "duration": 7999,
+     "view_count": 306,
+     "like_count": null,
+     "channel_id": "UC4VVkSq377q-ydfy5guIucw",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "A Thousand Cloys - Gameplay trailer",
+    "url": "https://www.youtube.com/watch?v=74G5-tWXwvM",
+    "author": "Grhyll",
+    "published_at": null,
+    "text": "A Thousand Cloys is an incremental game about exploring and cleansing an alien planet of its radiation with a swarm of high-tech ...",
+    "raw": {
+     "id": "74G5-tWXwvM",
+     "duration": 62,
+     "view_count": 198,
+     "like_count": null,
+     "channel_id": "UC4qk393xW5NWINWe7vJTwgQ",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "A Thousand Cloys ( Gameplay ) Rating: 3.2/5",
+    "url": "https://www.youtube.com/watch?v=4IW4qnQ4Jtc",
+    "author": "RAW with Kohut",
+    "published_at": null,
+    "text": "https://store.steampowered.com/app/3861740/A_Thousand_Cloys/ Version: Playtest 8/17/25 Welcome to Cloys Inc., the ...",
+    "raw": {
+     "id": "4IW4qnQ4Jtc",
+     "duration": 1442,
+     "view_count": 114,
+     "like_count": null,
+     "channel_id": "UCCsb4sQUKDKTRcmmB_YVYVA",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "Harvest Resources and EXPLORE THE PLANET // A THOUSAND CLOYS",
+    "url": "https://www.youtube.com/watch?v=CVEuiOe34i0",
+    "author": "Kosh Idle",
+    "published_at": null,
+    "text": "Welcome to Cloys Inc., the universe's leading toaster company, and your new family! Harvest resources, import Cloys to work for ...",
+    "raw": {
+     "id": "CVEuiOe34i0",
+     "duration": 6503,
+     "view_count": 557,
+     "like_count": null,
+     "channel_id": "UCnSpGewj9tCcrVWM_SpbcIw",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "Using TOASTERS To Mine a PLANET",
+    "url": "https://www.youtube.com/watch?v=2-UTRpmPwII",
+    "author": "InterndotGif",
+    "published_at": null,
+    "text": "... remember to https://bit.ly/Sub2Intern Follow me on Twitter! https://bit.ly/Sub2Twitter - - - - - A Thousand Cloys: Welcome to Cloys ...",
+    "raw": {
+     "id": "2-UTRpmPwII",
+     "duration": 2212,
+     "view_count": 52219,
+     "like_count": null,
+     "channel_id": "UCICC9zt0nDdqYTiyy7NzH5Q",
+     "tags": null,
+     "categories": null
+    }
+   }
+  ],
+  "meta": {
+   "elapsed_ms": 1719,
+   "attempts": [
+    {
+     "backend": "yt-dlp",
+     "result": "ok"
+    }
+   ]
+  },
+  "error": null
+ }
+}

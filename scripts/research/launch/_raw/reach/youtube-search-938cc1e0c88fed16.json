@@ -1,0 +1,126 @@
+{
+ "argv": [
+  "youtube",
+  "search",
+  "Fugue Shot",
+  "--limit",
+  "6"
+ ],
+ "at": 1793700242.5413666,
+ "date": "2026-11-03",
+ "envelope": {
+  "schema_version": 1,
+  "ok": true,
+  "channel": "youtube",
+  "action": "search",
+  "backend": "yt-dlp",
+  "items": [
+   {
+    "title": "Fugue Shot: Minigame Roguelike - Demo Out Now!",
+    "url": "https://www.youtube.com/watch?v=zZJEhZuAGXU",
+    "author": "Fugue Shot: Minigame Roguelike",
+    "published_at": null,
+    "text": "Wishlist Fugue Shot on Steam and play the demo today! STEAM ...",
+    "raw": {
+     "id": "zZJEhZuAGXU",
+     "duration": 60,
+     "view_count": 38777,
+     "like_count": null,
+     "channel_id": "UC5B36Sk1cX_TzfPMRoRnlmw",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "One of the most CREATIVE ROGUELIKES I've EVER PLAYED! - Fugue Shot",
+    "url": "https://www.youtube.com/watch?v=70IReSjLAIg",
+    "author": "Gohjoe",
+    "published_at": null,
+    "text": "Fugue Shot takes inspiration from the GOATS Mario Party and WarioWare, and incorporates a fully in depth Roguelike ...",
+    "raw": {
+     "id": "70IReSjLAIg",
+     "duration": 1797,
+     "view_count": 48698,
+     "like_count": null,
+     "channel_id": "UCac9YlOpTLy_wToRb5Bo-DQ",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "Fugue Shot | Official Gameplay Trailer",
+    "url": "https://www.youtube.com/watch?v=gbOKrEXV4C8",
+    "author": "Fugue Shot: Minigame Roguelike",
+    "published_at": null,
+    "text": "Fugue Shot is the Arcade Roguelike - each run, you'll jump between multiple game modes manifested as surreal dreams. Choose ...",
+    "raw": {
+     "id": "gbOKrEXV4C8",
+     "duration": 59,
+     "view_count": 3826,
+     "like_count": null,
+     "channel_id": "UC5B36Sk1cX_TzfPMRoRnlmw",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "Fugue Shot - Roguelike Mini-game Madness",
+    "url": "https://www.youtube.com/watch?v=vTDVHoaSckg",
+    "author": "Shrike",
+    "published_at": null,
+    "text": "It's a roguelike where to advance you have to beat ever increasingly difficult minigames. The first run we just take everything given ...",
+    "raw": {
+     "id": "vTDVHoaSckg",
+     "duration": 3664,
+     "view_count": 537,
+     "like_count": null,
+     "channel_id": "UC4HvoNNX1VWYTgMpTCS9aOQ",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "Fugue Shot: Minigame Roguelike - Official Trailer | OUT OF BOUNDS SHOWCASE 2026",
+    "url": "https://www.youtube.com/watch?v=IWRzuZ68knY",
+    "author": "Indie Games Hub",
+    "published_at": null,
+    "text": "Each run in Fugue Shot takes place in a shifting dreamscape filled with dangerous encounters known as the Omens, ranging from ...",
+    "raw": {
+     "id": "IWRzuZ68knY",
+     "duration": 60,
+     "view_count": 28858,
+     "like_count": null,
+     "channel_id": "UCt8CJiye87FMbEwt0npPMuQ",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "Fugue Shot: Minigame Roguelike [@RareDialect] Demo FIRST Look | arcade style roguelike | VOD",
+    "url": "https://www.youtube.com/watch?v=X8EPj86DVNA",
+    "author": "Swanky Honeybee",
+    "published_at": null,
+    "text": "A gauntlet of arcade-inspired minigames combined in the style of a roguelike. Each run takes place in a dreamscape filled with ...",
+    "raw": {
+     "id": "X8EPj86DVNA",
+     "duration": 2284,
+     "view_count": 142,
+     "like_count": null,
+     "channel_id": "UCgDmg2t5VJPM1twI3aojByg",
+     "tags": null,
+     "categories": null
+    }
+   }
+  ],
+  "meta": {
+   "elapsed_ms": 1640,
+   "attempts": [
+    {
+     "backend": "yt-dlp",
+     "result": "ok"
+    }
+   ]
+  },
+  "error": null
+ }
+}

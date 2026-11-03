@@ -1,0 +1,126 @@
+{
+ "argv": [
+  "youtube",
+  "search",
+  "The Outer Frame",
+  "--limit",
+  "6"
+ ],
+ "at": 1793700267.520698,
+ "date": "2026-11-03",
+ "envelope": {
+  "schema_version": 1,
+  "ok": true,
+  "channel": "youtube",
+  "action": "search",
+  "backend": "yt-dlp",
+  "items": [
+   {
+    "title": "The Outer Frame - Official Trailer | Latin American Games Showcase SGF Edition 2026",
+    "url": "https://www.youtube.com/watch?v=WD1mint74og",
+    "author": "GameTrailers",
+    "published_at": null,
+    "text": "Discover the truth. Bury it deeper. Decide how your agents cover it up before the masses catch on. A choice-driven mystery where ...",
+    "raw": {
+     "id": "WD1mint74og",
+     "duration": 59,
+     "view_count": 1895,
+     "like_count": null,
+     "channel_id": "UCJx5KP-pCUmL9eZUv-mIcNw",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "Outer Frame -「AMV」- Anime MV",
+    "url": "https://www.youtube.com/watch?v=kw5RpETj-WU",
+    "author": "ItsVanillaSky",
+    "published_at": null,
+    "text": "So guys hope you enjoy this amv its been a while still hope i got it XD. Recommended to watch this video at high quality and using ...",
+    "raw": {
+     "id": "kw5RpETj-WU",
+     "duration": 180,
+     "view_count": 1305,
+     "like_count": null,
+     "channel_id": "UCAJxgw8V_drkkT07W44HgwQ",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "The Outer Frame | Official Trailer",
+    "url": "https://www.youtube.com/watch?v=f-A5QzcnXNw",
+    "author": "Sapucai Games",
+    "published_at": null,
+    "text": "[The Outer Frame] is a choice-driven mystery puzzle sim where you dual role as detective and fixer. Command your agents from ...",
+    "raw": {
+     "id": "f-A5QzcnXNw",
+     "duration": 59,
+     "view_count": 922,
+     "like_count": null,
+     "channel_id": "UCHRmcFt09h0XfDD9FKTg3Lw",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "The Aura Farmer - Horror Skunx (official song)",
+    "url": "https://www.youtube.com/watch?v=CgayKlnjmMg",
+    "author": "Horror Skunx",
+    "published_at": null,
+    "text": "You can stream The Aura Farmer by Horror Skunx everywhere! https://ffm.to/the-aura-farmer Music composed & produced by: ...",
+    "raw": {
+     "id": "CgayKlnjmMg",
+     "duration": 139,
+     "view_count": 14614660,
+     "like_count": null,
+     "channel_id": "UCTjF8TNC7blVsBtWyMrsj4A",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "Liquify - Voyage to the Outer Worlds (2026 Full Album)",
+    "url": "https://www.youtube.com/watch?v=qRkUdInTiyc",
+    "author": "Liquify Official",
+    "published_at": null,
+    "text": "Get Vinyl here: https://blackthroneproductions.com/products/liquify-voyage-to-the-outer-worlds Listen here on Spotify: ...",
+    "raw": {
+     "id": "qRkUdInTiyc",
+     "duration": 2578,
+     "view_count": 200170,
+     "like_count": null,
+     "channel_id": "UCJjIGdWFInVHC7dC6G5QGQg",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "Robot Framework iFrame Handling | Outer Frame & Inner Frame",
+    "url": "https://www.youtube.com/watch?v=Fqo8Krt2oOs",
+    "author": "ANODOS",
+    "published_at": null,
+    "text": "Robot Framework – Nested iFrame Handling Tutorial** In this video, we will learn how to handle **Nested iFrames using Robot ...",
+    "raw": {
+     "id": "Fqo8Krt2oOs",
+     "duration": 812,
+     "view_count": 18,
+     "like_count": null,
+     "channel_id": "UCMP2e6ptWmbH54F9u_Z_JDQ",
+     "tags": null,
+     "categories": null
+    }
+   }
+  ],
+  "meta": {
+   "elapsed_ms": 1921,
+   "attempts": [
+    {
+     "backend": "yt-dlp",
+     "result": "ok"
+    }
+   ]
+  },
+  "error": null
+ }
+}

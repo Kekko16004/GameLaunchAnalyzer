@@ -1,0 +1,126 @@
+{
+ "argv": [
+  "youtube",
+  "search",
+  "Mortuus",
+  "--limit",
+  "6"
+ ],
+ "at": 1793700249.7155035,
+ "date": "2026-11-03",
+ "envelope": {
+  "schema_version": 1,
+  "ok": true,
+  "channel": "youtube",
+  "action": "search",
+  "backend": "yt-dlp",
+  "items": [
+   {
+    "title": "This Zombie Survival Roguelite has an ENDLESS amount of content! - Mortuus",
+    "url": "https://www.youtube.com/watch?v=OKoEAY3QOM4",
+    "author": "Gohjoe",
+    "published_at": null,
+    "text": "Mortuus brings the reliable COD zombie staple we know and love, and perfect it with random stages and unpredictable roguelite ...",
+    "raw": {
+     "id": "OKoEAY3QOM4",
+     "duration": 2985,
+     "view_count": 286003,
+     "like_count": null,
+     "channel_id": "UCac9YlOpTLy_wToRb5Bo-DQ",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "\"Mortuus\" Official Gameplay Trailer",
+    "url": "https://www.youtube.com/watch?v=OweuncGK6ms",
+    "author": "Hamuno",
+    "published_at": null,
+    "text": "MORTUUS is a round-based co-op zombies FPS for 1 to 4 players. Wishlist it now: search \"Mortuus\" on Steam. Steam: ...",
+    "raw": {
+     "id": "OweuncGK6ms",
+     "duration": 52,
+     "view_count": 10666,
+     "like_count": null,
+     "channel_id": "UCy2yeM3r--oR2rHzqL3MIRA",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "This Co-Op Zombies Survival Roguelite Game Looks AWESOME! - NEW \"Mortuus\" Game",
+    "url": "https://www.youtube.com/watch?v=hBR3wnI06rg",
+    "author": "KYRSP33DY",
+    "published_at": null,
+    "text": "Become a member of the channel: https://www.youtube.com/channel/UCIDlKYC7I6_76jCUBdX-6VQ/join Game: Mortuus A ...",
+    "raw": {
+     "id": "hBR3wnI06rg",
+     "duration": 4658,
+     "view_count": 43854,
+     "like_count": null,
+     "channel_id": "UCIDlKYC7I6_76jCUBdX-6VQ",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "We Beat The EASTER EGG On The First Try | MORTUUS",
+    "url": "https://www.youtube.com/watch?v=PGR1RhI14jQ",
+    "author": "LaToony",
+    "published_at": null,
+    "text": "Hey Everyone if you enjoyed the video and want to see more please let me know and if you have any suggestions i would love to ...",
+    "raw": {
+     "id": "PGR1RhI14jQ",
+     "duration": 940,
+     "view_count": 937,
+     "like_count": null,
+     "channel_id": "UC8pGWcTEL1_P7E_A119WFPw",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "Mortuus Is Actually Amazing!",
+    "url": "https://www.youtube.com/watch?v=rngNPPnMx5g",
+    "author": "M2Demo",
+    "published_at": null,
+    "text": "Let's check out Mortuus an amazing Zombies game just like COD Zombies! Leave a LIKE and a comment, thanks for watching.",
+    "raw": {
+     "id": "rngNPPnMx5g",
+     "duration": 2187,
+     "view_count": 2370,
+     "like_count": null,
+     "channel_id": "UCS8FXI1g-HuLewqC_0tO60w",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "Mortuus - 25 Minutes of Gameplay | Co-op Zombie FPS Roguelite",
+    "url": "https://www.youtube.com/watch?v=fVjb05zuJtY",
+    "author": "Aeo",
+    "published_at": null,
+    "text": "A round-based co-op zombies FPS for 1 to 4 players. Survive endless hordes in brutalist procedurally generated map. Buy doors ...",
+    "raw": {
+     "id": "fVjb05zuJtY",
+     "duration": 1487,
+     "view_count": 2686,
+     "like_count": null,
+     "channel_id": "UCN5NWGUTXn6evayCIGfYa5w",
+     "tags": null,
+     "categories": null
+    }
+   }
+  ],
+  "meta": {
+   "elapsed_ms": 1983,
+   "attempts": [
+    {
+     "backend": "yt-dlp",
+     "result": "ok"
+    }
+   ]
+  },
+  "error": null
+ }
+}

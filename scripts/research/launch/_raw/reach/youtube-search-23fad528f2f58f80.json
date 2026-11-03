@@ -1,0 +1,126 @@
+{
+ "argv": [
+  "youtube",
+  "search",
+  "Deck Beasts",
+  "--limit",
+  "6"
+ ],
+ "at": 1793700245.9250169,
+ "date": "2026-11-03",
+ "envelope": {
+  "schema_version": 1,
+  "ok": true,
+  "channel": "youtube",
+  "action": "search",
+  "backend": "yt-dlp",
+  "items": [
+   {
+    "title": "New Sacred Beast combo post banlist! Sacred Beasts Deck | MDPRO3",
+    "url": "https://www.youtube.com/watch?v=kKR5gxOtif0",
+    "author": "Duel Evolution",
+    "published_at": null,
+    "text": "The recent banlist has completely changed the format, but the Sacred Beasts are more ready than ever. Discover the ultimate ...",
+    "raw": {
+     "id": "kKR5gxOtif0",
+     "duration": 1179,
+     "view_count": 30857,
+     "like_count": null,
+     "channel_id": "UCY04OxOhQndGAvTfBgQD4Cw",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "1ST PLACE UNDEFEATED Sacred Beast Cyberse Deck Profile and Combo",
+    "url": "https://www.youtube.com/watch?v=r8j8WlxL7Oc",
+    "author": "SaintMarcuz",
+    "published_at": null,
+    "text": "We took the codebreaker combo to LOCALS and went undefeated! #sacredbeasts #codebreaker #sacredbeasts #hamon #raviel ...",
+    "raw": {
+     "id": "r8j8WlxL7Oc",
+     "duration": 803,
+     "view_count": 5053,
+     "like_count": null,
+     "channel_id": "UCY0PzXzmFKIUwCFth6HBJbQ",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "Deck Beasts Trailer",
+    "url": "https://www.youtube.com/watch?v=QYUzA81UDN8",
+    "author": "Deck Beasts",
+    "published_at": null,
+    "text": "Creature-collecting auto-battler roguelike. Draft pixel-art beasts, teach them ability cards, gear them with items and relics, then ...",
+    "raw": {
+     "id": "QYUzA81UDN8",
+     "duration": 54,
+     "view_count": 63155,
+     "like_count": null,
+     "channel_id": "UCOxTmP8N-i35cvstk0FpkHQ",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "DECK PROFILE SACRED BEASTS CON I NUOVI SUPPORTI! [Yu-Gi-Oh! ITA]",
+    "url": "https://www.youtube.com/watch?v=SKryIU9pY9s",
+    "author": "IvanGames",
+    "published_at": null,
+    "text": "Deck profile Sacred Beasts! Oggi vi faccio vedere i nuovi supporti Bestie Sacre usciti nell'ultimo set di Yu-Gi-Oh chiamato ...",
+    "raw": {
+     "id": "SKryIU9pY9s",
+     "duration": 1125,
+     "view_count": 458,
+     "like_count": null,
+     "channel_id": "UCwT4qUBYBxZCqPZZPrwdQwQ",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "SACRED BEASTS Post October Banlist (ft. Fiendsmith) | The Deck is Still Alive!!! | MDPRO3",
+    "url": "https://www.youtube.com/watch?v=pugPAfYboYI",
+    "author": "TD YGO",
+    "published_at": null,
+    "text": "After The banlist you would think Sacred Beats Fiendsmith would be dead after losing 2 end board pieces and Reprodocus but ...",
+    "raw": {
+     "id": "pugPAfYboYI",
+     "duration": 902,
+     "view_count": 5209,
+     "like_count": null,
+     "channel_id": "UCRYPyqBMXLvc5_2g0y9_shQ",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "Sacred Beast Deck Profile FT codebreaker and Cyberes link package Post Banlist 10/28/26",
+    "url": "https://www.youtube.com/watch?v=kQGCZK8Uh4w",
+    "author": "YahBoiYeet",
+    "published_at": null,
+    "text": "What's going on guys it's YahBoiYeet here and we're back to showcase what's still my favorite deck of the format post the ...",
+    "raw": {
+     "id": "kQGCZK8Uh4w",
+     "duration": 2080,
+     "view_count": 1395,
+     "like_count": null,
+     "channel_id": "UC3gzYliqu7TGak2nh9mAdYg",
+     "tags": null,
+     "categories": null
+    }
+   }
+  ],
+  "meta": {
+   "elapsed_ms": 1733,
+   "attempts": [
+    {
+     "backend": "yt-dlp",
+     "result": "ok"
+    }
+   ]
+  },
+  "error": null
+ }
+}

@@ -1,0 +1,126 @@
+{
+ "argv": [
+  "youtube",
+  "search",
+  "Hamstr Protocol",
+  "--limit",
+  "6"
+ ],
+ "at": 1793700206.599663,
+ "date": "2026-11-03",
+ "envelope": {
+  "schema_version": 1,
+  "ok": true,
+  "channel": "youtube",
+  "action": "search",
+  "backend": "yt-dlp",
+  "items": [
+   {
+    "title": "I farmed hamsters for unlimited energy",
+    "url": "https://www.youtube.com/watch?v=caOxKYbVYCE",
+    "author": "Blitz",
+    "published_at": null,
+    "text": "... https://www.tiktok.com/@blitzonyt ☆ DISCORD: https://discord.gg/ytblitz - - - - - HAMSTR PROTOCOL: From a single hamster ...",
+    "raw": {
+     "id": "caOxKYbVYCE",
+     "duration": 1886,
+     "view_count": 110993,
+     "like_count": null,
+     "channel_id": "UCK3eoeo-HGHH11Pevo1MzfQ",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "Hamstr Protocol Gameplay Trailer",
+    "url": "https://www.youtube.com/watch?v=0TAjuGlhTlU",
+    "author": "MoonBag Studio",
+    "published_at": null,
+    "text": "Wishlist now on Steam: https://store.steampowered.com/app/4708030/Hamstr_Protocol/ From a single hamster wheel to a full ...",
+    "raw": {
+     "id": "0TAjuGlhTlU",
+     "duration": 43,
+     "view_count": 246,
+     "like_count": null,
+     "channel_id": "UCl1qcM1WzOQ4Ifd_7yCmcfA",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "Hamstr Protocol | Full Demo | No Commentary",
+    "url": "https://www.youtube.com/watch?v=ltK2ISBsaX0",
+    "author": "HushPlaythroughs",
+    "published_at": null,
+    "text": "Relaxing longplay with calming gameplay – perfect for studying, working, sleeping or just chilling ♡ Mine HAM (a digital currency ...",
+    "raw": {
+     "id": "ltK2ISBsaX0",
+     "duration": 2887,
+     "view_count": 127,
+     "like_count": null,
+     "channel_id": "UCZNh0umQEqRYW_Enpij5r0w",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "I mined bitcoin with hamsters - Hamstr Protocol demo",
+    "url": "https://www.youtube.com/watch?v=DBE8uriJOiE",
+    "author": "shirlierox",
+    "published_at": null,
+    "text": "My uncle has left me a hamster digital coin factory, so let's play Hamstr Protocol and see how we can make money with our cute ...",
+    "raw": {
+     "id": "DBE8uriJOiE",
+     "duration": 1430,
+     "view_count": 170,
+     "like_count": null,
+     "channel_id": "UCSB7hZy8E53hLDIELbsEKjA",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "I made a hamster pay my electric bill",
+    "url": "https://www.youtube.com/watch?v=czWjViGwqCI",
+    "author": "Azrilich",
+    "published_at": null,
+    "text": "... Instagram https://www.instagram.com/azrilich Game ➞ Hamstr Protocol #azrilich #indie #incrementalgame #simulation.",
+    "raw": {
+     "id": "czWjViGwqCI",
+     "duration": 1417,
+     "view_count": 325009,
+     "like_count": null,
+     "channel_id": "UC-6l1LiHsSI67Q9xEXxjghg",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "Hamstr Protocol – Trailer",
+    "url": "https://www.youtube.com/watch?v=earYIqv5bAY",
+    "author": "@sosyal",
+    "published_at": null,
+    "text": "hamstrprotocol Build a hamster-powered bio-mining operation from the ground up. Assemble rigs by hand, manage heat, feed ...",
+    "raw": {
+     "id": "earYIqv5bAY",
+     "duration": 43,
+     "view_count": 20,
+     "like_count": null,
+     "channel_id": "UCi3LdyRlTtbmaU6gxmFtrbQ",
+     "tags": null,
+     "categories": null
+    }
+   }
+  ],
+  "meta": {
+   "elapsed_ms": 1780,
+   "attempts": [
+    {
+     "backend": "yt-dlp",
+     "result": "ok"
+    }
+   ]
+  },
+  "error": null
+ }
+}

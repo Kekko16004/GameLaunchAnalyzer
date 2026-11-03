@@ -1,0 +1,126 @@
+{
+ "argv": [
+  "youtube",
+  "search",
+  "Amphibian game",
+  "--limit",
+  "6"
+ ],
+ "at": 1793700263.8596106,
+ "date": "2026-11-03",
+ "envelope": {
+  "schema_version": 1,
+  "ok": true,
+  "channel": "youtube",
+  "action": "search",
+  "backend": "yt-dlp",
+  "items": [
+   {
+    "title": "Amphibian - World Premiere Trailer",
+    "url": "https://www.youtube.com/watch?v=2AMcWdXSk6c",
+    "author": "Amphibian (Official)",
+    "published_at": null,
+    "text": "jrpg #indiegames #Amphibian A countrywide drought forces Sapo and his frog allies into war against the invading toads.",
+    "raw": {
+     "id": "2AMcWdXSk6c",
+     "duration": 60,
+     "view_count": 11388,
+     "like_count": null,
+     "channel_id": "UCWWBKcwhxzwQkSmYZ2FlPBw",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "Amphibian - Official Announcement Trailer",
+    "url": "https://www.youtube.com/watch?v=auEnlPzKf0M",
+    "author": "Indie Games Hub",
+    "published_at": null,
+    "text": "Amphibian is a somber, Frog-Based, Super2D RPG for fans of classic console adventures, delivering a tightly curated tactical ...",
+    "raw": {
+     "id": "auEnlPzKf0M",
+     "duration": 61,
+     "view_count": 45708,
+     "like_count": null,
+     "channel_id": "UCt8CJiye87FMbEwt0npPMuQ",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "Amphibian - World Premiere Announcement Trailer - FGS Live From gamescom 2026",
+    "url": "https://www.youtube.com/watch?v=JuYhh4zSTlA",
+    "author": "FGS",
+    "published_at": null,
+    "text": "A countrywide drought forces Sapo and his frog allies into war against the invading toads. As dehydration and starvation grip the ...",
+    "raw": {
+     "id": "JuYhh4zSTlA",
+     "duration": 60,
+     "view_count": 5064,
+     "like_count": null,
+     "channel_id": "UCYyyaFiIqyIkye9JwYGJYGA",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "Amphibian - Official Gameplay Trailer",
+    "url": "https://www.youtube.com/watch?v=KMBoLIJF0Hs",
+    "author": "Indie Games Hub",
+    "published_at": null,
+    "text": "Amphibian is a somber, Frog-Based, Super2D RPG for fans of classic console adventures, delivering a tightly curated tactical ...",
+    "raw": {
+     "id": "KMBoLIJF0Hs",
+     "duration": 85,
+     "view_count": 31679,
+     "like_count": null,
+     "channel_id": "UCt8CJiye87FMbEwt0npPMuQ",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "Amphibian: Gameplay Trailer - The MIX Showcase",
+    "url": "https://www.youtube.com/watch?v=u22DWjBeMpI",
+    "author": "Amphibian (Official)",
+    "published_at": null,
+    "text": "jrpg #indiegames #amphibian A countrywide drought forces Sapo and his frog allies into war against the invading toads.",
+    "raw": {
+     "id": "u22DWjBeMpI",
+     "duration": 85,
+     "view_count": 609,
+     "like_count": null,
+     "channel_id": "UCWWBKcwhxzwQkSmYZ2FlPBw",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "Amphibian - Official Announcement Trailer",
+    "url": "https://www.youtube.com/watch?v=-Hg0czjaN_4",
+    "author": "All New Game Trailers",
+    "published_at": null,
+    "text": "Thanks for tuning in! Don't forget to hit that subscribe button and turn on notifications so you never miss a new game trailer.",
+    "raw": {
+     "id": "-Hg0czjaN_4",
+     "duration": 61,
+     "view_count": 4,
+     "like_count": null,
+     "channel_id": "UCBZl4iKyUH4mMpP6h5vkzpA",
+     "tags": null,
+     "categories": null
+    }
+   }
+  ],
+  "meta": {
+   "elapsed_ms": 2063,
+   "attempts": [
+    {
+     "backend": "yt-dlp",
+     "result": "ok"
+    }
+   ]
+  },
+  "error": null
+ }
+}

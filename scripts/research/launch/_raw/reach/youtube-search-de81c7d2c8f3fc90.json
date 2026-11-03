@@ -1,0 +1,126 @@
+{
+ "argv": [
+  "youtube",
+  "search",
+  "Vokeev",
+  "--limit",
+  "6"
+ ],
+ "at": 1793700210.140808,
+ "date": "2026-11-03",
+ "envelope": {
+  "schema_version": 1,
+  "ok": true,
+  "channel": "youtube",
+  "action": "search",
+  "backend": "yt-dlp",
+  "items": [
+   {
+    "title": "Morbid Inhale Trailer",
+    "url": "https://www.youtube.com/watch?v=SSKL_Iog1ss",
+    "author": "Vokeev",
+    "published_at": null,
+    "text": "https://store.steampowered.com/app/1724100/Morbid_Inhale/ Hungry zombies want to devour you, take the biggest gun and fight ...",
+    "raw": {
+     "id": "SSKL_Iog1ss",
+     "duration": 59,
+     "view_count": 76,
+     "like_count": null,
+     "channel_id": "UCb4Lag8VSVLVDjW1npr5hnQ",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "Reoxia - Announcement Trailer",
+    "url": "https://www.youtube.com/watch?v=6XebUFvHYVM",
+    "author": "Vokeev",
+    "published_at": null,
+    "text": "Reoxia is a single-player, story-driven first-person shooter. You are an astronaut who has returned to Earth after a catastrophe ...",
+    "raw": {
+     "id": "6XebUFvHYVM",
+     "duration": 116,
+     "view_count": 178,
+     "like_count": null,
+     "channel_id": "UCb4Lag8VSVLVDjW1npr5hnQ",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "Reoxia - Announcement Trailer",
+    "url": "https://www.youtube.com/watch?v=V1So3SAS4QY",
+    "author": "Vokeev",
+    "published_at": null,
+    "text": "Reoxia is a single-player, story-driven first-person shooter. You are an astronaut who has returned to Earth after a catastrophe ...",
+    "raw": {
+     "id": "V1So3SAS4QY",
+     "duration": 116,
+     "view_count": 232,
+     "like_count": null,
+     "channel_id": "UCb4Lag8VSVLVDjW1npr5hnQ",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "Reoxia - Official Announcement Trailer",
+    "url": "https://www.youtube.com/watch?v=Xt3qIbRuuLA",
+    "author": "Indie Games Hub",
+    "published_at": null,
+    "text": "Reoxia is a story-driven first-person shooter with realistic graphics set in a post-apocalyptic setting. You'll fight armed men, ...",
+    "raw": {
+     "id": "Xt3qIbRuuLA",
+     "duration": 116,
+     "view_count": 5365,
+     "like_count": null,
+     "channel_id": "UCt8CJiye87FMbEwt0npPMuQ",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "Morbid Inhale Trailer",
+    "url": "https://www.youtube.com/watch?v=w8G2MfWpNTY",
+    "author": "Vokeev",
+    "published_at": null,
+    "text": "https://store.steampowered.com/app/1724100/Morbid_Inhale/ Hungry zombies want to devour you, take the biggest gun and fight ...",
+    "raw": {
+     "id": "w8G2MfWpNTY",
+     "duration": 58,
+     "view_count": 119,
+     "like_count": null,
+     "channel_id": "UCb4Lag8VSVLVDjW1npr5hnQ",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "Reoxia (2027) - Official Announcement Trailer - 4K",
+    "url": "https://www.youtube.com/watch?v=bcPUSXHbfv8",
+    "author": "Masked Action",
+    "published_at": null,
+    "text": "Don't miss the Announcement Trailer for Reoxia, a single-player open-world action FPS developed by Vokeev. In Reoxia, you ...",
+    "raw": {
+     "id": "bcPUSXHbfv8",
+     "duration": 134,
+     "view_count": 7,
+     "like_count": null,
+     "channel_id": "UCkSnPthKkSgerqetSgQa00A",
+     "tags": null,
+     "categories": null
+    }
+   }
+  ],
+  "meta": {
+   "elapsed_ms": 1750,
+   "attempts": [
+    {
+     "backend": "yt-dlp",
+     "result": "ok"
+    }
+   ]
+  },
+  "error": null
+ }
+}

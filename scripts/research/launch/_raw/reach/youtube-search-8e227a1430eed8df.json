@@ -1,0 +1,126 @@
+{
+ "argv": [
+  "youtube",
+  "search",
+  "Catomino",
+  "--limit",
+  "6"
+ ],
+ "at": 1793700224.3234298,
+ "date": "2026-11-03",
+ "envelope": {
+  "schema_version": 1,
+  "ok": true,
+  "channel": "youtube",
+  "action": "search",
+  "backend": "yt-dlp",
+  "items": [
+   {
+    "title": "Catomino - Gameplay",
+    "url": "https://www.youtube.com/watch?v=LB_QJ8ie7q0",
+    "author": "IndieBunny",
+    "published_at": null,
+    "text": "Lascia cadere, scivola e coccola i gatti morbidi nei posti perfetti. Catomino è un accogliente puzzle 3D di polimini dove ...",
+    "raw": {
+     "id": "LB_QJ8ie7q0",
+     "duration": 47,
+     "view_count": 729,
+     "like_count": null,
+     "channel_id": "UCxO9W1jZKAiNFM2tqSbldgg",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "How to play Katamino",
+    "url": "https://www.youtube.com/watch?v=5X8QtgSMJPY",
+    "author": "Katamino Solver",
+    "published_at": null,
+    "text": "Hello Everyone is this video, I will teach you how to play Katamino, for the first time. and how to select a level and begin to solve it ...",
+    "raw": {
+     "id": "5X8QtgSMJPY",
+     "duration": 297,
+     "view_count": 71208,
+     "like_count": null,
+     "channel_id": "UCaHpKxo4T-vKK43SH4NuL9A",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "kci's megalovania - Catomino",
+    "url": "https://www.youtube.com/watch?v=DvoO9pBwPGQ",
+    "author": "kodeci the music maker",
+    "published_at": null,
+    "text": "another megalovania for an oc of mine this time tetris kat not the best but not bad midi: ...",
+    "raw": {
+     "id": "DvoO9pBwPGQ",
+     "duration": 144,
+     "view_count": 194,
+     "like_count": null,
+     "channel_id": "UCoEHeUiKQ0x8MEsRFMYb5Ng",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "Địa ngục của TOMINO",
+    "url": "https://www.youtube.com/watch?v=bTd3HnCIQG8",
+    "author": "Huỳnh Thiện-Inthelife",
+    "published_at": null,
+    "text": "like share subcribe nhé.",
+    "raw": {
+     "id": "bTd3HnCIQG8",
+     "duration": 123,
+     "view_count": 420698,
+     "like_count": null,
+     "channel_id": "UCIUxhYjoIui3r98qHPw-uaw",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "#1 video😉😉",
+    "url": "https://www.youtube.com/watch?v=BO2tP9g1aJw",
+    "author": "kelly catomino",
+    "published_at": null,
+    "text": null,
+    "raw": {
+     "id": "BO2tP9g1aJw",
+     "duration": 128,
+     "view_count": 6,
+     "like_count": null,
+     "channel_id": "UCat7YQytgz32Z3PbzNFytmA",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "marikit",
+    "url": "https://www.youtube.com/watch?v=nKHo4uN5IoY",
+    "author": "Aljean Catomino",
+    "published_at": null,
+    "text": "Slide show with my friends.",
+    "raw": {
+     "id": "nKHo4uN5IoY",
+     "duration": 304,
+     "view_count": 10,
+     "like_count": null,
+     "channel_id": "UCe8SBHmcRtA-C9uRwpDBNoA",
+     "tags": null,
+     "categories": null
+    }
+   }
+  ],
+  "meta": {
+   "elapsed_ms": 1641,
+   "attempts": [
+    {
+     "backend": "yt-dlp",
+     "result": "ok"
+    }
+   ]
+  },
+  "error": null
+ }
+}

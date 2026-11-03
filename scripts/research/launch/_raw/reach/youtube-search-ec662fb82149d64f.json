@@ -1,0 +1,126 @@
+{
+ "argv": [
+  "youtube",
+  "search",
+  "Pennants of Glory",
+  "--limit",
+  "6"
+ ],
+ "at": 1793700252.9263284,
+ "date": "2026-11-03",
+ "envelope": {
+  "schema_version": 1,
+  "ok": true,
+  "channel": "youtube",
+  "action": "search",
+  "backend": "yt-dlp",
+  "items": [
+   {
+    "title": "Pennants Of Glory: Condottiere - Official Trailer",
+    "url": "https://www.youtube.com/watch?v=Dw9R6BKtpY8",
+    "author": "Indie Games Hub",
+    "published_at": null,
+    "text": "Pennants of Glory: Condottiere is a single-player medieval RTS/RPG inspired by Battle Brothers mercenary company ...",
+    "raw": {
+     "id": "Dw9R6BKtpY8",
+     "duration": 106,
+     "view_count": 70949,
+     "like_count": null,
+     "channel_id": "UCt8CJiye87FMbEwt0npPMuQ",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "Pennants of Glory: Condottiere combat compilation",
+    "url": "https://www.youtube.com/watch?v=9ZRk15QTK94",
+    "author": "Confus Games",
+    "published_at": null,
+    "text": "Pennants of Glory: Condottiere Some footage from random battles of the RTT game am developing. Pennants is a mix of Total ...",
+    "raw": {
+     "id": "9ZRk15QTK94",
+     "duration": 164,
+     "view_count": 1422,
+     "like_count": null,
+     "channel_id": "UCVY1ok8Wox4zC2-23UuH5PQ",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "Sandbox Mercenary Company RPG - Pennants of Glory",
+    "url": "https://www.youtube.com/watch?v=ZuW7Xf_M_QE",
+    "author": "Nookrium",
+    "published_at": null,
+    "text": "Run a medieval mercenary company with Battle Brothers-style management in a living world. Command up to 600 soldiers in ...",
+    "raw": {
+     "id": "ZuW7Xf_M_QE",
+     "duration": 2562,
+     "view_count": 92924,
+     "like_count": null,
+     "channel_id": "UCwX8RD5ivBjTm1QHIv7fm_Q",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "Pennants Of Glory: Condottiere updated steam trailer",
+    "url": "https://www.youtube.com/watch?v=8L843TLnMIY",
+    "author": "Confus Games",
+    "published_at": null,
+    "text": "Pennants of Glory is a RTT/RPG in a living medieval world, inspired by Battle Brothers, Total War and Mount and Blade.",
+    "raw": {
+     "id": "8L843TLnMIY",
+     "duration": 106,
+     "view_count": 3269,
+     "like_count": null,
+     "channel_id": "UCVY1ok8Wox4zC2-23UuH5PQ",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "Pennants of Glory #5 DevBlog: Early Campaign",
+    "url": "https://www.youtube.com/watch?v=erlijFDzlEs",
+    "author": "Confus Games",
+    "published_at": null,
+    "text": "This describes typical first few minutes of new campaign when we have just two formations and are starting it out. Pennants of ...",
+    "raw": {
+     "id": "erlijFDzlEs",
+     "duration": 181,
+     "view_count": 544,
+     "like_count": null,
+     "channel_id": "UCVY1ok8Wox4zC2-23UuH5PQ",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "Pennants of Glory: Condottiere | Official Trailer",
+    "url": "https://www.youtube.com/watch?v=WlvUMDYA-tE",
+    "author": "CheckpointZero",
+    "published_at": null,
+    "text": "Lead a medieval mercenary company in a single-player RTS/RPG. Command hundreds in real-time 3D formation battles, build ...",
+    "raw": {
+     "id": "WlvUMDYA-tE",
+     "duration": 81,
+     "view_count": 221,
+     "like_count": null,
+     "channel_id": "UCQR0CGW4jh4OgfnGWw2a0lQ",
+     "tags": null,
+     "categories": null
+    }
+   }
+  ],
+  "meta": {
+   "elapsed_ms": 1563,
+   "attempts": [
+    {
+     "backend": "yt-dlp",
+     "result": "ok"
+    }
+   ]
+  },
+  "error": null
+ }
+}

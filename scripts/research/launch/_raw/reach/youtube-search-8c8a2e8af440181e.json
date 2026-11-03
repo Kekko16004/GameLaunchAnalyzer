@@ -1,0 +1,126 @@
+{
+ "argv": [
+  "youtube",
+  "search",
+  "RadCity",
+  "--limit",
+  "6"
+ ],
+ "at": 1793700235.3313217,
+ "date": "2026-11-03",
+ "envelope": {
+  "schema_version": 1,
+  "ok": true,
+  "channel": "youtube",
+  "action": "search",
+  "backend": "yt-dlp",
+  "items": [
+   {
+    "title": "RadCity: A Post-Apocalyptic Adventure | Demo | Gameplay PC",
+    "url": "https://www.youtube.com/watch?v=v3mub_3i6AI",
+    "author": "MAZAVS - Games Channel",
+    "published_at": null,
+    "text": "Scavenge and explore a dead city. RadCity is an atmospheric exploration game set after a nuclear war, in an unnamed eastern ...",
+    "raw": {
+     "id": "v3mub_3i6AI",
+     "duration": 870,
+     "view_count": 3987,
+     "like_count": null,
+     "channel_id": "UC3OAgUoy1JEp1FbYQK8bEEA",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "RadCity: A Post-Apocalyptic Adventure | Demo Gameplay Walkthrough | Stage315",
+    "url": "https://www.youtube.com/watch?v=jvBv8Ge6NPE",
+    "author": "Stage 3 Gaming",
+    "published_at": null,
+    "text": "RadCity: A Post-Apocalyptic Adventure | Demo Gameplay Walkthrough | Stage315 RadCity is an atmospheric exploration game ...",
+    "raw": {
+     "id": "jvBv8Ge6NPE",
+     "duration": 2596,
+     "view_count": 509,
+     "like_count": null,
+     "channel_id": "UCtPTeIdlMwYkimboM_Pq8fw",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "RadCity: A Post-Apocalyptic Adventure - Official Trailer",
+    "url": "https://www.youtube.com/watch?v=5OB8b-FiYd8",
+    "author": "Indie Games Hub",
+    "published_at": null,
+    "text": "RadCity is an atmospheric exploration game set after a nuclear war, in an unnamed eastern european industrial city. Scavenge ...",
+    "raw": {
+     "id": "5OB8b-FiYd8",
+     "duration": 84,
+     "view_count": 223226,
+     "like_count": null,
+     "channel_id": "UCt8CJiye87FMbEwt0npPMuQ",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "RadCity e-bike from Rad Power Bikes review",
+    "url": "https://www.youtube.com/watch?v=GpAmAhrZNQ4",
+    "author": "Electrek.co",
+    "published_at": null,
+    "text": "The RadCity costs just $1499 (http://bit.ly/Rad-City) yet offers great bang for your buck as an electric city bike. Check out our full ...",
+    "raw": {
+     "id": "GpAmAhrZNQ4",
+     "duration": 242,
+     "view_count": 124538,
+     "like_count": null,
+     "channel_id": "UCcOIZzJgLCyMPILY7-1Vsdg",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "RADCITY DEMO - NO COMMENTARY - Z-DAY APOCALYPSE A Post-Apocalyptic Adventure",
+    "url": "https://www.youtube.com/watch?v=GywFEzlbILI",
+    "author": "Paparaaapa",
+    "published_at": null,
+    "text": "Great work on the atmosphere; the visuals and sound effects are top-tier. I noticed the demo focuses entirely on stealth/evasion ...",
+    "raw": {
+     "id": "GywFEzlbILI",
+     "duration": 2650,
+     "view_count": 249,
+     "like_count": null,
+     "channel_id": "UCOXME-dMji7jOQen-Sxre8w",
+     "tags": null,
+     "categories": null
+    }
+   },
+   {
+    "title": "How To Increase Top Speed on Rad Power Bikes RadRover 6+Rad, City 5 Plus, and RadRunner 3 +",
+    "url": "https://www.youtube.com/watch?v=kQyRqTosP84",
+    "author": "2feetNOsox",
+    "published_at": null,
+    "text": "How To increase the top speed on your Rad Power Bike Rad Rover 6 Plus, City 5 + and RadRunner 3 +.",
+    "raw": {
+     "id": "kQyRqTosP84",
+     "duration": 62,
+     "view_count": 47328,
+     "like_count": null,
+     "channel_id": "UCS6fgQSG4YeWWEDwPUslajA",
+     "tags": null,
+     "categories": null
+    }
+   }
+  ],
+  "meta": {
+   "elapsed_ms": 1782,
+   "attempts": [
+    {
+     "backend": "yt-dlp",
+     "result": "ok"
+    }
+   ]
+  },
+  "error": null
+ }
+}
