@@ -21,6 +21,10 @@ the account's recent posts (--handle instagram=studio). Wishlists are NEVER fetc
   social_content.py track fetch [--since 2026-10-01] [--handle instagram=studio,x=studio] [--overwrite] [--manual launch/ricerche-manuali.md]
                      reads views / likes / comments / shares of every post with a URL through Agent Reach; fills only empty cells
                      (unless --overwrite) and writes the source and date in the `fetched` column; not ready = manual step
+  social_content.py flopcheck [--page launch/_raw/store_pages.json --appid N] [--answers launch/_raw/flopcheck_answers.json] \\
+                     [-o launch/_raw/flopcheck.json] [--md launch/flopcheck.md]
+                     why it could flop: checklist from the top comments of the Reddit cases (references/09-reddit-casi.md),
+                     weighted by how often flop threads blame each factor; auto checks on the page, the rest from answers
   social_content.py learn [--posts launch/social_posts.csv] [--fetch] -o launch/_raw/social_learn.json [--md]
                      per platform: median views vs the small-account benchmark; per moment / hook / format: lift vs your median,
                      wishlists per 1,000 views; winners (n >= 2, lift >= 1.5) and losers; small samples are said out loud
@@ -92,6 +96,85 @@ def evidence_md(db: dict, only: str | None = None) -> str:
         if v.get("flops"):
             L += ["", "**Perché i post falliscono:**", ""] + [f"- {f['why']}" for f in v["flops"]]
         L.append("")
+    L += cases_md(db, only)
+    return "\n".join(L) + "\n"
+
+
+def cases_md(db: dict, only: str | None = None) -> list[str]:
+    """Benchmarks and comment factors from the Reddit cases (references/09-reddit-casi.md)."""
+    cb, fw = db.get("case_benchmarks"), db.get("factor_weights")
+    if not cb:
+        return []
+    L = [f"## Casi reali ({cb['generated']}, `{cb['doc']}`)", "", cb["note"], "", "**Wishlist ogni 1.000 visualizzazioni** (mediana, p25-p75, n):", ""]
+    for k, v in cb["wishlists_per_1k_views"].items():
+        if only and k != only:
+            continue
+        ex = "; ".join(f"[{e['case']}]({e['url']}) {e['views']:,} -> {e['wishlists']:,}" for e in v["examples"][:2])
+        L.append(f"- {k}: {v['median']} ({v['p25']}-{v['p75']}, n {v['n']}); es. {ex}")
+    if not only:
+        L += ["", "**Wishlist a settimana per fascia di partenza:** " + "; ".join(f"{b['band']} -> mediana {b['median']} (n {b['n']})" for b in cb["weekly_wishlists_by_band"]), "",
+              "**Costo per wishlist:** " + "; ".join(f"{i['channel']} {i['usd_per_wishlist']} $" for i in cb["ads_cost_per_wishlist"]["items"]), ""]
+        if fw:
+            top = sorted(fw["factors"].items(), key=lambda kv: -kv[1]["flop_share"])[:6]
+            L += ["**Perché floppa secondo i commenti** (thread di flop che citano il fattore):", ""]
+            L += [f"- {v['label']}: {v['flop_threads_blaming']}/{fw['n_threads']['flop']} ({v['flop_votes']} voti), peso {v['weight_flop']}/5" for _, v in top]
+            L += ["", "Controllo sul tuo gioco: `social_content.py flopcheck`.", ""]
+    return L
+
+
+# ---------------------------------------------------------------- flop check
+OPS = {">=": lambda a, b: a >= b, "<=": lambda a, b: a <= b, ">": lambda a, b: a > b, "<": lambda a, b: a < b}
+
+
+def load_page(path: str | None, appid: str | None = None) -> dict:
+    """A store_bench.py fetch record (list or single object); pick the app id when given."""
+    if not path or not os.path.exists(path):
+        return {}
+    d = load_json(path)
+    if isinstance(d, dict):
+        return d
+    return next((x for x in d if not appid or str(x.get("appid")) == str(appid)), {}) if d else {}
+
+
+def flopcheck(db: dict, page: dict | None = None, answers: dict | None = None) -> dict:
+    """Apply the flop checklist (from the comments of the Reddit cases) to the game: auto checks on the Steam page record,
+    the rest from answers {"FC03": true, "wishlists": 3200}. risk = failed weight / weight judged (0-1)."""
+    page, answers = page or {}, answers or {}
+    data = dict(page, **{k: v for k, v in answers.items() if not re.fullmatch(r"FC\d+", k)})
+    out, fail_w, judged_w = [], 0, 0
+    for it in db.get("flop_checklist", {}).get("items", []):
+        ck, status, how = it.get("check"), "todo", ""
+        if answers.get(it["id"]) is not None:
+            status, how = ("ok" if answers[it["id"]] else "fail"), "risposta"
+        elif ck and num(data.get(ck["field"])) is not None:
+            val = num(data.get(ck["field"]))
+            status, how = ("ok" if OPS[ck["op"]](val, ck["value"]) else "fail"), f"{ck['field']} = {val:g}, soglia {ck['op']} {ck['value']}"
+        if status != "todo":
+            judged_w += it["weight"]
+            fail_w += it["weight"] if status == "fail" else 0
+        out.append(dict(id=it["id"], code=it["code"], weight=it["weight"], status=status, how=how, q=it["q"], fix=it["fix"], evidence=it.get("evidence", "")))
+    fails = sorted((x for x in out if x["status"] == "fail"), key=lambda x: -x["weight"])
+    todo = [x for x in out if x["status"] == "todo"]
+    risk = round(fail_w / judged_w, 2) if judged_w else None
+    return dict(generated_on=dt.date.today().isoformat(), game=page.get("name"), appid=page.get("appid"), risk=risk,
+                level=None if risk is None else "alto" if risk >= 0.5 else "medio" if risk >= 0.25 else "basso",
+                judged=len(out) - len(todo), todo=len(todo), items=out, top_fixes=[dict(id=x["id"], weight=x["weight"], fix=x["fix"]) for x in fails[:5]],
+                source=db.get("flop_checklist", {}).get("doc"))
+
+
+def flopcheck_md(fc: dict) -> str:
+    risk = "non calcolabile (rispondi alle domande)" if fc["risk"] is None else f"{fc['risk']} ({fc['level']})"
+    L = [f"# Perché potrebbe floppare: controllo{' di ' + fc['game'] if fc.get('game') else ''}", "",
+         f"Domande ricavate dai commenti dei casi Reddit ({fc['source']}), in ordine di peso (5 = il fattore più citato nei flop). "
+         f"Rischio = peso delle voci non superate / peso delle voci giudicate: **{risk}**. {fc['judged']} voci giudicate, {fc['todo']} da rispondere.", "",
+         "| Voce | Peso | Esito | Domanda | Come sistemare | Prove |", "|---|---|---|---|---|---|"]
+    lab = {"ok": "ok", "fail": "**DA SISTEMARE**", "todo": "da rispondere"}
+    for x in fc["items"]:
+        L.append(f"| {x['id']} | {x['weight']} | {lab[x['status']]}{(' (' + x['how'] + ')') if x['how'] else ''} | {x['q']} | {x['fix']} | {x['evidence']} |")
+    if fc["top_fixes"]:
+        L += ["", "**Prima di tutto:**", ""] + [f"{i}. {x['fix']} ({x['id']}, peso {x['weight']})" for i, x in enumerate(fc["top_fixes"], 1)]
+    L += ["", "Le risposte vanno in `launch/_raw/flopcheck_answers.json` (es. `{\"FC03\": true, \"wishlists\": 3200}`). "
+          "Sono opinioni di commentatori trasformate in domande, non leggi: servono a decidere cosa guardare per primo.", ""]
     return "\n".join(L) + "\n"
 
 
@@ -218,7 +301,8 @@ def plan(db: dict, moments: list[dict], start: dt.date, weeks: int, per_week: di
                 last_sub[sub["sub"]] = d
                 post["subreddit"] = sub["sub"]
                 post["rules"] = sub.get("self_promo_rules", "")[:220]
-            post["caption"] = "Titolo personale (es. \"My friend and I made a game about…\"), mai \"wishlist now\"; link Steam in un commento se le regole lo permettono"
+            post["caption"] = ("Titolo personale (es. \"My friend and I made a game about…\"), mai \"wishlist now\"; link Steam in un commento se le regole lo permettono. "
+                               "Alterna con un sub di tema del gioco (genere, gioco che ti ha ispirato): nei casi rende più dei sub di sviluppatori")
         if p == "x":
             post["caption"] = f"{a[1]} — link Steam nella prima risposta, niente hashtag"
         posts.append(post)
@@ -239,6 +323,7 @@ def plan_md(pl: dict, db: dict) -> str:
         L.append(f"- **{PLAT_IT[p]}** ({pl['per_week'][p]} a settimana): " + " · ".join(rs))
     L += ["", "**Cosa è un buon risultato** (account piccolo, dalle fonti): " + "; ".join(
         f"{PLAT_IT[p]} tipico ~{TYPICAL[p]} visualizzazioni a post" for p in pl["per_week"]) + ". Un post virale al mese è già un successo [FATTO sui casi, STIMA per noi].", "",
+          case_conv_line(db, pl["per_week"]), "",
           "**Come si fa un post:** primo secondo = il momento più forte del gioco già in corso (niente logo, niente intro), testo grande che dice il gancio, sottotitoli sempre, "
           "fine con la richiesta chiara. Lo stesso clip va su tutte le piattaforme a 1-2 giorni di distanza, file pulito senza filigrana di TikTok.", "",
           "**Prova A/B del gancio:** ogni riga ha due testi d'apertura (A e B). Usa A; quando lo stesso momento torna, usa B. Dopo 2 post per variante `learn` dice quale tenere.", "",
@@ -249,6 +334,16 @@ def plan_md(pl: dict, db: dict) -> str:
     L += ["", "## Dopo ogni post", "", "Il giorno dopo: `social_content.py track add` con visualizzazioni, like, condivisioni e le wishlist del giorno lette in Steamworks. "
           "Ogni domenica `learn` e poi `plan` di nuovo: i momenti che rendono tornano più spesso, quelli che non rendono escono.", ""]
     return "\n".join(L) + "\n"
+
+
+def case_conv_line(db: dict, platforms) -> str:
+    cv = (db.get("case_benchmarks") or {}).get("wishlists_per_1k_views", {})
+    xs = [f"{PLAT_IT[p]} {cv[p]['median']} (n {cv[p]['n']})" for p in platforms if p in cv]
+    if not xs:
+        return ""
+    yt = f"; YouTube con creator o aggregatori {cv['youtube']['median']} (n {cv['youtube']['n']})" if "youtube" in cv else ""
+    return ("**Quante wishlist portano 1.000 visualizzazioni** (mediana dei casi Reddit 2026, references/09-reddit-casi.md): " + "; ".join(xs) + yt
+            + ". Le view di TikTok e Shorts valgono poco: conta il pubblico giusto.")
 
 
 def calendar_steps(pl: dict) -> list[dict]:
@@ -405,7 +500,8 @@ def fetch_numbers(rows: list[dict], since: str | None = None, handles: dict | No
     return stats
 
 
-def learn(rows: list[dict]) -> dict:
+def learn(rows: list[dict], db: dict | None = None) -> dict:
+    cv = ((db or {}).get("case_benchmarks") or {}).get("wishlists_per_1k_views", {})
     res = dict(n=len(rows), platforms=[], by_moment=[], by_hook=[], by_format=[], by_clip=[], winners=[], losers=[], warnings=[])
     byp: dict = {}
     for r in rows:
@@ -422,7 +518,9 @@ def learn(rows: list[dict]) -> dict:
         wl_per_k = round(1000 * sum(w for w, _ in wls) / sum(v for _, v in wls), 2) if wls and sum(v for _, v in wls) else None
         eng = [((num(r.get("likes")) or 0) + (num(r.get("shares")) or 0) * 2 + (num(r.get("comments")) or 0)) / v for r, v in xs if v]
         res["platforms"].append(dict(platform=p, n=len(xs), median_views=round(med), typical_small=TYPICAL.get(p), vs_typical=round(med / TYPICAL[p], 2) if TYPICAL.get(p) else None,
-                                     best=round(max(vs)), wishlists_per_1k=wl_per_k, engagement=round(statistics.median(eng), 3) if eng else None))
+                                     best=round(max(vs)), wishlists_per_1k=wl_per_k, engagement=round(statistics.median(eng), 3) if eng else None,
+                                     cases_wishlists_per_1k=cv.get(p, {}).get("median"),
+                                     vs_cases=round(wl_per_k / cv[p]["median"], 2) if wl_per_k is not None and cv.get(p, {}).get("median") else None))
         if len(xs) < 5:
             res["warnings"].append(f"{PLAT_IT.get(p, p)}: solo {len(xs)} post con numeri, troppo pochi per conclusioni (servono 5+)")
     for field, bucket in (("moment", "by_moment"), ("hook", "by_hook"), ("format", "by_format"), ("clip", "by_clip")):
@@ -445,9 +543,9 @@ def learn(rows: list[dict]) -> dict:
 
 
 def learn_md(ln: dict) -> str:
-    L = [f"# Cosa funziona per il nostro gioco ({ln['n']} post registrati)", "", "| Piattaforma | Post | Visualizzazioni mediane | Tipico per un account piccolo | Migliore | Wishlist ogni 1.000 visual. |", "|---|---|---|---|---|---|"]
+    L = [f"# Cosa funziona per il nostro gioco ({ln['n']} post registrati)", "", "| Piattaforma | Post | Visualizzazioni mediane | Tipico per un account piccolo | Migliore | Wishlist ogni 1.000 visual. | Casi reali |", "|---|---|---|---|---|---|---|"]
     for p in ln["platforms"]:
-        L.append(f"| {PLAT_IT.get(p['platform'], p['platform'])} | {p['n']} | {p['median_views']} | ~{p['typical_small']} ({p['vs_typical']}×) | {p['best']} | {p['wishlists_per_1k'] if p['wishlists_per_1k'] is not None else '—'} |")
+        L.append(f"| {PLAT_IT.get(p['platform'], p['platform'])} | {p['n']} | {p['median_views']} | ~{p['typical_small']} ({p['vs_typical']}×) | {p['best']} | {p['wishlists_per_1k'] if p['wishlists_per_1k'] is not None else '—'} | {p.get('cases_wishlists_per_1k') or '—'}{(' (' + str(p['vs_cases']) + '×)') if p.get('vs_cases') else ''} |")
     for title, key in (("Momenti", "by_moment"), ("Ganci (A/B)", "by_hook"), ("Formati", "by_format")):
         if ln[key]:
             L += ["", f"**{title}** (× = rispetto alla mediana della piattaforma): " + ", ".join(f"{r['key']} {r['lift']}× (n {r['n']})" for r in ln[key])]
@@ -491,6 +589,10 @@ def main(argv=None):
     tf.add_argument("--overwrite", action="store_true"); tf.add_argument("--manual"); tf.add_argument("--reach", default="auto", choices=["auto", "on", "off"])
     ln = sub.add_parser("learn"); ln.add_argument("--posts", default=os.path.join("launch", "social_posts.csv")); ln.add_argument("-o", "--out"); ln.add_argument("--md")
     ln.add_argument("--fetch", action="store_true", help="first fill missing numbers through Agent Reach (track fetch)"); ln.add_argument("--handle")
+    fc = sub.add_parser("flopcheck", help="flop checklist from the comments of the Reddit cases, applied to the game")
+    fc.add_argument("--page", default=os.path.join("launch", "_raw", "store_pages.json"), help="store_bench.py fetch output (the game's own page)")
+    fc.add_argument("--appid"); fc.add_argument("--answers", default=os.path.join("launch", "_raw", "flopcheck_answers.json"))
+    fc.add_argument("-o", "--out", default=os.path.join("launch", "_raw", "flopcheck.json")); fc.add_argument("--md")
     a = ap.parse_args(argv)
     if a.cmd == "track" and a.tcmd == "fetch" or a.cmd == "learn" and a.fetch:
         reach.configure(mode=getattr(a, "reach", "auto"), manual=getattr(a, "manual", None))
@@ -512,7 +614,7 @@ def main(argv=None):
             print("added %d, updated %d" % merge_posts(a.posts, import_rows(a.file, plat(a.platform) if a.platform else None)))
         return
     if a.cmd == "learn":
-        res = learn(read_posts(a.posts))
+        res = learn(read_posts(a.posts), load_db(a.db))
         res["generated_on"] = dt.date.today().isoformat()
         write_json(res, a.out)
         if a.md:
@@ -521,6 +623,15 @@ def main(argv=None):
     db = load_db(a.db)
     if a.cmd == "evidence":
         txt = evidence_md(db, plat(a.platform) if a.platform else None)
+        if a.md:
+            open(a.md, "w", encoding="utf-8", newline="\n").write(txt)
+        else:
+            print(txt)
+        return
+    if a.cmd == "flopcheck":
+        res = flopcheck(db, load_page(a.page, a.appid), load_json(a.answers) if a.answers and os.path.exists(a.answers) else {})
+        write_json(res, a.out)
+        txt = flopcheck_md(res)
         if a.md:
             open(a.md, "w", encoding="utf-8", newline="\n").write(txt)
         else:

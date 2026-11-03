@@ -107,3 +107,13 @@ Ogni file termina con TODO nel formato di `references/06-synthesis-output.md`.
 ## Cosa hanno fatto i B che vendono (dal mercato reale)
 
 Prima di scegliere i canali, guarda in `calibration.json` → `marketing` (o `market_tracker.py timeline` sui B vincenti più vicini): quanti video di creator avevano prima e dopo l'uscita, quando è uscito il primo trailer, se c'era una demo e la Next Fest, quanti post Reddit, ogni quanto aggiornavano. I social sono raccolti con `entity_match.py`: conta solo ciò che parla davvero del gioco (precisione misurata su campioni etichettati a mano). TikTok, Instagram e X entrano nella timeline tramite Agent Reach (`reach.py`) quando `reach.py doctor` li dà pronti; per i canali non pronti le ricerche da fare a mano sono in `launch/ricerche-manuali.md` e i risultati si importano con `market_tracker.py manual --import`.
+
+## Casi reali (social, creator, fest)
+
+Da `references/09-reddit-casi.md` (257 casi da Reddit, 168 con fattori, 2026-11-03), da leggere prima di scegliere i canali:
+
+- **Wishlist ogni 1.000 visualizzazioni** (mediana dei casi): YouTube con aggregatori o creator ~27, Instagram Reels ~11, X ~6, TikTok ~1,7, Shorts ~1,3, post Reddit ~0,7. Le view dei video brevi valgono poco: conta chi guarda.
+- **Leve più confermate:** trailer agli aggregatori (Indie Games Hub, GameTrailers: 14 conferme, 3 smentite), showcase online (8 a 1), fest tematici di terzi (9 a 3), spinta dell'algoritmo (10 a 4). **Demo** e **Next Fest** sono pari (11 a 11, 17 a 11): moltiplicano quello che hai già.
+- **Reddit:** i sub di tema del gioco danno 75-1.100 wishlist a post; r/IndieDev e r/gamedev quasi niente (350k view → 15). Il pianificatore ha abbassato r/IndieDev a "low".
+- **Pubblicità:** Reddit Ads 0,5-2 $ a wishlist; creator TikTok pagati oltre 10 $.
+- **Nei commenti dei successi** la causa più indicata sono creator, stampa e aggregatori (45% dei thread). `top_moves.py` propone "manda il trailer agli aggregatori" appena il trailer è pronto.

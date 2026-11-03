@@ -36,6 +36,30 @@ from common import load_json, log, write_json
 import social_content as sc
 
 REQUIRED = ("id", "title", "status", "length_s", "aspect", "platforms", "hooks", "caption", "why", "record", "shots", "end_frame")
+# hooks and formats that worked in the Reddit cases (references/09-reddit-casi.md, numbers self-reported by the authors [DA VERIFICARE],
+# YouTube views verified with Agent Reach on 2026-11-03 [FATTO])
+CASE_HOOKS = [
+    dict(hook="Ancora a un gioco amato: \"I miss <gioco classico>, so I made my own\"", case="Steel Command (Shorts, 0 -> ~2.000 wishlist in 3 mesi)",
+         numbers="short più visto 119.693 view [FATTO 2026-11-03]", url="https://www.reddit.com/r/IndieGameWishlist/comments/1ubtzjg/2000_wl_for_2man_team_rts_in_3_months/"),
+    dict(hook="Premessa insolita in una riga sopra la clip (\"We filmed every enemy instead of animating them\")", case="Jiří Kára Simulátor (X + Reddit)",
+         numbers="220k view su X partendo da 160 follower; ~2.900 wishlist in 3 settimane", url="https://www.reddit.com/r/IndieGameWishlist/comments/1xlu07f/three_weeks_of_marketing_and_2900_wishlists_later/"),
+    dict(hook="Il gioco nel sub del suo tema, con il tema nel titolo (bonsai in r/bonsai, MMO in r/MMORPG)", case="Bonsai Island",
+         numbers="~120 wishlist in un giorno da un post r/bonsai", url="https://www.reddit.com/r/IndieGameWishlist/comments/1wt26n7/it_took_me_a_month_to_get_to_100_wishlist_but/"),
+    dict(hook="Lo strumento della community: post nel sub del motore il giorno in cui la pagina va online", case="My Beautiful Faraway (r/godot, 3,5k voti)",
+         numbers="1.139 wishlist nelle prime 24 ore", url="https://www.reddit.com/r/SoloDevelopment/comments/1rwi0qw/my_first_game_got_1139_wishlists_in_the_first_24/"),
+    dict(hook="Stile visivo che ferma lo scroll, prima immagine già bella, niente testo lungo", case="Tabouret (Reels)",
+         numbers="20k view con ~30 follower -> 300 wishlist in un giorno", url="https://www.reddit.com/r/IndieGameWishlist/comments/1wy4ox3/my_game_passed_2000_wishlists_in_just_over_2/"),
+]
+CASE_FORMATS = [
+    dict(fmt="Trailer mandato agli aggregatori (Indie Games Hub, GameTrailers): converte 10-35 wishlist ogni 1.000 view, 10-20 volte i video brevi",
+         url="https://www.reddit.com/r/IndieGameWishlist/comments/1xkwrxr/"),
+    dict(fmt="Video nativo di 15-30 s che mostra il gioco; mai lo sviluppatore che indica lo schermo né un'immagine statica (commento da 40 voti sul caso Eternally)",
+         url="https://www.reddit.com/r/SoloDevelopment/comments/1x5ygn8/3_years_of_evenings_after_my_day_job_i_just/"),
+    dict(fmt="r/IndieDev e r/gamedev per feedback, non per wishlist: 350k view -> 15 wishlist (Looks Like You)",
+         url="https://www.reddit.com/r/gamemarketing/comments/1x0xgow/i_had_very_successful_post_yesterday_that/"),
+    dict(fmt="Reels convertono meglio di TikTok e Shorts nei casi (mediana 11,5 contro 1,7 e 1,3 wishlist ogni 1.000 view); Instagram compare su Steam come ricerca per nome",
+         url="https://www.reddit.com/r/IndieGameWishlist/comments/1xkuqi5/almost_600_wishlists_in_13_days_for_my_desktop/"),
+]
 DAYS_IT = ["lunedì", "martedì", "mercoledì", "giovedì", "venerdì", "sabato", "domenica"]
 STATUS_IT = {"todo": "da registrare", "recorded": "registrata", "posted": "pubblicata", "retired": "ritirata"}
 
@@ -167,7 +191,8 @@ def week_kit(reg: dict, monday: dt.date, posts: int, learn: dict | None, used: d
         out.append(dict(kind="reddit", clip=best["id"], title=best.get("reddit_title") or best["title"], subreddit=sub["sub"], flair=sub.get("flair"),
                         date=rd.isoformat(), day=DAYS_IT[rd.weekday()], time=times.get("reddit", "15:00"), rules_check=sub.get("rules_check", []),
                         link=utm_link(reg, "reddit", wk, best["id"]) if page and rd >= page else None,
-                        why="clip nativa di 15-30 s con titolo personale: il formato dei post Reddit che hanno portato migliaia di wishlist (Laysara, Song of Iron)",
+                        why="clip nativa di 15-30 s con titolo personale: il formato dei post Reddit che hanno portato migliaia di wishlist (Laysara, Song of Iron); "
+                            "nei casi 2026 i sub di tema del gioco (r/bonsai, r/MMORPG, r/godot) hanno dato 75-1.100 wishlist a post, quelli di sviluppatori quasi zero",
                         source="https://howtomarketagame.com/2022/01/10/how-a-two-person-team-earned-11000-wishlists-with-one-reddit-post/",
                         log=[f"social_content.py track add --date {rd.isoformat()} --platform reddit --clip {best['id']} --views __ --likes __ --comments __" + (" --wishlists __ --utm reddit" if page and rd >= page else "")]))
     return dict(week=wk, pre_page=pre, posts=out)
@@ -216,6 +241,9 @@ def kit_md(reg: dict, k: dict, learn: dict | None) -> str:
                   "- **Controlla prima di postare:** " + "; ".join(p["rules_check"]),
                   f"- **Link:** solo in un commento, se le regole lo permettono: {p['link']}" if p.get("link") else "- **Link:** nessuno (pagina Steam non ancora online)",
                   f"- **Perché:** {p['why']} ([fonte]({p['source']}))", "- **Il giorno dopo (5 min):**", "```"] + p["log"] + ["```", ""]
+    L += ["## Ganci e formati dai casi reali", "", "Da `references/09-reddit-casi.md` (numeri auto-dichiarati dagli autori, view YouTube verificate):", ""]
+    L += [f"- **{h['hook']}**: {h['case']}, {h['numbers']} ([post]({h['url']}))" for h in CASE_HOOKS]
+    L += [f"- {f['fmt']} ([caso]({f['url']}))" for f in CASE_FORMATS] + [""]
     L += ["## Domenica (10 min)", "", "```", "social_content.py learn -o launch/_raw/social_learn.json --md launch/_raw/social_learn.md",
           "social_kit.py kit --clips launch/clips.json --start <lunedì prossimo> --learn launch/_raw/social_learn.json", "```",
           "Il kit della settimana dopo si rifà da solo con quello che ha funzionato."]

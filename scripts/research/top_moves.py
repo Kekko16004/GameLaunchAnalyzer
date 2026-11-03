@@ -10,6 +10,10 @@ Candidates (each with the reason, the expected effect, the hours and who does it
   todo     open TODO.md items and calendar steps that are overdue or due within 14 days
   fest     Steam event registrations closing soon (launch/_raw/steam_events_deadlines.json from steam_events.py deadlines):
            "register for fest X by date Y"; 50 within 21 days, 35 within 45 days [FATTO: Valve's dates]
+  cases    from the Reddit cases (references/09-reddit-casi.md): "send the trailer to the aggregators" when the trailer is done and
+           no TODO / calendar line mentions aggregators (32: the lever most often tied to a jump, 14 confirm / 3 contradict);
+           the heaviest failed items of launch/_raw/flopcheck.json (social_content.py flopcheck): score 10 + 6 x weight (1-5,
+           how often flop threads blame that factor) [OPINIONE of the commenters, counted]
   promo    the nearest high-priority feasible (not long-shot) online showcase / third-party fest application (launch/_raw/promo_events_deadlines.json
            from promo_events.py deadlines): 40 within 21 days, 30 within 45 days [OPINIONE: value score]
 Score (0-100, rules not magic): issue = weight(alta 3, media 2, bassa 1) / 3 x % testers; recipe = winners% - losers%
@@ -43,7 +47,7 @@ MARK = "⭐ mossa top · "
 SEV_W = {"alta": 3, "media": 2, "bassa": 1}
 STEP_WORDS = {"playtest": ["playtest"], "trailer": ["trailer"], "demo": ["demo"], "festival": ["festival", "vetrina", "showcase"],
               "next_fest": ["next fest", "nextfest"], "creators": ["creator", "youtuber", "streamer", "influencer"],
-              "updates": ["aggiornament", "patch", "roadmap", "update"]}
+              "updates": ["aggiornament", "patch", "roadmap", "update"], "aggregators": ["aggregator", "indie games hub", "gametrailers", "ign indie"]}
 STEP_HOURS = {"playtest": "3-6 h", "trailer": "10-20 h", "demo": "20-40 h", "festival": "2-4 h per candidatura", "next_fest": "4-8 h (iscrizione, pagina, stream)",
               "creators": "6-10 h (lista e email)", "updates": "pianificazione 2 h"}
 METRO_STEP = {"trailer": "trailer", "demo_pre": "demo", "nextfest_pre": "next_fest", "playtest_pre": "playtest"}
@@ -170,6 +174,20 @@ def candidates(root: str, today: dt.date, cal: dict | None) -> list[dict]:
             out.append(dict(source="social", key="social-track", title="Registra i numeri dei post usciti (social_content.py track)", score=22,
                             why=f"{len(posted)} post del piano sono già passati ma i numeri registrati sono {(sl or {}).get('n') or 0}: senza numeri non si capisce cosa rifare",
                             effect="il piano impara quali momenti e ganci tenere", hours="15 min", owner="👤", due=today.isoformat(), match=["numeri", "post"]))
+    # ---- Reddit cases (references/09-reddit-casi.md): aggregators once the trailer exists; heaviest flop-checklist failures
+    stt = our_status(root)
+    if stt.get("trailer") == "fatto" and stt.get("aggregators") == "manca":
+        out.append(dict(source="cases", key="cases-aggregators", title="Manda il trailer agli aggregatori (Indie Games Hub, GameTrailers, IGN Indie)", score=32,
+                        why="nei casi Reddit 2026 è la leva più spesso legata a un salto (14 casi la confermano, 3 la smentiscono); YouTube converte 10-35 wishlist ogni 1.000 view [FATTO sui casi, auto-dichiarati]",
+                        effect="un repost visto da 20-200k persone (Pennants of Glory 70.949 view su Indie Games Hub, Koromi 229.045 su GameTrailers) [STIMA per noi]",
+                        hours="1 h (mail o modulo)", owner="👤", due=None, match=["aggregator", "indie games hub"]))
+    fcp = os.path.join(root, "_raw", "flopcheck.json")
+    fc = common.load_json(fcp) if os.path.exists(fcp) else None
+    for x in [i for i in (fc or {}).get("items", []) if i.get("status") == "fail"][:2]:
+        out.append(dict(source="cases", key=f"flopcheck-{x['id']}", title=f"Sistema: {x['fix']}", score=10 + 6 * x["weight"],
+                        why=f"controllo 'perché floppa' ({x['id']}, peso {x['weight']}/5): {x.get('evidence', '')} [OPINIONE dei commentatori, contata]",
+                        effect="toglie una delle cause di flop più citate nei commenti dei casi reali", hours=None, owner="👤+🤖", due=None,
+                        match=[w for w in re.findall(r"[a-zà-ù]{5,}", x["fix"].lower())][:2]))
     # ---- publisher (publisher_scout.py): the owner said yes / don't know and someone is realistic now
     pub = common.load_json(os.path.join(root, "_raw", "publisher_scout.json")) if os.path.exists(os.path.join(root, "_raw", "publisher_scout.json")) else None
     if pub and pub.get("publisher_question") in ("yes", "dont_know") and (pub.get("counts") or {}).get("realistic_now"):

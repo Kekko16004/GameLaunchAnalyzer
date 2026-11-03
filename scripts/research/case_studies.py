@@ -19,6 +19,10 @@ add goes to your private file `~/.game-launch-strategist/case_studies.json` (nev
                       numbers found next to "wishlists / sales / Next Fest / followers" and the questions answered in the
                       comments. Never merged by itself: check it, then `add` or `import` the record.
 
+Reddit cases (references/09-reddit-casi.md, 2026-11-03): records with `tier` = "factored" (at least 2 of: numbers over time,
+dated actions, a jump tied to an action, a verifiable Steam page) or "anecdotal" (kept for reading, never in bench / tables),
+plus `outcome`, `levers`, `timeline`, `jumps`, `conversions`, `comment_factors`, `steam` and `verified` ([FATTO] with date).
+
 Honesty rules built in: medians come with n and the interval between the 25th and 75th percentile; fewer than 5 similar
 records = "campione piccolo" and the survey benchmark (n in the hundreds) leads; self-reported posts are survivorship-biased
 (people post when it went well), so the case median is shown NEXT to the survey median, never instead of it.
@@ -156,7 +160,7 @@ def survey_for(benchmarks: list[dict], n: int, event: str = "next_fest") -> dict
 
 def bench(recs: list[dict], benchmarks: list[dict], entering: int, genre: str | None = None, band: float = 0.5) -> dict:
     """Next Fest gain for games that entered with about `entering` wishlists: our case records + the survey bucket."""
-    pool = [r for r in recs if r.get("event") == "next_fest" and r.get("wishlists_before") and r.get("wishlists_after") is not None
+    pool = [r for r in recs if r.get("event") == "next_fest" and r.get("tier") != "anecdotal" and r.get("wishlists_before") and r.get("wishlists_after") is not None
             and r["wishlists_after"] >= r["wishlists_before"]]
     if genre:
         g_pool = [r for r in pool if any(genre.lower() in g for g in r.get("genres") or [])]
@@ -211,6 +215,7 @@ def tripwire_md(rows: list[dict], fest: str, today: dt.date) -> str:
 
 
 def stage_table(recs: list[dict], genre: str | None, limit: int = 12) -> list[str]:
+    recs = [r for r in recs if r.get("tier") != "anecdotal"]        # anecdotal cases (references/09) never enter tables or medians
     rows = [r for r in recs if not genre or any(genre.lower() in g for g in r.get("genres") or [])] or recs
     rows = sorted(rows, key=lambda r: (r.get("wishlists_before") or r.get("wishlists_at_launch") or 0))[:limit]
     L = ["| Gioco | Genere | Quando | Evento | Wishlist prima → dopo | All'uscita | Vendite | Cosa hanno fatto | Fonte |", "|---|---|---|---|---|---|---|---|---|"]

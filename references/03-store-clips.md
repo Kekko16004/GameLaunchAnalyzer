@@ -90,3 +90,7 @@ Output: **`launch/04b-store-copy.md`**. Non limitarti all'audit: **scrivi i test
 **Dopo capsule, testi o trailer nuovi proponi all'utente una nuova ondata del focus group** (`04-focus-group.md`, 7.5): è il momento in cui il panel vede per la prima volta i materiali dello store e la timeline mostra se click e punteggio salgono. Parte solo con l'ok dell'utente.
 
 Ogni file termina con TODO nel formato di `references/06-synthesis-output.md`.
+
+## Casi reali (pagina, trailer, capsule)
+
+Da `references/09-reddit-casi.md` (168 casi con fattori, commenti più votati contati, 2026-11-03). Nei thread dei flop i commentatori accusano per primi **trailer** (19 su 57), **gancio poco chiaro** (15), **pagina** (15), **grafica** (14) e **capsule** (10). Sulle pagine Steam misurate i successi hanno descrizioni più lunghe (mediana 1.670 caratteri contro 1.131, p 0,013) e più lingue (10 contro 2,5); screenshot e numero di trailer non distinguono. Prima di consegnare i testi lancia `social_content.py flopcheck` sulla pagina del gioco: controlla da solo trailer, lunghezza della descrizione e lingue, e chiede il resto.

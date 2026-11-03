@@ -61,3 +61,7 @@ Le soglie sono ipotesi calibrabili: dopo le prime settimane di dati reali vanno 
 ## Soglie dal mercato reale
 
 Le soglie dei tripwire di vendita ("sotto N copie a 30 / 90 giorni") si ancorano al base rate della fascia del gioco in `calibration.json`: p25 della fascia B al suo prezzo = allarme, mediana = in linea, p75 = sopra le attese. Durante il lancio, `market_tracker.py snapshot` (a +24h, 48h, 1 settimana, 1 mese, 3 mesi) e `--players-only` più volte al giorno misurano lo stesso percorso sul gioco e sui concorrenti; `timeline` mette accanto eventi e picchi (un evento prima di un picco non prova che lo abbia causato). L'ordine dei passi dei B vincenti (demo, Next Fest, trailer, creator) è in `calibration.json` → `marketing`.
+
+## Casi reali (soglie di wishlist)
+
+Da `references/09-reddit-casi.md`: partendo da zero, le prime 5 settimane dei casi fanno una mediana di 367 wishlist a settimana (successi 875, flop 27); da 0-499 la mediana è 230 a settimana. Con meno di 1.000 wishlist all'entrata la Next Fest dei casi porta +388 (sondaggio HTMAG 322). Uscite sotto 2.000 wishlist vendono decine o poche centinaia di copie nei casi; i commenti più votati indicano 7-10k come soglia [OPINIONE]. Usa queste forchette come tripwire di wishlist prima dell'uscita (`case_benchmarks` in `scripts/research/data/social_patterns.json`).
