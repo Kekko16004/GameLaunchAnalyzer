@@ -112,9 +112,18 @@ install.bat · update.bat      Windows; install.sh · update.sh for macOS / Linu
 
 ## Research tools
 
-`scripts/research/` holds stdlib-only tools with rate limiting and exponential backoff: `steam_discover.py` (find comparables), `steam_comps.py` (store data, reviews, sales estimates), `steam_reviews.py` (real negative/positive reviews with themes), `roster.py` (stable simulated testers), `fg_waves.py` (waves, deltas, timeline), `yt_research.py`, `social_verify.py`, `reddit_rules.py`, `build_creators.py`. Details, options and known limits are in [`scripts/research/README.md`](scripts/research/README.md).
+`scripts/research/` holds stdlib-only tools with rate limiting and exponential backoff: `steam_discover.py` (find comparables), `steam_comps.py` (store data, reviews, sales estimates), `steam_reviews.py` (real negative/positive reviews with themes), `roster.py` (stable simulated testers), `fg_waves.py` (waves, deltas, timeline), `yt_research.py`, `social_verify.py`, `reddit_rules.py`, `build_creators.py`, `reach.py` (every social platform through Agent Reach, read-only), `reddit_backends.py` (Reddit through a chain of backends). Details, options and known limits are in [`scripts/research/README.md`](scripts/research/README.md).
 
-Optional environment variables (never stored in files): `YOUTUBE_API_KEY`, `REDDIT_CLIENT_ID`, `REDDIT_CLIENT_SECRET`, `REDDIT_USER_AGENT`, `TWITCH_CLIENT_ID`, `TWITCH_CLIENT_SECRET`, `IG_OEMBED_TOKEN`. Without them the tools degrade gracefully and the skill records what has to be checked by hand.
+Optional environment variables (never stored in files): `YOUTUBE_API_KEY`, `REDDIT_CLIENT_ID`, `REDDIT_CLIENT_SECRET`, `REDDIT_USER_AGENT`, `TWITCH_CLIENT_ID`, `TWITCH_CLIENT_SECRET`, `IG_OEMBED_TOKEN`, `THREADSNOOP_API_KEY`. Without them the tools degrade gracefully and the skill records what has to be checked by hand.
+
+## Social platforms (Agent Reach)
+
+[Agent Reach](https://github.com/Panniantong/agent-reach) (MIT) is an optional dependency: the installer installs it with `uv` and `node installer/install.mjs update` refreshes it (`agent-reach update`). Through `scripts/research/reach.py` the skill reads X, TikTok (experimental), Instagram, Facebook, Reddit, YouTube (with subtitles), Bilibili, XiaoHongShu, GitHub, V2EX, LinkedIn and any web page or RSS feed. It is **read-only**: the skill never posts, comments, likes or sends messages, and never logs in for you.
+
+- `python scripts/research/reach.py doctor` shows which channels are ready; `--live` re-checks them on the network.
+- Platforms that need an account are unlocked by you, once, in Agent Reach's own browser window: `agent-reach login twitter`, `agent-reach login instagram`, `agent-reach login reddit` (`reach.py setup` lists them all; a secondary account is recommended). Logins and cookies stay in `~/.agent-reach/` and never pass through the chat.
+- A channel that is not ready gives `[DA VERIFICARE]` and a dated manual search in `launch/ricerche-manuali.md`; numbers read from a ready channel are `[FATTO]` with URL and date.
+- Reddit works even without a login: `reddit_backends.py` falls back to OAuth (with keys), the public JSON, the Arctic Shift archive, RSS, ThreadSnoop (with key) and the public page, and says which one answered.
 
 ## Scope and limits
 

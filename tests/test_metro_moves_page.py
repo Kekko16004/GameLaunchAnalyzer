@@ -1,6 +1,8 @@
 """Offline: the objective pre-launch metric (fit, out-of-time backtest, levers, score), the 3 moves written into TODO.md and
 calendar.md without duplicates, the predictions log, the marketing dossier, comparables vs tiers, and the real-market parts
 of STATUS.html (header summary, Mercato reale tab, cards)."""
+import os as _os
+_os.environ["GLS_REACH"] = "off"   # offline: never the real Agent Reach
 import os, sys, json, csv, io, contextlib, tempfile, datetime as dt, urllib.parse, random, shutil
 here = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(here, "..", "scripts", "research"))

@@ -1,0 +1,96 @@
+{
+ "doctor": {"schema_version": 1, "ok": true, "action": "doctor", "error": null, "result": {"version": "1.6.1", "tools": [{"tool": "opencli", "version": "1.8.7"}], "channels": [
+  {"channel": "github", "level": "default", "status": "ready", "problems": [], "regressed": false},
+  {"channel": "twitter", "level": "experimental", "status": "needs_login", "problems": ["needs login for: search, profile"], "hint": "agent-reach login twitter", "regressed": false},
+  {"channel": "youtube", "level": "default", "status": "ready", "problems": [], "regressed": false},
+  {"channel": "reddit", "level": "optional", "status": "broken", "problems": ["live check failed: search"], "regressed": false},
+  {"channel": "facebook", "level": "experimental", "status": "not_added", "problems": [], "regressed": false},
+  {"channel": "instagram", "level": "experimental", "status": "needs_login", "problems": [], "regressed": false},
+  {"channel": "bilibili", "level": "default", "status": "unverified", "problems": [], "regressed": false},
+  {"channel": "xiaohongshu", "level": "optional", "status": "not_added", "problems": [], "regressed": false},
+  {"channel": "web", "level": "default", "status": "ready", "problems": [], "regressed": false}]}},
+ "doctor_all_ready": {"schema_version": 1, "ok": true, "action": "doctor", "error": null, "result": {"version": "1.6.1", "tools": [], "channels": [
+  {"channel": "github", "level": "default", "status": "ready", "problems": []},
+  {"channel": "twitter", "level": "experimental", "status": "ready", "problems": []},
+  {"channel": "youtube", "level": "default", "status": "ready", "problems": []},
+  {"channel": "reddit", "level": "optional", "status": "ready", "problems": []},
+  {"channel": "instagram", "level": "experimental", "status": "ready", "problems": []},
+  {"channel": "web", "level": "default", "status": "ready", "problems": []}]}},
+ "channels": {"schema_version": 1, "ok": true, "channels": [
+  {"name": "twitter", "level": "experimental", "login": {"via": "browser"}, "actions": [
+   {"name": "search", "params": [{"name": "query", "required": true}, {"name": "limit", "required": false}], "backends": ["opencli"], "public_web": ["x.com/", "twitter.com/"]},
+   {"name": "profile", "params": [{"name": "username", "required": true}], "backends": ["opencli"], "public_web": []},
+   {"name": "tweets", "params": [{"name": "username", "required": true}, {"name": "limit", "required": false}], "backends": ["opencli"], "public_web": []},
+   {"name": "thread", "params": [{"name": "target", "required": true}], "backends": ["opencli"], "public_web": []}]},
+  {"name": "instagram", "level": "experimental", "login": {"via": "browser"}, "actions": [
+   {"name": "search", "params": [{"name": "query", "required": true}, {"name": "limit", "required": false}], "backends": ["opencli"], "public_web": []},
+   {"name": "profile", "params": [{"name": "username", "required": true}], "backends": ["opencli"], "public_web": []},
+   {"name": "posts", "params": [{"name": "username", "required": true}, {"name": "limit", "required": false}], "backends": ["opencli"], "public_web": []}]},
+  {"name": "reddit", "level": "optional", "login": {"via": "browser"}, "actions": [
+   {"name": "search", "params": [{"name": "query", "required": true}, {"name": "limit", "required": false}], "backends": ["opencli"], "public_web": ["reddit.com/r/"]},
+   {"name": "read", "params": [{"name": "target", "required": true}], "backends": ["opencli"], "public_web": ["reddit.com/r/", "redd.it/"]},
+   {"name": "subreddit", "params": [{"name": "name", "required": true}, {"name": "limit", "required": false}], "backends": ["opencli"], "public_web": []}]},
+  {"name": "youtube", "level": "default", "login": null, "actions": [
+   {"name": "read", "params": [{"name": "target", "required": true}], "backends": ["yt-dlp"], "public_web": []},
+   {"name": "search", "params": [{"name": "query", "required": true}, {"name": "limit", "required": false}], "backends": ["yt-dlp"], "public_web": []},
+   {"name": "subtitle", "params": [{"name": "target", "required": true}, {"name": "lang", "required": false}], "backends": ["yt-dlp"], "public_web": []},
+   {"name": "transcribe", "params": [{"name": "target", "required": true}], "backends": ["whisper"], "public_web": []}]},
+  {"name": "web", "level": "default", "login": null, "actions": [
+   {"name": "search", "params": [{"name": "query", "required": true}, {"name": "limit", "required": false}], "backends": ["exa"], "public_web": []},
+   {"name": "read", "params": [{"name": "target", "required": true}], "backends": ["jina", "exa"], "public_web": []}]},
+  {"name": "github", "level": "default", "login": null, "actions": [
+   {"name": "search", "params": [{"name": "query", "required": true}, {"name": "limit", "required": false}], "backends": ["gh"], "public_web": []},
+   {"name": "read", "params": [{"name": "target", "required": true}], "backends": ["gh"], "public_web": []}]},
+  {"name": "facebook", "level": "experimental", "login": {"via": "browser"}, "actions": [
+   {"name": "search", "params": [{"name": "query", "required": true}, {"name": "limit", "required": false}], "backends": ["opencli"], "public_web": ["facebook.com/"]},
+   {"name": "profile", "params": [{"name": "username", "required": true}], "backends": ["opencli"], "public_web": []}]},
+  {"name": "bilibili", "level": "default", "login": {"via": "session"}, "actions": [
+   {"name": "search", "params": [{"name": "query", "required": true}, {"name": "limit", "required": false}], "backends": ["bili-cli"], "public_web": []},
+   {"name": "subtitle", "params": [{"name": "target", "required": true}], "backends": ["bili-cli"], "public_web": []}]},
+  {"name": "xiaohongshu", "level": "optional", "login": {"via": "browser"}, "actions": [
+   {"name": "search", "params": [{"name": "query", "required": true}, {"name": "limit", "required": false}], "backends": ["opencli"], "public_web": ["xiaohongshu.com/"]},
+   {"name": "comments", "params": [{"name": "target", "required": true}, {"name": "limit", "required": false}], "backends": ["opencli"], "public_web": []}]}]},
+ "check": {"schema_version": 1, "ok": true, "results": []},
+ "twitter search": {"schema_version": 1, "ok": true, "channel": "twitter", "action": "search", "backend": "public-web", "error": null, "meta": {}, "items": [
+  {"title": "Tiny Pan Studio on X", "url": "https://x.com/tinypan/status/1001", "author": "tinypan", "published_at": "2026-10-10", "text": "Wobble Kitchen: our co-op physics cooking game has a demo on Steam store.steampowered.com/app/4242", "raw": {"source": null, "content_scope": "search_results", "access": "public", "completeness_verified": false}},
+  {"title": "Home ideas", "url": "https://x.com/decor/status/1002", "author": "decor", "published_at": "2026-10-11", "text": "my wobble kitchen table renovation photos, finally done", "raw": {"source": null, "content_scope": "search_results", "access": "public", "completeness_verified": false}}]},
+ "twitter profile studio": {"schema_version": 1, "ok": true, "channel": "twitter", "action": "profile", "backend": "opencli", "error": null, "meta": {}, "items": [
+  {"title": "Tiny Pan Studio", "url": "https://x.com/studio", "author": "studio", "published_at": null, "text": "We make Wobble Kitchen", "raw": {"screen_name": "studio", "followers": "1.2K", "following": 80, "tweets": 300, "verified": false}}]},
+ "twitter tweets studio": {"schema_version": 1, "ok": true, "channel": "twitter", "action": "tweets", "backend": "opencli", "error": null, "meta": {}, "items": [
+  {"title": null, "url": "https://x.com/studio/status/2001", "author": "studio", "published_at": null, "text": "Wobble Kitchen demo is live!", "raw": {"id": "2001", "likes": "45", "retweets": 7, "replies": 3, "views": "3.4K", "created_at": "Wed Oct 08 12:00:00 +0000 2026"}},
+  {"title": null, "url": "https://x.com/studio/status/2002", "author": "studio", "published_at": null, "text": "New trailer", "raw": {"id": "2002", "likes": 12, "views": 900, "created_at": "Thu Oct 02 09:00:00 +0000 2026"}}]},
+ "instagram posts teststudio": {"schema_version": 1, "ok": true, "channel": "instagram", "action": "posts", "backend": "opencli", "error": null, "meta": {}, "items": [
+  {"title": null, "url": null, "author": null, "published_at": "2026-10-02", "text": "New clip!", "raw": {"index": 1, "caption": "New clip!", "likes": 321, "comments": 4, "type": "video", "date": "2026-10-02"}},
+  {"title": null, "url": null, "author": null, "published_at": "2026-09-20", "text": "Devlog", "raw": {"index": 2, "caption": "Devlog", "likes": 88, "comments": 1, "type": "image", "date": "2026-09-20"}}]},
+ "youtube read": {"schema_version": 1, "ok": true, "channel": "youtube", "action": "read", "backend": "yt-dlp", "error": null, "meta": {}, "items": [
+  {"title": "Wobble Kitchen gameplay", "url": "https://www.youtube.com/watch?v=abcdefghijk", "author": "Chan", "published_at": "2026-10-01", "text": "co-op physics cooking", "raw": {"id": "abcdefghijk", "duration": 300, "view_count": 12345, "like_count": 678, "channel_id": "UC123"}}]},
+ "youtube search": {"schema_version": 1, "ok": true, "channel": "youtube", "action": "search", "backend": "yt-dlp", "error": null, "meta": {}, "items": [
+  {"title": "Wobble Kitchen gameplay", "url": "https://www.youtube.com/watch?v=abcdefghijk", "author": "Chan", "published_at": null, "text": null, "raw": {"id": "abcdefghijk", "duration": 300, "view_count": 12345, "like_count": null, "channel_id": "UC123"}}]},
+ "youtube subtitle": {"schema_version": 1, "ok": true, "channel": "youtube", "action": "subtitle", "backend": "yt-dlp", "error": null, "meta": {}, "items": [
+  {"title": "Wobble Kitchen gameplay", "url": "https://www.youtube.com/watch?v=abcdefghijk", "author": null, "published_at": null, "text": "hello and welcome\nthis game is chaos", "raw": {"lang": "en"}}]},
+ "reddit read https://www.reddit.com/r/IndieDev/about": {"schema_version": 1, "ok": true, "channel": "reddit", "action": "read", "backend": "public-web", "error": null, "meta": {}, "items": [
+  {"title": "Blocked", "url": "https://www.reddit.com/r/IndieDev/about/rules", "author": null, "published_at": null, "text": "You've been blocked by network security.\n\nTo continue, log in to your Reddit account or use your developer token", "raw": {"access": "public"}}]},
+ "reddit read https://www.reddit.com/r/IndieDev/": {"schema_version": 1, "ok": true, "channel": "reddit", "action": "read", "backend": "public-web", "error": null, "meta": {}, "items": [
+  {"title": "r/IndieDev", "url": "https://www.reddit.com/r/IndieDev/", "author": null, "published_at": null, "text": "IndieDev\nRules\n1. No self-promotion except on Screenshot Saturday\nShare your game in the weekly thread.\n2. Be civil\nNo insults or harassment.\n3. Capsule comparison posts only on Wednesdays\nUse r/gamecapsule otherwise.", "raw": {"access": "public"}}]},
+ "reddit read https://www.reddit.com/r/gamedev": {"schema_version": 1, "ok": true, "channel": "reddit", "action": "read", "backend": "public-web", "error": null, "meta": {}, "items": [
+  {"title": "My Next Fest results as a solo dev", "url": "https://www.reddit.com/r/gamedev/comments/abc/my_next_fest_results/", "author": "dev", "published_at": "2026-06-20", "text": "We entered Next Fest with 2,100 wishlists and left with 6.5k wishlists. The demo had 900 players.\n@someone: how many followers did you have?\n@dev: about 300 followers on X before launch", "raw": {"access": "public"}}]},
+ "reddit subreddit IndieDev": {"schema_version": 1, "ok": true, "channel": "reddit", "action": "subreddit", "backend": "opencli", "error": null, "meta": {}, "items": [
+  {"title": "After 3 years my co-op game finally has a demo", "url": "https://www.reddit.com/r/IndieDev/comments/a1/", "author": "a", "published_at": "2026-10-20T10:00:00Z", "text": "", "raw": {"id": "a1", "upvotes": 900, "comments": 120, "post_hint": "hosted:video", "url_overridden_by_dest": "https://v.redd.it/x"}},
+  {"title": "Before vs after: our lighting", "url": "https://www.reddit.com/r/IndieDev/comments/a2/", "author": "b", "published_at": "2026-10-20T11:00:00Z", "text": "", "raw": {"id": "a2", "upvotes": 500, "comments": 40, "post_hint": "image", "url_overridden_by_dest": "https://i.redd.it/x.png"}},
+  {"title": "How do you market a cozy game?", "url": "https://www.reddit.com/r/IndieDev/comments/a3/", "author": "c", "published_at": "2026-10-21T10:00:00Z", "text": "question", "raw": {"id": "a3", "upvotes": 300, "comments": 80, "post_hint": "self"}},
+  {"title": "Our new trailer", "url": "https://www.reddit.com/r/IndieDev/comments/a4/", "author": "d", "published_at": "2026-10-21T12:00:00Z", "text": "", "raw": {"id": "a4", "upvotes": 200, "comments": 10, "post_hint": "rich:video", "url_overridden_by_dest": "https://www.youtube.com/watch?v=zzzzzzzzzzz"}},
+  {"title": "Steam page is live", "url": "https://www.reddit.com/r/IndieDev/comments/a5/", "author": "e", "published_at": "2026-10-22T10:00:00Z", "text": "", "raw": {"id": "a5", "upvotes": 100, "comments": 5, "post_hint": "link", "url_overridden_by_dest": "https://store.steampowered.com/app/1"}},
+  {"title": "Feedback on my menu?", "url": "https://www.reddit.com/r/IndieDev/comments/a6/", "author": "f", "published_at": "2026-10-22T11:00:00Z", "text": "", "raw": {"id": "a6", "upvotes": 50, "comments": 30, "post_hint": "image", "url_overridden_by_dest": "https://i.redd.it/y.jpg"}},
+  {"title": "Devlog 4", "url": "https://www.reddit.com/r/IndieDev/comments/a7/", "author": "g", "published_at": "2026-10-23T10:00:00Z", "text": "text", "raw": {"id": "a7", "upvotes": 20, "comments": 2, "post_hint": "self"}},
+  {"title": "My itch page", "url": "https://www.reddit.com/r/IndieDev/comments/a8/", "author": "h", "published_at": "2026-10-23T11:00:00Z", "text": "", "raw": {"id": "a8", "upvotes": 10, "comments": 1, "post_hint": "link", "url_overridden_by_dest": "https://x.itch.io/game"}}]},
+ "web search": {"schema_version": 1, "ok": true, "channel": "web", "action": "search", "backend": "exa", "error": null, "meta": {}, "items": [
+  {"title": "Wobble Kitchen chaos #indiegame", "url": "https://www.tiktok.com/@fan/video/7550000000000000002", "author": null, "published_at": null, "text": "co-op cooking chaos", "raw": null},
+  {"title": "Some blog", "url": "https://example.com/post", "author": null, "published_at": null, "text": "not tiktok", "raw": null}]},
+ "__tiktok__ profile teststudio": {"schema_version": 1, "ok": true, "channel": "tiktok", "action": "profile", "backend": "opencli-tiktok", "error": null, "meta": {}, "items": [
+  {"title": "Tiny Pan", "url": null, "author": "teststudio", "published_at": null, "text": "devs of Wobble Kitchen", "raw": {"username": "teststudio", "name": "Tiny Pan", "followers": 5300, "following": 12, "likes": 40000, "videos": 25, "verified": false}}]},
+ "__tiktok__ user teststudio": {"schema_version": 1, "ok": true, "channel": "tiktok", "action": "user", "backend": "opencli-tiktok", "error": null, "meta": {}, "items": [
+  {"title": "Wobble Kitchen fire", "url": "https://www.tiktok.com/@teststudio/video/7550000000000000001", "author": "teststudio", "published_at": null, "text": "kitchen on fire #indiegame", "raw": {"id": "7550000000000000001", "plays": 15000, "likes": 900, "comments": 30, "shares": 12, "createTime": 1759651200}},
+  {"title": "Wobble Kitchen bug", "url": "https://www.tiktok.com/@teststudio/video/7550000000000000009", "author": "teststudio", "published_at": null, "text": "physics bug", "raw": {"id": "7550000000000000009", "plays": 800, "likes": 40, "comments": 2, "shares": 0, "createTime": 1759000000}}]},
+ "__tiktok__ search": {"schema_version": 1, "ok": true, "channel": "tiktok", "action": "search", "backend": "opencli-tiktok", "error": null, "meta": {}, "items": [
+  {"title": null, "url": "https://www.tiktok.com/@fan/video/7550000000000000002", "author": "fan", "published_at": null, "text": "Wobble Kitchen is pure chaos #indiegame #coop", "raw": {"rank": 1, "plays": 22000, "likes": 1500, "comments": 40, "shares": 30}}]}
+}

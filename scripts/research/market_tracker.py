@@ -14,7 +14,10 @@ Subcommands:
   estimate   copies as ranges from several methods: Boxleiter (reviews x 20..60), SteamSpy owners range, peak players x 30..100
   social     what marketing happened and when, per game: Steam news and events (official ISteamNews), YouTube (Data API,
              YOUTUBE_API_KEY), Reddit (OAuth if REDDIT_CLIENT_ID/SECRET, else the public RSS search), Twitch (Helix if
-             TWITCH_CLIENT_ID/SECRET, else skipped). Every result goes through entity_match.py: kept only above the threshold.
+             TWITCH_CLIENT_ID/SECRET, else skipped), and through Agent Reach (reach.py, --reach auto) X, TikTok and Instagram:
+             searches for the title and the posts of the game's own accounts (social_accounts, or the links of its store page),
+             with views / likes when the channel is ready; Reddit via Agent Reach when the RSS is blocked.
+             Every result goes through entity_match.py: kept only above the threshold.
   manual     writes launch/ricerche-manuali.md: the SteamDB pages to open (followers, peak CCU, price history) and the exact
              TikTok / Instagram / X searches to do BY HAND; `--import file.csv` loads what you found (platform,url,date,views,likes,appid,note)
   timeline   per game: weekly reviews (public histogram), player samples, news, videos, posts; spikes and what came before them
@@ -27,7 +30,9 @@ Data sources policy (do not "fix" this by scraping):
     YouTube Data API, Reddit (OAuth or public RSS), Twitch Helix, Gamalytic public API only with GAMALYTIC_API_KEY.
   - SteamDB: its terms do not allow automated scraping and it sits behind Cloudflare. NEVER scraped: `manual` writes the
     exact pages to check by hand.
-  - TikTok, Instagram, X: no official access without login or paid API. NEVER scraped: manual searches + CSV import.
+  - TikTok, Instagram, X: no official access without login or paid API. Read ONLY through Agent Reach (reach.py), with the
+    owner's own login in Agent Reach's dedicated browser, read-only, when `reach.py doctor` says the channel is ready
+    (TikTok search also through the public web: links and captions only). Not ready = manual searches + CSV import.
   - Followers and wishlists are not public: only proxies, always labelled as proxies.
 
 Keys: loaded at run time from --env-file, $GLS_ENV_FILE or the private file ~/.game-launch-strategist/.env. Values are never
@@ -53,6 +58,8 @@ import xml.etree.ElementTree as ET
 import common
 from common import Throttle, log, user_dir, write_json
 import entity_match as em
+import reach
+import reddit_backends as rb
 
 APPDETAILS = "https://store.steampowered.com/api/appdetails?appids={appid}&l=english&cc=us"
 APPREVIEWS = "https://store.steampowered.com/appreviews/{appid}?json=1&num_per_page=0&language=all&purchase_type=all"
@@ -488,8 +495,63 @@ def steam_news(appid, th: Throttle) -> list[dict]:
     return out
 
 
+REACH_PLAT = {"twitter": "x", "tiktok": "tiktok", "instagram": "instagram", "reddit": "reddit"}
+
+
+def accounts_from_links(links: list[str]) -> dict:
+    """{x: handle, tiktok: handle, instagram: handle} from the game's own links (store page, website)."""
+    out = {}
+    for u in links:
+        p = platform_of(u)
+        if p in ("x", "tiktok", "instagram") and p not in out and "/video/" not in u and "/status/" not in u:
+            h = reach.handle_of(u)
+            if h and h.lower() not in ("intent", "share", "home", "hashtag", "explore"):
+                out[p] = h
+    return out
+
+
+def reach_items(res: dict, platform: str) -> list[dict]:
+    out = []
+    for it in res.get("items") or []:
+        m = it.get("metrics") or {}
+        url = it.get("url") or ""
+        pub = it.get("published") or (tiktok_date(url) if platform == "tiktok" else None) or ""
+        out.append(dict(platform=platform, id=url, url=url, title=it.get("title") or (it.get("text") or "")[:140], text=it.get("text") or "",
+                        author=it.get("author"), published=pub[:10], views=m.get("views"), likes=m.get("likes"), comments=m.get("comments"),
+                        score=m.get("score"), access=it.get("access"), source=f"agent-reach {res.get('backend')} · {res.get('consulted')}"))
+    return out
+
+
+def reach_social(g: dict, accounts: dict, limit: int) -> tuple[list[dict], list[dict], dict]:
+    """(found to score, official posts, sources) for X, TikTok, Instagram through Agent Reach."""
+    found, official, src = [], [], {}
+    q = f'"{g["title"]}"'
+    for ch, plat in (("twitter", "x"), ("tiktok", "tiktok")):
+        r = reach.search(ch, q, limit)
+        found += reach_items(r, plat)
+        src[plat] = f"agent-reach {r.get('backend')}" if r["ok"] else f"non pronto ({(r.get('error') or {}).get('code')})"
+    for plat, ch in (("x", "twitter"), ("tiktok", "tiktok"), ("instagram", "instagram")):
+        h = accounts.get(plat)
+        if not h:
+            continue
+        r = reach.posts(ch, h, limit)
+        items = reach_items(r, plat)
+        for x in items:
+            x.update(score=100, why=["account ufficiale del gioco o dello studio"], kept=True, official=True)
+        official += items
+        pr = reach.profile(ch, h)
+        if pr["ok"] and pr["items"][0]["metrics"].get("followers") is not None:
+            src[f"{plat}_followers"] = dict(handle=h, followers=pr["items"][0]["metrics"]["followers"], source=pr["source"], date=pr["consulted"], label="[FATTO]")
+        src[plat] = (src.get(plat, "") + f"; account @{h}: " + (f"{len(items)} post" if r["ok"] else f"non pronto ({(r.get('error') or {}).get('code')})")).lstrip("; ")
+    if "instagram" not in src:
+        src["instagram"] = "solo account ufficiale (la ricerca di Instagram trova utenti, non post): nessun account noto"
+    return found, official, src
+
+
 def cmd_social(a):
     t = load_tracked(a)
+    reach.configure(mode=getattr(a, "reach", "auto"), manual=getattr(a, "manual", None))
+    use_reach = getattr(a, "reach", "auto") != "off" and reach.enabled()
     yt = YouTube(a.yt_quota)
     th_r, th_s, th_t = Throttle(2.5), Throttle(1.0), Throttle(0.5)
     if not yt.ok():
@@ -523,7 +585,20 @@ def cmd_social(a):
                 found += yt.search(f'"{g["title"]}"', after=g["announced"], n=25)
                 yt_done = True
         rd = None if a.no_reddit else reddit_search(g["title"], th_r)
+        rd_src = ("oauth" if os.environ.get("REDDIT_CLIENT_ID") else "rss") if rd is not None else False
+        if rd is None and not a.no_reddit:
+            # OAuth / RSS blocked: the rest of the Reddit chain (Agent Reach with login, public JSON, Agent Reach public web)
+            r = rb.search(f'"{g["title"]}"', None, 25, only=[b for b in rb.order() if b in ("reach", "json", "reach_public") and (use_reach or b == "json")])
+            if r["ok"]:
+                rd = [dict(platform="reddit", id=p.get("id") or p.get("url"), url=p.get("url"), title=p.get("title"), text=((p.get("text") or "")[:600] + " " + (p.get("link") or "")).strip(),
+                           author=p.get("author"), subreddit=p.get("subreddit"), score=p.get("score"), comments=p.get("num_comments"), published=(p.get("published") or "")[:10],
+                           source=f"reddit via {r['backend']} · {r['consulted']}") for p in r["posts"]]
+                rd_src = f"reddit via {r['backend']}"
         found += rd or []
+        official, rsrc = [], {}
+        if use_reach:
+            f2, official, rsrc = reach_social(g, e.get("social_accounts") or {}, getattr(a, "social_limit", 20))
+            found += f2
         tw = twitch_streams(g["title"], th_t)
         for plat in {c["platform"] for c in found}:
             em.score_batch([c for c in found if c["platform"] == plat], g, a.threshold)
@@ -531,8 +606,8 @@ def cmd_social(a):
         if yt.ok():
             yt.views(kept)
         res = dict(appid=e["appid"], name=g["title"], collected_on=datetime.date.today().isoformat(), threshold=a.threshold,
-                   sources=dict(steam_news=True, youtube=yt_done, reddit=(("oauth" if os.environ.get("REDDIT_CLIENT_ID") else "rss") if rd is not None else False), twitch=tw is not None),
-                   news=cands, kept=kept + (tw or []), rejected=[dict(platform=c["platform"], title=c.get("title"), score=c["score"], why=c["why"]) for c in found if not c["kept"]])
+                   sources=dict(steam_news=True, youtube=yt_done, reddit=rd_src, twitch=tw is not None, **rsrc),
+                   news=cands, kept=kept + (tw or []) + official, rejected=[dict(platform=c["platform"], title=c.get("title"), score=c["score"], why=c["why"]) for c in found if not c["kept"]])
         with open(out_p, "w", encoding="utf-8") as f:
             json.dump(res, f, ensure_ascii=False, indent=1)
         done += 1
@@ -546,8 +621,8 @@ MANUAL_START, MANUAL_END = "<!-- market_tracker:manual:start -->", "<!-- market_
 
 def manual_md(t: dict, today: str) -> str:
     L = [MANUAL_START, f"## Controlli a mano generati da `market_tracker.py manual` ({today})", "",
-         "Queste fonti **non si leggono con gli script**: SteamDB vieta lo scraping automatico (ed è dietro Cloudflare), TikTok, Instagram e X "
-         "non hanno un accesso ufficiale senza login. Si aprono a mano; quello che trovi va in un CSV e si importa con "
+         "SteamDB **non si legge con gli script** (vieta lo scraping automatico ed è dietro Cloudflare). TikTok, Instagram e X si leggono solo "
+         "con Agent Reach quando `reach.py doctor` li dà pronti (login tuo, sola lettura); finché non lo sono si aprono a mano. Quello che trovi va in un CSV e si importa con "
          "`market_tracker.py manual --import file.csv` (colonne: platform,url,date,views,likes,appid,note).", ""]
     for e in sorted(t.values(), key=lambda x: (x.get("name") or "")):
         n, k = e.get("name") or str(e["appid"]), e["appid"]
@@ -833,11 +908,14 @@ def dossier(a, appid: int, name: str | None = None) -> dict:
     g = game_entity(e)
     about = ((data or {}).get("about_the_game") or "") + " " + ((data or {}).get("detailed_description") or "")
     page_links = links_in(about) + ([data["website"]] if (data or {}).get("website") else [])
+    if not e.get("social_accounts"):
+        e["social_accounts"] = accounts_from_links(page_links)
     # social (reuse the cached collection when present; collect when missing)
     soc = load_social(a, appid)
     if not soc:
         ns = argparse.Namespace(**vars(a)); ns.appid = [appid]; ns.role = None; ns.limit = None; ns.refresh = False; ns.threshold = getattr(a, "threshold", em.THRESHOLD)
         ns.no_reddit = getattr(a, "no_reddit", False); ns.fill_youtube = False; ns.yt_quota = getattr(a, "yt_quota", 2000)
+        ns.reach = getattr(a, "reach", "auto"); ns.manual = getattr(a, "manual", None); ns.social_limit = getattr(a, "social_limit", 20)
         t[str(appid)] = e; save_tracked(a, t)
         cmd_social(ns)
         soc = load_social(a, appid)
@@ -850,7 +928,8 @@ def dossier(a, appid: int, name: str | None = None) -> dict:
             x["short"] = "#shorts" in ((x.get("title") or "") + " " + (x.get("text") or "")).lower()
     found_links = page_links + [u for x in kept for u in links_in((x.get("text") or "") + " " + (x.get("url") or ""))]
     th_o = Throttle(1.0)
-    tiktok = [tiktok_oembed(u, th_o) for u in dict.fromkeys(u for u in found_links if platform_of(u) == "tiktok" and "/video/" in u)][:20]
+    seen_tt = {x.get("url") for x in kept if x.get("platform") == "tiktok"}
+    tiktok = [tiktok_oembed(u, th_o) for u in dict.fromkeys(u for u in found_links if platform_of(u) == "tiktok" and "/video/" in u and u not in seen_tt)][:20]
     # the game's own accounts come only from its store page and website (links in creators' descriptions are THEIR accounts)
     accounts = sorted({u for u in page_links if platform_of(u) in ("tiktok", "instagram", "x", "youtube", "discord", "twitch", "bluesky", "linktree", "reddit")
                        and "/video/" not in u and "watch?v=" not in u})
@@ -864,7 +943,7 @@ def dossier(a, appid: int, name: str | None = None) -> dict:
         ev.append(dict(date=n["published"], platform="steam", kind="+".join(n.get("kinds") or []) or "news", title=n.get("title"), official=n.get("official"), url=n.get("url")))
     for x in kept:
         ev.append(dict(date=(x.get("published") or "")[:10], platform=x["platform"], kind=("short" if x.get("short") else "official" if x.get("official") else "creator" if x["platform"] == "youtube" else "post"),
-                       title=x.get("title"), author=x.get("author"), views=x.get("views"), score=x.get("score"), url=x.get("url")))
+                       title=x.get("title"), author=x.get("author"), views=x.get("views"), likes=x.get("likes"), score=x.get("score") if x["platform"] == "reddit" else None, url=x.get("url")))
     for x in tiktok:
         ev.append(dict(date=x.get("published") or "", platform="tiktok", kind="video", title=x.get("title"), author=x.get("author"), url=x["url"], views=None))
     for m in manual:
@@ -887,9 +966,11 @@ def dossier(a, appid: int, name: str | None = None) -> dict:
                    features=marketing_features(soc, rel))
     prices = [(r["ts"][:10], r.get("price"), r.get("discount")) for r in snaps]
     out = dict(appid=appid, name=g["title"], release_date=rel, built_on=datetime.date.today().isoformat(), developers=g["developers"], publishers=g["publishers"],
-               sources=dict(soc.get("sources") or {}, tiktok="oEmbed dei link trovati (niente ricerca: non esiste un accesso pubblico)",
-                            instagram="solo link trovati (oEmbed di Instagram richiede un token Meta; la Graph API Business Discovery richiede un tuo account Business: opzione futura)",
-                            x="solo link trovati e import manuale (l'API di X è a pagamento)"),
+               sources=dict(dict(tiktok="oEmbed dei link trovati (Agent Reach non pronto: `reach.py doctor`)",
+                                 instagram="solo link trovati (oEmbed di Instagram richiede un token Meta, la Graph API Business Discovery un account Business; "
+                                           "Agent Reach non pronto: `reach.py doctor`)",
+                                 x="solo link trovati e import manuale (l'API di X è a pagamento; Agent Reach non pronto: `reach.py doctor`)"), **(soc.get("sources") or {})),
+               social_accounts=e.get("social_accounts") or {},
                accounts=accounts, press=press, timeline=ev, weekly_reviews=series, spikes=moved, prices=prices, pattern=pattern,
                rejected_count=len(soc.get("rejected") or []), threshold=soc.get("threshold"))
     os.makedirs(mdir(a, "dossier"), exist_ok=True)
@@ -929,8 +1010,8 @@ def dossier_md(d: dict) -> str:
             L.append(f"- **{s['week']}** ({s['reviews']} recensioni): " + ("; ".join(f"{x['platform']} {x['kind']}: {(x.get('title') or '')[:60]}" + (f" ({x['views']:,} visualizzazioni)" if x.get("views") else "") for x in s["events"]) or "nessun evento trovato"))
     L += ["", "## Cronologia", "", "| Data | Piattaforma | Tipo | Cosa | Visualizzazioni |", "|---|---|---|---|---|"]
     L += [f"| {x['date']} | {x['platform']} | {x['kind']} | {(x.get('title') or '').replace('|', '/')[:80]} | {x.get('views') or ''} |" for x in d["timeline"][-80:]]
-    L += ["", "_TikTok, Instagram e X non si cercano con script (login e termini d'uso): le ricerche da fare a mano sono in `launch/ricerche-manuali.md`; "
-          "i risultati si importano con `market_tracker.py manual --import` e compaiono qui._"]
+    L += ["", "_TikTok, Instagram e X si leggono solo con Agent Reach (`reach.py`, login del proprietario, sola lettura) quando `reach.py doctor` li dà pronti; "
+          "altrimenti le ricerche da fare a mano sono in `launch/ricerche-manuali.md` e i risultati si importano con `market_tracker.py manual --import`._"]
     return "\n".join(L) + "\n"
 
 
@@ -1012,6 +1093,8 @@ def main(argv=None):
     so.add_argument("--no-reddit", action="store_true", help="skip Reddit (anonymous RSS is often rate limited)")
     so.add_argument("--fill-youtube", action="store_true", help="re-collect the games whose file has no YouTube part (quota ran out last time)")
     so.add_argument("--yt-quota", type=int, default=8000, help="YouTube units this run may spend (daily quota is 10,000; a search costs 100)")
+    so.add_argument("--reach", default="auto", choices=["auto", "on", "off"], help="X, TikTok, Instagram (and Reddit fallback) through Agent Reach")
+    so.add_argument("--social-limit", type=int, default=20, help="results per social search / account (Agent Reach)"); so.add_argument("--manual")
     m = sp.add_parser("manual"); m.add_argument("--import", dest="import_csv"); m.add_argument("-o", "--out"); m.add_argument("--role")
     tl = sp.add_parser("timeline"); tl.add_argument("--appid", action="append"); tl.add_argument("--limit", type=int, default=10); tl.add_argument("--md")
     mk = sp.add_parser("market"); mk.add_argument("--dataset"); mk.add_argument("--md")
@@ -1021,6 +1104,7 @@ def main(argv=None):
     do = sp.add_parser("dossier", help="marketing dossier of any game: one dated timeline across Steam, YouTube, Reddit, Twitch, TikTok links, manual imports")
     do.add_argument("--appid", action="append", required=True); do.add_argument("--name"); do.add_argument("--out-dir", default=os.path.join("launch", "_raw", "dossier"))
     do.add_argument("--yt-quota", type=int, default=2000); do.add_argument("--no-reddit", action="store_true"); do.add_argument("--threshold", type=int, default=em.THRESHOLD)
+    do.add_argument("--reach", default="auto", choices=["auto", "on", "off"]); do.add_argument("--social-limit", type=int, default=20); do.add_argument("--manual")
     a = ap.parse_args(argv)
     names = common.load_env(a.env_file)
     if names:

@@ -18,15 +18,17 @@ Reusable tools for launch market research: Steam comparables and reviews, creato
 | `roster.py` | Deterministic roster of simulated testers with stable IDs, casting traits and a 10-person jury | 7 |
 | `fg_waves.py` | Validate a focus-group wave, compute score and metrics, delta between waves, timeline | 7 |
 | `wave_kit.py` | Mandatory preparation of every wave: templates (`init`) and checklist (`check`) for the game map, screen map, timed runs, market, gameplay proposals, demo cap | 7 |
-| `yt_research.py` | Search recent videos, group by channel, add subscribers, verify URLs | 8 |
-| `social_verify.py` | Verify TikTok / YouTube (Shorts) / Instagram / Twitch URLs with official endpoints | 8 |
-| `reddit_rules.py` | Subreddit rules, subscribers, self-promotion flags | 9 |
+| `yt_research.py` | Search recent videos, group by channel, add subscribers, verify URLs, transcripts (backends api / reach / html) | 8 |
+| `social_verify.py` | Verify TikTok / YouTube (Shorts) / Instagram / X / Twitch URLs: official endpoints, plus real followers and post numbers through Agent Reach when the channel is ready | 8 |
+| `reach.py` | Agent Reach adapter (read-only): doctor, setup commands for the owner, search / read / comments / profile / posts / transcript / rss on X, TikTok, Instagram, Facebook, Reddit, YouTube, Bilibili, XiaoHongShu, GitHub, V2EX, LinkedIn, BOSS, Xueqiu, Xiaoyuzhou, web; cache, per-channel rate, backoff, cooldowns, manual steps | all |
+| `reddit_backends.py` | Reddit through a chain of backends (Agent Reach with login, OAuth, public JSON, Arctic Shift archive, RSS, ThreadSnoop with key, public page text): thread with comments, rules, top/new listings, search, doctor; the result names the backend used | 2, 6, 8, 9 |
+| `reddit_rules.py` | Subreddit rules, subscribers, self-promotion flags (OAuth, else the reddit_backends chain) | 9 |
 | `build_creators.py` | Merge everything into a prioritised creators CSV | 8 |
 | `review_corpus.py` | Many real reviews of the comparables AND of the genre: punished/rewarded themes, what they say about your game's features | 2, 7 |
 | `store_bench.py` | Store page and trailer analysis of the comparables (description, GIFs, trailer length, cuts, frames) vs how they performed | 2, 6, 6B |
 | `trailer_kit.py` | Trailer system: tool versions (brag, HyperFrames, ffmpeg), full measurement of any trailer (file or Steam HLS URL: all cuts, shot length per third, LUFS/true peak, frozen and black stretches, tempo), competitor table, storyboard checks, LONG master prompt + negative prompt + storyboard + asset plan + credits ledger + recording brief + QA list (+ Trailer tab of STATUS.html), automatic QA of a render, blind viewer panel with real anchors, code-made SFX/music sketches | Trailer, 6 |
 | `genre_bench.py` | Genre benchmarks at runtime from public data: distributions, cohorts by year, price bands, demo, visibility bar, your numbers | 2, 5 |
-| `market_tracker.py` | The whole market over time: head (top sellers, most played, tag tops), breakouts, snapshots at +24h/48h/1w/1m/3m, multi-method copy estimates, marketing per game (Steam news, YouTube, Reddit, Twitch) with timelines, manual-check file for SteamDB / TikTok / IG / X | 2, 5, 7C, routine |
+| `market_tracker.py` | The whole market over time: head (top sellers, most played, tag tops), breakouts, snapshots at +24h/48h/1w/1m/3m, multi-method copy estimates, marketing per game on every social (Steam news, YouTube, Reddit, Twitch; X, TikTok, Instagram through Agent Reach) with dated timelines, manual-check file for SteamDB and the channels that are not ready | 2, 5, 7C, routine |
 | `top_moves.py` | The 3 moves with most impact now (open issues, real winners' recipe, metro levers, deadlines), written into TODO.md and calendar.md without duplicates | 4, 7, 11, every run |
 | `predictions.py` | Predictions log: every wave and estimate vs what really happened, accuracy over time | 7, 7C, 11 |
 | `market_page.py` | The real-market parts of STATUS.html: header summary, Mercato reale tab, cards in the other tabs | 11 |
@@ -54,9 +56,9 @@ Reusable tools for launch market research: Steam comparables and reviews, creato
 | `weblinks.py` | Bare URLs in the generated pages become short, safe links (new tab, `rel=noopener`), used by `status_page.py` | 11 |
 | `todo_track.py` | Keep `TODO.md` alive: list, stats, mark done / reopen, add | 4, 11, routine |
 | `publisher_scout.py` | Publisher shortlist for a game from the curated `data/publishers.json` (sources and date per entry): fit (declared genres + real Steam catalog via store search and SteamSpy tags, stage, wishlists, team, price, platform, region), tiers realistic now / after X / stretch / dream with per-pitch odds and next step, never "nobody"; with/without publisher on calc_econ numbers (break-even copies multiplier); `check` for stale entries | 0A, 5, 8 |
-| `case_studies.py` | Real launch / Next Fest records from dev posts and post-mortems (source URL + date) plus survey benchmarks; `bench` (Next Fest gain entering with N), `tripwires` into calendar.md, `query`, `add` / `import` into the private file | 2, 4, 7C |
-| `reddit_trends.py` | What performs on a subreddit now: formats and title hooks of top vs new posts (lift), from public RSS (OAuth API when keys exist); no bypass of 403/429 | 6, 9 |
-| `social_content.py` | Evidence-based social module: patterns per platform with strength and sources, small-account benchmarks, post planner (moments → calendar per platform with A/B hooks, CTA by date, subreddit rules and cooldowns, weekly steps in calendar.md), post tracker (manual or CSV export) and `learn` (what works for THIS game, fed back into the plan and top_moves) | 6, 8, 9 |
+| `case_studies.py` | Real launch / Next Fest records from dev posts and post-mortems (source URL + date) plus survey benchmarks; `bench` (Next Fest gain entering with N), `tripwires` into calendar.md, `query`, `add` / `import` into the private file; `fetch` drafts a record from a post and its comments (Reddit chain, Agent Reach) | 2, 4, 7C |
+| `reddit_trends.py` | What performs on a subreddit now: formats and title hooks of top vs new posts (lift), from OAuth, Agent Reach (real upvotes), public RSS, then the Arctic Shift archive; the mode used is in the output; no bypass of 403/429 | 6, 9 |
+| `social_content.py` | Evidence-based social module: patterns per platform with strength and sources, small-account benchmarks, post planner (moments → calendar per platform with A/B hooks, CTA by date, subreddit rules and cooldowns, weekly steps in calendar.md), post tracker (manual, CSV export or `track fetch` through Agent Reach; wishlists never fetched) and `learn` (what works for THIS game, fed back into the plan and top_moves) | 6, 8, 9 |
 | `social_kit.py` | Weekly ready-to-post kit (3 cross-posted clips + 1 Reddit post: exact clip or storyboard, A/B hook texts, caption, hashtags, day/time, CTA by date, Steam link with UTM, one-line why with source, 5-minute logging line) and the clip registry with full storyboards and status (todo / recorded / posted); next week's kit is rebuilt from what worked | 6, 8 |
 | `honest_odds.py` | One honest-odds card per decision (copies, publisher, Next Fest, social, simulated vs real) with basis, label, what moves it and a cross-check when two sources disagree; shown in STATUS.html | 11 |
 | `common.py` | Throttled HTTP with retries, JSON/CSV writers (used by all) | – |
@@ -231,9 +233,13 @@ Answers "of the games that come out every day, how many are at least at our leve
 
 **Used:** official Steam store endpoints (search, appdetails, appreviews, appreviewhistogram), the official Steam Web API (GetNumberOfCurrentPlayers, GetMostPlayedGames, GetNewsForApp), SteamSpy, the YouTube Data API, Reddit (OAuth when `REDDIT_CLIENT_ID`/`REDDIT_CLIENT_SECRET` are set, otherwise the public RSS search, which Reddit often rate-limits with 429), Twitch Helix (only with `TWITCH_CLIENT_ID`/`TWITCH_CLIENT_SECRET`) and Gamalytic's public API (only with `GAMALYTIC_API_KEY`).
 
-**Not scraped, on purpose:** SteamDB (its terms do not allow automated scraping and it sits behind Cloudflare), TikTok, Instagram and X (no official access without login or a paid API). For these the tools write the exact pages and searches to do by hand into `launch/ricerche-manuali.md` (`market_tracker.py manual`), and what you find comes back through a CSV (`market_tracker.py manual --import`). Do not "fix" this with a scraper. Followers and wishlists are not public: only proxies, always labelled as proxies.
+**Not scraped, on purpose:** SteamDB (its terms do not allow automated scraping and it sits behind Cloudflare). Do not "fix" this with a scraper.
 
-**Your private keys file:** `~/.game-launch-strategist/.env` (outside the repository, so it can never be committed). Tools load it at run time; `--env-file PATH` or `GLS_ENV_FILE` point to another file; a variable already set in the environment wins. Keys used: `YOUTUBE_API_KEY`, `STEAM_WEB_API_KEY` (passed to Steam Web API calls when present), `REDDIT_USER_AGENT`, optional `REDDIT_CLIENT_ID`/`REDDIT_CLIENT_SECRET`, `TWITCH_CLIENT_ID`/`TWITCH_CLIENT_SECRET`, `GAMALYTIC_API_KEY`. Only key NAMES are ever printed; values never go into logs, `launch/`, reports or tests (the repository `.gitignore` also excludes `.env` and `*.env` as a safety net). The install record may store the PATH to the file, never its content.
+**Through Agent Reach only (`reach.py`, read-only):** TikTok, Instagram, X, Facebook, XiaoHongShu and logged-in Reddit are read only through [Agent Reach](https://github.com/Panniantong/agent-reach), with the login the OWNER did himself in Agent Reach's dedicated browser, and only when `reach.py doctor` says the channel is ready. Every number read carries its URL, the source (`agent-reach <version> · <channel>/<backend>`) and the consultation date, labelled [FATTO]. A channel that is not ready, a login wall or an anti-bot page gives [DA VERIFICARE] and the exact search to do by hand in `launch/ricerche-manuali.md` (`--manual`); what you find by hand comes back through a CSV (`market_tracker.py manual --import`). The skill never posts, comments, likes or sends messages, and never logs in for the owner.
+
+**Reddit:** `reddit_backends.py` tries, in order, Agent Reach with the owner's login, OAuth, the public JSON (now mostly 403 / login redirect), the [Arctic Shift](https://arctic-shift.photon-reddit.com) public archive (no key; scores taken some hours after posting), the public RSS (often 429), ThreadSnoop (only with `THREADSNOOP_API_KEY`) and the public page text through Agent Reach. The first that answers wins and the output names it. Followers and wishlists are not public: only proxies, always labelled as proxies.
+
+**Your private keys file:** `~/.game-launch-strategist/.env` (outside the repository, so it can never be committed). Tools load it at run time; `--env-file PATH` or `GLS_ENV_FILE` point to another file; a variable already set in the environment wins. Keys used: `YOUTUBE_API_KEY`, `STEAM_WEB_API_KEY` (passed to Steam Web API calls when present), `REDDIT_USER_AGENT`, optional `REDDIT_CLIENT_ID`/`REDDIT_CLIENT_SECRET`, `TWITCH_CLIENT_ID`/`TWITCH_CLIENT_SECRET`, `GAMALYTIC_API_KEY`, optional `THREADSNOOP_API_KEY` (Reddit read API, 1,000 free requests). Agent Reach keeps its own logins and keys inside `~/.agent-reach/` (set with `! agent-reach configure ...`): the skill never reads, prints or copies them. Only key NAMES are ever printed; values never go into logs, `launch/`, reports or tests (the repository `.gitignore` also excludes `.env` and `*.env` as a safety net). The install record may store the PATH to the file, never its content.
 
 ## 4e3. `cohort_bench.py update` / `calibrate`: the skill keeps learning from every release week
 
@@ -515,7 +521,9 @@ todo_track.py --file launch/TODO.md sync-decisions --decisions DECISIONI.md [--i
 Two backends:
 - **`api`**: official YouTube Data API v3. Needs `YOUTUBE_API_KEY` (free from Google Cloud Console). A search costs 100 units against a 10,000 daily quota (about 90 queries/day). Exact dates and subscriber counts. **Recommended.**
 - **`html`**: reads `ytInitialData` from the public results page, no key, no login. Fragile (breaks on layout changes), dates are relative ("2w ago"), and YouTube's ToS discourage automated access: use low volume and a high `--rate`.
-- `auto` (default): `api` if the key is set, otherwise `html`.
+- **`reach`**: Agent Reach's YouTube channel (yt-dlp): search with exact dates and views, no key, no quota.
+- `auto` (default): `api` if the key is set, otherwise `html`, with `reach` as fallback when the page gives nothing.
+- `transcript <url>`: subtitles through Agent Reach (`--lang it,en`); `--whisper` transcribes a video without subtitles (needs the owner's key, set with `! agent-reach configure groq-key`).
 
 ```bash
 python yt_research.py search -q "PlateUp" -q "PlateUp ita" --within month --dedupe -o yt_raw.json
@@ -548,7 +556,9 @@ The platform is detected from the URL. Output fields: `url, platform, ok, date, 
 
 Without keys Instagram and Twitch are **skipped**, never scraped.
 
-**Manual work:** TikTok followers need a login (profile and `/discover` pages redirect to it); Instagram and Twitch follower counts need user tokens or business permissions; there is no public, legitimate search endpoint for TikTok or Instagram (find URLs by hand or web search, then verify them here); X/Twitter is excluded (paid API, oEmbed gives nothing useful).
+**Agent Reach (`--reach auto`, default):** when `reach.py doctor` says the channel is ready, TikTok, Instagram and X rows get the REAL followers (`followers`, `followers_source`, `followers_label` = [FATTO]) and the post numbers (`views`, `likes`, `comments`, `shares`, `numbers_source`); YouTube rows get date and views. Not ready = the old behaviour and, with `--manual`, the manual step.
+
+**Manual work (when Agent Reach is not ready):** TikTok followers need a login (profile and `/discover` pages redirect to it); Instagram and Twitch follower counts need user tokens or business permissions; there is no public, legitimate search endpoint for TikTok or Instagram (find URLs by hand or web search, then verify them here); X/Twitter is excluded (paid API, oEmbed gives nothing useful).
 
 ## 7. `reddit_rules.py`: subreddit rules
 
@@ -561,7 +571,37 @@ python reddit_rules.py --subs-file subs.txt -o reddit_rules.json
 
 Returns rules (title and text), `subscribers`, `submission_type` and `promo_related_rules`: the numbers of rules mentioning self-promotion, 10% ratio, flair, Screenshot Saturday and similar (flagged **[promo]** in `.md`). The flagging is a regex heuristic: read the rules.
 
-**Limits:** anonymous requests usually get `403 Blocked`. The script does not try to bypass it: it reports the error and points to the sidebar. App-only OAuth (free) works.
+**Limits:** anonymous requests usually get `403 Blocked`. The script does not try to bypass it: it moves on to the `reddit_backends.py` chain (Arctic Shift archive: rules, or the sidebar and submit text, with the date of the archived copy; ThreadSnoop with a key; the public page through Agent Reach) and writes `backend` and `completeness` in the row. App-only OAuth (free) remains the most complete route.
+
+## 7b. `reach.py`: Agent Reach, every social platform, read-only
+
+```bash
+python reach.py doctor                 # channel -> pronto / non pronto, with the command that unlocks it
+python reach.py doctor --live          # live check first (network, a few minutes)
+python reach.py setup                  # the `!` commands the OWNER runs (logins happen in his own browser window)
+python reach.py search x "Game Title" --limit 20 --game game.json      # game.json -> entity_match filter
+python reach.py read https://www.youtube.com/watch?v=XXXXXXXXXXX
+python reach.py comments https://www.reddit.com/r/IndieDev/comments/abc123/   # Reddit through the whole backend chain
+python reach.py profile tiktok studio ; python reach.py posts instagram studio --limit 30
+python reach.py transcript https://www.youtube.com/watch?v=XXXXXXXXXXX --lang it,en
+python reach.py rss https://example.com/devlog.xml
+python reach.py run v2ex hot --limit 10                                   # anything else Agent Reach supports
+```
+
+Common options (before the subcommand): `--cache-dir` (default `launch/_raw/reach/`), `--max-age 24` hours, `--no-cache`, `--rate 3` seconds per channel, `--retries 1` (exponential backoff), `--timeout 90`, `--manual launch/ricerche-manuali.md`, `--mode auto|on|off`, `-o out.json`. Routing: a ready channel uses the site's own data; a channel that needs a login falls back to Agent Reach's public-web route where it exists (search scoped to the site: links and snippets, no numbers); channels without a search of their own (V2EX, Xiaoyuzhou) are searched on the web scoped to the site; otherwise ok=false with the reason. `RATE_LIMITED`, `PLATFORM_BLOCKED`, `NEED_LOGIN` and `BUSY` stop the channel for the run (rate limits put it on a 1-hour cooldown); block pages are never cached nor taken as content. TikTok has no Agent Reach channel in 1.6.1: `reach.py` runs OpenCLI's read-only TikTok commands (search, profile, user videos) inside Agent Reach's browser (experimental, needs the owner logged in to tiktok.com there), and searches tiktok.com through the public web otherwise. Python API: `reach.search / read / comments / profile / posts / transcript / rss / call / metrics`. Tests: `GLS_REACH_FAKE=fixtures.json` or `reach.set_runner(fn)`; `GLS_REACH=off` disables it.
+
+## 7c. `reddit_backends.py`: Reddit that works
+
+```bash
+python reddit_backends.py doctor                                   # which backends answer from this machine now
+python reddit_backends.py thread https://www.reddit.com/r/IndieGameWishlist/comments/1xkwrxr/   # post + comments
+python reddit_backends.py rules IndieDev
+python reddit_backends.py listing IndieGameWishlist --kind top --t month --limit 100
+python reddit_backends.py search "Game Title" --sub IndieGameWishlist
+python reddit_backends.py --backends arctic,rss thread 1xkwrxr     # force an order (or env GLS_REDDIT_BACKENDS)
+```
+
+Every result has `ok`, `backend`, `scores` (`real` from Agent Reach / OAuth / JSON, `archive` from Arctic Shift / ThreadSnoop, `none` from RSS / page text), `label`, `consulted` and `attempts` (each backend with its outcome). Hidden scores of fresh posts are `None`, never the fake 1. A 401/403/429 or an HTML block page takes that backend out for the rest of the run. Used by `reddit_rules.py`, `reddit_trends.py`, `case_studies.py fetch`, `market_tracker.py` and `reach.py comments`. ThreadSnoop comes from the owner's suggestion `threadsnoop/reddit-skills`: that repository contains only SKILL.md instructions (no code) for ThreadSnoop's read API (`api.threadsnoop.com/v1`, key in the `x-api-key` header, 1 credit per request, read-only); here it is an optional backend that runs only when `THREADSNOOP_API_KEY` is in the private keys file.
 
 ## 8. `build_creators.py`: creators CSV
 
@@ -616,7 +656,9 @@ python build_creators.py --youtube out/yt_shortlist.json --social out/social.jso
 | `cohort_bench.py` | Tested offline (`tests/test_cohort_bench.py`, fixture `tests/fixtures/cohort_bench.json`: per-day counts, binary search of the window, resume, every junk rule, HTML sheet fallback, grades kept, Boxleiter ranges, subsets). Run live on 2026-10-13 (14-day volume, 636-game cohort 2026-07-15..21, ffmpeg sheets). |
 | `cohort_bench.py metro` / `score` / `news` / `dossier`, `top_moves.py`, `predictions.py`, `market_page.py` + `status_page.py` | Tested offline (`tests/test_metro_moves_page.py`: planted signal found by the out-of-time backtest, monotonic probabilities, levers, one-week case refused; 3 moves written into TODO.md and calendar.md twice without duplicates and with a valid calendar; predictions sync without duplicates and hit/miss; dossier with TikTok oEmbed and date from the id, accounts from the page only, CDN assets filtered, spikes; STATUS.html summary with old data said first, the Mercato reale tab and the four cards). Run live on 2026-10-13 on Buffet Panic. |
 | `cohort_bench.py update` / `calibrate`, `market_tracker.py`, `entity_match.py` | Tested offline (`tests/test_market_calibrate.py`, `tests/test_entity_match.py`: keys loaded by name and never printed or written, dataset re-checks at 30/90/180 days, calibration and base rates, calc_econ scenarios, snapshot schedule, estimates, social matching, manual file, RSS parsing, marketing patterns; matching precision on two hand-labelled real samples). Run live on 2026-10-13: dataset seeded with the 592-game cohort, calibration written, discover (top sellers, most played, breakouts), snapshots, players, social for 3 comps (YouTube via key; Reddit anonymous RSS answered 429), timeline, manual checks. |
-| `reddit_rules.py` anonymous | `403 Blocked` (expected: OAuth needed). |
+| `reddit_rules.py` anonymous | `403 Blocked` on the JSON (expected); since 2026-11-03 the chain answers through Arctic Shift (r/IndieDev: sidebar guidelines, 249,287 subscribers). |
+| `reach.py` | Tested offline (`tests/test_reach.py`: fake runner, doctor, routing, cache, retries and backoff, blocks and cooldowns, manual steps, block pages, TikTok bridge, transcripts, RSS, entity matching, and the reach backends of social_verify, social_content, reddit_trends, reddit_rules, yt_research, case_studies, market_tracker). Run live on 2026-11-03 with Agent Reach 1.6.1: github, youtube, v2ex, web ready; X and Instagram need the owner's login; the Reddit channel stays broken until the login (OpenCLI gets an HTML block page). |
+| `reddit_backends.py` | Tested offline (`tests/test_reddit_backends.py`). Run live on 2026-11-03: thread r/IndieGameWishlist 1xkwrxr with 18 comments via Arctic Shift (also via RSS), r/IndieDev rules via the Arctic Shift sidebar, top of the month of r/IndieGameWishlist via Arctic Shift (100 posts); www/old JSON 403 or login redirect, RSS 429 after a few calls. |
 | `yt_research.py --backend api` | Not tested (no `YOUTUBE_API_KEY`). |
 | `steam_tags.py` | Tested offline (the reported Roguelite / Rogue-lite case, hyphen variants, typos, built-in fallback, unverifiable lists). **Not run against live SteamSpy.** |
 | `steam_events.py` | Tested offline (`tests/test_steam_events.py`: sales, fests across the new year, Next Fest editions, edition milestones, fallback on a broken or missing page, merge, weekly window rows, hand rows kept, launch_window auto feed, deadlines, warnings, calendar/TODO written once, top_moves fest move, cp1252). Run live on 2026-10-17. |

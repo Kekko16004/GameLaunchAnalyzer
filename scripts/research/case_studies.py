@@ -14,6 +14,10 @@ add goes to your private file `~/.game-launch-strategist/case_studies.json` (nev
   case_studies.py tripwires --entering 600,1000,2000 --calendar launch/calendar.md [--fest "Next Fest febbraio 2027"]
                       writes "### 📊 Next Fest: cosa aspettarsi" in the Tripwire section of calendar.md (idempotent)
   case_studies.py md -o launch/case-studies.md [--genre ...]     readable summary with benchmarks and the "our stage" table
+  case_studies.py fetch <url> [<url>...] [-o launch/_raw/reach/case_drafts.json]   read a post-mortem (Reddit post WITH its
+                      comments, X thread, blog) through Agent Reach (reach.py) and write a DRAFT: source, date, text, the
+                      numbers found next to "wishlists / sales / Next Fest / followers" and the questions answered in the
+                      comments. Never merged by itself: check it, then `add` or `import` the record.
 
 Honesty rules built in: medians come with n and the interval between the 25th and 75th percentile; fewer than 5 similar
 records = "campione piccolo" and the survey benchmark (n in the hundreds) leads; self-reported posts are survivorship-biased
@@ -30,6 +34,7 @@ import re
 import statistics
 
 import common
+import reach
 from common import load_json, log, user_dir, write_json
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -233,6 +238,66 @@ def to_md(data: dict, genre: str | None, entering: list[int], today: dt.date) ->
     return "\n".join(L) + "\n"
 
 
+NUM_CTX = re.compile(r"(?i)(\$?\d[\d.,]*\s*[kKmM]?)\s*(\+\s*)?(wishlists?|wl\b|sales|copies|units|sold|followers|players|ccu|reviews|downloads|views|revenue)"
+                     r"|(wishlists?|sales|copies|followers|revenue|ccu)[\s:=\-–]{0,4}(\$?\d[\d.,]*\s*[kKmM]?)")
+EVENT_CTX = re.compile(r"(?i)next ?fest|launch|release[d]?|early access|demo|kickstarter|showcase|wholesome direct|steam festival")
+
+
+def numbers_in(text: str, limit: int = 30) -> list[dict]:
+    """Numbers next to the words that matter, with 60 characters of context (to be checked by a human: self-reported)."""
+    out = []
+    for m in NUM_CTX.finditer(text or ""):
+        val = m.group(1) or m.group(5)
+        what = (m.group(3) or m.group(4) or "").lower()
+        n = common.parse_count(str(val).replace("$", "").replace(" ", ""))
+        if n is None:
+            continue
+        a, b = max(0, m.start() - 60), min(len(text), m.end() + 60)
+        out.append(dict(value=n, what=what, context=re.sub(r"\s+", " ", text[a:b]).strip()))
+        if len(out) >= limit:
+            break
+    return out
+
+
+def reddit_draft(u: str) -> dict:
+    """A Reddit post-mortem with its comments through the Reddit backend chain (Agent Reach, OAuth, JSON, Arctic Shift, RSS...)."""
+    import reddit_backends as rb
+    r = rb.thread(u)
+    if not r["ok"]:
+        return dict(source_url=u, ok=False, error="; ".join(f"{b}: {o}" for b, o in r["attempts"]), label="[DA VERIFICARE]")
+    p, text = r["post"], r.get("text") or ""
+    full = f"{p.get('title') or ''}\n{text}"
+    return dict(source_url=u, ok=True, label="[FATTO] testo letto; numeri auto-dichiarati", source=f"reddit via {r['backend']}", backend=r["backend"],
+                checked=r["consulted"], access="public", title=p.get("title"), author_public=bool(p.get("author")), source_date=p.get("published"),
+                score=p.get("score"), num_comments=p.get("num_comments"), comments_read=len(r.get("comments") or []), scores=r.get("scores"),
+                events=sorted({m.group(0).lower() for m in EVENT_CTX.finditer(full)}), numbers=numbers_in(full),
+                has_comments=bool(r.get("comments")) or "\n@" in text, text_chars=len(text), excerpt=text[:600],
+                draft=dict(game=None, genres=None, event=None, date=(p.get("published") or "")[:7] or None, source_url=u,
+                           source_date=p.get("published"), source_kind="reddit", confidence="self_reported"))
+
+
+def fetch_drafts(urls: list[str]) -> list[dict]:
+    """Read each post (with comments when the platform allows) and draft a record. Nothing is merged."""
+    out = []
+    for u in urls:
+        if reach.platform_of(u) == "reddit":
+            out.append(reddit_draft(u))
+            continue
+        res = reach.comments(u) if reach.platform_of(u) == "twitter" else reach.read(u)
+        if not res["ok"]:
+            out.append(dict(source_url=u, ok=False, error=(res.get("error") or {}).get("code"), label="[DA VERIFICARE]"))
+            continue
+        it = res["items"][0]
+        text = it.get("text") or ""
+        out.append(dict(source_url=u, ok=True, label="[FATTO] testo letto; numeri auto-dichiarati", source=res.get("source"), checked=res.get("consulted"),
+                        access=it.get("access"), title=it.get("title"), author_public=bool(it.get("author")), source_date=it.get("published"),
+                        events=sorted({m.group(0).lower() for m in EVENT_CTX.finditer(text)}), numbers=numbers_in(text),
+                        has_comments="\n@" in text, text_chars=len(text), excerpt=text[:600],
+                        draft=dict(game=None, genres=None, event=None, date=(it.get("published") or "")[:7] or None, source_url=u,
+                                   source_date=it.get("published"), source_kind=reach.platform_of(u), confidence="self_reported")))
+    return out
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--db"); ap.add_argument("--local", help="private records file (default ~/.game-launch-strategist/case_studies.json)")
@@ -251,7 +316,17 @@ def main(argv=None):
     t_ = sub.add_parser("tripwires"); t_.add_argument("--entering", default="600,1000,2000"); t_.add_argument("--genre")
     t_.add_argument("--calendar", required=True); t_.add_argument("--fest", default="Next Fest"); t_.add_argument("-o", "--out")
     m_ = sub.add_parser("md"); m_.add_argument("--genre"); m_.add_argument("--entering", default="300,600,1000,2000,5000"); m_.add_argument("-o", "--out")
+    f_ = sub.add_parser("fetch", help="draft records from post-mortems read through Agent Reach (never merged by itself)")
+    f_.add_argument("urls", nargs="+"); f_.add_argument("-o", "--out", default=os.path.join("launch", "_raw", "reach", "case_drafts.json")); f_.add_argument("--manual")
     a = ap.parse_args(argv)
+    if a.cmd == "fetch":
+        reach.configure(manual=a.manual)
+        common.load_env()            # REDDIT_CLIENT_ID/SECRET, THREADSNOOP_API_KEY (names only, never printed)
+        if not reach.enabled() and any(reach.platform_of(u) != "reddit" for u in a.urls):
+            log("Agent Reach non disponibile (`reach.py doctor`): i link non Reddit restano [DA VERIFICARE]; Reddit passa dagli altri backend")
+        drafts = fetch_drafts(a.urls)
+        write_json(dict(generated_on=dt.date.today().isoformat(), note="bozze: controllare a mano, poi `add` / `import`", drafts=drafts), a.out)
+        return
     today = dt.date.today()
     local = a.local if a.local is not None else user_dir("case_studies.json")
     if a.cmd == "add":

@@ -1,6 +1,8 @@
 """Offline tests: publisher scout (fit, tiers, never 'nobody fits', with/without arithmetic, database checks, live catalog with a fake
 network), case studies (merge, benchmarks, calendar tripwires), Reddit trends from RSS, social planner / tracker / learning,
 honest odds with cross-checks, calendar block helpers and the new STATUS.html sections."""
+import os as _os
+_os.environ["GLS_REACH"] = "off"   # offline: never the real Agent Reach
 import os, sys, json, tempfile, datetime as dt, shutil
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "scripts", "research"))
 os.environ["GLS_HOME"] = tempfile.mkdtemp()  # never read the user's real files or keys

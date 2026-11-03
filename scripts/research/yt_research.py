@@ -6,13 +6,17 @@ Two backends:
          default daily quota 10,000 -> ~90 queries/day). Recommended / ToS-clean.
   html : parses the public results page (ytInitialData), no key, no login. Fragile (layout changes)
          and automated access is not encouraged by YouTube ToS: use sparingly, low volume, slow rate.
-  auto (default): api if YOUTUBE_API_KEY is set, else html.
+  reach: Agent Reach (reach.py, yt-dlp underneath): search with views, duration, channel id; dates read per video
+         (cached in launch/_raw/reach). No key, no quota. Used by auto when the html page gives nothing.
+  auto (default): api if YOUTUBE_API_KEY is set, else html, with reach as fallback.
 
 Subcommands:
   search    queries -> videos JSON  (fields: vid,title,ch,url,when,days,views,topic,query)
   channels  videos JSON -> channels JSON (grouped, filtered by recency/min videos)
   subs      channels JSON -> + subs/country/desc, filtered by subscriber range
-  verify    video URLs (incl. /shorts/) -> official oEmbed (author, title) to confirm they exist
+  verify    video URLs (incl. /shorts/) -> official oEmbed (author, title) to confirm they exist; + date, views, likes via reach
+  transcript video URLs -> subtitles text (manual or auto captions) via Agent Reach; --whisper = speech-to-text (Groq/OpenAI
+            key set by the owner with `agent-reach configure groq-key`); one .txt per video + an index JSON
 
 Examples:
   python yt_research.py search -q "PlateUp" -q "PlateUp ita" --within month -o yt_raw.json
@@ -20,6 +24,7 @@ Examples:
   python yt_research.py channels yt_raw.json --max-days 90 -o yt_channels.json
   python yt_research.py subs yt_channels.json --max-subs 1000000 -o yt_shortlist.json
   python yt_research.py verify https://www.youtube.com/shorts/XXXXXXXXXXX -o yt_verified.json
+  python yt_research.py transcript https://www.youtube.com/watch?v=XXXXXXXXXXX --lang en,it --out-dir launch/_raw/transcripts
 """
 from __future__ import annotations
 
@@ -32,6 +37,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 from common import (Throttle, get_json, get_text, load_json, log, parse_count, q, read_list, safe_json,
                     set_rate, write_output)
+import reach
 
 API = "https://www.googleapis.com/youtube/v3"
 # YouTube results-page "upload date" filter tokens
@@ -126,9 +132,39 @@ def api_search(query: str, within: str, key: str, max_results: int, region: str 
     return out
 
 
+def reach_search(query: str, within: str, max_results: int, dates: int = 15) -> list[dict]:
+    """Search through Agent Reach (yt-dlp): views, duration, channel id; the date of the first `dates` videos is read one by one."""
+    res = reach.search("youtube", query, min(max_results, 50))
+    if not res["ok"]:
+        log(f"reach {query!r}: {(res.get('error') or {}).get('code')}")
+        return []
+    out = []
+    for k, it in enumerate(res["items"]):
+        raw = it.get("raw") if isinstance(it.get("raw"), dict) else {}
+        m = re.search(r"v=([\w-]{11})", it.get("url") or "")
+        vid = raw.get("id") or (m.group(1) if m else None)
+        if not vid:
+            continue
+        when = it.get("published")
+        if not when and k < dates:
+            r = reach.read(f"https://www.youtube.com/watch?v={vid}", "youtube")
+            when = r["items"][0].get("published") if r["ok"] else None
+        days = rel2days(when or "")
+        if DAYS[within] is not None and days is not None and days > DAYS[within]:
+            continue
+        cid = raw.get("channel_id")
+        out.append(dict(vid=vid, title=it.get("title"), ch=it.get("author"), url=("/channel/" + cid) if cid else None, channel_id=cid,
+                        when=when, days=days, views=it["metrics"].get("views"), duration=raw.get("duration"), source="agent-reach"))
+    return out
+
+
 def pick_backend(name: str) -> str:
     if name == "auto":
         return "api" if os.environ.get("YOUTUBE_API_KEY") else "html"
+    if name == "reach":
+        if not reach.enabled():
+            raise SystemExit("backend=reach requires Agent Reach (reach.py doctor)")
+        return "reach"
     if name == "api" and not os.environ.get("YOUTUBE_API_KEY"):
         raise SystemExit("backend=api requires env var YOUTUBE_API_KEY")
     return name
@@ -147,10 +183,15 @@ def cmd_search(a):
     for topic, query in jobs:
         for w in windows:
             try:
-                vids = (api_search(query, w, os.environ["YOUTUBE_API_KEY"], a.max_results, a.region, a.lang)
-                        if backend == "api" else html_search(query, w))
+                vids = (api_search(query, w, os.environ["YOUTUBE_API_KEY"], a.max_results, a.region, a.lang) if backend == "api"
+                        else reach_search(query, w, a.max_results) if backend == "reach" else html_search(query, w))
             except Exception as e:  # noqa: BLE001
                 log(f"ERR {query!r} [{w}]: {e}")
+                vids = []
+            if not vids and backend == "html" and a.backend == "auto" and reach.enabled():
+                log(f"{query!r} [{w}]: pagina html vuota, provo agent-reach")
+                vids = reach_search(query, w, a.max_results)
+            if not vids:
                 continue
             for v in vids:
                 if a.dedupe and (v["vid"], topic) in seen:
@@ -245,9 +286,36 @@ def cmd_verify(a):
     out = []
     for u in read_list(a.urls, a.urls_file):
         o = safe_json("https://www.youtube.com/oembed?format=json&url=" + q(to_watch_url(u)), default={})
-        out.append(dict(url=u, ok=bool(o), author=o.get("author_name"), author_url=o.get("author_url"),
-                        title=o.get("title"), is_short="/shorts/" in u))
+        row = dict(url=u, ok=bool(o), author=o.get("author_name"), author_url=o.get("author_url"), title=o.get("title"), is_short="/shorts/" in u)
+        if a.reach != "off" and reach.enabled():
+            r = reach.read(to_watch_url(u), "youtube")
+            if r["ok"]:
+                it = r["items"][0]
+                row.update(ok=True, date=it.get("published"), author=row["author"] or it.get("author"), title=row["title"] or it.get("title"),
+                           numbers_source=f"{r['source']} · {r['consulted']}", **{k: v for k, v in it["metrics"].items() if k in ("views", "likes", "comments")})
+        out.append(row)
         log(f"{'OK ' if o else 'ERR'} {u} | {o.get('author_name')} | {(o.get('title') or '')[:80]}")
+    write_output(out, a.out)
+
+
+def cmd_transcript(a):
+    os.makedirs(a.out_dir, exist_ok=True)
+    out = []
+    for u in read_list(a.urls, a.urls_file):
+        target = to_watch_url(u) if ("youtu" in u or re.fullmatch(r"[\w-]{11}", u)) else u
+        r = reach.transcript(target, a.lang, True if a.whisper else None)
+        row = dict(url=u, ok=r["ok"], label=r["label"], source=r.get("source"), consulted=r.get("consulted"), error=(r.get("error") or {}).get("code"))
+        if r["ok"]:
+            it = r["items"][0]
+            m = re.search(r"(?:v=|youtu\.be/|shorts/)([\w-]{11})", u) or re.search(r"(BV[0-9A-Za-z]{10})", u)
+            vid = m.group(1) if m else re.sub(r"\W+", "_", u)[-40:]
+            path = os.path.join(a.out_dir, f"{vid}.txt")
+            with open(path, "w", encoding="utf-8", newline="\n") as f:
+                f.write(it.get("text") or "")
+            raw = it.get("raw") if isinstance(it.get("raw"), dict) else {}
+            row.update(file=path, title=it.get("title"), lang=raw.get("lang"), words=len((it.get("text") or "").split()))
+        out.append(row)
+        log(f"{'OK ' if r['ok'] else 'ERR'} {u} | {row.get('words') or row.get('error')}")
     write_output(out, a.out)
 
 
@@ -261,7 +329,7 @@ def main():
     s.add_argument("--queries-file", help="text file, one query per line")
     s.add_argument("--topics-json", help='JSON {"Topic": ["query", ...]}; topic is stored on each video')
     s.add_argument("--within", action="append", choices=list(SP), help="upload-date window (repeatable; default month)")
-    s.add_argument("--backend", default="auto", choices=["auto", "api", "html"])
+    s.add_argument("--backend", default="auto", choices=["auto", "api", "html", "reach"])
     s.add_argument("--max-results", type=int, default=50, help="api backend only (max 50)")
     s.add_argument("--region", help="api: regionCode, e.g. IT")
     s.add_argument("--lang", help="api: relevanceLanguage, e.g. it")
@@ -279,7 +347,7 @@ def main():
 
     b = sub.add_parser("subs", help="add subscriber counts to channels")
     b.add_argument("channels", help="JSON from `channels`")
-    b.add_argument("--backend", default="auto", choices=["auto", "api", "html"])
+    b.add_argument("--backend", default="auto", choices=["auto", "api", "html", "reach"])
     b.add_argument("--min-subs", type=int, default=0)
     b.add_argument("--max-subs", type=int, default=10**12)
     b.add_argument("--keep-unknown", action="store_true", help="keep channels whose subs could not be read")
@@ -290,11 +358,23 @@ def main():
     v = sub.add_parser("verify", help="verify video URLs via official oEmbed")
     v.add_argument("urls", nargs="*")
     v.add_argument("--urls-file")
+    v.add_argument("--reach", default="auto", choices=["auto", "on", "off"], help="add date, views, likes through Agent Reach")
     v.add_argument("-o", "--out", default="-")
     v.set_defaults(fn=cmd_verify)
 
+    t = sub.add_parser("transcript", help="subtitles / speech-to-text of videos via Agent Reach")
+    t.add_argument("urls", nargs="*")
+    t.add_argument("--urls-file")
+    t.add_argument("--lang", help="preferred subtitle languages, e.g. en,it (default: Agent Reach's list)")
+    t.add_argument("--whisper", action="store_true", help="speech-to-text when there are no subtitles (needs the owner's Groq/OpenAI key)")
+    t.add_argument("--out-dir", default=os.path.join("launch", "_raw", "transcripts"))
+    t.add_argument("--manual", help="ricerche-manuali.md for the manual steps")
+    t.add_argument("-o", "--out", default="-")
+    t.set_defaults(fn=cmd_transcript)
+
     a = ap.parse_args()
     set_rate(a.rate)
+    reach.configure(manual=getattr(a, "manual", None))
     a.fn(a)
 
 

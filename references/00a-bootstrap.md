@@ -17,8 +17,16 @@ Una chat nuova non ricorda nulla e non sa quali strumenti ha il progetto. **La s
 | Immagini | lettura di PNG/JPG | guardare capsule, screenshot, fotogrammi: l'hook si giudica guardando |
 | Altre skill | `game-developer`, `real-world-design`, `dataviz`… | riusare ciò che hanno prodotto (vedi passo 4) |
 | Subagenti | `Agent`/`Task` | ricerca parallela, gruppi del focus group in contesti separati |
+| Social (Agent Reach) | `reach.py doctor` (CLI `agent-reach`, anche skill `agent-reach`) | leggere X, TikTok, Instagram, Facebook, Reddit, YouTube con sottotitoli, Bilibili, XiaoHongShu, GitHub, V2EX, LinkedIn, web e RSS; sola lettura |
+| Reddit | `reddit_backends.py doctor` | quale backend Reddit risponde da questa macchina (Agent Reach con login, OAuth, JSON, archivio Arctic Shift, RSS, ThreadSnoop) |
 
 3. Per ogni capacità: **disponibile / collegata ma non risponde / assente**. Se il progetto la prevede (passo 2) ma non è collegata, vedi il passo 6.
+4. **Social: inventario con Agent Reach.** Lancia
+   ```bash
+   python3 <skill>/scripts/research/reach.py doctor --md launch/_raw/reach-doctor.md
+   python3 <skill>/scripts/research/reddit_backends.py doctor -o launch/_raw/reddit-doctor.json
+   ```
+   La tabella dice canale per canale **pronto / non pronto** e il comando che sblocca il canale. Nel Context Pack scrivi solo i canali pronti come "posso leggere"; per gli altri dai al proprietario i comandi di `reach.py setup` (si lanciano con `!` davanti, il login lo fa lui nella finestra del browser dedicato, account secondario consigliato) e prosegui senza aspettare. `--live` rifà il controllo dal vivo (qualche minuto, rete). Se `agent-reach` manca: `node installer/install.mjs update` lo installa (dipendenza facoltativa) oppure `! uv tool install https://github.com/Panniantong/Agent-Reach/releases/latest/download/agent-reach.zip`. Mai login, cookie o password in chat.
 
 ## 2. Scansione del disco: `project_scan.py`
 

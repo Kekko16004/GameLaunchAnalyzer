@@ -18,7 +18,10 @@
       "install": { "win": "winget install --id Git.Git -e --accept-source-agreements --accept-package-agreements", "mac": "xcode-select --install", "linux": "sudo apt install -y git" } },
     { "id": "python", "cmds": ["python", "python3", "py"], "label": "Python", "min": "3.9", "required": false, "offer": true,
       "why": { "it": "script di ricerca (Steam, recensioni, creator, report)", "en": "research scripts (Steam, reviews, creators, reports)" },
-      "install": { "win": "winget install --id Python.Python.3.12 -e --accept-source-agreements --accept-package-agreements", "mac": "brew install python", "linux": "sudo apt install -y python3" } }
+      "install": { "win": "winget install --id Python.Python.3.12 -e --accept-source-agreements --accept-package-agreements", "mac": "brew install python", "linux": "sudo apt install -y python3" } },
+    { "id": "uv", "label": "uv", "required": false, "offer": true,
+      "why": { "it": "installa e aggiorna Agent Reach (social in sola lettura)", "en": "installs and updates Agent Reach (social platforms, read-only)" },
+      "install": { "win": "winget install --id astral-sh.uv -e --accept-source-agreements --accept-package-agreements", "mac": "brew install uv", "linux": "curl -LsSf https://astral.sh/uv/install.sh | sh" } }
   ],
   "skills": [
     {

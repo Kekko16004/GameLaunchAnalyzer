@@ -5,8 +5,10 @@ that learns which formats work for THIS game and feeds the plan, calendar.md and
 
 Evidence: `data/social_patterns.json` (patterns per platform with kind, strength measured / expert_opinion / anecdote and
 sources with dates; honest benchmarks for small accounts; views -> wishlists conversions; flops; subreddit rules; posting
-times). It is curated: platforms change, so every rule shows its date. Nothing here scrapes TikTok, Instagram or X: views
-and likes come from YOUR analytics (CSV export or typed in), Reddit trends from public RSS (reddit_trends.py).
+times). It is curated: platforms change, so every rule shows its date. Views and likes come from YOUR analytics (CSV export
+or typed in) or, with `track fetch`, are read from the post itself through Agent Reach (reach.py) where the channel is
+ready: TikTok, X, Reddit and YouTube Shorts with the owner's login in Agent Reach's browser; Instagram by date match on
+the account's recent posts (--handle instagram=studio). Wishlists are NEVER fetched: they come from Steamworks.
 
   social_content.py evidence [--platform tiktok] [--md out.md]           the rules and benchmarks, with sources
   social_content.py moments --from-clips launch/04-clips.md [--runs launch/fg/waves] -o launch/_raw/social_moments.json
@@ -16,7 +18,10 @@ and likes come from YOUR analytics (CSV export or typed in), Reddit trends from 
                      [--learn launch/_raw/social_learn.json] [--calendar launch/calendar.md] -o launch/_raw/social_plan.json --md launch/social-plan.md
   social_content.py track add --date 2026-10-27 --platform tiktok --moment H1 --hook A --views 850 --likes 40 [--wishlists 6] [--url ...]
   social_content.py track import tiktok_export.csv [--platform tiktok]   merge an analytics export (common column names understood)
-  social_content.py learn [--posts launch/social_posts.csv] -o launch/_raw/social_learn.json [--md]
+  social_content.py track fetch [--since 2026-10-01] [--handle instagram=studio,x=studio] [--overwrite] [--manual launch/ricerche-manuali.md]
+                     reads views / likes / comments / shares of every post with a URL through Agent Reach; fills only empty cells
+                     (unless --overwrite) and writes the source and date in the `fetched` column; not ready = manual step
+  social_content.py learn [--posts launch/social_posts.csv] [--fetch] -o launch/_raw/social_learn.json [--md]
                      per platform: median views vs the small-account benchmark; per moment / hook / format: lift vs your median,
                      wishlists per 1,000 views; winners (n >= 2, lift >= 1.5) and losers; small samples are said out loud
 
@@ -35,6 +40,7 @@ import re
 import statistics
 
 import common  # noqa: F401  (UTF-8 console)
+import reach
 from common import load_json, log, write_json
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -48,7 +54,7 @@ TYPICAL = {"tiktok": 1000, "youtube_shorts": 400, "instagram": 500, "reddit": 20
 LENGTH = {"tiktok": "15-30 s, che si ripete in loop", "youtube_shorts": "15-30 s (massimo 3 min)", "instagram": "15-30 s, file pulito senza filigrana",
           "reddit": "GIF o video di 15-30 s", "x": "clip di 30-60 s, link Steam in risposta"}
 POST_COLS = ["date", "platform", "url", "moment", "hook", "format", "length_s", "views", "likes", "comments", "shares", "saves", "profile_visits", "followers_delta",
-             "wishlists_delta", "clip", "utm", "notes"]
+             "wishlists_delta", "clip", "utm", "notes", "fetched"]
 CSV_ALIAS = {"video views": "views", "views": "views", "visualizzazioni": "views", "plays": "views", "impressions": "views", "likes": "likes", "mi piace": "likes",
              "comments": "comments", "commenti": "comments", "shares": "shares", "condivisioni": "shares", "saves": "saves", "salvataggi": "saves",
              "date": "date", "post time": "date", "video publish time": "date", "data": "date", "link": "url", "video link": "url", "url": "url",
@@ -344,6 +350,61 @@ def import_rows(path: str, platform: str | None) -> list[dict]:
     return out
 
 
+REACH_PLATFORM = {"tiktok": "tiktok", "youtube_shorts": "youtube", "instagram": "instagram", "reddit": "reddit", "x": "twitter"}
+FETCH_FIELDS = ("views", "likes", "comments", "shares")
+
+
+def parse_handles(s: str | None) -> dict:
+    out = {}
+    for part in (s or "").split(","):
+        if "=" in part:
+            k, v = part.split("=", 1)
+            out[plat(k)] = v.strip().lstrip("@")
+    return out
+
+
+def fetch_numbers(rows: list[dict], since: str | None = None, handles: dict | None = None, overwrite: bool = False) -> dict:
+    """Fill the numbers of each post with a URL through Agent Reach. Returns {updated, skipped, failed: [(url, code)]}."""
+    handles = handles or {}
+    stats = dict(updated=0, skipped=0, failed=[])
+    ig_cache: dict = {}
+    for r in rows:
+        url, p = (r.get("url") or "").strip(), r.get("platform")
+        if not url or p not in REACH_PLATFORM or (since and (r.get("date") or "") < since):
+            stats["skipped"] += 1
+            continue
+        if not overwrite and all((r.get(f) or "") != "" for f in ("views", "likes")):
+            stats["skipped"] += 1
+            continue
+        if p == "instagram":
+            h = handles.get("instagram") or reach.handle_of(url)
+            if not h:
+                stats["failed"].append((url, "NO_HANDLE"))
+                continue
+            if h not in ig_cache:
+                ig_cache[h] = reach.posts("instagram", h, 30)
+            res = ig_cache[h]
+            same_day = [x for x in res["items"] if (x.get("published") or "")[:10] == r.get("date")]
+            hit = [x for x in res["items"] if x.get("url") and x["url"].rstrip("/") == url.rstrip("/")] or (same_day if len(same_day) == 1 else [])
+            how = "stesso giorno" if hit and not (hit[0].get("url") or "").rstrip("/") == url.rstrip("/") else "link"
+        else:
+            res = reach.read(url, REACH_PLATFORM[p])
+            hit, how = res["items"][:1], "link"
+        if not (res["ok"] and hit):
+            stats["failed"].append((url, (res.get("error") or {}).get("code") or "NOT_MATCHED"))
+            continue
+        m = hit[0]["metrics"]
+        changed = False
+        for f in FETCH_FIELDS:
+            if m.get(f) is not None and (overwrite or (r.get(f) or "") == ""):
+                r[f] = str(int(m[f]))
+                changed = True
+        if changed:
+            r["fetched"] = f"{res.get('source')} · {res.get('consulted')}" + (" · abbinato per data" if how == "stesso giorno" else "")
+            stats["updated"] += 1
+    return stats
+
+
 def learn(rows: list[dict]) -> dict:
     res = dict(n=len(rows), platforms=[], by_moment=[], by_hook=[], by_format=[], by_clip=[], winners=[], losers=[], warnings=[])
     byp: dict = {}
@@ -425,8 +486,24 @@ def main(argv=None):
         ta.add_argument(f"--{f.replace('_delta', '').replace('_', '-')}", dest=f)
     ta.add_argument("--posts", default=os.path.join("launch", "social_posts.csv"))
     ti = ts.add_parser("import"); ti.add_argument("file"); ti.add_argument("--platform"); ti.add_argument("--posts", default=os.path.join("launch", "social_posts.csv"))
+    tf = ts.add_parser("fetch", help="read the numbers of the posts through Agent Reach (reach.py)")
+    tf.add_argument("--posts", default=os.path.join("launch", "social_posts.csv")); tf.add_argument("--since"); tf.add_argument("--handle", help="instagram=studio,x=studio")
+    tf.add_argument("--overwrite", action="store_true"); tf.add_argument("--manual"); tf.add_argument("--reach", default="auto", choices=["auto", "on", "off"])
     ln = sub.add_parser("learn"); ln.add_argument("--posts", default=os.path.join("launch", "social_posts.csv")); ln.add_argument("-o", "--out"); ln.add_argument("--md")
+    ln.add_argument("--fetch", action="store_true", help="first fill missing numbers through Agent Reach (track fetch)"); ln.add_argument("--handle")
     a = ap.parse_args(argv)
+    if a.cmd == "track" and a.tcmd == "fetch" or a.cmd == "learn" and a.fetch:
+        reach.configure(mode=getattr(a, "reach", "auto"), manual=getattr(a, "manual", None))
+        if not reach.enabled():
+            log("Agent Reach non disponibile (reach.py doctor): i numeri restano da inserire a mano con `track add` o `track import`")
+        else:
+            rows = read_posts(a.posts)
+            st = fetch_numbers(rows, getattr(a, "since", None), parse_handles(a.handle), getattr(a, "overwrite", False))
+            write_posts(a.posts, rows)
+            log(f"fetch: {st['updated']} post aggiornati, {st['skipped']} saltati, {len(st['failed'])} non letti"
+                + "".join(f"\n  - {u} ({c})" for u, c in st["failed"][:10]))
+        if a.cmd == "track":
+            return
     if a.cmd == "track":
         if a.tcmd == "add":
             r = {f: getattr(a, f) for f in POST_COLS if getattr(a, f) is not None}

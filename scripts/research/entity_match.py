@@ -187,6 +187,27 @@ def score_batch(cands: list[dict], g: dict, threshold: int = THRESHOLD) -> list[
     return cands
 
 
+def from_reach(item: dict, platform: str | None = None) -> dict:
+    """A normalised reach.py item (X, TikTok, Instagram, Reddit, YouTube...) -> a candidate for score()."""
+    raw = item.get("raw") if isinstance(item.get("raw"), dict) else {}
+    return dict(platform=platform or item.get("platform"), title=item.get("title") or "", text=item.get("text") or "", author=item.get("author") or "",
+                author_id=raw.get("channel_id") or raw.get("author_id") or raw.get("screen_name"), url=item.get("url") or "",
+                published=item.get("published"), metrics=item.get("metrics") or {})
+
+
+def filter_reach(res: dict, g: dict, threshold: int = THRESHOLD) -> dict:
+    """Score the items of one reach.py result against the game; keeps them all with score/why/kept, `kept_items` = the relevant ones.
+    TikTok and X captions are short: the batch ambiguity and the game words do most of the work, as for YouTube titles."""
+    cands = [from_reach(x, res.get("channel")) for x in res.get("items") or []]
+    score_batch(cands, g, threshold)
+    for x, c in zip(res.get("items") or [], cands):
+        x.update(score=c["score"], why=c["why"], kept=c["kept"])
+    res["kept_items"] = [x for x in res.get("items") or [] if x.get("kept")]
+    res["rejected_count"] = len(res.get("items") or []) - len(res["kept_items"])
+    res["threshold"] = threshold
+    return res
+
+
 def evaluate(labels: dict, threshold: int = THRESHOLD) -> dict:
     """Precision of 'keep everything the title search returned' (before) vs 'keep what passes the score' (after)."""
     games = {str(g["appid"]): g for g in labels["games"]}
@@ -213,7 +234,25 @@ def main(argv=None):
     sp = ap.add_subparsers(dest="cmd", required=True)
     e = sp.add_parser("eval", help="precision before/after on a hand-labelled sample")
     e.add_argument("labels"); e.add_argument("--threshold", type=int, default=THRESHOLD)
+    f = sp.add_parser("filter", help="score a reach.py result file against a game JSON (social results: X, TikTok, Instagram, Reddit...)")
+    f.add_argument("results", help="JSON written by reach.py search/posts (-o)"); f.add_argument("--game", required=True, help="game JSON: title, appid, developers, handles, words...")
+    f.add_argument("--threshold", type=int, default=THRESHOLD); f.add_argument("-o", "--out")
     a = ap.parse_args(argv)
+    if a.cmd == "filter":
+        with open(a.results, encoding="utf-8") as fh:
+            res = json.load(fh)
+        with open(a.game, encoding="utf-8") as fh:
+            g = json.load(fh)
+        for r in (res if isinstance(res, list) else [res]):
+            filter_reach(r, g, a.threshold)
+            print(f"{r.get('channel')}: tenuti {len(r['kept_items'])}, scartati {r['rejected_count']} (soglia {a.threshold})", file=sys.stderr)
+        text = json.dumps(res, ensure_ascii=False, indent=1)
+        if a.out:
+            with open(a.out, "w", encoding="utf-8") as fh:
+                fh.write(text)
+        else:
+            print(text)
+        return
     with open(a.labels, encoding="utf-8") as f:
         res = evaluate(json.load(f), a.threshold)
     print(json.dumps({k: v for k, v in res.items() if k != "per_game"}, indent=1))

@@ -3,8 +3,11 @@
 import glob, os, subprocess, sys
 here = os.path.dirname(os.path.abspath(__file__))
 failed = []
+# offline: never call the real Agent Reach installed on this machine (test_reach.py uses its own fake runner)
+env = dict(os.environ, GLS_REACH="off")
+env.pop("GLS_REACH_FAKE", None)
 for t in sorted(glob.glob(os.path.join(here, "test_*.py"))):
-    r = subprocess.run([sys.executable, "-W", "error::DeprecationWarning", t], capture_output=True, text=True)
+    r = subprocess.run([sys.executable, "-W", "error::DeprecationWarning", t], capture_output=True, text=True, env=env)
     last = (r.stdout.strip().splitlines() or ["(no output)"])[-1]
     print(("PASS " if r.returncode == 0 else "FAIL ") + os.path.basename(t) + " | " + last)
     if r.returncode:

@@ -1,4 +1,6 @@
 """entity_match offline: precision before/after on two hand-labelled real samples (tuning set and held-out set) and unit cases."""
+import os as _os
+_os.environ["GLS_REACH"] = "off"   # offline: never the real Agent Reach
 import os, sys, json
 here = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(here, "..", "scripts", "research"))

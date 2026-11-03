@@ -1,5 +1,7 @@
 import sys, json, io, contextlib, os, tempfile, csv, urllib.parse
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "scripts", "research"))
+import os as _os
+_os.environ["GLS_REACH"] = "off"   # offline: never the real Agent Reach
 import common
 def fake(url, **kw):
     u = urllib.parse.urlparse(url)

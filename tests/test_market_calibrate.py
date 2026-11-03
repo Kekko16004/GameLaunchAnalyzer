@@ -1,5 +1,7 @@
 """Offline: private keys loading (never printed), cohort dataset update / re-checks / calibrate, calc_econ base-rate scenarios,
 market_tracker snapshots, estimates, manual checks file, RSS parsing, social collection with entity matching, marketing patterns."""
+import os as _os
+_os.environ["GLS_REACH"] = "off"   # offline: never the real Agent Reach
 import os, sys, json, csv, io, contextlib, tempfile, datetime as dt, urllib.parse, shutil
 here = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(here, "..", "scripts", "research"))

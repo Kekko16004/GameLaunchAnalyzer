@@ -10,12 +10,20 @@ Platforms:
              Meta app with oEmbed Read). Without it the platform is skipped.
   twitch     Helix API (clips / videos / users). Needs env TWITCH_CLIENT_ID + TWITCH_CLIENT_SECRET
              (app access token, client-credentials flow). Without them the platform is skipped.
+  x          X / Twitter posts and profiles: only through Agent Reach (below).
+
+Agent Reach backend (reach.py, --reach auto by default): when Agent Reach is installed and the channel is ready
+(`reach.py doctor`), the REAL follower counts of TikTok, Instagram and X accounts and the numbers of the post (views,
+likes, comments) are read from the platform through the owner's own login in Agent Reach's browser, labelled [FATTO]
+with the source and the date. YouTube gets publish date and views. When a channel is not ready the old behaviour stays
+(oEmbed, "manual (requires login)") and, with --manual, the manual step is written to ricerche-manuali.md.
 
 Platform is auto-detected from each URL.
 
 Examples:
   python social_verify.py https://www.tiktok.com/@user/video/7677411131643809031 -o tt_verified.json
   python social_verify.py --urls-file urls.txt -o verified.csv --since 2026-07-01
+  python social_verify.py https://x.com/studio https://www.instagram.com/studio/ --manual launch/ricerche-manuali.md
 """
 from __future__ import annotations
 
@@ -25,12 +33,13 @@ import os
 import re
 import urllib.parse
 from common import get_json, http_get, log, q, read_list, set_rate, ts_to_date, write_output
+import reach
 
 
 def platform_of(u: str) -> str | None:
     h = urllib.parse.urlparse(u).netloc.lower()
     for key, p in (("tiktok.", "tiktok"), ("youtube.", "youtube"), ("youtu.be", "youtube"),
-                   ("instagram.", "instagram"), ("twitch.tv", "twitch")):
+                   ("instagram.", "instagram"), ("twitch.tv", "twitch"), ("twitter.", "x"), ("x.com", "x")):
         if key in h:
             return p
     return None
@@ -105,7 +114,50 @@ def twitch(u: str) -> dict:
     return o
 
 
-HANDLERS = dict(tiktok=tiktok, youtube=youtube, instagram=instagram, twitch=twitch)
+def x_post(u: str) -> dict:
+    return dict(followers="manual (requires login)")   # X has no free public endpoint: Agent Reach or by hand
+
+
+HANDLERS = dict(tiktok=tiktok, youtube=youtube, instagram=instagram, twitch=twitch, x=x_post)
+
+
+def _src(res: dict) -> str:
+    return f"{res.get('source')} · {res.get('consulted')}"
+
+
+def with_reach(u: str, p: str, row: dict) -> dict:
+    """Real numbers through Agent Reach (followers of the account, numbers of the post), only when the channel answers."""
+    if p not in ("tiktok", "instagram", "x", "youtube") or not reach.enabled():
+        return row
+    if p == "youtube":
+        r = reach.read(u, "youtube")
+        if r["ok"]:
+            it = r["items"][0]
+            row.update(date=row.get("date") or it.get("published"), **{k: v for k, v in it["metrics"].items() if k in ("views", "likes", "comments")},
+                       numbers_source=_src(r), numbers_label="[FATTO]")
+        return row
+    is_post = bool(re.search(r"/(video|photo|status|p|reel|reels)/", u))
+    handle = row.get("handle") or reach.handle_of(u)
+    if not handle and p == "x" and is_post:
+        handle = (urllib.parse.urlparse(u).path.split("/") + [""])[1] or None
+    if is_post and p in ("tiktok", "x"):
+        r = reach.read(u, p)
+        if r["ok"]:
+            it = r["items"][0]
+            row.update(author=row.get("author") or it.get("author"), title=row.get("title") or (it.get("text") or "")[:200],
+                       date=row.get("date") or it.get("published"), numbers_source=_src(r), numbers_label="[FATTO]",
+                       **{k: v for k, v in it["metrics"].items() if k in ("views", "likes", "comments", "shares")})
+    if handle:
+        r = reach.profile(p, handle)
+        if r["ok"] and r["items"][0]["metrics"].get("followers") is not None:
+            m = r["items"][0]["metrics"]
+            row.update(followers=m["followers"], followers_source=_src(r), followers_label="[FATTO]", handle=handle,
+                       **{k: m[k] for k in ("following", "posts") if k in m})
+            row.pop("skipped", None)
+        else:
+            row["followers_label"] = "[DA VERIFICARE]"
+            row["reach_error"] = (r.get("error") or {}).get("code")
+    return row
 
 
 def main():
@@ -114,9 +166,12 @@ def main():
     ap.add_argument("--urls-file", help="text file, one URL per line")
     ap.add_argument("--since", help="flag rows with date before YYYY-MM-DD as recent=False")
     ap.add_argument("--rate", type=float, default=1.0, help="min seconds between requests (default 1.0)")
+    ap.add_argument("--reach", default="auto", choices=["auto", "on", "off"], help="Agent Reach backend for real followers / post numbers (default auto)")
+    ap.add_argument("--manual", help="ricerche-manuali.md: write the manual step when a channel is not ready")
     ap.add_argument("-o", "--out", default="-", help=".json or .csv (default stdout JSON)")
     a = ap.parse_args()
     set_rate(a.rate)
+    reach.configure(mode=a.reach, manual=a.manual)
     urls = read_list(a.urls, a.urls_file)
     if not urls:
         ap.error("no URLs given")
@@ -129,9 +184,11 @@ def main():
         else:
             try:
                 row.update(HANDLERS[p](u))
-                row["ok"] = "skipped" not in row
             except Exception as e:  # noqa: BLE001
-                row.update(ok=False, error=str(e))
+                row.update(error=str(e))
+            if a.reach != "off":
+                with_reach(u, p, row)
+            row["ok"] = "skipped" not in row and ("error" not in row or "followers_source" in row or "numbers_source" in row)
         if a.since and row.get("date"):
             row["recent"] = row["date"] >= a.since
         out.append(row)

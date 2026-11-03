@@ -7,6 +7,10 @@ read by feed readers. With REDDIT_CLIENT_ID/SECRET in the private keys file the 
 scores and comment counts are real. Without OAuth the feed has NO scores: the rank in the top list is the signal
 (position 1 = most upvoted), so the tool reports shares and LIFT (share among top posts / share among new posts), not upvotes.
 If Reddit answers 403/429 the tool stops for that feed, never retries around a block, and writes the manual steps.
+Agent Reach (reach.py, --reach auto by default): when the owner is logged in to Reddit in Agent Reach's browser
+(`reach.py doctor` says reddit is ready) the subreddit's latest posts come with REAL upvotes and comments; "top" is then the
+best quarter by upvotes of those posts and "new" is all of them (mode "reach"). It is used before RSS when ready, and after an
+RSS block otherwise. Not ready = manual steps, as before.
 
   reddit_trends.py scan indiegames IndieDev IndieGaming IndieGameWishlist --t week [--limit 100] -o launch/_raw/reddit_trends.json
                          [--md launch/_raw/reddit_trends.md] [--raw-dir launch/_raw/reddit_rss] [--manual launch/ricerche-manuali.md]
@@ -26,6 +30,8 @@ import re
 import xml.etree.ElementTree as ET
 
 import common
+import reach
+import reddit_backends as rb
 from common import load_env, log, write_json
 
 ATOM = "{http://www.w3.org/2005/Atom}"
@@ -165,17 +171,71 @@ def fetch_rss(sub: str, kind: str, t: str, limit: int) -> str:
     return common.get_text(f"https://www.reddit.com/r/{sub}/{kind}/.rss{q}", headers={"User-Agent": os.environ.get("REDDIT_USER_AGENT") or UA}, retries=2)
 
 
+def row_of(k: int, x: dict) -> dict:
+    """A Reddit-shaped post (API, JSON, archive) -> one row of the analysis."""
+    url = x.get("url") or ""
+    fmt = "video" if x.get("is_video") else "gallery" if x.get("is_gallery") else "text" if x.get("is_self") else classify(f'<a href="{url}">[link]</a>', "https://www.reddit.com" + (x.get("permalink") or ""))
+    title = x.get("title") or ""
+    return dict(rank=k, title=title, url="https://www.reddit.com" + (x.get("permalink") or ""), format=fmt, score=x.get("score"), comments=x.get("num_comments"),
+                published=common.ts_to_date(x.get("created_utc") or 0), words=len(title.split()), features=[f for f, (rx, _) in FEATURES.items() if re.search(rx, title.lower())])
+
+
+def fetch_chain(sub: str, t: str, limit: int) -> tuple[list[dict], list[dict], str, str]:
+    """RSS / OAuth / Agent Reach failed: the other backends of reddit_backends (public JSON, Arctic Shift archive, ThreadSnoop).
+    Returns top, new, backend, note. Raises when none answers."""
+    only = [b for b in rb.order() if b in ("json", "arctic", "threadsnoop")]
+    top = rb.listing(sub, "top", t, limit, only=only)
+    if not top["ok"]:
+        raise RuntimeError("; ".join(f"{b}: {o}" for b, o in top["attempts"]) or "nessun backend")
+    new = rb.listing(sub, "new", t, limit, only=only)
+    def rows(res):
+        out = []
+        for k, p in enumerate(res.get("posts") or [], 1):
+            raw = dict(p.get("raw") or {})
+            perma = (p.get("url") or "").replace("https://www.reddit.com", "")
+            out.append(row_of(k, dict(raw, title=p.get("title"), permalink=perma, score=p.get("score"), num_comments=p.get("num_comments"),
+                                      url=raw.get("url") or p.get("link") or "", created_utc=0)) | dict(published=p.get("published") or ""))
+        return out
+    t_rows = rows(top)
+    n_rows = rows(new) if new["ok"] else t_rows
+    return t_rows, n_rows, top["backend"], top.get("note") or ""
+
+
 def fetch_oauth(sub: str, kind: str, t: str, limit: int, h: dict) -> list[dict]:
     d = common.get_json(f"https://oauth.reddit.com/r/{sub}/{kind}?t={t}&limit={limit}&raw_json=1", headers=h)
     out = []
     for k, c in enumerate(d.get("data", {}).get("children", []), 1):
-        x = c.get("data") or {}
-        url = x.get("url") or ""
-        fmt = "video" if x.get("is_video") else "gallery" if x.get("is_gallery") else "text" if x.get("is_self") else classify(f'<a href="{url}">[link]</a>', "https://www.reddit.com" + (x.get("permalink") or ""))
-        title = x.get("title") or ""
-        out.append(dict(rank=k, title=title, url="https://www.reddit.com" + (x.get("permalink") or ""), format=fmt, score=x.get("score"), comments=x.get("num_comments"),
-                        published=common.ts_to_date(x.get("created_utc") or 0), words=len(title.split()), features=[f for f, (rx, _) in FEATURES.items() if re.search(rx, title.lower())]))
+        out.append(row_of(k, c.get("data") or {}))
     return out
+
+
+def reach_format(raw: dict) -> str:
+    hint, dest = str(raw.get("post_hint") or ""), str(raw.get("url_overridden_by_dest") or raw.get("url") or "")
+    if raw.get("gallery_urls"):
+        return "gallery"
+    if "video" in hint and "rich" not in hint:
+        return "video"
+    if hint == "image":
+        return "gif" if re.search(r"\.gifv?(\?|$)", dest) else "image"
+    if hint in ("link", "rich:video") or (dest and "/comments/" not in dest):
+        return classify(f'<a href="{dest}">[link]</a>', "")
+    return "text"
+
+
+def fetch_reach(sub: str, limit: int) -> tuple[list[dict], list[dict]]:
+    """Latest posts with real upvotes via Agent Reach (site tool, owner's login). top = best quarter by upvotes, new = all."""
+    res = reach.posts("reddit", sub, min(limit, 100))
+    if not res["ok"]:
+        raise RuntimeError("agent-reach " + str((res.get("error") or {}).get("code")))
+    rows = []
+    for it in res["items"]:
+        raw = it.get("raw") if isinstance(it.get("raw"), dict) else {}
+        title = it.get("title") or ""
+        rows.append(dict(title=title, url=it.get("url") or "", format=reach_format(raw), score=it["metrics"].get("score"), comments=it["metrics"].get("comments"),
+                         published=it.get("published") or "", words=len(title.split()), features=[f for f, (rx, _) in FEATURES.items() if re.search(rx, title.lower())]))
+    new = [dict(r, rank=k) for k, r in enumerate(rows, 1)]
+    top = sorted(rows, key=lambda r: -(r.get("score") or 0))[:max(5, len(rows) // 4)]
+    return [dict(r, rank=k) for k, r in enumerate(top, 1)], new
 
 
 MANUAL = """
@@ -186,6 +246,7 @@ Il feed pubblico ha risposto {status} il {date}. Non si aggira il blocco. A mano
 3. Ripeti con https://www.reddit.com/r/{sub}/new/ per 25 post (è il "di solito si pubblica").
 4. Salva la tabella in `launch/_raw/reddit_trends_manual.csv` (colonne: list,rank,format,title,upvotes) e chiedi a Claude di analizzarla.
 Oppure: crea un'app "script" gratuita su https://www.reddit.com/prefs/apps e metti REDDIT_CLIENT_ID e REDDIT_CLIENT_SECRET nel file privato delle chiavi.
+Oppure (punteggi veri, senza chiavi): `! agent-reach login reddit` (login tuo, account secondario) e poi `reach.py doctor --live`.
 """
 
 
@@ -196,7 +257,8 @@ def main(argv=None):
     s.add_argument("subs", nargs="+"); s.add_argument("--t", default="week", choices=["day", "week", "month", "year", "all"])
     s.add_argument("--limit", type=int, default=100); s.add_argument("--rate", type=float, default=6.0, help="seconds between requests (default 6)")
     s.add_argument("-o", "--out"); s.add_argument("--md"); s.add_argument("--raw-dir"); s.add_argument("--manual", help="ricerche-manuali.md to append blocked steps to")
-    s.add_argument("--env-file")
+    s.add_argument("--env-file"); s.add_argument("--reach", default="auto", choices=["auto", "on", "off"], help="Agent Reach backend (default auto)")
+    s.add_argument("--no-chain", action="store_true", help="do not fall back to the other Reddit backends (public JSON, Arctic Shift archive, ThreadSnoop)")
     p = sub.add_parser("parse")
     p.add_argument("feed"); p.add_argument("--baseline"); p.add_argument("--sub", default="?"); p.add_argument("-o", "--out")
     a = ap.parse_args(argv)
@@ -209,16 +271,22 @@ def main(argv=None):
         return
     load_env(a.env_file)
     common.set_rate(a.rate)
+    reach.configure(mode=a.reach, manual=a.manual)
     h = oauth_headers() if common.has_key("REDDIT_CLIENT_ID") and common.has_key("REDDIT_CLIENT_SECRET") else None
-    mode = "oauth" if h else "rss"
+    use_reach = a.reach != "off" and reach.enabled()
+    mode = "oauth" if h else "reach" if use_reach and (a.reach == "on" or reach.ready("reddit")) else "rss"
     log(f"mode: {mode}")
     today = dt.date.today().isoformat()
-    res = dict(generated_on=today, mode=mode, t=a.t, subs={}, blocked=[], note="RSS: no scores, rank = signal; lift = share in top / share in new" if mode == "rss" else "OAuth: real scores")
+    notes = dict(rss="RSS: no scores, rank = signal; lift = share in top / share in new", oauth="OAuth: real scores",
+                 reach="Agent Reach: latest posts with real upvotes; top = best quarter by upvotes (period = the latest posts, not --t)")
+    res = dict(generated_on=today, mode=mode, t=a.t, subs={}, blocked=[], note=notes[mode])
     for sname in a.subs:
         sname = sname.removeprefix("r/").strip("/")
         try:
             if h:
                 top, new = fetch_oauth(sname, "top", a.t, a.limit, h), fetch_oauth(sname, "new", a.t, a.limit, h)
+            elif mode == "reach":
+                top, new = fetch_reach(sname, a.limit)
             else:
                 tx, nx = fetch_rss(sname, "top", a.t, a.limit), fetch_rss(sname, "new", a.t, a.limit)
                 if a.raw_dir:
@@ -228,6 +296,28 @@ def main(argv=None):
                 top, new = parse_feed(tx), parse_feed(nx)
         except Exception as e:  # noqa: BLE001
             status = getattr(e, "code", type(e).__name__)
+            if mode == "rss" and use_reach:
+                try:
+                    top, new = fetch_reach(sname, a.limit)
+                    an = analyse(top, new)
+                    an["suggestions"] = suggestions(an, sname)
+                    an["mode"] = "reach"
+                    res["subs"][sname] = an
+                    log(f"r/{sname}: RSS bloccato ({status}), letto con agent-reach: {len(new)} post con voti veri")
+                    continue
+                except Exception as e2:  # noqa: BLE001
+                    status = f"{status}; agent-reach: {e2}"
+            if not a.no_chain:
+                try:
+                    top, new, backend, note = fetch_chain(sname, a.t, a.limit)
+                    an = analyse(top, new)
+                    an["suggestions"] = suggestions(an, sname)
+                    an.update(mode=backend, note=note)
+                    res["subs"][sname] = an
+                    log(f"r/{sname}: {mode} bloccato ({status}), letto via {backend}: {len(top)} top, {len(new)} nuovi")
+                    continue
+                except Exception as e3:  # noqa: BLE001
+                    status = f"{status}; altri backend: {e3}"
             log(f"r/{sname}: blocked ({status})" + ("; manual steps written" if a.manual else ""))
             res["blocked"].append(dict(sub=sname, status=str(status)))
             if a.manual:
