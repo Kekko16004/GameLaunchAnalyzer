@@ -8,7 +8,7 @@ a global `agent-reach` found on PATH, and answers one JSON object per command; i
 What Agent Reach is: a read-only CLI. Public content goes through its "public-web" route (web search scoped to the site, page
 reading); logged-in platforms go through its own dedicated browser (CloakBrowser, headless) where the OWNER logged in himself. It
 never posts, never logs in for you, never asks for passwords. Cookies stay inside the private state folder
-(~/.game-launch-strategist/reach/home): this module never reads, prints or copies them.
+(~/.game-launch-strategist/reach/home): this module never reads, prints or copies them (it only asks Agent Reach's own Python whether a login cookie exists BY NAME: a yes/no answer).
 
 TikTok: Agent Reach 1.6.1 has no TikTok channel. The OpenCLI tool it installs does have read-only TikTok commands (search,
 profile, user videos), so `tiktok` here runs those inside Agent Reach's dedicated browser, read commands only (allowlist).
@@ -214,9 +214,9 @@ def _exec(argv: list[str], stdin: str | None = None, timeout: float | None = Non
             out = runner(argv, stdin, timeout)
         elif not tool_python():
             return _err("NOT_INSTALLED", "the internal Agent Reach copy is not installed", hint_it("NOT_INSTALLED", ""))
-        elif argv and argv[0] in ("__tiktok__", "__tiktok_import__"):
-            r = subprocess.run([tool_python(), "-I", "-X", "utf8", "-c", _TIKTOK_BRIDGE if argv[0] == "__tiktok__" else _TIKTOK_IMPORT],
-                               input=json.dumps(dict(args=argv[1:], timeout=timeout)),
+        elif argv and argv[0] in ("__tiktok__", "__tiktok_import__", "__logincookies__"):
+            r = subprocess.run([tool_python(), "-I", "-X", "utf8", "-c", {"__tiktok__": _TIKTOK_BRIDGE, "__tiktok_import__": _TIKTOK_IMPORT}.get(argv[0], _LOGINCK)],
+                               input=stdin if argv[0] == "__logincookies__" else json.dumps(dict(args=argv[1:], timeout=timeout)),
                                capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=timeout + 150,
                                cwd=os.path.expanduser("~"), env=rt.env())
             out = r.stdout
@@ -320,6 +320,111 @@ except ReachError as e:
 except Exception as e:
     out(False, code="UPSTREAM_BROKEN", message=type(e).__name__)
 '''
+
+
+# Does the dedicated browser hold the cookie only a LOGGED-IN user has on that site? Runs inside Agent Reach's own Python, never starts the
+# browser, looks cookies up BY NAME and prints booleans only: values are never printed, returned or stored.
+_LOGINCK = r'''
+import json, sys
+req = json.load(sys.stdin)
+def out(ok, result=None, code="", message=""):
+    print(json.dumps({"schema_version": 1, "ok": ok, "result": result, "error": None if ok else {"code": code, "message": message[:200], "hint": ""}}))
+try:
+    from agent_reach.runtime import browser, cdp
+except Exception as e:
+    out(False, code="NEED_SETUP", message="Agent Reach internals changed: " + type(e).__name__); sys.exit(0)
+try:
+    res = cdp.call("Storage.getCookies") if browser.is_running() else None
+    if res is None:
+        out(True, {"running": False, "present": {}}); sys.exit(0)
+    rows = res.get("cookies", [])
+    present = {}
+    for ch, (dom, names) in (req.get("channels") or {}).items():
+        present[ch] = any(c.get("name") in names and bool(c.get("value")) and cdp.domain_matches(str(c.get("domain", "")), dom) for c in rows)
+    out(True, {"running": True, "present": present})
+except Exception as e:
+    out(False, code="UPSTREAM_BROKEN", message=type(e).__name__)
+'''
+# channel -> (site domain, names of the cookie only a logged-in user has). Names are public knowledge, not secrets.
+LOGIN_COOKIE = {"twitter": ("x.com", ("auth_token",)), "reddit": ("reddit.com", ("reddit_session",)),
+                "instagram": ("instagram.com", ("sessionid",)), "linkedin": ("linkedin.com", ("li_at",)),
+                "tiktok": ("tiktok.com", ("sessionid", "sessionid_ss", "sid_tt"))}
+SITE_NAME = dict(twitter="X", reddit="Reddit", instagram="Instagram", linkedin="LinkedIn", tiktok="TikTok")
+
+
+def login_cookie_state(channels) -> dict:
+    """{channel: True|False|None}: is the login cookie of each channel in the dedicated browser? None = unknown (browser off, no answer)."""
+    want = {c: LOGIN_COOKIE[c] for c in channels if c in LOGIN_COOKIE}
+    if not want:
+        return {}
+    env = _exec(["__logincookies__"], stdin=json.dumps(dict(channels={c: [d, list(n)] for c, (d, n) in want.items()})), timeout=30)
+    res = env.get("result") if isinstance(env.get("result"), dict) else {}
+    if not env.get("ok") or not res.get("running"):
+        return {c: None for c in want}
+    return {c: (bool(res["present"][c]) if c in (res.get("present") or {}) else None) for c in want}
+
+
+def _agent_state() -> dict:
+    """Agent Reach's own state.json (counts, codes and times only are read from it), or {}."""
+    try:
+        with open(os.path.join(rt.state_home(), "state.json"), encoding="utf-8") as fh:
+            d = json.load(fh)
+        return d if isinstance(d, dict) else {}
+    except (OSError, ValueError):
+        return {}
+
+
+def agent_cooldown_left(channel: str) -> int:
+    """Seconds Agent Reach still keeps the channel in its 1-hour pause after a confirmed rate limit (0 = no pause)."""
+    at = ((_agent_state().get("cooldowns") or {}).get(channel) or {}).get("at")
+    try:
+        t = dt.datetime.strptime(str(at), "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=dt.timezone.utc).timestamp()
+    except ValueError:
+        return 0
+    return max(0, int(t + 3600 - time.time()))
+
+
+def _short(msg, code=None) -> str:
+    line = (str(msg or "").strip().splitlines() or [""])[0]
+    return it_text(line, code)[:160]
+
+
+def _note_diag(channel: str, env: dict):
+    """After a live check: per failed action keep the error code and the first line of the message (no cookies, no results)."""
+    acts = {}
+    for r in env.get("results") or []:
+        if r.get("channel") == channel and not r.get("passed") and isinstance(r.get("error"), dict):
+            e = r["error"]
+            acts.setdefault(r.get("action") or "?", dict(code=e.get("code"), msg=_short(e.get("message"), e.get("code"))))
+    s = _state()
+    s.setdefault("diag", {})[channel] = dict(at=dt.datetime.now().isoformat(timespec="seconds"), actions=acts)
+    _save_state(s)
+
+
+def diagnose(channel: str, cookie: bool | None = None) -> dict:
+    """Why a channel is not ready, in plain Italian, from facts only: Agent Reach's pause, the login cookie in the dedicated browser and
+    the error text of the last live check. Returns {why, next}; `next` is empty when the right answer is the public web or waiting."""
+    site = SITE_NAME.get(channel, channel)
+    left = agent_cooldown_left(channel)
+    acts = ((_state().get("diag") or {}).get(channel) or {}).get("actions") or {}
+    msgs = " ".join(str(a.get("msg") or "") for a in acts.values()).lower()
+    codes = {a.get("code") for a in acts.values()}
+    if left:
+        mins = max(1, left // 60)
+        return dict(why=f"{site} ha rallentato le richieste: Agent Reach non riprova per altri {mins} minuti (non insistere e non cambiare account); "
+                        "passato il tempo controlla UNA sola volta",
+                    next=f"! {me()} login {channel} --check")
+    if cookie is False and channel in LOGIN_COOKIE:
+        name = LOGIN_COOKIE[channel][1][0]
+        return dict(why=f"nel browser dedicato manca il cookie di login `{name}`: il login di {site} non c'è (non è stato copiato, oppure {site} l'ha cancellato): entra in {site} nel tuo Chrome (profilo scelto) e ripeti la copia",
+                    next=f"! {alt_cmd(channel)}")
+    if "unexpected token '<'" in msgs or "not valid json" in msgs or "network security" in msgs:
+        return dict(why=f"{site} blocca le richieste dati del browser dedicato (risposta 403 \"blocked by network security\"): è un blocco della piattaforma, "
+                        "non dipende dal tuo login; ricerca e lettura passano dal web pubblico", next="")
+    if "NEED_LOGIN" in codes and cookie:
+        return dict(why=f"{site} rifiuta la sessione copiata (risposta 401) anche se il cookie di login c'è: di solito è un limite temporaneo o la sessione è stata invalidata: aspetta almeno un'ora e controlla UNA sola volta",
+                    next=f"! {me()} login {channel} --check")
+    return dict(why="", next="")
 
 
 # ---------------------------------------------------------------- state: doctor, channels, cooldowns
@@ -608,6 +713,8 @@ def manual_step(channel: str, what: str, err: dict | None, query: str = "", path
     url = MANUAL_SEARCH.get(channel, MANUAL_SEARCH["web"]).format(q=urllib.parse.quote(query)) if query else ""
     L = ["", head, "", f"- Motivo: {code}" + (f" ({(err or {}).get('message', '')[:160]})" if (err or {}).get("message") else ""),
          f"- Per sbloccarlo: {hint_it(code, channel)}"]
+    if (err or {}).get("why"):
+        L.insert(4, f"- Perché: {err['why']}")
     if url:
         L.append(f"- Intanto a mano: {url} (annota URL, data, visualizzazioni e like; i numeri vanno poi in `social_content.py track add` o `market_tracker.py manual --import`)")
     try:
@@ -622,6 +729,10 @@ def _not_ready(channel: str, action: str, query: dict, what: str, q: str = "") -
     st = status(channel)
     code = "NOT_INSTALLED" if st == "not_installed" else _BLOCKED.get(channel) or ("RATE_LIMITED" if _cooldown(channel) else "NEED_LOGIN" if st == "needs_login" else "NOT_READY")
     err = dict(code=code, message=f"{channel}: {STATUS_IT.get(st, st)}", hint_it=hint_it(code, channel))
+    if st not in OK_STATUS:
+        err["why"] = diagnose(channel)["why"]          # the real cause, when known (pause, missing login cookie, platform block)
+        if not err["why"]:
+            del err["why"]
     manual_step(channel, what, err, q)
     return dict(ok=False, channel=channel, action=action, query=query, backend=None, access=None, label="[DA VERIFICARE]", consulted=dt.date.today().isoformat(),
                 source=f"agent-reach · {channel}", cached=False, items=[], error=err)
@@ -889,6 +1000,8 @@ def doctor(live: bool = False, tiktok_probe: str = "tiktok") -> dict:
         chk = _exec(["check", "--timeout", "60"], timeout=900)
         if not chk.get("ok") and not chk.get("results"):
             log("check: " + it_text((chk.get("error") or {}).get("message", ""), (chk.get("error") or {}).get("code")))
+        for c in sorted({r.get("channel") for r in chk.get("results") or [] if r.get("channel")}):
+            _note_diag(c, chk)
         _DOCTOR = None
         if status("twitter") not in ("not_added", "needs_setup"):
             env = _exec(["__tiktok__", "profile", tiktok_probe], timeout=90)
@@ -897,7 +1010,10 @@ def doctor(live: bool = False, tiktok_probe: str = "tiktok") -> dict:
     rows = []
     info = channels_info()
     importable = set(import_channels())
-    for c in (d.get("result") or {}).get("channels") or []:
+    chans = (d.get("result") or {}).get("channels") or []
+    # is the login cookie of a not-ready channel (and of TikTok) in the dedicated browser? one local look, names only, no network
+    cookie = login_cookie_state([c["channel"] for c in chans if c.get("status") not in OK_STATUS and c["channel"] in LOGIN_COOKIE] + ["tiktok"])
+    for c in chans:
         ch, st = c["channel"], c.get("status")
         pw = sorted({a for a, x in ((info.get(ch) or {}).get("actions") or {}).items() if x.get("public_web")})
         label = STATUS_IT.get(st, st)
@@ -906,14 +1022,22 @@ def doctor(live: bool = False, tiktok_probe: str = "tiktok") -> dict:
         nxt = "" if st in OK_STATUS else (f"! {login_cmd(ch)}" if ch in LOGIN_CHANNELS or ch == "reddit" or st == "needs_login" else
                                           f"! {me()} add {ch}" if st == "not_added" else f"{me()} doctor --live" if st == "unverified" else
                                           f"! {me()} install" if st == "broken" else "")
-        rows.append(dict(channel=ch, level=c.get("level"), status=st, ready=st in OK_STATUS, label=label, public_web=pw,
+        dg = diagnose(ch, cookie.get(ch)) if st not in OK_STATUS else {}
+        if dg.get("why"):                       # a real cause is known: do not send the owner to reinstall or to log in again for nothing
+            nxt = dg.get("next", "")
+        rows.append(dict(channel=ch, level=c.get("level"), status=st, ready=st in OK_STATUS, label=label, public_web=pw, why=dg.get("why", ""),
                          problems=[it_text(p) for p in c.get("problems") or []],
                          checked_at=c.get("checked_at"), next=nxt, verified_actions=c.get("verified_actions") or [],
-                         alt=f"! {alt_cmd(ch)}" if st not in OK_STATUS and ch in importable else ""))
+                         alt=f"! {alt_cmd(ch)}" if st not in OK_STATUS and ch in importable and nxt != f"! {alt_cmd(ch)}" else ""))
     tst = status("tiktok")
     t = _state().get("tiktok") or {}
+    tlabel = STATUS_IT.get(tst, tst) + "; ricerca via web pubblico sempre possibile"
+    twhy = diagnose("tiktok", cookie.get("tiktok"))["why"] if tst not in OK_STATUS else ""
+    if tst in OK_STATUS and cookie.get("tiktok") is False:     # the probe also passes on public data: say that no login is behind it
+        twhy = "nel browser dedicato non c'è il login di TikTok (cookie `sessionid` assente): vale solo per i dati pubblici"
+        tlabel += "; ATTENZIONE: senza login, solo dati pubblici"
     rows.append(dict(channel="tiktok", level="experimental (OpenCLI nel browser di Agent Reach)", status=tst, ready=tst in OK_STATUS,
-                     label=STATUS_IT.get(tst, tst) + "; ricerca via web pubblico sempre possibile", public_web=["search"], problems=[],
+                     label=tlabel, why=twhy, public_web=["search"], problems=[],
                      checked_at=t.get("at"), next="" if tst in OK_STATUS else f"! {login_cmd('tiktok')}  (si apre la finestra di X: poi apri tiktok.com/login nella stessa finestra e fai il login)",
                      alt="" if tst in OK_STATUS else f"! {alt_cmd('tiktok')}",
                      verified_actions=["search", "profile", "user"] if tst in OK_STATUS else []))
@@ -935,7 +1059,7 @@ def doctor_md(d: dict) -> str:
         L += [f"Attenzione: correzioni locali mancanti ({', '.join(k for k, v in ri['patches'].items() if v != 'ok')}): `! {me()} install`", ""]
     L += ["| Canale | Stato | Pronto | Da fare |", "|---|---|---|---|"]
     for r in d["rows"]:
-        L.append(f"| {r['channel']} | {r['label']} | {'sì' if r['ready'] else 'no'} | {('`' + r['next'] + '`') if r['next'] else ''}{(' · oppure, se il login nel browser dedicato è bloccato: `' + r['alt'] + '`') if r.get('alt') else ''} |")
+        L.append(f"| {r['channel']} | {r['label']}{(' — Perché: ' + r['why']) if r.get('why') else ''} | {'sì' if r['ready'] else 'no'} | {('`' + r['next'] + '`') if r['next'] else ''}{(' · oppure, se il login nel browser dedicato è bloccato: `' + r['alt'] + '`') if r.get('alt') else ''} |")
     if any(r.get("alt") for r in d["rows"]):
         L += ["", f"Login copiato dal tuo browser normale (da un profilo che scegli tu): guida con `{me()} collega-browser`."]
     return "\n".join(L) + "\n"
@@ -1085,13 +1209,17 @@ def check_channel(channel: str) -> dict:
         env = _exec(["__tiktok__", "profile", "tiktok"], timeout=90)
         _note_tiktok(bool(env.get("ok")), (env.get("error") or {}).get("code"))
     else:
-        _exec(["check", channel, "--timeout", "60"], timeout=300)
+        env = _exec(["check", channel, "--timeout", "60"], timeout=300)     # always live; only Agent Reach's own 1-hour rate-limit pause skips it
+        if env.get("results"):
+            _note_diag(channel, env)
     _DOCTOR = None
     return next((r for r in doctor(False)["rows"] if r["channel"] == channel), dict(channel=channel, ready=False, label="sconosciuto", next=""))
 
 
 def _print_row(row: dict, out=print):
     out(f"Canale {row['channel']}: {row['label']}." + ("" if row.get("ready") else f" Non ancora pronto{(' - ' + row['next']) if row.get('next') else ''}"))
+    if row.get("why") and not row.get("ready"):
+        out(f"  Perché: {row['why']}.")
 
 
 def login(channel: str, lang: str | None = None, wait: bool = True, check_only: bool = False, out=print) -> int:
@@ -1263,7 +1391,10 @@ def import_one(channel: str) -> dict:
     """Copy one site's login from the owner's browser: {channel, state: copied|none|choose|bridge|error, n, code, message}. No cookie values."""
     env = _exec(["__tiktok_import__"], timeout=120) if channel == "tiktok" else _owner_call(["login", channel, "--import-existing"], timeout=180)
     if env.get("ok"):
-        return dict(channel=channel, state="copied", n=int((env.get("result") or {}).get("copied_cookies") or 0))
+        n = int((env.get("result") or {}).get("copied_cookies") or 0)
+        # "copied N cookies" is not "logged in": look (by name) whether the cookie only a logged-in user has is really in the dedicated browser
+        has = login_cookie_state([channel]).get(channel)
+        return dict(channel=channel, state="nologin" if has is False else "copied", n=n, cookie=LOGIN_COOKIE.get(channel, ("", ("",)))[1][0])
     e = env.get("error") or {}
     low = str(e.get("message", "")).lower()
     state = ("none" if "no local browser login" in low else "choose" if "several local browsers" in low else
@@ -1273,7 +1404,10 @@ def import_one(channel: str) -> dict:
 
 def import_line(r: dict) -> str:
     ch = r["channel"]
+    site = SITE_NAME.get(ch, ch)
     return {"copied": f"{ch}: login copiato ({r.get('n')} voci)",
+            "nologin": f"{ch}: copiate {r.get('n')} voci ma NON il login (manca il cookie `{r.get('cookie')}`): in quel profilo di Chrome non risulti dentro a {site}, "
+                       f"o la sessione è scaduta. Entra in {site} in QUEL profilo, poi ripeti. Non controllo il canale: sarebbe una richiesta sprecata",
             "none": f"{ch}: nessun login trovato in quel profilo (fai il login su quel sito in quel profilo di Chrome, poi riprova)",
             "choose": f"{ch}: più browser hanno un login di questo sito: scegli con `! {me()} browser use ID`",
             "bridge": f"{ch}: il ponte non è attivo (browser dedicato spento o estensione scollegata): riprova, oppure `! {me()} collega-browser`",
