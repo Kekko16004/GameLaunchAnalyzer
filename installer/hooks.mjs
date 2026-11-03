@@ -113,6 +113,20 @@ function reachDoctor(ctx, py) {
   try { return JSON.parse(r.out.slice(r.out.indexOf("{"), r.out.lastIndexOf("}") + 1)); } catch { return null; }
 }
 
+// Agent Reach opens its dedicated browser in Chinese (locale written in the code); `agent-reach update` puts that back, so the fix runs after every install/update
+async function reachLangTask(ctx, py) {
+  const { ui, run, CANON } = ctx;
+  const it = ctx.lang === "it";
+  const script = path.join(CANON, "game-launch-strategist", "scripts", "research", "reach.py");
+  await ui.task(it ? "Agent Reach: lingua del browser" : "Agent Reach: browser language", async (t) => {
+    if (ctx.DRY || !py || !ctx.exists(script)) return { state: "skip" };
+    const r = await run(py.exe, ["-B", script, "fix-lang"], { onLine: t.update, cwd: ctx.HOME, timeout: 120000, env: { PYTHONIOENCODING: "utf-8" } });
+    const lines = r.out.trim().split(/\r?\n/).filter(Boolean);
+    if (r.code !== 0) return { state: "warn", note: (lines.find((l) => /non riconosciuto|non trovo|non modificabile/.test(l)) || lines.pop() || "fix-lang").slice(0, 140) };
+    return { note: (lines[0] || "").replace(/^Lingua del browser: /, "").slice(0, 140) };
+  });
+}
+
 export async function after(ctx) {
   const { ui, run, lang, CANON, ROOT, flags } = ctx;
   const it = lang === "it";
@@ -128,6 +142,7 @@ export async function after(ctx) {
     return { note: `${n} ${it ? "compilano" : "compile"} ${ctx.g.dot} Python ${py.ver}` };
   });
   await reachTask(ctx);
+  if (ctx.detected.reach && !ctx.DRY) await reachLangTask(ctx, py);
   if (ctx.detected.reach && !ctx.DRY) {
     const d = reachDoctor(ctx, py);
     ctx.detected.reachDoctor = d;
@@ -153,8 +168,8 @@ export async function summary(ctx, rows) {
   const r = ctx.detected.reach;
   rows.push(["Agent Reach", r ? `${r.version || "?"}${ctx.detected.reachDoctor ? ` ${ctx.g.dot} ${(ctx.detected.reachDoctor.ready || []).length} ${it ? "canali pronti" : "channels ready"}` : ""}` : (it ? "non installato" : "not installed")]);
   if (r && (ctx.detected.reachDoctor?.not_ready || []).some((c) => ["twitter", "instagram", "tiktok", "reddit"].includes(c)))
-    ctx.footer.push(ctx.c.dim(it ? "Social con login (li fai tu, nel browser dedicato): ! agent-reach login twitter | instagram | reddit  ·  elenco: python reach.py setup"
-                                 : "Logged-in socials (you log in, in the dedicated browser): ! agent-reach login twitter | instagram | reddit  ·  list: python reach.py setup"));
+    ctx.footer.push(ctx.c.dim(it ? "Social con login (li fai tu, nel browser dedicato): ! python reach.py login twitter | instagram | reddit  ·  percorso e elenco: python reach.py setup"
+                                 : "Logged-in socials (you log in, in the dedicated browser): ! python reach.py login twitter | instagram | reddit  ·  full path and list: python reach.py setup"));
 }
 
 export async function doctor(ctx) {

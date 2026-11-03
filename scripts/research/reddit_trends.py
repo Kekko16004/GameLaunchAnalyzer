@@ -246,7 +246,7 @@ Il feed pubblico ha risposto {status} il {date}. Non si aggira il blocco. A mano
 3. Ripeti con https://www.reddit.com/r/{sub}/new/ per 25 post (è il "di solito si pubblica").
 4. Salva la tabella in `launch/_raw/reddit_trends_manual.csv` (colonne: list,rank,format,title,upvotes) e chiedi a Claude di analizzarla.
 Oppure: crea un'app "script" gratuita su https://www.reddit.com/prefs/apps e metti REDDIT_CLIENT_ID e REDDIT_CLIENT_SECRET nel file privato delle chiavi.
-Oppure (punteggi veri, senza chiavi): `! agent-reach login reddit` (login tuo, account secondario) e poi `reach.py doctor --live`.
+Oppure (punteggi veri, senza chiavi): `! python <skill>/scripts/research/reach.py login reddit` (login tuo, account secondario; il percorso vero lo stampa `reach.py setup`) e poi `reach.py doctor --live`.
 """
 
 

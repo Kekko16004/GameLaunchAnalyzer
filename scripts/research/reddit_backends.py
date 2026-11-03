@@ -9,7 +9,7 @@ out for the rest of the run and the next one is tried.
 
 Backends, in order (override with --backends or env GLS_REDDIT_BACKENDS="arctic,rss"; for "new" listings rss comes before arctic,
 because the archive can lag a few hours):
-  reach        Agent Reach's Reddit channel with the owner's login (`! agent-reach login reddit`): real upvotes, comments.
+  reach        Agent Reach's Reddit channel with the owner's login (`! python <skill>/scripts/research/reach.py login reddit`): real upvotes, comments.
                Used only when `reach.py doctor` says reddit is ready.
   oauth        official API, app-only OAuth (REDDIT_CLIENT_ID + REDDIT_CLIENT_SECRET in the private keys file): real numbers.
   json         public JSON (www.reddit.com, then old.reddit.com) with a descriptive User-Agent. Often 403 / login redirect now.
@@ -572,7 +572,7 @@ def doctor(sub: str = "IndieDev") -> dict:
     rows = []
     for b in ORDER:
         if not available(b):
-            why = _DOWN.get(b) or dict(reach="Reddit non pronto in Agent Reach (`! agent-reach login reddit`)",
+            why = _DOWN.get(b) or dict(reach="Reddit non pronto in Agent Reach (il proprietario lancia `! python <skill>/scripts/research/reach.py login reddit`, percorso vero in `reach.py setup`)",
                                        oauth="mancano REDDIT_CLIENT_ID / REDDIT_CLIENT_SECRET nel file privato delle chiavi",
                                        threadsnoop="manca THREADSNOOP_API_KEY nel file privato delle chiavi",
                                        reach_public="Agent Reach non installato", arctic="disattivato (GLS_ARCTIC=off)").get(b, "non disponibile")

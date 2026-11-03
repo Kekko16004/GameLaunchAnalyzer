@@ -14,7 +14,10 @@ profile, user videos), so `tiktok` here runs those inside Agent Reach's dedicate
 Experimental: it needs the owner logged in to tiktok.com in that browser, otherwise it answers NEED_LOGIN / empty.
 
   reach.py doctor [--live] [--md FILE] [-o FILE] [--json]     which channels are ready (pronto) / need a login / are off
-  reach.py setup                                              the commands the OWNER runs himself (`! agent-reach login x`)
+  reach.py setup                                              the commands the OWNER runs himself (`! python reach.py login x`)
+  reach.py login <channel> [--lang it-IT] [--check] [--no-wait]   login through the skill: fixes the browser language first, opens
+                                                              the login window, then checks the channel (tiktok = twitter window + tiktok.com/login)
+  reach.py fix-lang [--lang it-IT] [--stop]                   patch Agent Reach's dedicated browser (it opens pages in Chinese by default)
   reach.py channels                                           every channel, action and parameter Agent Reach declares
   reach.py search <platform> <query...> [--limit 10] [--game game.json]   search (game.json -> entity_match filter)
   reach.py read <url> [--platform P]                          read a post, video, page (channel picked from the URL)
@@ -85,8 +88,8 @@ MANUAL_SEARCH = {"tiktok": "https://www.tiktok.com/search?q={q}", "twitter": "ht
                  "youtube": "https://www.youtube.com/results?search_query={q}", "bilibili": "https://search.bilibili.com/all?keyword={q}",
                  "xiaohongshu": "https://www.xiaohongshu.com/search_result?keyword={q}", "facebook": "https://www.facebook.com/search/top?q={q}",
                  "github": "https://github.com/search?q={q}", "web": "https://duckduckgo.com/?q={q}"}
-HINT_IT = {"NEED_LOGIN": "il proprietario lancia `! agent-reach login {ch}` e fa il login da sé nella finestra (account secondario consigliato), poi `reach.py doctor --live`",
-           "NOT_READY": "canale non pronto: `! agent-reach login {ch}` (o `! agent-reach add {ch}`), poi `reach.py doctor --live`",
+HINT_IT = {"NEED_LOGIN": "il proprietario lancia `! {login}` e fa il login da sé nella finestra (account secondario consigliato), poi `reach.py doctor --live`",
+           "NOT_READY": "canale non pronto: `! {login}` (o `! agent-reach add {ch}`), poi `reach.py doctor --live`",
            "NEED_SETUP": "manca uno strumento: `! agent-reach add {ch}`, poi `reach.py doctor --live`",
            "NOT_INSTALLED": "Agent Reach non è installato: `! " + INSTALL_CMD + "` e `! agent-reach setup` (oppure `node installer/install.mjs update`)",
            "RATE_LIMITED": "la piattaforma ha rallentato le richieste: aspetta (Agent Reach mette in pausa il canale), non cambiare account",
@@ -95,6 +98,13 @@ HINT_IT = {"NEED_LOGIN": "il proprietario lancia `! agent-reach login {ch}` e fa
            "TIMEOUT": "nessuna risposta in tempo: riprova più tardi o con --timeout più alto",
            "UPSTREAM_BROKEN": "il canale non funziona adesso: riprova più tardi; se dura, `! agent-reach update`",
            "NOT_FOUND": "il contenuto non esiste: controlla il link o il nome"}
+
+
+
+def hint_it(code: str, channel: str) -> str:
+    """The Italian hint of an error code, with the login command the owner can really type."""
+    return HINT_IT.get(code, HINT_IT["NOT_READY"]).format(ch=channel, login=login_cmd(channel))
+
 
 _RUNNER = None           # tests: fn(argv: list[str], stdin: str | None, timeout: float) -> stdout str
 _THROTTLES: dict = {}
@@ -459,7 +469,7 @@ def normalise(env: dict, channel: str, action: str, query: dict, cached: bool = 
                           metrics=metrics(it), access=access, raw=raw))
     err = env.get("error") if not ok else None
     if err and err.get("code") in HINT_IT:
-        err = dict(err, hint_it=HINT_IT[err["code"]].format(ch=channel))
+        err = dict(err, hint_it=hint_it(err["code"], channel))
     return dict(ok=ok and bool(items), channel=channel, action=action, query=query, backend=backend, access=("public" if backend == "public-web" else "site") if ok else None,
                 label="[FATTO]" if ok and items else "[DA VERIFICARE]", consulted=today,
                 source=f"agent-reach {version() or '?'} · {channel}/{backend or '-'}", cached=cached, items=items,
@@ -548,7 +558,7 @@ def manual_step(channel: str, what: str, err: dict | None, query: str = "", path
         return
     url = MANUAL_SEARCH.get(channel, MANUAL_SEARCH["web"]).format(q=urllib.parse.quote(query)) if query else ""
     L = ["", head, "", f"- Motivo: {code}" + (f" ({(err or {}).get('message', '')[:160]})" if (err or {}).get("message") else ""),
-         f"- Per sbloccarlo: {HINT_IT.get(code, HINT_IT['NOT_READY']).format(ch=channel)}"]
+         f"- Per sbloccarlo: {hint_it(code, channel)}"]
     if url:
         L.append(f"- Intanto a mano: {url} (annota URL, data, visualizzazioni e like; i numeri vanno poi in `social_content.py track add` o `market_tracker.py manual --import`)")
     try:
@@ -562,7 +572,7 @@ def manual_step(channel: str, what: str, err: dict | None, query: str = "", path
 def _not_ready(channel: str, action: str, query: dict, what: str, q: str = "") -> dict:
     st = status(channel)
     code = "NOT_INSTALLED" if st == "not_installed" else _BLOCKED.get(channel) or ("RATE_LIMITED" if _cooldown(channel) else "NEED_LOGIN" if st == "needs_login" else "NOT_READY")
-    err = dict(code=code, message=f"{channel}: {STATUS_IT.get(st, st)}", hint_it=HINT_IT.get(code, HINT_IT["NOT_READY"]).format(ch=channel))
+    err = dict(code=code, message=f"{channel}: {STATUS_IT.get(st, st)}", hint_it=hint_it(code, channel))
     manual_step(channel, what, err, q)
     return dict(ok=False, channel=channel, action=action, query=query, backend=None, access=None, label="[DA VERIFICARE]", consulted=dt.date.today().isoformat(),
                 source=f"agent-reach · {channel}", cached=False, items=[], error=err)
@@ -831,8 +841,7 @@ def doctor(live: bool = False, tiktok_probe: str = "tiktok") -> dict:
         label = STATUS_IT.get(st, st)
         if st not in OK_STATUS and pw:
             label += f"; via web pubblico: {', '.join(pw)}"
-        nxt = "" if st in OK_STATUS else (f"! agent-reach add {ch}  poi  ! agent-reach login {ch}" if st == "not_added" and (ch in LOGIN_CHANNELS or ch == "reddit") else
-                                          f"! agent-reach login {ch}" if ch in LOGIN_CHANNELS or ch == "reddit" or st == "needs_login" else
+        nxt = "" if st in OK_STATUS else (f"! {login_cmd(ch)}" if ch in LOGIN_CHANNELS or ch == "reddit" or st == "needs_login" else
                                           f"! agent-reach add {ch}" if st == "not_added" else f"agent-reach check {ch}" if st == "unverified" else
                                           "! agent-reach update" if st == "broken" else "")
         rows.append(dict(channel=ch, level=c.get("level"), status=st, ready=st in OK_STATUS, label=label, public_web=pw, problems=c.get("problems") or [],
@@ -841,7 +850,7 @@ def doctor(live: bool = False, tiktok_probe: str = "tiktok") -> dict:
     t = _state().get("tiktok") or {}
     rows.append(dict(channel="tiktok", level="experimental (OpenCLI nel browser di Agent Reach)", status=tst, ready=tst in OK_STATUS,
                      label=STATUS_IT.get(tst, tst) + "; ricerca via web pubblico sempre possibile", public_web=["search"], problems=[],
-                     checked_at=t.get("at"), next="" if tst in OK_STATUS else "! agent-reach login twitter  (poi apri tiktok.com nella stessa finestra e fai il login)",
+                     checked_at=t.get("at"), next="" if tst in OK_STATUS else f"! {login_cmd('tiktok')}  (si apre la finestra di X: poi apri tiktok.com/login nella stessa finestra e fai il login)",
                      verified_actions=["search", "profile", "user"] if tst in OK_STATUS else []))
     tools_ = [dict(tool=x.get("tool"), version=x.get("version")) for x in (d.get("result") or {}).get("tools") or []]
     return dict(installed=True, version=version(), checked_on=today, live=live, repo=REPO, rows=rows, tools=tools_,
@@ -861,25 +870,286 @@ def doctor_md(d: dict) -> str:
     return "\n".join(L) + "\n"
 
 
+# ---------------------------------------------------------------- login through the skill + browser language
+# Agent Reach's dedicated browser (CloakBrowser) is started by agent_reach/runtime/browser_watcher.py with locale="zh-CN" written in the code,
+# so every page opens in Chinese. `fix-lang` rewrites that one value so it comes from the env REACH_BROWSER_LOCALE (default: this machine's
+# language) and sets the same language in the browser profile. `agent-reach update` replaces the file: the installer runs `fix-lang` again.
+LOCALE_MARK = "GLS-LOCALE-PATCH"
+_LANG_RE = re.compile(r"^[A-Za-z]{2,3}(-[A-Za-z0-9]{2,8}){0,2}$")
+_LOCALE_ARG = re.compile(r'locale=(?:os\.environ\.get\("REACH_BROWSER_LOCALE"\) or )?"([A-Za-z0-9-]{2,12})",(?:  # ' + LOCALE_MARK + ")?")
+
+
+def skill_script() -> str:
+    """Absolute path of reach.py as the owner must type it: the installed copy if there is one. Forward slashes (work in bash and cmd)."""
+    inst = os.path.join(os.path.expanduser("~"), ".agents", "skills", "game-launch-strategist", "scripts", "research", "reach.py")
+    return (inst if os.path.isfile(inst) else os.path.abspath(__file__)).replace("\\", "/")
+
+
+def login_cmd(channel: str) -> str:
+    """The command the owner types after `!` to log in to a channel through the skill."""
+    p = skill_script()
+    return f'python {chr(34) + p + chr(34) if " " in p else p} login {ALIASES.get(channel, channel)}'
+
+
+def system_locale() -> str:
+    """This machine's language as a BCP 47 tag (it-IT), or en-US when it cannot be read."""
+    v = ""
+    try:
+        if os.name == "nt":
+            import ctypes
+            buf = ctypes.create_unicode_buffer(85)
+            if ctypes.windll.kernel32.GetUserDefaultLocaleName(buf, 85):
+                v = buf.value
+        else:
+            v = (os.environ.get("LC_ALL") or os.environ.get("LANG") or "").split(".")[0].replace("_", "-")
+    except Exception:  # noqa: BLE001
+        v = ""
+    return v if _LANG_RE.match(v) else "en-US"
+
+
+def wanted_lang(arg: str | None = None) -> str:
+    """--lang, else the env REACH_BROWSER_LOCALE, else the system language, else en-US. Invalid values are ignored."""
+    for v in (arg, os.environ.get("REACH_BROWSER_LOCALE")):
+        if v and _LANG_RE.match(v.strip()):
+            return v.strip()
+    return system_locale()
+
+
+def accept_languages(lang: str) -> str:
+    out = []
+    for x in (lang, lang.split("-")[0], "en-US", "en"):
+        if x not in out:
+            out.append(x)
+    return ",".join(out)
+
+
+def find_watcher() -> str | None:
+    """Path of the installed agent_reach/runtime/browser_watcher.py (env GLS_REACH_WATCHER for tests)."""
+    p = os.environ.get("GLS_REACH_WATCHER")
+    if p:
+        return p if os.path.isfile(p) else None
+    py = tool_python()
+    if not py:
+        return None
+    try:
+        r = subprocess.run([py, "-I", "-c", "import importlib.util as u; s = u.find_spec('agent_reach'); print(list(s.submodule_search_locations)[0])"],
+                           capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=60, cwd=os.path.expanduser("~"))
+        f = os.path.join(r.stdout.strip().splitlines()[-1], "runtime", "browser_watcher.py") if r.returncode == 0 and r.stdout.strip() else ""
+    except (OSError, subprocess.SubprocessError, IndexError):
+        f = ""
+    return f if f and os.path.isfile(f) else None
+
+
+def patch_watcher(path: str, lang: str) -> dict:
+    """Make browser_watcher.py take its locale from REACH_BROWSER_LOCALE (default `lang`). Idempotent; the first run keeps path + '.orig'.
+    status: patched | updated (default language changed) | unchanged | unrecognized (no locale= to patch) | error."""
+    try:
+        with open(path, "rb") as fh:
+            raw = fh.read()
+        text = raw.decode("utf-8")
+    except (OSError, UnicodeDecodeError) as e:
+        return dict(status="error", path=path, message=e.__class__.__name__)
+    found = _LOCALE_ARG.findall(text)
+    if len(found) != 1 or "import os" not in text:
+        return dict(status="unrecognized", path=path, message="il file di Agent Reach è cambiato: non trovo il punto da correggere")
+    new_arg = f'locale=os.environ.get("REACH_BROWSER_LOCALE") or "{lang}",  # {LOCALE_MARK}'
+    patched = LOCALE_MARK in text
+    if patched and found[0] == lang and new_arg in text:
+        return dict(status="unchanged", path=path, lang=lang, was=found[0])
+    backup = path + ".orig"
+    try:
+        if not patched and not os.path.exists(backup):
+            with open(backup, "wb") as fh:
+                fh.write(raw)
+        with open(path, "wb") as fh:
+            fh.write(_LOCALE_ARG.sub(lambda m: new_arg, text, count=1).encode("utf-8"))
+    except OSError as e:
+        return dict(status="error", path=path, message=e.__class__.__name__)
+    return dict(status="updated" if patched else "patched", path=path, lang=lang, was=found[0], backup=backup if os.path.exists(backup) else None)
+
+
+def browser_status() -> dict:
+    """Agent Reach's own `browser status`: {running, headless, profile_dir...} or {} when it cannot be read."""
+    env = _exec(["browser", "status"], timeout=30)
+    return (env.get("result") or {}) if env.get("ok") else {}
+
+
+def profile_prefs_path(profile_dir: str | None) -> str:
+    d = os.environ.get("GLS_REACH_PROFILE") or profile_dir or os.path.join(os.path.expanduser("~"), ".agent-reach", "browser", "profile")
+    return os.path.join(d, "Default", "Preferences")
+
+
+def patch_prefs(path: str, lang: str) -> dict:
+    """Set the browser profile's accepted/selected languages. Call it only when the browser is NOT running (it rewrites the file on exit).
+    One backup, Preferences.gls-backup. status: set | unchanged | missing (no profile yet) | error."""
+    if not os.path.isfile(path):
+        return dict(status="missing", path=path)
+    want = accept_languages(lang)
+    try:
+        with open(path, "r", encoding="utf-8") as fh:
+            data = json.load(fh)
+        intl = data.setdefault("intl", {})
+        before = {k: intl.get(k) for k in ("accept_languages", "selected_languages")}
+        if before["accept_languages"] == want and before["selected_languages"] == want:
+            return dict(status="unchanged", path=path, languages=want)
+        backup = path + ".gls-backup"
+        if not os.path.exists(backup):
+            shutil.copy2(path, backup)
+        intl["accept_languages"] = intl["selected_languages"] = want
+        tmp = path + ".gls-tmp"
+        with open(tmp, "w", encoding="utf-8", newline="") as fh:
+            json.dump(data, fh, separators=(",", ":"), ensure_ascii=False)
+        os.replace(tmp, path)
+    except (OSError, ValueError) as e:
+        return dict(status="error", path=path, message=e.__class__.__name__)
+    return dict(status="set", path=path, languages=want, was=before, backup=backup)
+
+
+def stop_browser() -> bool:
+    """Close the dedicated browser with Agent Reach's own command (`agent-reach browser stop`); nothing else is ever killed."""
+    env = _exec(["browser", "stop"], timeout=60)
+    return bool(env.get("ok")) and not browser_status().get("running")
+
+
+def fix_lang(lang: str | None = None, stop: bool = False, out=print) -> dict:
+    """Patch the watcher and the profile so the dedicated browser opens in `lang`. Returns the report; `out` prints the Italian lines."""
+    lang = wanted_lang(lang)
+    rep = dict(lang=lang, watcher=None, prefs=None, running=None)
+    w = find_watcher()
+    if not w:
+        rep["watcher"] = dict(status="missing")
+        out("Lingua del browser: non trovo Agent Reach (browser_watcher.py). Se non è installato: `node installer/install.mjs update`.")
+    else:
+        r = rep["watcher"] = patch_watcher(w, lang)
+        msg = {"patched": f"corretto browser_watcher.py: la lingua era \"{r.get('was')}\" fissa, ora viene da REACH_BROWSER_LOCALE (predefinita {lang}); copia originale: {r.get('backup')}",
+               "updated": f"browser_watcher.py era già corretto: lingua predefinita cambiata in {lang}",
+               "unchanged": f"browser_watcher.py già a posto (lingua {lang})",
+               "unrecognized": "browser_watcher.py non riconosciuto (Agent Reach aggiornato?): " + str(r.get("message")),
+               "error": "browser_watcher.py non modificabile: " + str(r.get("message"))}[r["status"]]
+        out("Lingua del browser: " + msg)
+    st = browser_status()
+    running = rep["running"] = st.get("running")
+    if running and stop:
+        out("Il browser dedicato è acceso: lo chiudo con il comando di Agent Reach (`agent-reach browser stop`).")
+        running = rep["running"] = not stop_browser()
+    if running is None:
+        out("Profilo del browser: non riesco a sapere se il browser è acceso, non lo tocco. Riprova con Agent Reach installato.")
+    elif running:
+        out("Profilo del browser: il browser dedicato è ACCESO, non tocco le sue impostazioni. Chiudilo con `! agent-reach browser stop` "
+            f"(oppure rilancia con --stop) e rifai `fix-lang`: così anche le pagine già salvate passano a {lang}.")
+    else:
+        r = rep["prefs"] = patch_prefs(profile_prefs_path(st.get("profile_dir")), lang)
+        out("Profilo del browser: " + {"set": f"lingue impostate a {r.get('languages')} (prima: {(r.get('was') or {}).get('selected_languages')}); copia in {r.get('backup')}",
+                                       "unchanged": f"già a posto ({r.get('languages')})", "missing": "nessun profilo ancora (si crea al primo login, con la lingua giusta)",
+                                       "error": "non modificabile: " + str(r.get("message"))}[r["status"]])
+    return rep
+
+
+def _login_call(channel: str, lang: str) -> dict:
+    """`agent-reach login <channel>` with REACH_BROWSER_LOCALE in its environment; its stderr (QR codes, prompts) stays on screen."""
+    if _RUNNER or os.environ.get("GLS_REACH_FAKE"):
+        return _exec(["login", channel], timeout=600)
+    b = find_bin()
+    if not b:
+        return _err("NOT_INSTALLED", "agent-reach is not on PATH", hint_it("NOT_INSTALLED", channel))
+    try:
+        r = subprocess.run([b, "login", channel], stdout=subprocess.PIPE, text=True, encoding="utf-8", errors="replace", timeout=900,
+                           cwd=os.path.expanduser("~"), env=dict(os.environ, PYTHONIOENCODING="utf-8", REACH_BROWSER_LOCALE=lang))
+    except subprocess.TimeoutExpired:
+        return _err("TIMEOUT", "agent-reach login did not finish in 15 minutes")
+    except OSError as e:
+        return _err("NOT_INSTALLED", f"cannot run agent-reach: {e.__class__.__name__}", hint_it("NOT_INSTALLED", channel))
+    for line in reversed((r.stdout or "").strip().splitlines()):
+        if line.strip().startswith("{"):
+            try:
+                return json.loads(line)
+            except ValueError:
+                break
+    return _err("BAD_OUTPUT", "agent-reach printed no JSON")
+
+
+def check_channel(channel: str) -> dict:
+    """Live check of ONE channel (agent-reach check <ch>; TikTok through its probe) and its row of the doctor table."""
+    global _DOCTOR
+    if channel == "tiktok":
+        env = _exec(["__tiktok__", "profile", "tiktok"], timeout=90)
+        _note_tiktok(bool(env.get("ok")), (env.get("error") or {}).get("code"))
+    else:
+        _exec(["check", channel, "--timeout", "60"], timeout=300)
+    _DOCTOR = None
+    return next((r for r in doctor(False)["rows"] if r["channel"] == channel), dict(channel=channel, ready=False, label="sconosciuto", next=""))
+
+
+def _print_row(row: dict, out=print):
+    out(f"Canale {row['channel']}: {row['label']}." + ("" if row.get("ready") else f" Non ancora pronto{(' - ' + row['next']) if row.get('next') else ''}"))
+
+
+def login(channel: str, lang: str | None = None, wait: bool = True, check_only: bool = False, out=print) -> int:
+    """The login flow run by the OWNER: fix the browser language, open Agent Reach's login window, then check the channel.
+    It never types credentials and never reads cookies: the login itself is done by the owner in the window."""
+    ch = ALIASES.get(channel, channel)
+    target = "twitter" if ch == "tiktok" else ch
+    if not enabled():
+        out("Agent Reach non è installato. " + HINT_IT["NOT_INSTALLED"])
+        return 2
+    if check_only:
+        row = check_channel(ch)
+        _print_row(row, out)
+        return 0 if row.get("ready") else 1
+    lang = wanted_lang(lang)
+    st = browser_status()
+    # a background (headless) browser is closed with Agent Reach's own command so its language can change; a visible window is never closed
+    fix_lang(lang, stop=bool(st.get("running") and st.get("headless")), out=out)
+    out(f"Apro la finestra di login di {target}... (utente e password li scrivi tu, non passano da qui)")
+    env = _login_call(target, lang)
+    if not env.get("ok"):
+        e = env.get("error") or {}
+        out(f"Login non partito [{e.get('code', '?')}]: {str(e.get('message', ''))[:200]} {e.get('hint', '')}".strip())
+        return 3
+    item = (env.get("items") or [{}])[0]
+    out(f"Finestra aperta{(': ' + str(item.get('opened'))) if item.get('opened') else ''}. Fai il login da solo (account secondario consigliato).")
+    if item.get("next"):
+        out("Agent Reach dice: " + str(item["next"])[:300])
+    if ch == "tiktok":
+        out("TikTok: nella STESSA finestra apri https://www.tiktok.com/login e fai il login anche lì.")
+    if wait and sys.stdin and sys.stdin.isatty():
+        try:
+            input("Quando hai finito il login premi Invio per controllare... ")
+        except EOFError:
+            pass
+        else:
+            row = check_channel(ch)
+            _print_row(row, out)
+            return 0 if row.get("ready") else 1
+    out(f"Quando hai finito il login, controlla con:  ! python {skill_script()} login {ch} --check")
+    return 0
+
+
 def setup_text() -> str:
+    L = lambda ch: login_cmd(ch)
     return f"""# Agent Reach: comandi che lancia il proprietario (mai Claude al posto suo)
 
 Login e cookie non passano mai dalla chat. Ogni comando si lancia nella chat con `!` davanti (gira nel tuo terminale).
 Usa un **account secondario**: le piattaforme possono limitare gli account usati da programmi.
+Il login passa dalla skill (`reach.py login`): prima mette il browser dedicato nella tua lingua (di serie Agent Reach lo apre in cinese),
+poi apre la finestra, poi controlla il canale.
 
 1. Installazione (se manca):  `! {INSTALL_CMD}`  poi  `! agent-reach setup`
 2. Social con login, una volta sola (si apre una finestra del browser dedicato, il login lo fai tu):
-   - X / Twitter:   `! agent-reach login twitter`
-   - Instagram:     `! agent-reach login instagram`
-   - Reddit (dati del sito, punteggi veri): `! agent-reach login reddit`
-   - XiaoHongShu:   `! agent-reach add xiaohongshu`  poi  `! agent-reach login xiaohongshu`
-   - Facebook:      `! agent-reach add facebook`  poi  `! agent-reach login facebook`
-   - Bilibili (sottotitoli): `! agent-reach login bilibili` (QR)
-   - TikTok: nella finestra aperta da `! agent-reach login twitter` apri https://www.tiktok.com/login e fai il login anche lì
-     (stesso browser dedicato; TikTok passa da OpenCLI, è sperimentale)
-3. Chiavi facoltative (testo nascosto, mai in chat): `! agent-reach configure groq-key` (trascrizione dei video senza sottotitoli)
-4. Verifica: `! python <skill>/scripts/research/reach.py doctor --live`  → tabella pronto / non pronto
-5. Se un login scade: rifai il punto 2 per quel canale. Per uscire: `! agent-reach logout <canale>`.
+   - X / Twitter:   `! {L("twitter")}`
+   - Instagram:     `! {L("instagram")}`
+   - Reddit (dati del sito, punteggi veri): `! {L("reddit")}`
+   - XiaoHongShu:   `! {L("xiaohongshu")}`
+   - Facebook:      `! {L("facebook")}`
+   - Bilibili (sottotitoli): `! {L("bilibili")}` (QR)
+   - TikTok: `! {L("tiktok")}`  (si apre la finestra di X: nella stessa finestra apri https://www.tiktok.com/login e fai il login anche lì;
+     stesso browser dedicato; TikTok passa da OpenCLI, è sperimentale)
+   Finito il login, se il comando non ha aspettato: `! python {skill_script()} login <canale> --check`
+3. Solo la lingua del browser (senza aprire login): `! python {skill_script()} fix-lang`  (`--lang it-IT` per scegliere, `--stop` per chiudere prima il browser dedicato)
+4. Chiavi facoltative (testo nascosto, mai in chat): `! agent-reach configure groq-key` (trascrizione dei video senza sottotitoli)
+5. Verifica: `! python {skill_script()} doctor --live`  → tabella pronto / non pronto
+6. Se un login scade: rifai il punto 2 per quel canale. Per uscire: `! agent-reach logout <canale>`.
+7. Dopo `agent-reach update` la lingua torna cinese: l'installatore della skill la rimette (`node installer/install.mjs update`), oppure rilancia il punto 3.
 """
 
 
@@ -904,6 +1174,8 @@ def main(argv=None):
     sp = ap.add_subparsers(dest="cmd", required=True)
     d = sp.add_parser("doctor"); d.add_argument("--live", action="store_true"); d.add_argument("--md"); d.add_argument("--json", action="store_true")
     sp.add_parser("setup"); sp.add_parser("channels")
+    lg = sp.add_parser("login"); lg.add_argument("channel"); lg.add_argument("--lang"); lg.add_argument("--check", action="store_true"); lg.add_argument("--no-wait", action="store_true")
+    fl = sp.add_parser("fix-lang"); fl.add_argument("--lang"); fl.add_argument("--stop", action="store_true")
     s = sp.add_parser("search"); s.add_argument("platform"); s.add_argument("query", nargs="+"); s.add_argument("--limit", type=int, default=10)
     s.add_argument("--game", help="game JSON for entity_match (title, appid, developers, handles, words...)"); s.add_argument("--threshold", type=int)
     r = sp.add_parser("read"); r.add_argument("target"); r.add_argument("--platform")
@@ -919,6 +1191,11 @@ def main(argv=None):
     if a.cmd == "setup":
         print(setup_text())
         return 0
+    if a.cmd == "login":
+        return login(a.channel, a.lang, wait=not a.no_wait, check_only=a.check)
+    if a.cmd == "fix-lang":
+        rep = fix_lang(a.lang, a.stop)
+        return 0 if (rep["watcher"] or {}).get("status") in ("patched", "updated", "unchanged") else 1
     if a.cmd == "doctor":
         res = doctor(a.live)
         if a.md:

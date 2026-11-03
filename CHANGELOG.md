@@ -1,5 +1,15 @@
 # Changelog
 
+## 2026-11-03 (3): social login through the skill, Agent Reach browser in your language
+
+### Added
+- `reach.py login <channel>` (twitter, instagram, reddit, tiktok, ...): runs `fix-lang`, then Agent Reach's own `login`, then checks that channel (`--check` = only the check, `--lang`, `--no-wait`). tiktok = the X window, then open tiktok.com/login in the same window. The owner still types user and password himself.
+- `reach.py fix-lang [--lang it-IT] [--stop]`: Agent Reach opens its dedicated browser with `locale="zh-CN"` written in `browser_watcher.py`. The value now comes from the env `REACH_BROWSER_LOCALE` (default: the system language, else en-US); backup `browser_watcher.py.orig`; idempotent. It also sets the browser profile languages (`Preferences`, backup `Preferences.gls-backup`) but only when the browser is not running; `--stop` closes it with `agent-reach browser stop`.
+- The installer runs `fix-lang` after every install/update (`agent-reach update` puts the Chinese value back).
+
+### Changed
+- `reach.py setup`, the `next` column of `doctor`, error hints, SKILL.md, README, bootstrap and the installer footer now show `! python <installed path>/reach.py login <channel>` instead of `! agent-reach login ...`.
+
 ## 2026-11-03 (2): status colours, Reels and X in the plan, "why games flop" with reasons
 
 ### Changed

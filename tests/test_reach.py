@@ -59,10 +59,10 @@ d = reach.doctor()
 st = {r["channel"]: r for r in d["rows"]}
 assert d["installed"] and d["version"] == "1.6.1"
 assert st["youtube"]["ready"] and st["web"]["ready"] and not st["twitter"]["ready"] and not st["instagram"]["ready"]
-assert st["twitter"]["next"] == "! agent-reach login twitter" and "search" in st["twitter"]["public_web"]
+assert st["twitter"]["next"] == "! " + reach.login_cmd("twitter") and "reach.py login twitter" in st["twitter"]["next"] and "agent-reach login" not in st["twitter"]["next"] and "search" in st["twitter"]["public_web"]
 assert st["tiktok"]["status"] == "unverified" and not st["tiktok"]["ready"] and "tiktok.com" in st["tiktok"]["next"]
 md = reach.doctor_md(d)
-assert "| youtube | pronto | sì |" in md and "agent-reach login twitter" in md
+assert "| youtube | pronto | sì |" in md and "reach.py login twitter" in md
 assert "youtube" in d["ready"] and "twitter" in d["not_ready"]
 print("doctor ok:", d["ready"])
 
@@ -76,7 +76,7 @@ reset(manual=man)
 r = reach.profile("x", "@studio")
 assert not r["ok"] and r["label"] == "[DA VERIFICARE]" and r["error"]["code"] == "NEED_LOGIN" and not CALLS[2:], CALLS
 txt = open(man, encoding="utf-8").read()
-assert "agent-reach · twitter · profile studio" in txt and "! agent-reach login twitter" in txt and "x.com/search?q=studio" in txt
+assert "agent-reach · twitter · profile studio" in txt and "reach.py login twitter" in txt and "! agent-reach login" not in txt and "x.com/search?q=studio" in txt
 reach.profile("x", "studio")
 assert open(man, encoding="utf-8").read().count("twitter · profile studio") == 1           # same day, same step: written once
 print("routing ok: public web for search, manual step for profile (once)")
@@ -243,7 +243,101 @@ assert out.returncode == 0 and "youtube" in dj["ready"], out.stderr
 out = subprocess.run([sys.executable, os.path.join(R, "reach.py"), "--cache-dir", os.path.join(TMP, "c2"), "search", "x", "Test", "Game", "--limit", "5"], capture_output=True, text=True, encoding="utf-8", env=env)
 assert out.returncode == 0 and json.loads(out.stdout)["label"] == "[FATTO]", out.stderr
 out = subprocess.run([sys.executable, os.path.join(R, "reach.py"), "setup"], capture_output=True, text=True, encoding="utf-8", env=env)
-assert "! agent-reach login twitter" in out.stdout and "cookie" not in out.stdout.lower().replace("login e cookie", "")
+assert "reach.py login twitter" in out.stdout and "reach.py fix-lang" in out.stdout and "! agent-reach login" not in out.stdout and "cookie" not in out.stdout.lower().replace("login e cookie", "")
 print("cli ok: doctor --json, search, setup")
+
+# ---- login / fix-lang: patch the installed browser_watcher.py (on a temp copy), the profile language, the new subcommands
+WATCHER = "import os\n\n\ndef _launch_cloak(url, *, headless=True):\n    ctx = launch_persistent_context(\n        str(browser.profile_dir()), headless=headless, locale=\"zh-CN\",\n        args=[\"--x\"],\n    )\n    return ctx\n"
+wp = os.path.join(TMP, "browser_watcher.py")
+open(wp, "w", encoding="utf-8", newline="").write(WATCHER)
+r = reach.patch_watcher(wp, "it-IT")
+t = open(wp, encoding="utf-8").read()
+assert r["status"] == "patched" and r["was"] == "zh-CN" and "zh-CN" not in t and 'os.environ.get("REACH_BROWSER_LOCALE") or "it-IT"' in t and t.count("GLS-LOCALE-PATCH") == 1
+assert open(wp + ".orig", encoding="utf-8").read() == WATCHER                          # backup = the untouched original
+r = reach.patch_watcher(wp, "it-IT")
+assert r["status"] == "unchanged" and open(wp, encoding="utf-8").read() == t           # idempotent: the second run changes nothing
+r = reach.patch_watcher(wp, "en-GB")
+t2 = open(wp, encoding="utf-8").read()
+assert r["status"] == "updated" and '"en-GB"' in t2 and "it-IT" not in t2 and t2.count("locale=") == 1
+assert open(wp + ".orig", encoding="utf-8").read() == WATCHER                          # the backup is never overwritten by a patched file
+compile(t2, wp, "exec")
+open(wp, "w", encoding="utf-8", newline="").write("def nothing():\n    pass\n")
+assert reach.patch_watcher(wp, "it-IT")["status"] == "unrecognized"                      # a changed upstream file is left alone
+assert reach.patch_watcher(os.path.join(TMP, "nope.py"), "it-IT")["status"] == "error"
+print("patch_watcher ok: patched, backup, idempotent, language change, unrecognized")
+
+assert reach.accept_languages("it-IT") == "it-IT,it,en-US,en" and reach.accept_languages("en-US") == "en-US,en" and reach.accept_languages("it") == "it,en-US,en"
+os.environ.pop("REACH_BROWSER_LOCALE", None)
+assert reach.wanted_lang("fr-FR") == "fr-FR" and reach.wanted_lang("xx; rm -rf") == reach.system_locale()
+os.environ["REACH_BROWSER_LOCALE"] = "de-DE"
+assert reach.wanted_lang() == "de-DE" and reach.wanted_lang("it-IT") == "it-IT"
+os.environ.pop("REACH_BROWSER_LOCALE")
+assert reach._LANG_RE.match(reach.system_locale())
+pd = os.path.join(TMP, "profile", "Default")
+os.makedirs(pd)
+pp = os.path.join(pd, "Preferences")
+open(pp, "w", encoding="utf-8").write(json.dumps({"intl": {"selected_languages": "zh-CN,zh"}, "other": {"k": [1, 2]}}, separators=(",", ":")))
+r = reach.patch_prefs(pp, "it-IT")
+d2 = json.load(open(pp, encoding="utf-8"))
+assert r["status"] == "set" and d2["intl"] == {"selected_languages": "it-IT,it,en-US,en", "accept_languages": "it-IT,it,en-US,en"} and d2["other"] == {"k": [1, 2]}
+assert json.load(open(pp + ".gls-backup", encoding="utf-8"))["intl"] == {"selected_languages": "zh-CN,zh"}
+assert reach.patch_prefs(pp, "it-IT")["status"] == "unchanged" and reach.patch_prefs(os.path.join(pd, "x"), "it-IT")["status"] == "missing"
+print("patch_prefs ok")
+
+# fix_lang end to end with the fake runner: running browser -> profile untouched; stopped -> profile set
+os.environ["GLS_REACH_WATCHER"] = os.path.join(TMP, "w2.py"); os.environ["GLS_REACH_PROFILE"] = os.path.join(TMP, "profile")
+open(os.environ["GLS_REACH_WATCHER"], "w", encoding="utf-8").write(WATCHER)
+open(pp, "w", encoding="utf-8").write(json.dumps({"intl": {"selected_languages": "ja"}}))
+reset()
+DYN["browser status"] = {"ok": True, "result": {"running": True, "headless": True, "profile_dir": os.environ["GLS_REACH_PROFILE"]}}
+lines = []
+rep = reach.fix_lang("it-IT", out=lines.append)
+assert rep["watcher"]["status"] == "patched" and rep["running"] and rep["prefs"] is None and json.load(open(pp, encoding="utf-8"))["intl"] == {"selected_languages": "ja"}
+assert any("ACCESO" in x for x in lines) and ["browser", "stop"] not in CALLS                  # never closed without --stop
+CALLS.clear()
+DYN["browser status"] = [{"ok": True, "result": {"running": True, "headless": True}}, {"ok": True, "result": {"running": False}}, {"ok": True, "result": {"running": False, "profile_dir": os.environ["GLS_REACH_PROFILE"]}}]
+DYN["browser stop"] = {"ok": True, "result": {}}
+rep = reach.fix_lang("it-IT", stop=True, out=lines.append)
+assert ["browser", "stop"] in CALLS and rep["watcher"]["status"] == "unchanged" and rep["running"] is False, rep
+assert rep["prefs"]["status"] == "set" and json.load(open(pp, encoding="utf-8"))["intl"]["selected_languages"] == "it-IT,it,en-US,en"
+print("fix_lang ok: running browser untouched, --stop uses agent-reach's own command, then the profile is set")
+
+# login: fix-lang first, then Agent Reach's `login <canale>`, nothing else; tiktok = the twitter window; --check = that channel only
+reset()
+DYN["browser status"] = {"ok": True, "result": {"running": False, "profile_dir": os.environ["GLS_REACH_PROFILE"]}}
+DYN["login twitter"] = {"ok": True, "items": [{"opened": "https://x.com/login", "next": "log in in the window"}]}
+lines = []
+rc = reach.login("x", "it-IT", wait=False, out=lines.append)
+flat = "\n".join(lines)
+assert rc == 0 and ["login", "twitter"] in CALLS and "x.com/login" in flat and "login twitter --check" in flat, flat
+assert CALLS.index(["browser", "status"]) < CALLS.index(["login", "twitter"])
+CALLS.clear(); lines.clear()
+rc = reach.login("tiktok", "it-IT", wait=False, out=lines.append)
+assert ["login", "twitter"] in CALLS and ["login", "tiktok"] not in CALLS and "tiktok.com/login" in "\n".join(lines)
+CALLS.clear(); lines.clear()
+DYN["login instagram"] = {"ok": False, "items": [], "error": {"code": "NEED_SETUP", "message": "no browser", "hint": "x"}}
+assert reach.login("instagram", "it-IT", wait=False, out=lines.append) == 3 and "NEED_SETUP" in lines[-1]
+CALLS.clear(); lines.clear()
+DYN["doctor"] = FX["doctor_all_ready"]; DYN["check twitter --timeout 60"] = {"ok": True}
+reach._DOCTOR = None
+rc = reach.login("twitter", check_only=True, out=lines.append)
+assert ["check", "twitter", "--timeout", "60"] in CALLS and ["login", "twitter"] not in CALLS and lines and lines[0].startswith("Canale twitter"), (CALLS, lines)
+del DYN["doctor"]
+os.environ.pop("GLS_REACH_WATCHER"); os.environ.pop("GLS_REACH_PROFILE")
+print("login ok:", lines[0])
+
+# CLI parsing of the new subcommands (subprocess, fake runner: nothing real is touched)
+env = dict(os.environ, GLS_REACH_FAKE=os.path.join(HERE, "fixtures", "reach_fake.json"), PYTHONIOENCODING="utf-8", GLS_HOME=os.path.join(TMP, "home3"),
+           GLS_REACH_WATCHER=os.path.join(TMP, "w3.py"), GLS_REACH_PROFILE=os.path.join(TMP, "noprofile"))
+open(env["GLS_REACH_WATCHER"], "w", encoding="utf-8").write(WATCHER)
+out = subprocess.run([sys.executable, os.path.join(R, "reach.py"), "fix-lang", "--lang", "it-IT"], capture_output=True, text=True, encoding="utf-8", env=env)
+assert out.returncode == 0 and "corretto browser_watcher.py" in out.stdout and "zh-CN" not in open(env["GLS_REACH_WATCHER"], encoding="utf-8").read(), out.stdout + out.stderr
+out = subprocess.run([sys.executable, os.path.join(R, "reach.py"), "fix-lang", "--lang", "it-IT"], capture_output=True, text=True, encoding="utf-8", env=env)
+assert out.returncode == 0 and "già a posto" in out.stdout, out.stdout
+out = subprocess.run([sys.executable, os.path.join(R, "reach.py"), "login", "--help"], capture_output=True, text=True, encoding="utf-8", env=env)
+assert out.returncode == 0 and "--check" in out.stdout and "--no-wait" in out.stdout and "--lang" in out.stdout
+out = subprocess.run([sys.executable, os.path.join(R, "reach.py"), "login"], capture_output=True, text=True, encoding="utf-8", env=env)
+assert out.returncode == 2                                                                       # argparse: the channel is required
+print("cli ok: fix-lang (twice), login --help, login without channel")
 
 print("ALL REACH TESTS PASSED")
