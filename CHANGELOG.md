@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-11-03 (5): copy the login from the owner's normal browser (X blocks the dedicated one)
+
+### Added
+- `reach.py login <channel|tutti> --dal-mio-browser [--profilo ID]`: maps to Agent Reach's `login <ch> --import-existing` (cookies of that site only, read from the owner's Chrome/Edge through the OpenCLI Browser Bridge extension), then checks the channel. `tutti` = every channel with a browser login (twitter, instagram, reddit, facebook, xiaohongshu, linkedin, boss, xueqiu) plus tiktok.com (own import in the private Python, same code path); one Italian line each: copiato / nessun login trovato / errore. bilibili is explained (it reuses the login by itself). Never prints cookie values.
+- The source profile is always chosen by the owner: it refuses to run (exit 5) without `browser use ID` or `--profilo ID`, even with a single connected profile; it prints the profile before copying and fails if that profile is not connected now.
+- `reach.py browser profiles|use ID` (Italian output, `<== SCELTO` mark; the bridge only knows an id, shown in the extension popup) and `reach.py collega-browser` (steps: extension from the Web Store or unpacked from `~/.game-launch-strategist/reach/home/browser/extension`, only in the chosen profile; the folder is only replaced by an explicit extension upgrade, then press "Ricarica" in chrome://extensions). The bridge daemon only runs while the dedicated browser is open: the commands start it invisibly when it is off.
+- `doctor`: rows have an `alt` field and the table adds `--dal-mio-browser` for every login channel that is not ready; `NEED_LOGIN` / `NOT_READY` hints and `setup` mention it.
+- `tests/test_reach_browser.py`.
+
 ## 2026-11-03 (4): Agent Reach becomes an internal component of the skill
 
 ### Changed

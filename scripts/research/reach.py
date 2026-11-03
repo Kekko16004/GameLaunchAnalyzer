@@ -19,7 +19,9 @@ Experimental: it needs the owner logged in to tiktok.com in that browser, otherw
   reach.py setup                                              the commands the OWNER runs himself (`! python reach.py login x`)
   reach.py login <channel> [--lang it-IT] [--check] [--no-wait]   opens the login window of the dedicated browser (in your language),
                                                               then checks the channel (tiktok = twitter window + tiktok.com/login)
-  reach.py logout <channel> | add <channel> | configure <key> | browser status|stop     owner maintenance, all through the skill
+  reach.py login <canale|tutti> --dal-mio-browser             copies the login of the OWNER'S normal Chrome/Edge (never shows it); tiktok included
+  reach.py collega-browser                                    step by step: connect the owner's normal browser (OpenCLI extension)
+  reach.py logout <channel> | add <channel> | configure <key> | browser status|stop|profiles|use ID     owner maintenance, all through the skill
   reach.py fix-lang [--lang it-IT] [--stop]                   check the language fix and set the browser profile languages
   reach.py channels                                           every channel, action and parameter Agent Reach declares
   reach.py search <platform> <query...> [--limit 10] [--game game.json]   search (game.json -> entity_match filter)
@@ -92,8 +94,8 @@ MANUAL_SEARCH = {"tiktok": "https://www.tiktok.com/search?q={q}", "twitter": "ht
                  "youtube": "https://www.youtube.com/results?search_query={q}", "bilibili": "https://search.bilibili.com/all?keyword={q}",
                  "xiaohongshu": "https://www.xiaohongshu.com/search_result?keyword={q}", "facebook": "https://www.facebook.com/search/top?q={q}",
                  "github": "https://github.com/search?q={q}", "web": "https://duckduckgo.com/?q={q}"}
-HINT_IT = {"NEED_LOGIN": "il proprietario lancia `! {login}` e fa il login da sé nella finestra (account secondario consigliato), poi `reach.py doctor --live`",
-           "NOT_READY": "canale non pronto: `! {login}` (o `! {me} add {ch}`), poi `reach.py doctor --live`",
+HINT_IT = {"NEED_LOGIN": "il proprietario lancia `! {login}` e fa il login da sé nella finestra (account secondario consigliato), poi `reach.py doctor --live`; se la piattaforma blocca quel login, copia quello del tuo browser normale: `! {login} --dal-mio-browser` (prima `! {me} collega-browser`)",
+           "NOT_READY": "canale non pronto: `! {login}` (o `! {me} add {ch}`), poi `reach.py doctor --live`; alternativa: `! {login} --dal-mio-browser` (login copiato dal tuo browser normale, vedi `! {me} collega-browser`)",
            "NEED_SETUP": "manca uno strumento: `! {me} add {ch}`, poi `reach.py doctor --live`",
            "NOT_INSTALLED": "Agent Reach interno non installato: `! {me} install` (lo fa anche l'aggiornamento della skill)",
            "RATE_LIMITED": "la piattaforma ha rallentato le richieste: aspetta (Agent Reach mette in pausa il canale), non cambiare account",
@@ -212,8 +214,9 @@ def _exec(argv: list[str], stdin: str | None = None, timeout: float | None = Non
             out = runner(argv, stdin, timeout)
         elif not tool_python():
             return _err("NOT_INSTALLED", "the internal Agent Reach copy is not installed", hint_it("NOT_INSTALLED", ""))
-        elif argv and argv[0] == "__tiktok__":
-            r = subprocess.run([tool_python(), "-I", "-X", "utf8", "-c", _TIKTOK_BRIDGE], input=json.dumps(dict(args=argv[1:], timeout=timeout)),
+        elif argv and argv[0] in ("__tiktok__", "__tiktok_import__"):
+            r = subprocess.run([tool_python(), "-I", "-X", "utf8", "-c", _TIKTOK_BRIDGE if argv[0] == "__tiktok__" else _TIKTOK_IMPORT],
+                               input=json.dumps(dict(args=argv[1:], timeout=timeout)),
                                capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=timeout + 150,
                                cwd=os.path.expanduser("~"), env=rt.env())
             out = r.stdout
@@ -289,6 +292,33 @@ except ReachError as e:
     print(json.dumps({"ok": False, "items": [], "error": {"code": code, "message": (e.message or "")[:400], "hint": e.hint or ""}}))
 except Exception as e:
     print(json.dumps({"ok": False, "items": [], "error": {"code": "UPSTREAM_BROKEN", "message": type(e).__name__ + ": " + str(e)[:300], "hint": ""}}))
+'''
+
+
+# Copies the owner's tiktok.com login from his normal browser into the dedicated one. Agent Reach has no TikTok channel, so this runs
+# its own session_reuse.prepare (the code behind `login <ch> --import-existing`) with a stand-in channel. It prints counts only.
+_TIKTOK_IMPORT = r'''
+import json, sys
+def out(ok, result=None, code="", message="", hint=""):
+    print(json.dumps({"schema_version": 1, "ok": ok, "action": "reuse login", "result": result,
+                      "error": None if ok else {"code": code, "message": message[:300], "hint": hint}}))
+try:
+    from types import SimpleNamespace
+    from agent_reach.runtime import manage, session_reuse, tools
+    from agent_reach.runtime.result import ReachError
+except Exception as e:
+    out(False, code="NEED_SETUP", message="Agent Reach internals changed: " + type(e).__name__); sys.exit(0)
+try:
+    tools.extend_path()
+    ch = SimpleNamespace(name="tiktok", login_url="https://www.tiktok.com/login", domains=("tiktok.com",))
+    orig = manage._channel
+    manage._channel = lambda name: ch if name == "tiktok" else orig(name)
+    r = session_reuse.prepare("tiktok", force=True)
+    out(True, {"source": r.get("source"), "copied_cookies": r.get("copied_cookies", 0)})
+except ReachError as e:
+    out(False, code=e.code, message=e.message or "", hint=e.hint or "")
+except Exception as e:
+    out(False, code="UPSTREAM_BROKEN", message=type(e).__name__)
 '''
 
 
@@ -866,6 +896,7 @@ def doctor(live: bool = False, tiktok_probe: str = "tiktok") -> dict:
     d = doctor_raw()
     rows = []
     info = channels_info()
+    importable = set(import_channels())
     for c in (d.get("result") or {}).get("channels") or []:
         ch, st = c["channel"], c.get("status")
         pw = sorted({a for a, x in ((info.get(ch) or {}).get("actions") or {}).items() if x.get("public_web")})
@@ -877,12 +908,14 @@ def doctor(live: bool = False, tiktok_probe: str = "tiktok") -> dict:
                                           f"! {me()} install" if st == "broken" else "")
         rows.append(dict(channel=ch, level=c.get("level"), status=st, ready=st in OK_STATUS, label=label, public_web=pw,
                          problems=[it_text(p) for p in c.get("problems") or []],
-                         checked_at=c.get("checked_at"), next=nxt, verified_actions=c.get("verified_actions") or []))
+                         checked_at=c.get("checked_at"), next=nxt, verified_actions=c.get("verified_actions") or [],
+                         alt=f"! {alt_cmd(ch)}" if st not in OK_STATUS and ch in importable else ""))
     tst = status("tiktok")
     t = _state().get("tiktok") or {}
     rows.append(dict(channel="tiktok", level="experimental (OpenCLI nel browser di Agent Reach)", status=tst, ready=tst in OK_STATUS,
                      label=STATUS_IT.get(tst, tst) + "; ricerca via web pubblico sempre possibile", public_web=["search"], problems=[],
                      checked_at=t.get("at"), next="" if tst in OK_STATUS else f"! {login_cmd('tiktok')}  (si apre la finestra di X: poi apri tiktok.com/login nella stessa finestra e fai il login)",
+                     alt="" if tst in OK_STATUS else f"! {alt_cmd('tiktok')}",
                      verified_actions=["search", "profile", "user"] if tst in OK_STATUS else []))
     tools_ = [dict(tool=x.get("tool"), version=x.get("version")) for x in (d.get("result") or {}).get("tools") or []]
     return dict(installed=True, version=version(), checked_on=today, live=live, repo=REPO, runtime=run_info, rows=rows, tools=tools_,
@@ -902,7 +935,9 @@ def doctor_md(d: dict) -> str:
         L += [f"Attenzione: correzioni locali mancanti ({', '.join(k for k, v in ri['patches'].items() if v != 'ok')}): `! {me()} install`", ""]
     L += ["| Canale | Stato | Pronto | Da fare |", "|---|---|---|---|"]
     for r in d["rows"]:
-        L.append(f"| {r['channel']} | {r['label']} | {'sì' if r['ready'] else 'no'} | {('`' + r['next'] + '`') if r['next'] else ''} |")
+        L.append(f"| {r['channel']} | {r['label']} | {'sì' if r['ready'] else 'no'} | {('`' + r['next'] + '`') if r['next'] else ''}{(' · oppure, se il login nel browser dedicato è bloccato: `' + r['alt'] + '`') if r.get('alt') else ''} |")
+    if any(r.get("alt") for r in d["rows"]):
+        L += ["", f"Login copiato dal tuo browser normale (da un profilo che scegli tu): guida con `{me()} collega-browser`."]
     return "\n".join(L) + "\n"
 
 
@@ -1100,6 +1135,257 @@ def login(channel: str, lang: str | None = None, wait: bool = True, check_only: 
     return 0
 
 
+# ---------------------------------------------------------------- login copied from the owner's normal browser
+# Agent Reach reads a site's login from the owner's normal Chrome/Edge through the OpenCLI "Browser Bridge" extension and copies ONLY
+# that site into the dedicated browser (`login <ch> --import-existing`, runtime/session_reuse.py). The owner's browser is never changed.
+# The bridge daemon runs only while the dedicated browser is open: `_ensure_bridge` turns it on (invisible window) when it is not.
+# The SOURCE browser profile is always chosen by the owner (`browser use ID` or `--profilo ID`), never guessed, even with one profile.
+# The bridge only knows a profile by its OpenCLI id (no name, no e-mail): the id is shown in the extension popup of that profile.
+# Nothing here reads or prints cookie values: Agent Reach answers with counts, and error texts never carry cookies.
+IMPORT_FALLBACK = ("twitter", "instagram", "reddit", "facebook", "xiaohongshu", "linkedin", "boss", "xueqiu")
+EXTENSION_STORE = "https://chromewebstore.google.com/detail/opencli/ildkmabpimmkaediidaifkhjpohdnifk"
+PROFILE_WAIT = 30.0          # seconds to wait for the owner's extension to connect to the bridge (it retries every few seconds)
+_ID_RE = re.compile(r"^[A-Za-z0-9_.:-]{1,64}$")
+_ALL = ("tutti", "all", "tutto")
+
+
+def import_channels() -> list[str]:
+    """Channels whose login can be copied from the owner's browser: every Agent Reach channel with a browser login, plus tiktok."""
+    names = [n for n, c in channels_info().items() if isinstance(c.get("login"), dict) and c["login"].get("via") == "browser"]
+    names = names or list(IMPORT_FALLBACK)
+    return [n for n in names if n != "tiktok"] + ["tiktok"]
+
+
+def alt_cmd(channel: str) -> str:
+    """The alternative the owner can type when the dedicated browser's login is blocked."""
+    return f"{login_cmd(channel)} --dal-mio-browser"
+
+
+def extension_dir() -> str:
+    """Where Agent Reach keeps the OpenCLI extension (unpacked). Stable: it is only replaced by an explicit extension upgrade."""
+    return os.path.normpath(os.path.join(rt.state_home(), "browser", "extension"))
+
+
+def chosen_profile() -> str | None:
+    """The source profile the owner chose with `browser use` / `--profilo` (kept in the skill's own state), or None."""
+    v = _state().get("source_profile")
+    return v if isinstance(v, str) and _ID_RE.match(v) else None
+
+
+def _save_chosen(profile: str):
+    s = _state()
+    s["source_profile"] = profile
+    _save_state(s)
+
+
+def _ensure_bridge(out=print) -> bool:
+    """The bridge daemon lives with the dedicated browser: turn that on (invisible) when it is off. A visible login window is never touched."""
+    if browser_status().get("running"):
+        return True
+    out("Accendo il browser dedicato (invisibile) per collegare il tuo browser normale...")
+    env = _owner_call(["browser", "setup"], timeout=240)
+    if not env.get("ok"):
+        e = env.get("error") or {}
+        out(f"Non riuscito [{e.get('code', '?')}]: {it_text(e.get('message', ''), e.get('code'))[:200]} {it_text(e.get('hint', ''), e.get('code'))}".strip())
+        return False
+    return True
+
+
+def source_profiles(wait: float | None = None) -> tuple[list[str], list[str], dict]:
+    """(your browsers connected to the bridge, the dedicated one, raw answer). Waits for the owner's extension while there is none."""
+    end = time.time() + (PROFILE_WAIT if wait is None else wait)
+    while True:
+        env = _exec(["browser", "profiles"], timeout=30)
+        rows = (env.get("result") or {}).get("profiles") or [] if env.get("ok") else []
+        mine = [str(r.get("id")) for r in rows if not r.get("dedicated")]
+        if mine or not env.get("ok") or time.time() >= end:
+            return mine, [str(r.get("id")) for r in rows if r.get("dedicated")], env
+        time.sleep(3)
+
+
+def _fail_line(env: dict) -> str:
+    e = env.get("error") or {}
+    msg = it_text(e.get("message", ""), e.get("code"))[:200]
+    if "choose a connected local browser profile" in str(e.get("message", "")).lower():
+        msg = "quell'ID non è un tuo browser collegato (o è il browser dedicato)"
+    return f"Non riuscito [{e.get('code', '?')}]: {msg}"
+
+
+def browser_profiles(out=print) -> int:
+    """`browser profiles`: which browsers the bridge sees. Yours = the Chrome profile where the OpenCLI extension is loaded."""
+    if not enabled():
+        out("Agent Reach interno non installato. " + hint_it("NOT_INSTALLED", ""))
+        return 2
+    if not _ensure_bridge(out):
+        return 3
+    mine, ded, env = source_profiles()
+    if not env.get("ok"):
+        out(_fail_line(env))
+        return 3
+    pick = chosen_profile()
+    for i in ded:
+        out(f"- {i}: browser dedicato di Agent Reach (non è il tuo, non va scelto)")
+    for i in mine:
+        out(f"- {i}: un TUO profilo di Chrome/Edge con l'estensione OpenCLI" + ("   <== SCELTO come sorgente dei login" if i == pick else ""))
+    if mine:
+        out("Il ponte non conosce nome o e-mail del profilo, solo questo ID. Per riconoscerlo: nel profilo giusto clicca l'icona OpenCLI "
+            "(puzzle in alto a destra, poi OpenCLI): la riga \"Profile\" mostra lo stesso ID.")
+    if not mine:
+        out(f"Nessun tuo profilo è collegato (l'estensione manca o non ha ancora trovato il ponte). Guida: `! {me()} collega-browser`")
+        return 1
+    if pick and pick not in mine:
+        out(f"Attenzione: il profilo scelto ({pick}) adesso non è collegato: apri quel profilo di Chrome (o scegline un altro con `browser use ID`).")
+    elif not pick:
+        out(f"Non hai ancora scelto la sorgente. Anche se ne vedi uno solo, scegli tu: `! {me()} browser use ID`")
+    return 0
+
+
+def browser_use(profile: str, out=print) -> int:
+    """`browser use ID`: choose the Chrome profile the logins are copied from. Always explicit: copying refuses to run without it."""
+    if not enabled():
+        out("Agent Reach interno non installato. " + hint_it("NOT_INSTALLED", ""))
+        return 2
+    if not profile or not _ID_RE.match(profile):
+        out(f"Serve l'ID di un tuo profilo, come lo mostra `! {me()} browser profiles`.")
+        return 2
+    if not _ensure_bridge(out):
+        return 3
+    env = _owner_call(["browser", "use", profile], timeout=60)
+    if not env.get("ok"):
+        out(_fail_line(env) + f" (controlla l'ID con `! {me()} browser profiles`)")
+        return 3
+    _save_chosen(profile)
+    out(f"Profilo sorgente scelto: {profile}. Da lì si leggono solo i login dei siti che chiedi; il tuo browser non viene modificato.")
+    return 0
+
+
+def import_one(channel: str) -> dict:
+    """Copy one site's login from the owner's browser: {channel, state: copied|none|choose|bridge|error, n, code, message}. No cookie values."""
+    env = _exec(["__tiktok_import__"], timeout=120) if channel == "tiktok" else _owner_call(["login", channel, "--import-existing"], timeout=180)
+    if env.get("ok"):
+        return dict(channel=channel, state="copied", n=int((env.get("result") or {}).get("copied_cookies") or 0))
+    e = env.get("error") or {}
+    low = str(e.get("message", "")).lower()
+    state = ("none" if "no local browser login" in low else "choose" if "several local browsers" in low else
+             "bridge" if "bridge" in low or e.get("code") == "NOT_INSTALLED" else "error")
+    return dict(channel=channel, state=state, n=0, code=e.get("code"), message=it_text(e.get("message", ""), e.get("code"))[:160])
+
+
+def import_line(r: dict) -> str:
+    ch = r["channel"]
+    return {"copied": f"{ch}: login copiato ({r.get('n')} voci)",
+            "none": f"{ch}: nessun login trovato in quel profilo (fai il login su quel sito in quel profilo di Chrome, poi riprova)",
+            "choose": f"{ch}: più browser hanno un login di questo sito: scegli con `! {me()} browser use ID`",
+            "bridge": f"{ch}: il ponte non è attivo (browser dedicato spento o estensione scollegata): riprova, oppure `! {me()} collega-browser`",
+            }.get(r["state"], f"{ch}: errore [{r.get('code') or '?'}] {r.get('message') or ''}".strip())
+
+
+def login_from_browser(channel: str, profile: str | None = None, out=print) -> int:
+    """`login <canale|tutti> --dal-mio-browser [--profilo ID]`: copy the login(s) from the owner's CHOSEN Chrome profile, then check each one.
+    Refuses to run when no source profile was chosen by the owner (`browser use ID` or `--profilo ID`), even if only one is connected."""
+    global _DOCTOR
+    ch = "tutti" if channel.lower() in _ALL else ALIASES.get(channel, channel)
+    if not enabled():
+        out("Agent Reach interno non installato. " + hint_it("NOT_INSTALLED", ch))
+        return 2
+    can = import_channels()
+    if ch == "bilibili":
+        out("bilibili: non si copia con un comando. Prende da solo il login dal profilo collegato (se sei dentro a bilibili.com) quando serve; "
+            f"altrimenti `! {login_cmd('bilibili')}` (QR).")
+        return 2
+    if ch != "tutti" and ch not in can:
+        out(f"{ch}: non ha un login da copiare dal browser (canali possibili: {', '.join(can)}, oppure `tutti`).")
+        return 2
+    if profile is not None and not _ID_RE.match(profile):
+        out(f"--profilo vuole l'ID di un tuo profilo, come lo mostra `! {me()} browser profiles`.")
+        return 2
+    pick = profile or chosen_profile()
+    if not pick:
+        out("Mi fermo: non hai ancora scelto da QUALE profilo di Chrome copiare i login (non lo scelgo io, nemmeno se ne vedo uno solo).\n"
+            f"  1. `! {me()} browser profiles`  (elenca i tuoi profili collegati)\n"
+            f"  2. `! {me()} browser use ID`    (oppure aggiungi `--profilo ID` a questo comando)\n"
+            f"  Se non hai ancora collegato il browser: `! {me()} collega-browser`")
+        return 5
+    todo = can if ch == "tutti" else [ch]
+    if not _ensure_bridge(out):
+        return 3
+    mine, _, env = source_profiles()
+    if not mine:
+        out("Non vedo il tuo browser normale: l'estensione OpenCLI non è collegata al ponte. "
+            f"Guida passo per passo: `! {me()} collega-browser`")
+        return 4
+    if pick not in mine:
+        out(f"Il profilo scelto ({pick}) adesso non è collegato. Collegati ora: {', '.join(mine)}. "
+            f"Apri il profilo di Chrome giusto e riprova, oppure scegline un altro: `! {me()} browser use ID`")
+        return 4
+    use_env = _owner_call(["browser", "use", pick], timeout=60)          # makes Agent Reach read ONLY this profile
+    if not use_env.get("ok"):
+        out(_fail_line(use_env))
+        return 3
+    _save_chosen(pick)
+    out(f"Copio i login dal profilo scelto: {pick} (il Chrome dove hai caricato l'estensione). Siti: {', '.join(todo)}. Il tuo browser non cambia.")
+    results = [import_one(c) for c in todo]
+    for r in results:
+        out("- " + import_line(r))
+    copied = [r["channel"] for r in results if r["state"] == "copied"]
+    ok = True
+    for c in copied:
+        _DOCTOR = None
+        if c != "tiktok" and status(c) == "not_added":
+            out(f"Attivo il canale {c} (installa quello che serve)...")
+            _owner_call(["add", c], timeout=900)
+        row = check_channel(c)
+        _print_row(row, out)
+        ok = ok and bool(row.get("ready"))
+    if not copied:
+        out("Nessun login copiato." + ("" if ch != "tutti" else " Fai il login nel profilo scelto sui siti che vuoi, poi ripeti."))
+        return 1
+    return 0 if ok else 1
+
+
+def connect_browser_text() -> str:
+    """The owner steps to connect his normal browser (shown by `collega-browser`)."""
+    ext = extension_dir()
+    ext_ok = os.path.isfile(os.path.join(ext, "manifest.json"))
+    where = (f"""scegli la cartella:
+         {ext}
+      Non spostarla e non cancellarla. Se un giorno Agent Reach la aggiorna, il percorso resta lo stesso ma devi premere
+      "Ricarica" sulla scheda OpenCLI in chrome://extensions.""" if ext_ok else
+             f"""scegli la cartella dell'estensione: non c'è ancora, la prepara `! {me()} browser profiles` (poi ripeti qui, la cartella è
+      {ext}).""")
+    manual = f"""   B) Senza negozio: apri chrome://extensions (Edge: edge://extensions), attiva "Modalità sviluppatore", poi
+      "Carica estensione non pacchettizzata" (Edge: "Carica estensione decompressa") e {where}"""
+    return f"""# Collega UN profilo del tuo browser normale (copia del login, per quando X o altri bloccano il browser dedicato)
+
+Serve una volta sola. Il login lo fai tu, nel tuo Chrome/Edge di tutti i giorni; la skill copia nel browser dedicato solo il sito che
+chiedi, e SOLO dal profilo che scegli tu (mai uno scelto da me). Il tuo browser non viene modificato. Account secondario consigliato.
+
+1. Apri il profilo di Chrome che vuoi usare (icona del profilo in alto a destra, poi scegli il profilo: ogni profilo ha la sua finestra).
+   Installa l'estensione "OpenCLI" (il ponte ufficiale di Agent Reach) SOLO in quel profilo:
+   A) Dal negozio (più semplice): apri {EXTENSION_STORE}  e premi "Aggiungi a Chrome"
+      (in Edge: prima edge://extensions, attiva "Consenti estensioni da altri negozi", poi lo stesso link).
+{manual}
+   Attenzione: l'estensione ha permessi larghi (cookie, debugger, tutti i siti). Quando hai finito puoi toglierla o disattivarla.
+   Se la metti in due profili, il ponte li vede entrambi e devi scegliere (punto 3).
+2. In quello stesso profilo fai il login normale sui siti che vuoi: x.com, instagram.com, tiktok.com, reddit.com...
+3. Elenca i profili collegati e scegli (accende da solo il browser dedicato invisibile, aspetta fino a {int(PROFILE_WAIT)} secondi):
+   `! {me()} browser profiles`
+   Il ponte conosce solo un ID (niente nome o e-mail). Per riconoscerlo: nel profilo giusto clicca l'icona OpenCLI (puzzle in alto a
+   destra, poi OpenCLI): la riga "Profile" mostra lo stesso ID.
+   `! {me()} browser use ID`        <- OBBLIGATORIO, anche se ne vedi uno solo: senza questa scelta la copia non parte.
+4. Copia il login (mostra da quale profilo copia, prima di copiare):
+   `! {me()} login twitter --dal-mio-browser`        (un sito: twitter, instagram, tiktok, reddit, facebook, xiaohongshu, linkedin, boss, xueqiu)
+   `! {me()} login tutti --dal-mio-browser`          (tutti quelli che trovi in quel profilo; per gli altri scrive "nessun login trovato")
+   Puoi anche passare il profilo al volo: `... --dal-mio-browser --profilo ID`. Alla fine controlla da solo ogni canale copiato;
+   per rifarlo: `! {me()} login twitter --check`
+5. Se il login scade o cambi account: ripeti il punto 4 (rilegge il profilo e sostituisce la copia).
+
+Nota: il ponte c'è solo mentre il browser dedicato è acceso (lo accendono questi comandi). Bilibili prende il login da solo dal profilo
+collegato quando serve. Se l'estensione è in un solo profilo, Agent Reach può anche riusare i suoi login da solo durante le ricerche:
+per questo va caricata solo nel profilo che vuoi usare.
+"""
+
+
 def owner_cmd(cmd: str, arg: str | None = None, out=print) -> int:
     """add <channel> | logout <channel> | configure <key> | browser status|stop, through the internal copy, with Italian output."""
     if not enabled():
@@ -1166,11 +1452,14 @@ Il browser dedicato si apre nella tua lingua (di serie {wanted_lang()}).
    - TikTok: `! {L("tiktok")}`  (si apre la finestra di X: nella stessa finestra apri https://www.tiktok.com/login e fai il login anche lì;
      stesso browser dedicato; TikTok passa da OpenCLI, è sperimentale)
    Finito il login, se il comando non ha aspettato: `! {me()} login <canale> --check`
+   Se la piattaforma blocca il login nel browser dedicato (succede con X): copia il login dal TUO Chrome/Edge, da un profilo che scegli tu:
+   `! {me()} collega-browser` (guida), poi `! {me()} browser profiles`, `! {me()} browser use ID`, `! {me()} login twitter --dal-mio-browser`
+   (o `login tutti --dal-mio-browser` per ogni sito in cui sei già dentro).
 3. Aggiungere un canale senza login (es. linkedin, xueqiu): `! {me()} add <canale>`
 4. Chiavi facoltative (testo nascosto, mai in chat): `! {me()} configure groq-key` (trascrizione dei video senza sottotitoli)
 5. Verifica: `! {me()} doctor --live`  → tabella pronto / non pronto
 6. Se un login scade: rifai il punto 2 per quel canale. Per uscire: `! {me()} logout <canale>`.
-7. Browser dedicato: `! {me()} browser status` / `! {me()} browser stop`; lingua del profilo: `! {me()} fix-lang` (`--lang it-IT`).
+7. Browser dedicato: `! {me()} browser status` / `! {me()} browser stop` / `! {me()} browser profiles`; lingua del profilo: `! {me()} fix-lang` (`--lang it-IT`).
 """
 
 
@@ -1194,13 +1483,15 @@ def main(argv=None):
     ap.add_argument("-o", "--out", default="-")
     sp = ap.add_subparsers(dest="cmd", required=True)
     d = sp.add_parser("doctor"); d.add_argument("--live", action="store_true"); d.add_argument("--md"); d.add_argument("--json", action="store_true")
-    sp.add_parser("setup"); sp.add_parser("channels"); sp.add_parser("install")
-    lg = sp.add_parser("login"); lg.add_argument("channel"); lg.add_argument("--lang"); lg.add_argument("--check", action="store_true"); lg.add_argument("--no-wait", action="store_true")
+    sp.add_parser("setup"); sp.add_parser("channels"); sp.add_parser("install"); sp.add_parser("collega-browser")
+    lg = sp.add_parser("login"); lg.add_argument("channel", help="canale, oppure 'tutti' con --dal-mio-browser"); lg.add_argument("--lang"); lg.add_argument("--check", action="store_true"); lg.add_argument("--no-wait", action="store_true")
+    lg.add_argument("--dal-mio-browser", dest="from_browser", action="store_true", help="copia il login dal profilo di Chrome/Edge scelto con `browser use ID`")
+    lg.add_argument("--profilo", help="ID del profilo sorgente (come `browser profiles`), alternativa a `browser use ID`")
     fl = sp.add_parser("fix-lang"); fl.add_argument("--lang"); fl.add_argument("--stop", action="store_true")
     for name in ("add", "logout"):
         x = sp.add_parser(name); x.add_argument("channel")
     cf = sp.add_parser("configure"); cf.add_argument("key", help="groq-key | openai-key | proxy | github-token | browser-port")
-    br = sp.add_parser("browser"); br.add_argument("op", choices=["status", "stop"])
+    br = sp.add_parser("browser"); br.add_argument("op", choices=["status", "stop", "profiles", "use"]); br.add_argument("profile", nargs="?", help="ID del profilo (solo per `use`)")
     s = sp.add_parser("search"); s.add_argument("platform"); s.add_argument("query", nargs="+"); s.add_argument("--limit", type=int, default=10)
     s.add_argument("--game", help="game JSON for entity_match (title, appid, developers, handles, words...)"); s.add_argument("--threshold", type=int)
     r = sp.add_parser("read"); r.add_argument("target"); r.add_argument("--platform")
@@ -1218,13 +1509,31 @@ def main(argv=None):
         return 0
     if a.cmd == "install":
         return install_runtime()
+    if a.cmd == "collega-browser":
+        print(connect_browser_text())
+        return 0
     if a.cmd == "login":
+        if a.profilo and not a.from_browser:
+            print("--profilo si usa con --dal-mio-browser.")
+            return 2
+        if a.from_browser:
+            return login_from_browser(a.channel, a.profilo)
+        if a.channel.lower() in _ALL:
+            print("`tutti` si usa solo con --dal-mio-browser (ogni sito ha il suo login: uno alla volta senza).")
+            return 2
         return login(a.channel, a.lang, wait=not a.no_wait, check_only=a.check)
     if a.cmd in ("add", "logout"):
         return owner_cmd(a.cmd, a.channel)
     if a.cmd == "configure":
         return owner_cmd("configure", a.key)
     if a.cmd == "browser":
+        if a.profile and a.op != "use":
+            print("L'ID del profilo serve solo a `browser use ID`.")
+            return 2
+        if a.op == "profiles":
+            return browser_profiles()
+        if a.op == "use":
+            return browser_use(a.profile or "")
         return owner_cmd("browser", a.op)
     if a.cmd == "fix-lang":
         rep = fix_lang(a.lang, a.stop)
