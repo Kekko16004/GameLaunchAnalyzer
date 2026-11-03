@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-11-03 (2): status colours, Reels and X in the plan, "why games flop" with reasons
+
+### Changed
+- One palette for the whole page: **to do = neutral grey, in progress = orange, done = green, red only for overdue and problems** (`status_page.py`, `marketing_glance.py`, `criticita.py`, `calendar_view.py`). The "Da fare" icon, the open-count badge on the tabs, the criticality owner statuses (aperto / da verificare / da decidere) and the channel pills are grey; owner chips (me / Claude / together) moved off orange and green to violet / blue / teal so they never read as a status.
+- `social_content.py moments --from-registry launch/clips.json`: one moment per clip with its own hooks, caption and platforms. `plan` uses only a clip's own hooks when it has two or more, drops hashtags on X, and puts a clip only where it is made for. Reels and X are in the plan and in the Canali card (no longer "non usare").
+- `social_content.py flopcheck`: an answer can be `true` / `false` or `{"status": "ok|fail|na", "why": one line, "proof": file, "action": what to do}`. `na` = not applicable yet (e.g. no trailer): left out of the risk, shown as "Non applicabile ancora". New `--launch launch/` reads store text, languages and release timing from the launch folder; the default `--page` (comparables) is no longer taken for the game's own page.
+- STATUS.html "Perche' i giochi floppano": reason, proof and action per item; the saved result is recomputed when the answers file is newer; the social plan (all platforms, A/B hooks) is shown week by week.
+- `top_moves.py`: failed flop items enter heaviest first, with the custom action; `na` never.
+
 ## 2026-11-03: STATUS.html, a clearer Marketing e social tab
 
 ### Changed

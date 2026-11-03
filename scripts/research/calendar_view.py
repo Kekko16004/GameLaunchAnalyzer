@@ -439,7 +439,7 @@ def calendar_html(items: list[dict], rm: dict | None, today: dt.date, launch: dt
 
 
 CSS = """
-.cal{--o-me:#e5732f;--o-claude:#2a78d6;--o-both:#159a6c;--o-none:#8a63d2;position:relative}
+.cal{--o-me:#8a63d2;--o-claude:#2a78d6;--o-both:#0e8fa8;--o-none:#7d7a72;position:relative}
 :root[data-theme="dark"] .cal{--o-me:#f08a4b;--o-claude:#5a9cf0;--o-both:#2dbb88;--o-none:#a68bea}
 @media (prefers-color-scheme:dark){:root:where(:not([data-theme="light"])) .cal{--o-me:#f08a4b;--o-claude:#5a9cf0;--o-both:#2dbb88;--o-none:#a68bea}}
 .cal .o-me{--c:var(--o-me)}.cal .o-claude{--c:var(--o-claude)}.cal .o-both{--c:var(--o-both)}.cal .o-none{--c:var(--o-none)}

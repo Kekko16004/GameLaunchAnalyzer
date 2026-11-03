@@ -11,8 +11,9 @@ ready: TikTok, X, Reddit and YouTube Shorts with the owner's login in Agent Reac
 the account's recent posts (--handle instagram=studio). Wishlists are NEVER fetched: they come from Steamworks.
 
   social_content.py evidence [--platform tiktok] [--md out.md]           the rules and benchmarks, with sources
-  social_content.py moments --from-clips launch/04-clips.md [--runs launch/fg/waves] -o launch/_raw/social_moments.json
+  social_content.py moments --from-clips launch/04-clips.md [--from-registry launch/clips.json] [--runs launch/fg/waves] -o launch/_raw/social_moments.json
                      moments = hook table rows (| H1 | **text** | scores...) + [TOP] lines of the wave runs
+                     --from-registry: one moment per clip of the clip registry (title, hooks and caption of the clip, priority -> weight, the platforms it is made for)
   social_content.py plan --moments launch/_raw/social_moments.json --start 2026-10-26 --weeks 6 \\
                      [--per-week tiktok=4,youtube_shorts=3,instagram=3,reddit=1,x=2] [--steam-live 2026-10-31] \\
                      [--learn launch/_raw/social_learn.json] [--calendar launch/calendar.md] -o launch/_raw/social_plan.json --md launch/social-plan.md
@@ -21,10 +22,12 @@ the account's recent posts (--handle instagram=studio). Wishlists are NEVER fetc
   social_content.py track fetch [--since 2026-10-01] [--handle instagram=studio,x=studio] [--overwrite] [--manual launch/ricerche-manuali.md]
                      reads views / likes / comments / shares of every post with a URL through Agent Reach; fills only empty cells
                      (unless --overwrite) and writes the source and date in the `fetched` column; not ready = manual step
-  social_content.py flopcheck [--page launch/_raw/store_pages.json --appid N] [--answers launch/_raw/flopcheck_answers.json] \\
+  social_content.py flopcheck [--page launch/_raw/store_pages.json --appid N] [--launch launch] [--answers launch/_raw/flopcheck_answers.json] \\
                      [-o launch/_raw/flopcheck.json] [--md launch/flopcheck.md]
                      why it could flop: checklist from the top comments of the Reddit cases (references/09-reddit-casi.md),
-                     weighted by how often flop threads blame each factor; auto checks on the page, the rest from answers
+                     weighted by how often flop threads blame each factor; auto checks on the page (with --launch also on store_kit.json and
+                     the wishlist plan), the rest from answers: true / false, or {"status": "ok|fail|na", "why": "...", "proof": "file",
+                     "action": "..."} (na = not applicable yet, e.g. no trailer: left out of the risk and shown as such on STATUS.html)
   social_content.py learn [--posts launch/social_posts.csv] [--fetch] -o launch/_raw/social_learn.json [--md]
                      per platform: median views vs the small-account benchmark; per moment / hook / format: lift vs your median,
                      wishlists per 1,000 views; winners (n >= 2, lift >= 1.5) and losers; small samples are said out loud
@@ -136,29 +139,84 @@ def load_page(path: str | None, appid: str | None = None) -> dict:
     return next((x for x in d if not appid or str(x.get("appid")) == str(appid)), {}) if d else {}
 
 
+STATUS_WORDS = {"ok": "ok", "true": "ok", "superato": "ok", "fail": "fail", "false": "fail", "da sistemare": "fail", "da_sistemare": "fail", "ko": "fail",
+                "na": "na", "n/a": "na", "non applicabile": "na", "non_applicabile": "na", "non applicabile ancora": "na", "non_applicabile_ancora": "na"}
+
+
+def answer_status(a):
+    """One answer -> ok / fail / na / None. Accepted: true / false (the old form), "ok" / "fail" / "na", or an object {"status": ..., "why": ..., "proof": ..., "action": ...}."""
+    if isinstance(a, dict):
+        a = a.get("status", a.get("ok"))
+    if isinstance(a, bool):
+        return "ok" if a else "fail"
+    if a is None:
+        return None
+    return STATUS_WORDS.get(str(a).strip().lower())
+
+
+def launch_facts(root: str) -> tuple[dict, dict]:
+    """Facts the checklist can read by itself from the launch folder: (page-like facts, auto answers).
+    desc_chars and languages from store_kit.json; FC03 (months between the Steam page and the release, week not crowded) from _raw/wl_plan.json + window.json."""
+    def rd(*p):
+        try:
+            with open(os.path.join(root, *p), encoding="utf-8") as f:
+                return json.load(f)
+        except (OSError, ValueError):
+            return None
+    facts, auto = {}, {}
+    kit = rd("store_kit.json") or {}
+    st = kit.get("steam") or {}
+    if (st.get("long_description") or {}).get("blocks"):
+        try:
+            import store_kit as sk
+            facts["desc_chars"] = len(sk.assemble(st["long_description"]))
+        except Exception:  # noqa: BLE001
+            pass
+    for s_ in st.get("settings") or []:
+        if str(s_.get("label", "")).lower().startswith(("languages", "lingue")):
+            n = len([x for x in re.split(r"[,;/]", str(s_.get("value") or "")) if x.strip()])
+            if n:
+                facts["languages"] = n
+            break
+    wlp, win = rd("_raw", "wl_plan.json") or {}, rd("_raw", "window.json") or {}
+    if wlp.get("start") and wlp.get("launch"):
+        months = (dt.date.fromisoformat(wlp["launch"]) - dt.date.fromisoformat(wlp["start"])).days / 30.4
+        auto["FC03"] = {"status": "ok" if months >= 3 and (win.get("chosen") or {}).get("verdict") != "affollata" else "fail",
+                        "how": f"{months:.1f} mesi tra pagina Steam ({wlp['start']}) e uscita ({wlp['launch']})"}
+    return facts, auto
+
+
 def flopcheck(db: dict, page: dict | None = None, answers: dict | None = None) -> dict:
     """Apply the flop checklist (from the comments of the Reddit cases) to the game: auto checks on the Steam page record,
-    the rest from answers {"FC03": true, "wishlists": 3200}. risk = failed weight / weight judged (0-1)."""
+    the rest from answers. An answer is true / false, "ok" / "fail" / "na", or an object {"status": "ok|fail|na", "why": one line,
+    "proof": file(s), "action": what to do} (na = not applicable yet, e.g. there is no trailer; it is left out of the risk).
+    risk = failed weight / weight judged (0-1)."""
     page, answers = page or {}, answers or {}
     data = dict(page, **{k: v for k, v in answers.items() if not re.fullmatch(r"FC\d+", k)})
     out, fail_w, judged_w = [], 0, 0
     for it in db.get("flop_checklist", {}).get("items", []):
         ck, status, how = it.get("check"), "todo", ""
-        if answers.get(it["id"]) is not None:
-            status, how = ("ok" if answers[it["id"]] else "fail"), "risposta"
+        a = answers.get(it["id"])
+        d = a if isinstance(a, dict) else {}
+        given = answer_status(a)
+        if given:
+            status, how = given, d.get("how") or "risposta"
         elif ck and num(data.get(ck["field"])) is not None:
             val = num(data.get(ck["field"]))
             status, how = ("ok" if OPS[ck["op"]](val, ck["value"]) else "fail"), f"{ck['field']} = {val:g}, soglia {ck['op']} {ck['value']}"
-        if status != "todo":
+        if status in ("ok", "fail"):
             judged_w += it["weight"]
             fail_w += it["weight"] if status == "fail" else 0
-        out.append(dict(id=it["id"], code=it["code"], weight=it["weight"], status=status, how=how, q=it["q"], fix=it["fix"], evidence=it.get("evidence", "")))
+        out.append(dict(id=it["id"], code=it["code"], weight=it["weight"], status=status, how=how, q=it["q"], fix=it["fix"], evidence=it.get("evidence", ""),
+                        why=d.get("why", ""), proof=d.get("proof", ""), action=d.get("action", "")))
     fails = sorted((x for x in out if x["status"] == "fail"), key=lambda x: -x["weight"])
     todo = [x for x in out if x["status"] == "todo"]
+    na = [x for x in out if x["status"] == "na"]
     risk = round(fail_w / judged_w, 2) if judged_w else None
     return dict(generated_on=dt.date.today().isoformat(), game=page.get("name"), appid=page.get("appid"), risk=risk,
                 level=None if risk is None else "alto" if risk >= 0.5 else "medio" if risk >= 0.25 else "basso",
-                judged=len(out) - len(todo), todo=len(todo), items=out, top_fixes=[dict(id=x["id"], weight=x["weight"], fix=x["fix"]) for x in fails[:5]],
+                judged=len(out) - len(todo) - len(na), todo=len(todo), na=len(na), items=out,
+                top_fixes=[dict(id=x["id"], weight=x["weight"], fix=x.get("action") or x["fix"]) for x in fails[:5]],
                 source=db.get("flop_checklist", {}).get("doc"))
 
 
@@ -166,14 +224,17 @@ def flopcheck_md(fc: dict) -> str:
     risk = "non calcolabile (rispondi alle domande)" if fc["risk"] is None else f"{fc['risk']} ({fc['level']})"
     L = [f"# Perché potrebbe floppare: controllo{' di ' + fc['game'] if fc.get('game') else ''}", "",
          f"Domande ricavate dai commenti dei casi Reddit ({fc['source']}), in ordine di peso (5 = il fattore più citato nei flop). "
-         f"Rischio = peso delle voci non superate / peso delle voci giudicate: **{risk}**. {fc['judged']} voci giudicate, {fc['todo']} da rispondere.", "",
-         "| Voce | Peso | Esito | Domanda | Come sistemare | Prove |", "|---|---|---|---|---|---|"]
-    lab = {"ok": "ok", "fail": "**DA SISTEMARE**", "todo": "da rispondere"}
+         f"Rischio = peso delle voci non superate / peso delle voci giudicate: **{risk}**. {fc['judged']} voci giudicate, {fc.get('na', 0)} non applicabili ancora, {fc['todo']} da rispondere.", "",
+         "| Voce | Peso | Esito | Domanda | Motivo e prova | Cosa fare |", "|---|---|---|---|---|---|"]
+    lab = {"ok": "ok", "fail": "**DA SISTEMARE**", "na": "non applicabile ancora", "todo": "da rispondere"}
     for x in fc["items"]:
-        L.append(f"| {x['id']} | {x['weight']} | {lab[x['status']]}{(' (' + x['how'] + ')') if x['how'] else ''} | {x['q']} | {x['fix']} | {x['evidence']} |")
+        reason = " ".join(t for t in (x.get("why"), f"Prova: {x['proof']}" if x.get("proof") else "") if t) or x.get("evidence", "")
+        L.append(f"| {x['id']} | {x['weight']} | {lab[x['status']]}{(' (' + x['how'] + ')') if x['how'] and x['how'] != 'risposta' else ''} | {x['q']} | {reason} | {x.get('action') or x['fix']} |")
     if fc["top_fixes"]:
         L += ["", "**Prima di tutto:**", ""] + [f"{i}. {x['fix']} ({x['id']}, peso {x['weight']})" for i, x in enumerate(fc["top_fixes"], 1)]
-    L += ["", "Le risposte vanno in `launch/_raw/flopcheck_answers.json` (es. `{\"FC03\": true, \"wishlists\": 3200}`). "
+    L += ["", "Le risposte vanno in `launch/_raw/flopcheck_answers.json`: `{\"FC03\": true}` oppure, con il motivo, "
+          "`{\"FC01\": {\"status\": \"na\", \"why\": \"il trailer non esiste ancora\", \"proof\": \"launch/store_kit.json\", \"action\": \"...\"}}` "
+          "(status: ok, fail o na = non applicabile ancora). "
           "Sono opinioni di commentatori trasformate in domande, non leggi: servono a decidere cosa guardare per primo.", ""]
     return "\n".join(L) + "\n"
 
@@ -192,6 +253,19 @@ def moments_from_clips(md: str) -> list[dict]:
         nums = [int(re.sub(r"\D", "", c)) for c in cells if re.fullmatch(r"\**\d+\**", c)]
         score = nums[-1] if nums else None
         out.append(dict(id=m.group(1), label=m.group(2).strip(), score=score, source="04-clips.md", kind=kind_of(m.group(2))))
+    return out
+
+
+def moments_from_registry(path: str) -> list[dict]:
+    """One moment per clip of the registry (launch/clips.json, social_kit.py): the clip's own hooks and caption, priority 1 = heaviest, the platforms it is made for."""
+    reg = load_json(path)
+    out = []
+    for c in reg.get("clips", []):
+        if c.get("status") == "retired":
+            continue
+        cap = c.get("caption") or ""
+        out.append(dict(id=c["id"], label=c.get("title") or c["id"], score=max(1, 10 - int(c.get("priority") or 9)), source=os.path.basename(path), kind=kind_of(c.get("title") or ""),
+                        hooks=[[h, cap] for h in c.get("hooks") or []], platforms=c.get("platforms") or []))
     return out
 
 
@@ -271,6 +345,14 @@ def learned_weights(learn: dict | None) -> dict:
     return w
 
 
+def fits(m: dict, p: str) -> bool:
+    """A moment from the clip registry lists the platforms it is made for; X takes any clip made for TikTok or Reels (a clip of 30-60 s, link in the first reply)."""
+    pl = m.get("platforms")
+    if not pl:
+        return True
+    return bool({"x", "instagram", "tiktok"} & set(pl)) if p == "x" else p in pl
+
+
 def plan(db: dict, moments: list[dict], start: dt.date, weeks: int, per_week: dict, steam_live: dt.date | None, learn: dict | None = None,
          itch_live: dt.date | None = None, game: str = "the game", hooks: dict | None = None, note: str | None = None) -> dict:
     if not moments:
@@ -282,11 +364,14 @@ def plan(db: dict, moments: list[dict], start: dt.date, weeks: int, per_week: di
     slots = schedule_slots(start, weeks, per_week)
     for d, p in slots:
         # each moment goes round all platforms before a new one: cross-post the same clip (staggered), judge per platform
-        cand = sorted(ranked, key=lambda m: (used.get((m["id"], p), 0), ranked.index(m)))
+        fit = [m for m in ranked if fits(m, p)] or ranked
+        cand = sorted(fit, key=lambda m: (used.get((m["id"], p), 0), ranked.index(m)))
         m = cand[0]
         used[(m["id"], p)] = used.get((m["id"], p), 0) + 1
         H = hooks or HOOKS
-        hk = [tuple(x) for x in (m.get("hooks") or [])] + list(H.get(m.get("kind") or "chaos", H["chaos"]))
+        own = [tuple(x) for x in (m.get("hooks") or [])]
+        # a clip with its own two or more hooks (clip registry) uses only those: the generic ones are for moments that have none
+        hk = own if len(own) >= 2 else own + list(H.get(m.get("kind") or "chaos", H["chaos"]))
         k = hook_i.get(m["id"], 0)
         hook_i[m["id"]] = k + 1
         a, b = hk[k % len(hk)], hk[(k + 1) % len(hk)]
@@ -304,7 +389,8 @@ def plan(db: dict, moments: list[dict], start: dt.date, weeks: int, per_week: di
             post["caption"] = ("Titolo personale (es. \"My friend and I made a game about…\"), mai \"wishlist now\"; link Steam in un commento se le regole lo permettono. "
                                "Alterna con un sub di tema del gioco (genere, gioco che ti ha ispirato): nei casi rende più dei sub di sviluppatori")
         if p == "x":
-            post["caption"] = f"{a[1]} — link Steam nella prima risposta, niente hashtag"
+            no_tags = re.sub(r"\s*#\w+", "", a[1]).strip()
+            post["caption"] = f"{no_tags} — link Steam nella prima risposta, niente hashtag"
         posts.append(post)
     rules = {p: [r["rule"] for r in db["platforms"].get(p, {}).get("patterns", []) if r["kind"] in ("hook", "length", "format", "cta")][:4] for p in per_week}
     return dict(generated_on=dt.date.today().isoformat(), start=start.isoformat(), weeks=weeks, per_week=per_week, posts=posts, rules=rules,
@@ -571,7 +657,7 @@ def main(argv=None):
     ap.add_argument("--db")
     sub = ap.add_subparsers(dest="cmd", required=True)
     e = sub.add_parser("evidence"); e.add_argument("--platform"); e.add_argument("--md")
-    m = sub.add_parser("moments"); m.add_argument("--from-clips"); m.add_argument("--runs"); m.add_argument("-o", "--out")
+    m = sub.add_parser("moments"); m.add_argument("--from-clips"); m.add_argument("--from-registry", help="launch/clips.json: one moment per clip"); m.add_argument("--runs"); m.add_argument("-o", "--out")
     p = sub.add_parser("plan")
     p.add_argument("--moments", required=True); p.add_argument("--start"); p.add_argument("--weeks", type=int, default=6)
     p.add_argument("--per-week", default="tiktok=4,youtube_shorts=3,instagram=3,reddit=1,x=2"); p.add_argument("--steam-live", help="date the Steam page goes live: from then the CTA is the wishlist")
@@ -591,7 +677,7 @@ def main(argv=None):
     ln.add_argument("--fetch", action="store_true", help="first fill missing numbers through Agent Reach (track fetch)"); ln.add_argument("--handle")
     fc = sub.add_parser("flopcheck", help="flop checklist from the comments of the Reddit cases, applied to the game")
     fc.add_argument("--page", default=os.path.join("launch", "_raw", "store_pages.json"), help="store_bench.py fetch output (the game's own page)")
-    fc.add_argument("--appid"); fc.add_argument("--answers", default=os.path.join("launch", "_raw", "flopcheck_answers.json"))
+    fc.add_argument("--launch", help="launch folder: read store text, languages and release timing from it"); fc.add_argument("--appid"); fc.add_argument("--answers", default=os.path.join("launch", "_raw", "flopcheck_answers.json"))
     fc.add_argument("-o", "--out", default=os.path.join("launch", "_raw", "flopcheck.json")); fc.add_argument("--md")
     a = ap.parse_args(argv)
     if a.cmd == "track" and a.tcmd == "fetch" or a.cmd == "learn" and a.fetch:
@@ -629,7 +715,10 @@ def main(argv=None):
             print(txt)
         return
     if a.cmd == "flopcheck":
-        res = flopcheck(db, load_page(a.page, a.appid), load_json(a.answers) if a.answers and os.path.exists(a.answers) else {})
+        facts, auto = launch_facts(a.launch) if a.launch else ({}, {})
+        default_page = os.path.join("launch", "_raw", "store_pages.json")   # in a game folder this file holds the comparables, not our page: only read with --appid or an explicit --page
+        page = load_page(a.page, a.appid) if (a.appid or a.page != default_page) else {}
+        res = flopcheck(db, dict(facts, **page), dict(auto, **(load_json(a.answers) if a.answers and os.path.exists(a.answers) else {})))
         write_json(res, a.out)
         txt = flopcheck_md(res)
         if a.md:
@@ -641,6 +730,8 @@ def main(argv=None):
         ms = []
         if a.from_clips:
             ms += moments_from_clips(open(a.from_clips, encoding="utf-8").read())
+        if a.from_registry:
+            ms += moments_from_registry(a.from_registry)
         if a.runs:
             ms += moments_from_runs(a.runs)
         log(f"{len(ms)} moments")

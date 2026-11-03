@@ -44,19 +44,20 @@ SEV_PILL = {"alta": "crit", "media": "warn", "bassa": "mute"}
 STAGE_LABEL = {"beta": "beta", "full": "gioco completo"}
 STAGE_ORDER = {"": 0, "beta": 0, "full": 1}
 STATUS_PILL = {"nuova": ("new", "Nuova"), "presente": ("mute", "Presente"), "persistente": ("mute", "Persistente"), "in aumento": ("crit", "In aumento"), "in calo": ("ok", "In calo"),
-               "ricomparsa": ("warn", "Ricomparsa"), "risolta": ("ok", "Risolta"), "aperta": ("warn", "Aperta"), "in corso": ("warn", "In corso")}
+               "ricomparsa": ("warn", "Ricomparsa"), "risolta": ("ok", "Risolta"), "aperta": ("mute", "Aperta"), "in corso": ("warn", "In corso")}
 SOURCES = {"onda": "ondata", "playtest": "test reale", "recensioni": "recensioni reali", "premortem": "pre-mortem", "altro": "altro"}
 FIELDS = ["key", "label", "severity", "source", "gate", "area", "opened", "status", "closed", "note"]
 MONTHS = "gen feb mar apr mag giu lug ago set ott nov dic".split()
 # owner's decision (issue_status.json): (pill kind, label, still to do now?, icon)
-OWNER = {"aperto": ("warn", "Aperto", True, "warn"), "in_lavorazione": ("new", "In lavorazione", True, "work"), "da_verificare": ("warn", "Da verificare", True, "ask"),
+OWNER = {"aperto": ("mute", "Aperto", True, "todo"), "in_lavorazione": ("warn", "In lavorazione", True, "work"), "da_verificare": ("mute", "Da verificare", True, "ask"),
          "risolto": ("ok", "Risolto", False, "ok"), "pianificato": ("mute", "Pianificato", False, "plan"), "accettato": ("mute", "Accettato così", False, "dash"),
          "non_problema": ("mute", "Non è un problema", False, "dash")}
-UNDECIDED = ("warn", "Da decidere", True, "ask")
+UNDECIDED = ("mute", "Da decidere", True, "ask")
 _ICON = {"ok": '<path d="M3.5 8.2l2.6 2.6L12.5 5" stroke="var(--good)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>',
          "warn": '<path d="M8 2L14.5 13.5H1.5z" fill="none" stroke="var(--warn)" stroke-width="1.6" stroke-linejoin="round"/><path d="M8 6.5v3.2M8 11.6v.2" stroke="var(--ink)" stroke-width="1.6" stroke-linecap="round"/>',
-         "work": '<circle cx="8" cy="8" r="5.6" fill="none" stroke="var(--s1)" stroke-width="1.6"/><path d="M8 4.8V8l2.2 1.4" stroke="var(--s1)" stroke-width="1.6" fill="none" stroke-linecap="round"/>',
-         "ask": '<circle cx="8" cy="8" r="5.6" fill="none" stroke="var(--warn)" stroke-width="1.6"/><path d="M6.4 6.4a1.7 1.7 0 113 1c-.6.5-1.4.8-1.4 1.7M8 11.4v.2" stroke="var(--ink)" stroke-width="1.5" fill="none" stroke-linecap="round"/>',
+         "todo": '<circle cx="8" cy="8" r="5.6" fill="none" stroke="var(--muted)" stroke-width="1.6"/>',
+         "work": '<circle cx="8" cy="8" r="5.6" fill="none" stroke="var(--warn)" stroke-width="1.6"/><path d="M8 4.8V8l2.2 1.4" stroke="var(--warn)" stroke-width="1.6" fill="none" stroke-linecap="round"/>',
+         "ask": '<circle cx="8" cy="8" r="5.6" fill="none" stroke="var(--muted)" stroke-width="1.6"/><path d="M6.4 6.4a1.7 1.7 0 113 1c-.6.5-1.4.8-1.4 1.7M8 11.4v.2" stroke="var(--ink)" stroke-width="1.5" fill="none" stroke-linecap="round"/>',
          "plan": '<rect x="2.5" y="3.5" width="11" height="10" rx="1.5" fill="none" stroke="var(--ink2)" stroke-width="1.5"/><path d="M2.5 6.5h11M5.5 2v3M10.5 2v3" stroke="var(--ink2)" stroke-width="1.5"/>',
          "dash": '<circle cx="8" cy="8" r="5.6" fill="none" stroke="var(--muted)" stroke-width="1.6"/><path d="M5.2 8h5.6" stroke="var(--muted)" stroke-width="1.6" stroke-linecap="round"/>'}
 

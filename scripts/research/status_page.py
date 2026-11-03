@@ -127,7 +127,7 @@ h2{scroll-margin-top:72px}.gates{display:flex;gap:6px 16px;flex-wrap:wrap;margin
 .tabs{position:sticky;top:0;z-index:5;background:var(--bg);display:flex;gap:4px;overflow-x:auto;padding:10px 0 0;margin:14px 0 0;border-bottom:1px solid var(--axis);scrollbar-width:thin}
 .tabs button{flex:none;display:inline-flex;align-items:center;gap:6px;background:transparent;color:var(--ink2);border:1px solid transparent;border-bottom:0;border-radius:10px 10px 0 0;padding:8px 14px;cursor:pointer;font:inherit;font-size:.95rem;margin-bottom:-1px}
 .tabs button[aria-selected="true"]{background:var(--surface);color:var(--ink);border-color:var(--axis);font-weight:600;border-bottom:1px solid var(--surface)}.tabs button:focus-visible{outline:2px solid var(--s1);outline-offset:-2px}.tabs svg{flex:none}
-.tabs .cnt{font-size:.75rem;font-weight:600;border-radius:999px;padding:0 7px;border:1px solid var(--warn);color:var(--ink)}[role=tabpanel]{padding-top:4px}[role=tabpanel][hidden]{display:none}
+.tabs .cnt{font-size:.75rem;font-weight:600;border-radius:999px;padding:0 7px;border:1px solid var(--muted);color:var(--ink)}[role=tabpanel]{padding-top:4px}[role=tabpanel][hidden]{display:none}
 .risk-own{display:inline-flex;gap:6px;flex-wrap:wrap;margin-left:6px}.todo-sec{margin-top:10px}.todo-sec summary{font-weight:600}.todo-l{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;padding:8px 0;border-top:1px solid var(--grid)}.todo-l .meta{grid-column:2;color:var(--ink2);font-size:.85rem;display:flex;gap:12px;flex-wrap:wrap}
 .todo-l.done .txt{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--axis)}.wgrid{display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(min(150px,100%),1fr));margin:8px 0}.wgrid .tile .v{font-size:1.4rem}
 .chart svg{max-width:860px}.stage{display:inline-block;border-radius:6px;padding:1px 8px;font-size:.8rem;font-weight:600;border:1px solid var(--s1);color:var(--ink)}.stage.full{border-color:var(--s2)}
@@ -152,7 +152,7 @@ details[open]>summary::before{transform:rotate(45deg)}details.card>summary{font-
 .tabs{background:color-mix(in srgb,var(--bg) 82%,transparent);backdrop-filter:saturate(1.4) blur(10px);-webkit-backdrop-filter:saturate(1.4) blur(10px);border-bottom:1px solid var(--grid);gap:2px;padding:10px 0 8px;margin:18px 0 0}
 .tabs button{border-radius:999px;border:1px solid transparent;padding:7px 14px;margin:0;font-size:.92rem}.tabs button:hover{background:var(--surface2);color:var(--ink)}
 .tabs button[aria-selected="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink);border-bottom:1px solid var(--ink)}
-.tabs .cnt{border:0;background:var(--warn);color:#141413;padding:0 7px;line-height:1.5}.tabs .cnt.late{background:var(--crit);color:#fff}
+.tabs .cnt{border:0;background:var(--surface2);color:var(--ink2);box-shadow:inset 0 0 0 1px var(--muted);padding:0 7px;line-height:1.5}.tabs .cnt.late{background:var(--crit);color:#fff;box-shadow:none}
 .toc{gap:6px;padding:6px 0 4px}.toc a{background:var(--surface);box-shadow:var(--shadow);border-color:var(--ring)}
 .tile{display:flex;flex-direction:column;gap:2px}.tile .l{font-size:.8rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);font-weight:600}.tile .v{font-size:1.75rem;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
 .tile .d{font-size:.82rem;line-height:1.4}.grid{gap:14px}
@@ -167,7 +167,7 @@ a.ext::after{content:"↗";font-size:.75em;margin-left:2px;opacity:.7}a.ext:hove
 ol.steps{margin-top:4px}.step{grid-template-columns:2.1em minmax(0,1fr);gap:3px 12px;padding:12px 4px;border-top:1px solid var(--grid);border-radius:8px}
 .step .n{grid-row:span 4;width:2em;height:2em;border-radius:50%;display:grid;place-items:center;font-size:.78rem;font-weight:600;background:var(--surface2);color:var(--ink2)}
 .step[data-state="done"] .n{background:color-mix(in srgb,var(--good) 18%,transparent);color:var(--goodtext)}.step[data-state="overdue"] .n{background:color-mix(in srgb,var(--crit) 16%,transparent);color:var(--crit)}
-.step .meta{gap:6px 8px}.owner{font-weight:600;padding:0 9px;border:1px solid var(--ring);background:var(--surface)}.owner.o-me{border-color:#e5732f}.owner.o-claude{border-color:#2a78d6}.owner.o-both{border-color:#159a6c}
+.step .meta{gap:6px 8px}.owner{font-weight:600;padding:0 9px;border:1px solid var(--ring);background:var(--surface)}.owner.o-me{border-color:#8a63d2}.owner.o-claude{border-color:#2a78d6}.owner.o-both{border-color:#0e8fa8}
 .due{padding:0 9px;border:1px solid var(--ring);color:var(--ink2);font-variant-numeric:tabular-nums}.due.soon{border-color:var(--warn);color:var(--ink)}.due.late{border-color:var(--crit);color:var(--crit);font-weight:600}
 .step .stext,.step .stags,.step .snext,.step .sdet,.step .notes{grid-column:2;min-width:0}.stitle{font-weight:600}.stail{color:var(--ink2)}.step .stext strong{font-weight:600}
 .stags{display:flex;flex-wrap:wrap;gap:5px;margin-top:3px}.tagx{border:1px solid var(--ring);background:var(--surface2);padding:0 9px;color:var(--ink2);max-width:100%;overflow:hidden;text-overflow:ellipsis}
@@ -205,7 +205,7 @@ a{color:var(--acc)}a:focus-visible,button:focus-visible,summary:focus-visible{ou
 button.theme{display:inline-flex;align-items:center;gap:6px;box-shadow:none;border:1px solid var(--ring);background:var(--surface);color:var(--ink)}button.theme svg{flex:none}
 details>summary{cursor:pointer}summary:hover{color:var(--ink)}
 .chartbox .why::before{content:"Come si legge: ";font-weight:600;color:var(--ink)}
-.owner.o-me{border-color:var(--acc2)}.owner.o-claude{border-color:var(--acc)}.owner.o-both{border-color:var(--ink2)}
+.owner.o-me{border-color:#8a63d2}.owner.o-claude{border-color:#2a78d6}.owner.o-both{border-color:#0e8fa8}
 .progress span{background:var(--good)}
 @media (max-width:700px){h2{font-size:var(--fs-2);margin:32px 0 10px}.card{padding:14px}.tile .v{font-size:var(--fs-3)}.toc{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding-bottom:6px}.toc::-webkit-scrollbar{display:none}.top{padding-right:52px}button.theme{padding:8px}button.theme span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}}
 @media print{:root{--bg:#fff;--surface:#fff;--shadow:none}body{background:#fff;color:#000}.tabs,.toc,button.theme,button.copy,.filters,.tip{display:none!important}
@@ -261,7 +261,7 @@ def fmt_date(s) -> str:
 ICONS = {  # always paired with a text label: colour never carries the meaning alone
     "pass": ('<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><circle cx="9" cy="9" r="8" fill="var(--good)"/><path d="M5 9.5l2.6 2.6L13 6.5" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>', "Superato"),
     "fail": ('<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><circle cx="9" cy="9" r="8" fill="var(--crit)"/><path d="M6 6l6 6M12 6l-6 6" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/></svg>', "Non superato"),
-    "pending": ('<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><circle cx="9" cy="9" r="7.2" fill="none" stroke="var(--crit)" stroke-width="2"/><path d="M9 5v4.5l3 1.5" stroke="var(--crit)" stroke-width="2" fill="none" stroke-linecap="round"/></svg>', "Da fare"),
+    "pending": ('<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><circle cx="9" cy="9" r="7.2" fill="none" stroke="var(--muted)" stroke-width="2"/><path d="M9 5v4.5l3 1.5" stroke="var(--muted)" stroke-width="2" fill="none" stroke-linecap="round"/></svg>', "Da fare"),
     "warn": ('<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M9 1.5L17 16H1z" fill="var(--warn)"/><path d="M9 6.5v4.5M9 13v.8" stroke="#0b0b0b" stroke-width="2" stroke-linecap="round"/></svg>', "Attenzione"),
     "info": ('<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><circle cx="9" cy="9" r="8" fill="none" stroke="var(--muted)" stroke-width="2"/><path d="M9 8v5M9 5.2v.8" stroke="var(--muted)" stroke-width="2" stroke-linecap="round"/></svg>', "Info"),
     "na": ('<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><circle cx="9" cy="9" r="7.2" fill="none" stroke="var(--muted)" stroke-width="2"/><path d="M5 9h8" stroke="var(--muted)" stroke-width="2" stroke-linecap="round"/></svg>', "Non applicabile")}

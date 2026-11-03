@@ -72,7 +72,7 @@ def plain(t: str) -> str:
 
 
 def dot(kind: str, label: str) -> str:
-    """Status pill: ok (green), prog (orange, in progress), todo (red outline, to do), bad (red, problem), off (grey, not used)."""
+    """Status pill, one palette for the whole page: ok (green, done), prog (orange, in progress), todo (grey outline, to do), bad (red, overdue or a problem), off (light grey, not used / not applicable yet)."""
     return f'<span class="spill {kind}"><i aria-hidden="true"></i>{esc(label)}</span>'
 
 
@@ -166,11 +166,11 @@ def channels(root: str, db: dict, today: dt.date) -> list[dict]:
         rows.append(dict(key="steam", kind="ok", label="Online", note="La pagina c'è: ogni post porta lì."))
     elif kit.get("steam"):
         when = f" (prevista il {fmt_date(wlp['start'])})" if wlp.get("start") else ""
-        rows.append(dict(key="steam", kind="prog", label="Da collegare", note=f"Testi pronti da copiare; la pagina non è ancora online{when}."))
+        rows.append(dict(key="steam", kind="todo", label="Da collegare", note=f"Testi pronti da copiare; la pagina non è ancora online{when}."))
     if clips.get("itch_live"):
         rows.append(dict(key="itch", kind="ok", label="Online", note="Pagina itch.io pubblicata."))
     elif kit.get("itch"):
-        rows.append(dict(key="itch", kind="prog", label="Da collegare", note="Testi pronti; la pagina non è ancora pubblicata."))
+        rows.append(dict(key="itch", kind="todo", label="Da collegare", note="Testi pronti; la pagina non è ancora pubblicata."))
     for key in ("tiktok", "youtube_shorts", "instagram", "reddit", "x"):
         ref = conv.get(key)
         refs = f"Nei casi: {n_it(ref['median'], 1)} wishlist ogni 1.000 visualizzazioni (n {ref['n']})." if ref else ""
@@ -179,7 +179,7 @@ def channels(root: str, db: dict, today: dt.date) -> list[dict]:
             rows.append(dict(key=key, kind="ok", label="Attivo", note=f"{p['n']} post misurati. {refs}".strip()))
         elif key in planned:
             extra = " Regole dei subreddit da leggere a mano." if key == "reddit" and any("VERIFICARE" in str(r.get("flair", "")) for r in clips.get("reddit") or []) else ""
-            rows.append(dict(key=key, kind="prog", label="Da collegare", note=f"Nel piano, nessun post misurato ancora.{extra} {refs}".strip()))
+            rows.append(dict(key=key, kind="todo", label="Da collegare", note=f"Nel piano, nessun post misurato ancora.{extra} {refs}".strip()))
         elif ref:
             rows.append(dict(key=key, kind="off", label="Non usare per ora", note=f"Fuori dal piano. {refs}".strip()))
     cr_path = os.path.join(root, "creators.csv")
@@ -192,7 +192,7 @@ def channels(root: str, db: dict, today: dt.date) -> list[dict]:
         if cr:
             a = sum(1 for r in cr if (r.get("priorita") or "").strip().upper().startswith("A"))
             ref = conv.get("youtube")
-            rows.append(dict(key="youtube", kind="prog", label="Da contattare", note=f"{len(cr)} creator in lista, {a} con priorità A."
+            rows.append(dict(key="youtube", kind="todo", label="Da contattare", note=f"{len(cr)} creator in lista, {a} con priorità A."
                              + (f" Nei casi un video di creator rende {n_it(ref['median'], 1)} wishlist ogni 1.000 visualizzazioni." if ref else "")))
     return rows
 
@@ -302,7 +302,7 @@ def languages(kit: dict) -> int | None:
 def numbers_html(rows: list[dict]) -> str:
     if not rows:
         return '<p class="note">Nessun numero confrontabile ancora.</p>'
-    kinds = {"ok": "ok", "bad": "bad", "prog": "prog", "todo": "todo", "info": "off"}
+    kinds = {"ok": "ok", "bad": "bad", "prog": "off", "todo": "todo", "info": "off"}  # the middle of a range is not "in progress": neutral
     body = "".join(f'<div class="num"><div class="nl">{esc(r["label"])}</div><div class="nv">{esc(r["ours"])}</div><div class="ns">{esc(r.get("sub", ""))}</div>'
                    f'{dot(kinds[r["kind"]], r["verdict"])}{r.get("meter", "")}<div class="nr">{esc(r.get("ref", ""))}</div></div>' for r in rows)
     has_meter = any(r.get("meter") for r in rows)
@@ -313,35 +313,21 @@ def numbers_html(rows: list[dict]) -> str:
 
 # ---------------------------------------------------------------- 4. flop check
 def flop(root: str, db: dict, today: dt.date, wl_a: dict | None):
-    """The flop checklist on our game: the saved result wins; otherwise answers + facts read from launch/."""
+    """The flop checklist on our game: the saved result wins (unless the answers are newer); otherwise answers + facts read from launch/."""
     ready = _j(root, "_raw", "flopcheck.json")
-    if ready and ready.get("items"):
+    ans_path = os.path.join(root, "_raw", "flopcheck_answers.json")
+    ready_path = os.path.join(root, "_raw", "flopcheck.json")
+    fresh = not (os.path.exists(ans_path) and os.path.exists(ready_path) and os.path.getmtime(ans_path) > os.path.getmtime(ready_path) + 1)
+    if ready and ready.get("items") and fresh:
         return ready
     if not (db or {}).get("flop_checklist"):
         return None
     import social_content as sc
-    answers = dict(_j(root, "_raw", "flopcheck_answers.json") or {})
-    facts = {}
-    kit = _j(root, "store_kit.json") or {}
-    st = kit.get("steam") or {}
-    if st.get("long_description", {}).get("blocks"):
-        try:
-            import store_kit as sk
-            facts["desc_chars"] = len(sk.assemble(st["long_description"]))
-        except Exception:  # noqa: BLE001
-            pass
-    n = languages(kit)
-    if n:
-        facts["languages"] = n
+    facts, auto = sc.launch_facts(root)
+    answers = dict(auto, **(_j(root, "_raw", "flopcheck_answers.json") or {}))
     if (wl_a or {}).get("current") is not None:
         facts["wishlists"] = wl_a["current"]
-    wlp = _j(root, "_raw", "wl_plan.json") or {}
-    win = _j(root, "_raw", "window.json") or {}
-    if "FC03" not in answers and wlp.get("start") and wlp.get("launch"):
-        months = (dt.date.fromisoformat(wlp["launch"]) - dt.date.fromisoformat(wlp["start"])).days / 30.4
-        crowded = ((win.get("chosen") or {}).get("verdict") == "affollata")
-        answers["FC03"] = months >= 3 and not crowded
-    fc = sc.flopcheck(db, facts, {k: v for k, v in answers.items()})
+    fc = sc.flopcheck(db, facts, answers)
     for it in fc["items"]:
         if it["status"] != "todo" and not it.get("how"):
             it["how"] = "dalle tue risposte o dal piano"
@@ -356,28 +342,61 @@ def flop_label(db: dict, code: str) -> str:
 def flop_html(fc: dict | None, db: dict) -> str:
     if not fc:
         return ""
-    items = sorted(fc["items"], key=lambda x: ({"fail": 0, "todo": 1, "ok": 2}.get(x["status"], 3), -x["weight"]))
-    n = {k: sum(1 for x in items if x["status"] == k) for k in ("ok", "fail", "todo")}
-    pill = {"ok": ("ok", "Superato"), "fail": ("bad", "Da sistemare"), "todo": ("todo", "Da verificare")}
+    order = {"fail": 0, "todo": 1, "ok": 2, "na": 3}
+    items = sorted(fc["items"], key=lambda x: (order.get(x["status"], 4), -x["weight"]))
+    n = {k: sum(1 for x in items if x["status"] == k) for k in ("ok", "fail", "todo", "na")}
+    pill = {"ok": ("ok", "Superato"), "fail": ("bad", "Da sistemare"), "todo": ("todo", "Da verificare"), "na": ("off", "Non applicabile ancora")}
     li = []
     for x in items:
         k, lab = pill.get(x["status"], ("todo", "Da verificare"))
-        act = x["fix"] if x["status"] != "ok" else "Niente da fare: tienilo così."
-        how = f' <span class="note">({esc(plain(x["how"]))})</span>' if x.get("how") and x["status"] != "todo" else ""
+        act = x.get("action") or (x["fix"] if x["status"] != "ok" else "Niente da fare: tienilo così.")
+        how = f' <span class="note">({esc(plain(x["how"]))})</span>' if x.get("how") and x["status"] not in ("todo",) and x["how"] != "risposta" and not x.get("why") else ""
+        why = (f'<p class="fw"><strong>Motivo:</strong> {esc(x["why"])}' + (f' <span class="proof">Prova: {esc(x["proof"])}</span>' if x.get("proof") else "") + "</p>") if x.get("why") else ""
         li.append(f'<li class="fl {x["status"]}">{dot(k, lab)}<div><p class="ft">{esc(flop_label(db, x["code"]))} <span class="w" title="Peso: quanto spesso i commenti dei flop citano questa causa (5 = la più citata)">peso {x["weight"]}/5</span></p>'
-                  f'<p class="fq">{esc(plain(x["q"]))}{how}</p><p class="fa"><strong>Azione:</strong> {esc(plain(act))}</p></div></li>')
-    head = f'<div class="flsum">{dot("ok", str(n["ok"]) + " superati")}{dot("bad", str(n["fail"]) + " da sistemare")}{dot("todo", str(n["todo"]) + " da verificare")}</div>'
+                  f'<p class="fq">{esc(plain(x["q"]))}{how}</p>{why}<p class="fa"><strong>Azione:</strong> {esc(plain(act))}</p></div></li>')
+    head = (f'<div class="flsum">{dot("ok", str(n["ok"]) + " superati")}{dot("bad", str(n["fail"]) + " da sistemare")}'
+            + (f'{dot("todo", str(n["todo"]) + " da verificare")}' if n["todo"] else "")
+            + (f'{dot("off", str(n["na"]) + " non applicabili ancora")}' if n["na"] else "") + "</div>")
     return (head + f'<ul class="flops">{"".join(li)}</ul><p class="how"><strong>Come si legge:</strong> le domande vengono dai commenti più votati sotto i post di giochi andati male; '
             'il peso dice quanto spesso quella causa viene citata. Sono opinioni contate, non leggi: dicono cosa guardare per primo. '
-            'Claude segna le risposte quando le dai; alcune voci si controllano da sole sui dati del piano.</p>')
+            '«Non applicabile ancora» vuol dire che la cosa non esiste (per esempio il trailer): non conta come bocciata finché non c\'è. '
+            'Claude segna le risposte con il motivo e la prova; alcune voci si controllano da sole sui dati del piano.</p>')
 
 
 # ---------------------------------------------------------------- folded details
+def plan_weeks_html(root: str) -> str:
+    """The calendar of social_content.py plan (_raw/social_plan.json): every platform, week by week, with the two opening texts of the A/B test."""
+    pl = _j(root, "_raw", "social_plan.json") or {}
+    posts = pl.get("posts") or []
+    if not posts:
+        return ""
+    weeks: dict = {}
+    for x in posts:
+        try:
+            d = dt.date.fromisoformat(x["date"])
+        except (KeyError, ValueError):
+            continue
+        weeks.setdefault(d - dt.timedelta(days=d.weekday()), []).append(x)
+    per = pl.get("per_week") or {}
+    intro = ("<p class=\"note\">Post a settimana: " + ", ".join(f"{esc(NAMES.get(p, p))} {n}" for p, n in per.items()) + ". "
+             "Lo stesso momento esce su più piattaforme a 1-2 giorni di distanza; ogni riga ha due testi d'apertura per la prova A/B.</p>") if per else ""
+    out = [intro]
+    for wk, xs in sorted(weeks.items()):
+        rows = []
+        for x in sorted(xs, key=lambda x: x["date"]):
+            where = esc(NAMES.get(x["platform"], x["platform"])) + (f' · {esc(x["subreddit"])}' if x.get("subreddit") else "")
+            rows.append(f'<tr><td>{fmt_date(x["date"])}</td><td>{where}</td><td>{esc(x.get("moment"))} {esc(str(x.get("moment_label", ""))[:60])}</td>'
+                        f'<td>A: {esc(x.get("hook_a"))}<br>B: {esc(x.get("hook_b"))}</td><td>{esc(x.get("caption", ""))}</td><td>{esc(x.get("cta", ""))}</td></tr>')
+        out.append(f'<h3>Settimana del {fmt_date(wk.isoformat())}</h3><div class="wrap"><table><thead><tr><th>Giorno</th><th>Dove</th><th>Momento</th><th>Testo di apertura</th><th>Didascalia</th><th>Fine del video</th></tr></thead><tbody>{"".join(rows)}</tbody></table></div>')
+    return "".join(out)
+
+
 def weeks_html(root: str) -> str:
+    plan_part = plan_weeks_html(root)
     kits = (_j(root, "_raw", "social_kit.json") or {}).get("kits") or []
     if not kits:
-        return ""
-    parts = []
+        return plan_part
+    parts = [plan_part + "<h3>Kit pronto da pubblicare (clip e storyboard)</h3>" if plan_part else ""]
     for k in kits:
         rows = []
         for p in k.get("posts", []):
@@ -393,6 +412,11 @@ def weeks_html(root: str) -> str:
 def hooks_html(root: str) -> str:
     kits = (_j(root, "_raw", "social_kit.json") or {}).get("kits") or []
     seen, li = set(), []
+    for x in (_j(root, "_raw", "social_plan.json") or {}).get("posts") or []:
+        for lab, h in (("A", x.get("hook_a")), ("B", x.get("hook_b"))):
+            if h and h not in seen:
+                seen.add(h)
+                li.append(f'<li>{dot("ok" if lab == "A" else "off", "In uso" if lab == "A" else "Di riserva")}<span>«{esc(h)}» <span class="note">{esc(NAMES.get(x["platform"], x["platform"]))}, momento {esc(x.get("moment"))}</span></span></li>')
     for k in kits:
         for p in k.get("posts", []):
             for i, h in enumerate(p.get("hooks") or []):
@@ -525,7 +549,8 @@ def glance(root: str, plan: dict, today: dt.date, wl_a: dict | None, db: dict | 
            + ('<section class="card g-flop"><h3>Perché i giochi floppano: il nostro controllo</h3>' + flop_html(fc, db) + "</section>" if fc else "") + "</div>")
     kits = (_j(root, "_raw", "social_kit.json") or {}).get("kits") or []
     clips = _j(root, "clips.json") or {}
-    folds = [fold("Piano social, settimana per settimana", weeks_html(root), f"{len(kits)} settimane"),
+    n_weeks = len({(dt.date.fromisoformat(x["date"]) - dt.timedelta(days=dt.date.fromisoformat(x["date"]).weekday())) for x in (_j(root, "_raw", "social_plan.json") or {}).get("posts") or [] if x.get("date")}) or len(kits)
+    folds = [fold("Piano social, settimana per settimana", weeks_html(root), f"{n_weeks} settimane"),
              fold("Ganci: i testi dei primi 2 secondi", hooks_html(root)),
              fold("Regole dei subreddit", subreddits_html(root, db), f"{len(clips.get('reddit') or [])} nel piano"),
              fold("Prove e fonti", evidence_html(db)),
@@ -540,12 +565,12 @@ ol.moves{list-style:none;margin:0;padding:0;display:grid;gap:14px}ol.moves li{di
 .mv-n{width:2rem;height:2rem;border-radius:50%;display:grid;place-items:center;font-weight:700;background:var(--acc-soft);color:var(--acc)}
 .mv-t{margin:0;font-weight:600;font-size:var(--fs-2);line-height:1.35}.mv-t .more{font-weight:400;font-size:var(--fs-0);margin-left:6px;white-space:nowrap}
 .mv-meta{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 0}.mv-meta>span{font-size:var(--fs-0);border:1px solid var(--rule);border-radius:999px;padding:1px 9px;color:var(--ink2);background:var(--surface)}
-.mv-meta .who{color:var(--ink);font-weight:600}.mv-meta .who.claude{border-color:var(--acc)}.mv-meta .who.me{border-color:var(--acc2)}.mv-meta .who.both{border-color:var(--ink2)}
+.mv-meta .who{color:var(--ink);font-weight:600}.mv-meta .who.claude{border-color:#2a78d6}.mv-meta .who.me{border-color:#8a63d2}.mv-meta .who.both{border-color:#0e8fa8}
 .mv-meta .due.late{border-color:var(--crit);color:var(--crit);font-weight:600}.mv-meta .due.soon{border-color:var(--warn);color:var(--ink)}.mv-meta .due.none{color:var(--muted)}
 .mv-why{margin:6px 0 0;color:var(--ink2);font-size:var(--fs-0)}
 .spill{display:inline-flex;align-items:center;gap:6px;font-size:var(--fs-0);font-weight:600;white-space:nowrap;line-height:1.4}.spill i{width:10px;height:10px;border-radius:50%;flex:none;display:inline-block}
-.spill.ok i{background:var(--good)}.spill.prog i{background:var(--warn)}.spill.bad i{background:var(--crit)}.spill.todo i{border:2px solid var(--crit);width:8px;height:8px}.spill.off i{border:2px solid var(--muted);width:8px;height:8px}
-.spill.ok{color:var(--goodtext)}.spill.bad{color:var(--crit)}.spill.off{color:var(--muted)}
+.spill.ok i{background:var(--good)}.spill.prog i{background:var(--warn)}.spill.bad i{background:var(--crit)}.spill.todo i{border:2px solid var(--muted);width:8px;height:8px}.spill.off i{background:var(--axis);border:0}
+.spill.ok{color:var(--goodtext)}.spill.bad{color:var(--crit)}.spill.todo{color:var(--ink2)}.spill.off{color:var(--muted)}
 ul.chan{list-style:none;margin:0;padding:0}ul.chan li{display:grid;grid-template-columns:9.5em 10.5em minmax(0,1fr);gap:4px 12px;align-items:baseline;padding:8px 0;border-top:1px solid var(--rule)}ul.chan li:first-child{border-top:0}
 .cn{font-weight:600}.cnote{color:var(--ink2);font-size:var(--fs-0)}
 .nums{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(min(250px,100%),1fr))}.num{border:1px solid var(--rule);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:4px;min-width:0}
@@ -555,9 +580,9 @@ ul.chan{list-style:none;margin:0;padding:0}ul.chan li{display:grid;grid-template
 p.how{margin:12px 0 0;font-size:var(--fs-0);color:var(--ink2)}
 .flsum{display:flex;gap:18px;flex-wrap:wrap;margin:0 0 10px}
 ul.flops{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(420px,100%),1fr));gap:0 24px}
-ul.flops li{display:grid;grid-template-columns:8.5em minmax(0,1fr);gap:10px;align-items:start;padding:10px 0;border-top:1px solid var(--rule)}
+ul.flops li{display:grid;grid-template-columns:12.5em minmax(0,1fr);gap:10px;align-items:start;padding:10px 0;border-top:1px solid var(--rule)}
 .ft{margin:0;font-weight:600}.ft .w{font-weight:400;color:var(--muted);font-size:var(--fs-0);margin-left:6px}.fq{margin:2px 0 0;color:var(--ink2);font-size:var(--fs-0)}.fa{margin:4px 0 0;font-size:var(--fs-0)}
-li.fl.ok .fa{color:var(--muted)}
+li.fl.ok .fa,li.fl.na .fa{color:var(--muted)}li.fl.na .ft,li.fl.na .fq{color:var(--ink2)}.fw{margin:4px 0 0;font-size:var(--fs-0)}.fw .proof{display:block;color:var(--muted);overflow-wrap:anywhere}
 details.fold{margin-top:12px}details.fold>summary{padding:4px 0}details.fold>summary h2{margin:16px 0 8px;display:inline-flex}details.fold>summary .count{color:var(--muted);font-size:var(--fs-0)}
 details.fold>.card{margin-top:4px}.srule{margin-bottom:12px}.srule ul{margin:4px 0 0}
 @media (max-width:760px){.glance{grid-template-columns:1fr}ul.chan li{grid-template-columns:1fr auto}ul.chan .cnote{grid-column:1/-1}ul.flops li{grid-template-columns:1fr}}

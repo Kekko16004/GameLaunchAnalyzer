@@ -183,11 +183,13 @@ def candidates(root: str, today: dt.date, cal: dict | None) -> list[dict]:
                         hours="1 h (mail o modulo)", owner="👤", due=None, match=["aggregator", "indie games hub"]))
     fcp = os.path.join(root, "_raw", "flopcheck.json")
     fc = common.load_json(fcp) if os.path.exists(fcp) else None
-    for x in [i for i in (fc or {}).get("items", []) if i.get("status") == "fail"][:2]:
-        out.append(dict(source="cases", key=f"flopcheck-{x['id']}", title=f"Sistema: {x['fix']}", score=10 + 6 * x["weight"],
-                        why=f"controllo 'perché floppa' ({x['id']}, peso {x['weight']}/5): {x.get('evidence', '')} [OPINIONE dei commentatori, contata]",
+    # failed items only, heaviest first; "na" (not applicable yet, e.g. the trailer does not exist) never counts as failed
+    for x in sorted([i for i in (fc or {}).get("items", []) if i.get("status") == "fail"], key=lambda i: -i["weight"])[:2]:
+        todo_txt = x.get("action") or x["fix"]
+        out.append(dict(source="cases", key=f"flopcheck-{x['id']}", title=f"Sistema: {todo_txt}", score=10 + 6 * x["weight"],
+                        why=f"controllo 'perché floppa' ({x['id']}, peso {x['weight']}/5): {x.get('why') or x.get('evidence', '')} [OPINIONE dei commentatori, contata]",
                         effect="toglie una delle cause di flop più citate nei commenti dei casi reali", hours=None, owner="👤+🤖", due=None,
-                        match=[w for w in re.findall(r"[a-zà-ù]{5,}", x["fix"].lower())][:2]))
+                        match=[w for w in re.findall(r"[a-zà-ù]{5,}", todo_txt.lower())][:2]))
     # ---- publisher (publisher_scout.py): the owner said yes / don't know and someone is realistic now
     pub = common.load_json(os.path.join(root, "_raw", "publisher_scout.json")) if os.path.exists(os.path.join(root, "_raw", "publisher_scout.json")) else None
     if pub and pub.get("publisher_question") in ("yes", "dont_know") and (pub.get("counts") or {}).get("realistic_now"):
