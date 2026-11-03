@@ -243,29 +243,10 @@ assert out.returncode == 0 and "youtube" in dj["ready"], out.stderr
 out = subprocess.run([sys.executable, os.path.join(R, "reach.py"), "--cache-dir", os.path.join(TMP, "c2"), "search", "x", "Test", "Game", "--limit", "5"], capture_output=True, text=True, encoding="utf-8", env=env)
 assert out.returncode == 0 and json.loads(out.stdout)["label"] == "[FATTO]", out.stderr
 out = subprocess.run([sys.executable, os.path.join(R, "reach.py"), "setup"], capture_output=True, text=True, encoding="utf-8", env=env)
-assert "reach.py login twitter" in out.stdout and "reach.py fix-lang" in out.stdout and "! agent-reach login" not in out.stdout and "cookie" not in out.stdout.lower().replace("login e cookie", "")
+assert "reach.py login twitter" in out.stdout and "reach.py fix-lang" in out.stdout and "! agent-reach" not in out.stdout and "reach.py install" in out.stdout and "cookie" not in out.stdout.lower().replace("login e cookie", "")
 print("cli ok: doctor --json, search, setup")
 
-# ---- login / fix-lang: patch the installed browser_watcher.py (on a temp copy), the profile language, the new subcommands
-WATCHER = "import os\n\n\ndef _launch_cloak(url, *, headless=True):\n    ctx = launch_persistent_context(\n        str(browser.profile_dir()), headless=headless, locale=\"zh-CN\",\n        args=[\"--x\"],\n    )\n    return ctx\n"
-wp = os.path.join(TMP, "browser_watcher.py")
-open(wp, "w", encoding="utf-8", newline="").write(WATCHER)
-r = reach.patch_watcher(wp, "it-IT")
-t = open(wp, encoding="utf-8").read()
-assert r["status"] == "patched" and r["was"] == "zh-CN" and "zh-CN" not in t and 'os.environ.get("REACH_BROWSER_LOCALE") or "it-IT"' in t and t.count("GLS-LOCALE-PATCH") == 1
-assert open(wp + ".orig", encoding="utf-8").read() == WATCHER                          # backup = the untouched original
-r = reach.patch_watcher(wp, "it-IT")
-assert r["status"] == "unchanged" and open(wp, encoding="utf-8").read() == t           # idempotent: the second run changes nothing
-r = reach.patch_watcher(wp, "en-GB")
-t2 = open(wp, encoding="utf-8").read()
-assert r["status"] == "updated" and '"en-GB"' in t2 and "it-IT" not in t2 and t2.count("locale=") == 1
-assert open(wp + ".orig", encoding="utf-8").read() == WATCHER                          # the backup is never overwritten by a patched file
-compile(t2, wp, "exec")
-open(wp, "w", encoding="utf-8", newline="").write("def nothing():\n    pass\n")
-assert reach.patch_watcher(wp, "it-IT")["status"] == "unrecognized"                      # a changed upstream file is left alone
-assert reach.patch_watcher(os.path.join(TMP, "nope.py"), "it-IT")["status"] == "error"
-print("patch_watcher ok: patched, backup, idempotent, language change, unrecognized")
-
+# ---- browser language: the locale fix lives in the internal copy (reach_runtime patches, see test_reach_runtime.py); here the profile
 assert reach.accept_languages("it-IT") == "it-IT,it,en-US,en" and reach.accept_languages("en-US") == "en-US,en" and reach.accept_languages("it") == "it,en-US,en"
 os.environ.pop("REACH_BROWSER_LOCALE", None)
 assert reach.wanted_lang("fr-FR") == "fr-FR" and reach.wanted_lang("xx; rm -rf") == reach.system_locale()
@@ -284,23 +265,26 @@ assert json.load(open(pp + ".gls-backup", encoding="utf-8"))["intl"] == {"select
 assert reach.patch_prefs(pp, "it-IT")["status"] == "unchanged" and reach.patch_prefs(os.path.join(pd, "x"), "it-IT")["status"] == "missing"
 print("patch_prefs ok")
 
-# fix_lang end to end with the fake runner: running browser -> profile untouched; stopped -> profile set
-os.environ["GLS_REACH_WATCHER"] = os.path.join(TMP, "w2.py"); os.environ["GLS_REACH_PROFILE"] = os.path.join(TMP, "profile")
-open(os.environ["GLS_REACH_WATCHER"], "w", encoding="utf-8").write(WATCHER)
+# fix_lang end to end with the fake runner: it only CHECKS the locale patch; running browser -> profile untouched; stopped -> profile set
+os.environ["GLS_REACH_PROFILE"] = os.path.join(TMP, "profile")
 open(pp, "w", encoding="utf-8").write(json.dumps({"intl": {"selected_languages": "ja"}}))
 reset()
 DYN["browser status"] = {"ok": True, "result": {"running": True, "headless": True, "profile_dir": os.environ["GLS_REACH_PROFILE"]}}
 lines = []
 rep = reach.fix_lang("it-IT", out=lines.append)
-assert rep["watcher"]["status"] == "patched" and rep["running"] and rep["prefs"] is None and json.load(open(pp, encoding="utf-8"))["intl"] == {"selected_languages": "ja"}
-assert any("ACCESO" in x for x in lines) and ["browser", "stop"] not in CALLS                  # never closed without --stop
+assert rep["patch"] == "ok" and rep["running"] and rep["prefs"] is None and json.load(open(pp, encoding="utf-8"))["intl"] == {"selected_languages": "ja"}
+assert any("ACCESO" in x for x in lines) and ["browser", "stop"] not in CALLS and any("correzione presente" in x for x in lines)   # never closed without --stop
 CALLS.clear()
 DYN["browser status"] = [{"ok": True, "result": {"running": True, "headless": True}}, {"ok": True, "result": {"running": False}}, {"ok": True, "result": {"running": False, "profile_dir": os.environ["GLS_REACH_PROFILE"]}}]
 DYN["browser stop"] = {"ok": True, "result": {}}
 rep = reach.fix_lang("it-IT", stop=True, out=lines.append)
-assert ["browser", "stop"] in CALLS and rep["watcher"]["status"] == "unchanged" and rep["running"] is False, rep
+assert ["browser", "stop"] in CALLS and rep["running"] is False, rep
 assert rep["prefs"]["status"] == "set" and json.load(open(pp, encoding="utf-8"))["intl"]["selected_languages"] == "it-IT,it,en-US,en"
-print("fix_lang ok: running browser untouched, --stop uses agent-reach's own command, then the profile is set")
+os.environ["GLS_REACH_LOCALE_PATCH"] = "missing"
+lines.clear()
+assert reach.fix_lang("it-IT", out=lines.append)["patch"] == "missing" and "reach.py install" in lines[0]
+os.environ.pop("GLS_REACH_LOCALE_PATCH")
+print("fix_lang ok: checks the internal fix, running browser untouched, --stop uses the copy's own command, then the profile is set")
 
 # login: fix-lang first, then Agent Reach's `login <canale>`, nothing else; tiktok = the twitter window; --check = that channel only
 reset()
@@ -323,21 +307,31 @@ reach._DOCTOR = None
 rc = reach.login("twitter", check_only=True, out=lines.append)
 assert ["check", "twitter", "--timeout", "60"] in CALLS and ["login", "twitter"] not in CALLS and lines and lines[0].startswith("Canale twitter"), (CALLS, lines)
 del DYN["doctor"]
-os.environ.pop("GLS_REACH_WATCHER"); os.environ.pop("GLS_REACH_PROFILE")
+os.environ.pop("GLS_REACH_PROFILE")
 print("login ok:", lines[0])
 
-# CLI parsing of the new subcommands (subprocess, fake runner: nothing real is touched)
+# CLI parsing of the owner subcommands (subprocess, fake runner: nothing real is touched)
 env = dict(os.environ, GLS_REACH_FAKE=os.path.join(HERE, "fixtures", "reach_fake.json"), PYTHONIOENCODING="utf-8", GLS_HOME=os.path.join(TMP, "home3"),
-           GLS_REACH_WATCHER=os.path.join(TMP, "w3.py"), GLS_REACH_PROFILE=os.path.join(TMP, "noprofile"))
-open(env["GLS_REACH_WATCHER"], "w", encoding="utf-8").write(WATCHER)
+           GLS_REACH_PROFILE=os.path.join(TMP, "noprofile"))
 out = subprocess.run([sys.executable, os.path.join(R, "reach.py"), "fix-lang", "--lang", "it-IT"], capture_output=True, text=True, encoding="utf-8", env=env)
-assert out.returncode == 0 and "corretto browser_watcher.py" in out.stdout and "zh-CN" not in open(env["GLS_REACH_WATCHER"], encoding="utf-8").read(), out.stdout + out.stderr
-out = subprocess.run([sys.executable, os.path.join(R, "reach.py"), "fix-lang", "--lang", "it-IT"], capture_output=True, text=True, encoding="utf-8", env=env)
-assert out.returncode == 0 and "già a posto" in out.stdout, out.stdout
+assert out.returncode == 0 and "correzione presente" in out.stdout and "zh-CN" not in out.stdout, out.stdout + out.stderr
 out = subprocess.run([sys.executable, os.path.join(R, "reach.py"), "login", "--help"], capture_output=True, text=True, encoding="utf-8", env=env)
 assert out.returncode == 0 and "--check" in out.stdout and "--no-wait" in out.stdout and "--lang" in out.stdout
 out = subprocess.run([sys.executable, os.path.join(R, "reach.py"), "login"], capture_output=True, text=True, encoding="utf-8", env=env)
 assert out.returncode == 2                                                                       # argparse: the channel is required
-print("cli ok: fix-lang (twice), login --help, login without channel")
+for sub in (["add", "--help"], ["logout", "--help"], ["configure", "--help"], ["browser", "--help"], ["install", "--help"]):
+    out = subprocess.run([sys.executable, os.path.join(R, "reach.py"), *sub], capture_output=True, text=True, encoding="utf-8", env=env)
+    assert out.returncode == 0, (sub, out.stderr)
+out = subprocess.run([sys.executable, os.path.join(R, "reach.py"), "browser", "status"], capture_output=True, text=True, encoding="utf-8", env=env)
+assert out.returncode in (0, 3) and "Browser dedicato" in out.stdout or "Non riuscito" in out.stdout, out.stdout
+print("cli ok: fix-lang, login --help, login without channel, add/logout/configure/browser/install")
+
+# ---- messages in Chinese never reach the owner: replaced by the Italian text of their code
+e = reach.it_error({"code": "NEED_LOGIN", "message": "需要登录", "hint": "运行 agent-reach login twitter"})
+assert e["message"] == "serve il login nel browser dedicato [NEED_LOGIN]" and "agent-reach login" not in e["hint"] and "reach.py login" in e["hint"] and e["message_raw"]
+assert reach.it_text("plain English stays") == "plain English stays" and reach.it_error({"code": "X", "message": "ok"})["message"] == "ok"
+env_ = reach._parse('noise\n{"ok": false, "items": [], "error": {"code": "TIMEOUT", "message": "超时", "hint": ""}}')
+assert env_["error"]["message"].startswith("nessuna risposta in tempo")
+print("translation ok: Chinese message replaced by code, English kept")
 
 print("ALL REACH TESTS PASSED")

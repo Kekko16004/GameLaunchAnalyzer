@@ -1,4 +1,5 @@
 // game-launch-strategist hooks for the skillkit installer: Python check, script compile check, optional unit tests.
+import fs from "node:fs";
 import path from "node:path";
 
 // the real interpreter (py.exe and the Store alias are launchers). A Store python reports an exe inside
@@ -18,32 +19,31 @@ function findPython(ctx) {
 }
 const okVer = (v) => { const [a, b] = String(v || "0.0").split(".").map(Number); return a > 3 || (a === 3 && b >= 9); };
 
-// ---------------------------------------------------------------- Agent Reach (optional dependency: social platforms, read-only)
-// https://github.com/Panniantong/agent-reach . Installed with uv from the GitHub release (never from PyPI: the PyPI package with
-// the same name is not this project), refreshed by `install.mjs update` with `agent-reach update`. Logins stay with the owner.
-const REACH_ZIP = "https://github.com/Panniantong/Agent-Reach/releases/latest/download/agent-reach.zip";
-function findReach(ctx) {
-  const home = ctx.HOME || process.env.USERPROFILE || process.env.HOME || "";
-  const local = path.join(home, ".local", "bin", ctx.isWin ? "agent-reach.exe" : "agent-reach");
-  return ctx.which("agent-reach") || (ctx.exists(local) ? local : "");
-}
-function findUv(ctx) {
-  const home = ctx.HOME || process.env.USERPROFILE || process.env.HOME || "";
-  const local = path.join(home, ".local", "bin", ctx.isWin ? "uv.exe" : "uv");
-  return ctx.which("uv") || (ctx.exists(local) ? local : "");
-}
-// agent-reach prints one JSON object per command (1.6+); a plain line means 1.5 or older
-function reachJson(out) {
-  for (const l of String(out || "").trim().split(/\r?\n/).reverse()) { const s = l.trim(); if (s.startsWith("{")) { try { return JSON.parse(s); } catch { return null; } } }
-  return null;
-}
-function reachVersion(ctx, exe) {
-  if (!exe) return "";
-  const r = ctx.runSync(exe, ["version"], { timeout: 30000, cwd: ctx.HOME });
-  return reachJson(r.out)?.result?.version || (/(\d+\.\d+\.\d+)/.exec(r.out || "")?.[1] ? `${/(\d+\.\d+\.\d+)/.exec(r.out)[1]} (1.5)` : "");
-}
+// ---------------------------------------------------------------- Agent Reach (internal component: social platforms, read-only)
+// https://github.com/Panniantong/agent-reach (MIT). Not a global program: the skill builds a PRIVATE copy, pinned by version and sha256,
+// with scripts/research/reach_runtime.py (own Python venv, own state folder, local patches: browser language, state folder, no global
+// skill). Real folder ~/.game-launch-strategist/reach, linked as <skill>/tools/agent-reach. `install.mjs update` refreshes and repairs
+// it; an old global install (~/.agent-reach) is COPIED in once, never moved. Logins stay with the owner (reach.py login <canale>).
 const skipped = (ctx) => String(ctx.flags.skip || "").split(/[,\s]+/).includes("agent-reach");
-const isUpdate = () => process.argv.slice(2).some((a) => a.toLowerCase() === "update");
+const runtimeScript = (ctx, base) => path.join(base, "scripts", "research", "reach_runtime.py");
+const skillDir = (ctx) => path.join(ctx.CANON, "game-launch-strategist");
+const gls = (ctx) => process.env.GLS_HOME || path.join(ctx.HOME || process.env.USERPROFILE || process.env.HOME || "", ".game-launch-strategist");
+function jsonOut(out) {
+  const s = String(out || ""); const i = s.indexOf("{"), j = s.lastIndexOf("}");
+  if (i < 0 || j < i) return null;
+  try { return JSON.parse(s.slice(i, j + 1)); } catch { return null; }
+}
+// state of the internal copy (installed, version, patches), read from the given skill folder (repo before install, canonical after)
+function reachCheck(ctx, py, base) {
+  const script = runtimeScript(ctx, base);
+  if (!py || !ctx.exists(script)) return null;
+  const r = ctx.runSync(py.exe, ["-B", script, "check", "--json"], { timeout: 60000, cwd: ctx.HOME, env: { ...process.env, PYTHONIOENCODING: "utf-8" } });
+  return jsonOut(r.out);
+}
+const oldGlobal = (ctx) => {
+  const home = ctx.HOME || process.env.USERPROFILE || process.env.HOME || "";
+  return ctx.which("agent-reach") || (ctx.exists(path.join(home, ".local", "bin", ctx.isWin ? "agent-reach.exe" : "agent-reach")) ? "~/.local/bin/agent-reach" : "");
+};
 
 export async function detect(ctx) {
   // the Python row itself comes from "requires" in skillkit.json; keep the real path for the checks below
@@ -51,80 +51,65 @@ export async function detect(ctx) {
   ctx.vars.python = py?.exe || "";
   ctx.detected.python = py;
   const it = ctx.lang === "it";
-  const exe = findReach(ctx);
-  const v = reachVersion(ctx, exe);
-  ctx.detected.reach = exe ? { exe, version: v } : null;
-  ctx.detected.uv = findUv(ctx);
-  ctx.ui.row(exe ? "ok" : "off", "Agent Reach", exe ? v || "?" : ctx.c.faint(it ? "non installato" : "not installed"),
-    ctx.c.dim(it ? "opzionale: social in sola lettura" : "optional: social platforms, read-only"));
+  const c = reachCheck(ctx, py, ctx.ROOT);
+  ctx.detected.reach = c?.installed ? c : null;
+  ctx.ui.row(c?.installed ? (c.patches_ok ? "ok" : "warn") : "off", "Agent Reach", c?.installed ? `${c.version} ${ctx.c.faint(it ? "(interno)" : "(internal)")}` : ctx.c.faint(it ? "non installato" : "not installed"),
+    ctx.c.dim(it ? "componente interno: social in sola lettura" : "internal component: social platforms, read-only"));
 }
 
 export async function questions(ctx) {
-  if (ctx.detected.reach || skipped(ctx)) return;
+  if (ctx.detected.reach || skipped(ctx) || ctx.choices.agentReach === true) return;
   const it = ctx.lang === "it";
-  ctx.choices.agentReach = await ctx.ui.confirm({ title: it ? "Installo Agent Reach (X, TikTok, Instagram, Reddit... in sola lettura)?" : "Install Agent Reach (X, TikTok, Instagram, Reddit... read-only)?", yes: true, lang: ctx.lang });
+  ctx.choices.agentReach = await ctx.ui.confirm({ title: it ? "Installo Agent Reach dentro la skill (X, TikTok, Instagram, Reddit... in sola lettura)?" : "Install Agent Reach inside the skill (X, TikTok, Instagram, Reddit... read-only)?", yes: true, lang: ctx.lang });
 }
 
-async function reachTask(ctx) {
+// <skill>/tools/agent-reach -> the real folder (recreated after every mirror of the skill; never a copy)
+function reachLink(ctx, real) {
+  const at = path.join(skillDir(ctx), "tools", "agent-reach");
+  try {
+    if (ctx.exists(at) && !isLinkPath(at)) return at;   // a real folder put there by hand: left alone (reach_runtime uses it)
+    ctx.link(real, at);
+    return at;
+  } catch { return ""; }
+}
+function isLinkPath(p) { try { return fs.lstatSync(p).isSymbolicLink(); } catch { return false; } }
+
+async function reachTask(ctx, py) {
   const { ui, run, lang } = ctx;
   const it = lang === "it";
-  await ui.task("Agent Reach", async (t) => {
+  await ui.task(it ? "Agent Reach (interno)" : "Agent Reach (internal)", async (t) => {
     if (ctx.DRY) return { state: "skip" };
-    if (skipped(ctx) || ctx.choices.agentReach === false) return { state: "skip", note: it ? "escluso" : "skipped" };
-    let exe = ctx.detected.reach?.exe || findReach(ctx);
-    if (exe) {
-      const before = reachVersion(ctx, exe);
-      if (!isUpdate()) return { note: `${before || "?"} ${ctx.g.dot} ${it ? "già installato" : "already installed"}` };
-      if (/\(1\.5\)$/.test(before)) {
-        const uv = findUv(ctx);
-        if (!uv) return { state: "warn", note: it ? "1.5 da aggiornare: serve uv" : "1.5 needs uv to upgrade" };
-        await run(uv, ["tool", "install", "--force", REACH_ZIP], { onLine: t.update, cwd: ctx.HOME, timeout: 900000 });
-      } else {
-        const r = await run(exe, ["update"], { onLine: t.update, cwd: ctx.HOME, timeout: 900000, env: { PYTHONIOENCODING: "utf-8" } });
-        const j = reachJson(r.out);
-        if (j && j.ok === false) return { state: "warn", note: (j.error?.hint || j.error?.message || "update").slice(0, 120) };
-      }
-      const after = reachVersion(ctx, findReach(ctx) || exe);
-      ctx.detected.reach = { exe, version: after };
-      return { note: after === before ? `${after} ${ctx.g.dot} ${it ? "già aggiornato" : "up to date"}` : `${before} ${ctx.g.arrow} ${after}` };
+    if (skipped(ctx) || (ctx.choices.agentReach === false && !ctx.detected.reach)) return { state: "skip", note: it ? "escluso" : "skipped" };
+    if (!py) return { state: "warn", note: it ? "serve Python 3.10+" : "needs Python 3.10+" };
+    const script = runtimeScript(ctx, skillDir(ctx));
+    if (!ctx.exists(script)) return { state: "warn", note: "reach_runtime.py?" };
+    const before = ctx.detected.reach?.version || "";
+    const r = await run(py.exe, ["-B", script, "install", "--update", "--json"], { onLine: t.update, cwd: ctx.HOME, timeout: 1800000, env: { PYTHONIOENCODING: "utf-8" } });
+    const j = jsonOut(r.out.split(/\r?\n/).filter((l) => l.trim().startsWith("{")).pop());
+    if (!j || r.code !== 0 && !j.installed) {
+      const last = r.out.trim().split(/\r?\n/).filter(Boolean).pop() || "install";
+      return { state: "warn", note: last.slice(0, 140) };
     }
-    const uv = findUv(ctx);
-    if (!uv) {
-      ctx.footer.push(`${ctx.c.warn(ctx.g.warn)} Agent Reach: ${ctx.isWin ? "winget install --id astral-sh.uv -e" : "curl -LsSf https://astral.sh/uv/install.sh | sh"}  ${ctx.g.arrow}  uv tool install ${REACH_ZIP}`);
-      return { state: "warn", note: it ? "serve uv (vedi sotto)" : "needs uv (see below)" };
-    }
-    const r = await run(uv, ["tool", "install", REACH_ZIP], { onLine: t.update, cwd: ctx.HOME, timeout: 900000 });
-    exe = findReach(ctx);
-    if (!exe) return { state: "warn", note: it ? `installazione non riuscita (${r.code}): uv tool update-shell, poi riprova` : `install failed (${r.code}): uv tool update-shell, then retry` };
-    // default channels only (no logins): GitHub, YouTube, Bilibili, V2EX, web
-    await run(exe, ["setup"], { onLine: t.update, cwd: ctx.HOME, timeout: 900000, env: { PYTHONIOENCODING: "utf-8" } });
-    const v = reachVersion(ctx, exe);
-    ctx.detected.reach = { exe, version: v };
+    const link = reachLink(ctx, j.root);
+    ctx.detected.reach = reachCheck(ctx, py, skillDir(ctx)) || { installed: true, version: j.version };
     ctx.choices.agentReach = true;
-    return { note: `${v} ${ctx.g.dot} ${it ? "installato" : "installed"}` };
+    const bad = Object.entries(j.patches || {}).filter(([, v]) => !["ok", "patched"].includes(v)).map(([k]) => k);
+    if (j.migration?.status === "copied") ctx.notes.push(it ? `Agent Reach: copiata la configurazione di ${j.migration.src} (${j.migration.files} file). L'originale resta com'era.`
+                                                           : `Agent Reach: copied the setup of ${j.migration.src} (${j.migration.files} files). The original is untouched.`);
+    const g = oldGlobal(ctx);
+    if (g) ctx.footer.push(ctx.c.dim(it ? `Agent Reach globale ancora presente (${g}): la skill non lo usa più; si può togliere con uv tool uninstall agent-reach`
+                                       : `A global Agent Reach is still installed (${g}): the skill no longer uses it; remove it with uv tool uninstall agent-reach`));
+    const note = `${before && before !== j.version ? `${before} ${ctx.g.arrow} ` : ""}${j.version} ${ctx.g.dot} ${ctx.tilde(link || j.root)}`;
+    return bad.length ? { state: "warn", note: `${note} ${ctx.g.dot} ${it ? "correzioni mancanti" : "patches missing"}: ${bad.join(", ")}` } : { note };
   });
 }
 
 // channels ready / not ready, through the skill's own adapter (same table as `reach.py doctor`)
 function reachDoctor(ctx, py) {
-  const script = path.join(ctx.CANON, "game-launch-strategist", "scripts", "research", "reach.py");
+  const script = path.join(skillDir(ctx), "scripts", "research", "reach.py");
   if (!py || !ctx.exists(script)) return null;
   const r = ctx.runSync(py.exe, ["-B", script, "doctor", "--json"], { timeout: 120000, cwd: ctx.HOME, env: { ...process.env, PYTHONIOENCODING: "utf-8" } });
-  try { return JSON.parse(r.out.slice(r.out.indexOf("{"), r.out.lastIndexOf("}") + 1)); } catch { return null; }
-}
-
-// Agent Reach opens its dedicated browser in Chinese (locale written in the code); `agent-reach update` puts that back, so the fix runs after every install/update
-async function reachLangTask(ctx, py) {
-  const { ui, run, CANON } = ctx;
-  const it = ctx.lang === "it";
-  const script = path.join(CANON, "game-launch-strategist", "scripts", "research", "reach.py");
-  await ui.task(it ? "Agent Reach: lingua del browser" : "Agent Reach: browser language", async (t) => {
-    if (ctx.DRY || !py || !ctx.exists(script)) return { state: "skip" };
-    const r = await run(py.exe, ["-B", script, "fix-lang"], { onLine: t.update, cwd: ctx.HOME, timeout: 120000, env: { PYTHONIOENCODING: "utf-8" } });
-    const lines = r.out.trim().split(/\r?\n/).filter(Boolean);
-    if (r.code !== 0) return { state: "warn", note: (lines.find((l) => /non riconosciuto|non trovo|non modificabile/.test(l)) || lines.pop() || "fix-lang").slice(0, 140) };
-    return { note: (lines[0] || "").replace(/^Lingua del browser: /, "").slice(0, 140) };
-  });
+  return jsonOut(r.out);
 }
 
 export async function after(ctx) {
@@ -141,8 +126,7 @@ export async function after(ctx) {
     if (r.code !== 0 || nbad) { for (const l of r.out.trim().split(/\r?\n/).slice(1, 6)) ui.detail(l, "err"); return { state: "warn", note: `${nbad || "?"} ${it ? "con errori" : "with errors"}` }; }
     return { note: `${n} ${it ? "compilano" : "compile"} ${ctx.g.dot} Python ${py.ver}` };
   });
-  await reachTask(ctx);
-  if (ctx.detected.reach && !ctx.DRY) await reachLangTask(ctx, py);
+  await reachTask(ctx, py);
   if (ctx.detected.reach && !ctx.DRY) {
     const d = reachDoctor(ctx, py);
     ctx.detected.reachDoctor = d;
@@ -164,24 +148,27 @@ export async function after(ctx) {
 export async function summary(ctx, rows) {
   const it = ctx.lang === "it";
   rows.push([it ? "Usa" : "Use", "/game-launch-strategist [Completa | Rapida | Mirata <area> | Ondata | Aggiornamento | Trailer]"]);
-  if (!ctx.detected.python) ctx.footer.push(`${ctx.c.warn(ctx.g.warn)} Python 3.9+  ${ctx.isWin ? "winget install --id Python.Python.3.12 -e" : "brew install python"}`);
+  if (!ctx.detected.python) ctx.footer.push(`${ctx.c.warn(ctx.g.warn)} Python 3.10+  ${ctx.isWin ? "winget install --id Python.Python.3.12 -e" : "brew install python"}`);
   const r = ctx.detected.reach;
-  rows.push(["Agent Reach", r ? `${r.version || "?"}${ctx.detected.reachDoctor ? ` ${ctx.g.dot} ${(ctx.detected.reachDoctor.ready || []).length} ${it ? "canali pronti" : "channels ready"}` : ""}` : (it ? "non installato" : "not installed")]);
+  rows.push(["Agent Reach", r ? `${r.version || "?"} ${it ? "(interno)" : "(internal)"}${ctx.detected.reachDoctor ? ` ${ctx.g.dot} ${(ctx.detected.reachDoctor.ready || []).length} ${it ? "canali pronti" : "channels ready"}` : ""}` : (it ? "non installato" : "not installed")]);
+  const reachPy = path.join(skillDir(ctx), "scripts", "research", "reach.py").split(path.sep).join("/");
   if (r && (ctx.detected.reachDoctor?.not_ready || []).some((c) => ["twitter", "instagram", "tiktok", "reddit"].includes(c)))
-    ctx.footer.push(ctx.c.dim(it ? "Social con login (li fai tu, nel browser dedicato): ! python reach.py login twitter | instagram | reddit  ·  percorso e elenco: python reach.py setup"
-                                 : "Logged-in socials (you log in, in the dedicated browser): ! python reach.py login twitter | instagram | reddit  ·  full path and list: python reach.py setup"));
+    ctx.footer.push(ctx.c.dim(it ? `Social con login (li fai tu, nel browser dedicato): ! python ${reachPy} login twitter | instagram | reddit  ·  elenco completo: python ${reachPy} setup`
+                                 : `Logged-in socials (you log in, in the dedicated browser): ! python ${reachPy} login twitter | instagram | reddit  ·  full list: python ${reachPy} setup`));
 }
 
 export async function doctor(ctx) {
   const it = ctx.lang === "it";
-  const exe = findReach(ctx);
-  if (!exe) { ctx.ui.row("off", "Agent Reach", ctx.c.faint(it ? "non installato (opzionale)" : "not installed (optional)"), ctx.c.dim("node installer/install.mjs update")); return 0; }
-  const v = reachVersion(ctx, exe);
-  ctx.ui.row(v ? "ok" : "warn", "Agent Reach", v || "?", ctx.c.faint(ctx.tilde(exe)));
-  const d = reachDoctor(ctx, findPython(ctx));
+  const py = findPython(ctx);
+  const c = reachCheck(ctx, py, skillDir(ctx));
+  if (!c?.installed) { ctx.ui.row("off", "Agent Reach", ctx.c.faint(it ? "non installato (opzionale)" : "not installed (optional)"), ctx.c.dim("node installer/install.mjs update")); return 0; }
+  const bad = Object.entries(c.patches || {}).filter(([, v]) => v !== "ok").map(([k]) => k);
+  ctx.ui.row(bad.length || !c.up_to_date ? "warn" : "ok", "Agent Reach", `${c.version} ${it ? "(interno)" : "(internal)"}`,
+    ctx.c.faint(`${ctx.tilde(c.root)}${bad.length ? ` ${ctx.g.dot} ${it ? "correzioni mancanti" : "patches missing"}: ${bad.join(", ")}` : ""}${c.up_to_date ? "" : ` ${ctx.g.dot} ${it ? "versione" : "version"} ${c.pinned}?`}`));
+  if (!c.link_ok) ctx.ui.row("warn", it ? "collegamento" : "link", ctx.tilde(c.link), ctx.c.dim("node installer/install.mjs update"));
+  const d = reachDoctor(ctx, py);
   if (d) ctx.ui.row(d.ready?.length ? "ok" : "warn", it ? "social pronti" : "social ready", (d.ready || []).join(", ") || "—",
     d.not_ready?.length ? ctx.c.faint(`${it ? "non pronti" : "not ready"}: ${d.not_ready.join(", ")}`) : "");
   else ctx.ui.row("warn", "reach.py", it ? "doctor non riuscito" : "doctor failed");
-  return 0;   // optional dependency: never counted as a problem
+  return 0;   // optional component: never counted as a problem
 }
-

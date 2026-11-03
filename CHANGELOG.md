@@ -1,5 +1,19 @@
 # Changelog
 
+## 2026-11-03 (4): Agent Reach becomes an internal component of the skill
+
+### Changed
+- Agent Reach is no longer a global program (`uv tool install`, `agent-reach` on PATH). The installer builds a **private copy** with `scripts/research/reach_runtime.py`: release 1.6.1 pinned and checked by sha256, own Python environment (uv venv, or `python -m venv` without uv) in `~/.game-launch-strategist/reach/venv`, own state folder `.../reach/home` (browser profile and logins, sessions, config, OpenCLI, CloakBrowser), linked inside the skill as `tools/agent-reach` (gitignored, never committed). `install.mjs update` refreshes and repairs it; `install.mjs doctor` checks version, patches and link.
+- `reach.py` runs only that copy (lookup: env `GLS_REACH_HOME` → `~/.game-launch-strategist/config.json` `reach.path` → `<skill>/tools/agent-reach` → default), never an `agent-reach` found on PATH. Every owner command is now a `reach.py` command: `install`, `login`, `logout`, `add`, `configure` (hidden input), `browser status|stop`, `doctor --live`, `setup`.
+- Local patches applied by the installer to the installed copy, idempotent (`GLS-PATCH:<id>`): `home` (state folder from `AGENT_REACH_HOME`), `locale` (browser language from `REACH_BROWSER_LOCALE` or the system language, never a fixed zh-CN), `subs` (YouTube subtitles English first, then Italian), `embedded` (no global skill or links in other AIs, no self-update / self-uninstall).
+- `fix-lang` no longer edits files: the language fix is in the installed copy; it checks the patch and sets the browser profile languages (kept for compatibility).
+- Messages Agent Reach prints in Chinese are replaced by Italian ones (by error code) before they reach the owner.
+- Migration: an existing `~/.agent-reach` is COPIED once into the private folder (profile, logins, state, OpenCLI, Chromium; caches and locks skipped; absolute paths rewritten; global skill links dropped; pip tools reinstalled privately). The old folder is never moved by the skill.
+
+### Added
+- `THIRD_PARTY_NOTICES.md` (Agent Reach: repository, version, sha256, licence, modifications).
+- `tests/test_reach_runtime.py`: lookup order, never a global agent-reach, private environment, patches on LF/CRLF sources, sha256-checked install, migration by copy.
+
 ## 2026-11-03 (3): social login through the skill, Agent Reach browser in your language
 
 ### Added

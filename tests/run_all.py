@@ -3,7 +3,7 @@
 import glob, os, subprocess, sys
 here = os.path.dirname(os.path.abspath(__file__))
 failed = []
-# offline: never call the real Agent Reach installed on this machine (test_reach.py uses its own fake runner)
+# offline: never call the real internal Agent Reach copy of this machine (the reach tests use fake runners)
 env = dict(os.environ, GLS_REACH="off")
 env.pop("GLS_REACH_FAKE", None)
 for t in sorted(glob.glob(os.path.join(here, "test_*.py"))):

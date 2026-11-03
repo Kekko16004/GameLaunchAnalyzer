@@ -16,7 +16,7 @@ Subcommands:
   subs      channels JSON -> + subs/country/desc, filtered by subscriber range
   verify    video URLs (incl. /shorts/) -> official oEmbed (author, title) to confirm they exist; + date, views, likes via reach
   transcript video URLs -> subtitles text (manual or auto captions) via Agent Reach; --whisper = speech-to-text (Groq/OpenAI
-            key set by the owner with `agent-reach configure groq-key`); one .txt per video + an index JSON
+            key set by the owner with `reach.py configure groq-key`); one .txt per video + an index JSON
 
 Examples:
   python yt_research.py search -q "PlateUp" -q "PlateUp ita" --within month -o yt_raw.json

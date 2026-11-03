@@ -20,7 +20,7 @@
       "why": { "it": "script di ricerca (Steam, recensioni, creator, report)", "en": "research scripts (Steam, reviews, creators, reports)" },
       "install": { "win": "winget install --id Python.Python.3.12 -e --accept-source-agreements --accept-package-agreements", "mac": "brew install python", "linux": "sudo apt install -y python3" } },
     { "id": "uv", "label": "uv", "required": false, "offer": true,
-      "why": { "it": "installa e aggiorna Agent Reach (social in sola lettura)", "en": "installs and updates Agent Reach (social platforms, read-only)" },
+      "why": { "it": "crea l'ambiente privato di Agent Reach dentro la skill (social in sola lettura)", "en": "builds the private Agent Reach environment inside the skill (social platforms, read-only)" },
       "install": { "win": "winget install --id astral-sh.uv -e --accept-source-agreements --accept-package-agreements", "mac": "brew install uv", "linux": "curl -LsSf https://astral.sh/uv/install.sh | sh" } }
   ],
   "skills": [
@@ -28,7 +28,7 @@
       "name": "game-launch-strategist",
       "path": ".",
       "legacy": ["game_launch_strategist", "launch-strategist", "gamelaunchstrategist"],
-      "exclude": ["installer", "tests", "commands", "docs", "README.md", "INSTALL.md", "CHANGELOG.md", "skillkit.json",
+      "exclude": ["installer", "tests", "tools", "commands", "docs", "README.md", "INSTALL.md", "CHANGELOG.md", "skillkit.json",
                   "install.bat", "install.sh", "install.ps1", "installer.bat", "update.bat", "update.sh", "update.ps1",
                   ".gitignore", ".gitattributes", ".github", ".terminalmcp", "*.m4s", "*.bak", "*.bak2", "*.orig", "*.pyc", ".env", "*.env"]
     }

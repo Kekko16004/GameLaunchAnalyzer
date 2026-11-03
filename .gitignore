@@ -10,3 +10,6 @@ __pycache__/
 # local tool state
 .terminalmcp/
 .variant-studio/
+
+# Agent Reach runtime (built by the installer, never committed): link to ~/.game-launch-strategist/reach
+tools/
