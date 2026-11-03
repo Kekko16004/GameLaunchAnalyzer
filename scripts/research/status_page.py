@@ -24,14 +24,15 @@ tracking: everything is inline, so the file can be attached to an email as is). 
   status.json -> roadmap     key milestones (closed test, Steam Direct, Coming Soon, free beta, demo, Next Fest, launch, 1.0): see calendar_view.py
   Calendario tab             every dated item of calendar.md, TODO.md, Steam and online events, waves (calendar_view.py); every URL is a link (weblinks.py)
   launch/fg/waves/wNN-metrics.md, wNN-delta.md   per-wave reports of the focus group (fg_waves.py)
-Layout: a sticky bar of TABS (Riepilogo · Gioco e test · Marketing e store · Trailer · Piano e soldi · Calendario · Mercato reale · Documenti; pure CSS + a few lines
+Layout: a sticky bar of TABS (Riepilogo · Gioco e test · Marketing e social · Trailer · Piano e soldi · Calendario · Mercato reale · Documenti; pure CSS + a few lines
 of inline JS, the last tab is remembered in localStorage), a wide page (up to 1400 px) that still works at 390 px. Riepilogo holds
 the verdict with the Go/No-Go gates at a glance, the "Adesso" box (whose turn it is), key numbers, alerts and trends.
 Live state: launch/issue_status.json (the owner's decision on every focus-group issue, see criticita.py) is shown as a badge with its
 note wherever issues appear (criticalities per wave and per gate, evolution matrix, top-issues chart, convergence table of the
 documents, verdict risks, real-review themes) and splits "Da fare adesso" from "Già deciso". TODO.md is read live (todo_track.py
 marks lines done): open / done per section, and a warning when it was not updated after the latest wave or decision.
-Charts ("Quadro d'insieme") come from report_charts.py; the same charts are exported as .svg for the Markdown reports by charts_export.py.
+Marketing e social opens with marketing_glance.py (what to do now, channels, numbers against the real cases, the flop traffic light);
+the rest of the tab is folded. Charts ("Quadro d'insieme") come from report_charts.py; the same charts are exported as .svg for the Markdown reports by charts_export.py.
   launch/criticita.csv       criticalities from other sources (real test, reviews, pre-mortem): criticita.py add
   launch/qa.json             your questions and the answers given (qa.py add); status.json -> qa and critiques_by_wave are read too
   launch/issue_status.json   the owner's decisions on the issues (aperto, in_lavorazione, da_verificare, risolto, pianificato, accettato, non_problema)
@@ -79,6 +80,7 @@ import wl_track as wl
 import calendar_view as cv
 import weblinks
 import trailer_kit as tk
+import marketing_glance as mg
 
 MONTHS = "gen feb mar apr mag giu lug ago set ott nov dic".split()
 DOCS = {  # stem -> title
@@ -182,13 +184,48 @@ ol.steps{margin-top:4px}.step{grid-template-columns:2.1em minmax(0,1fr);gap:3px 
 @media (max-width:700px){.top{position:relative;padding-right:84px}button.theme{position:absolute;top:4px;right:0;padding:5px 11px;font-size:.8rem}.top .sub+.sub{display:none}}
 @media (max-width:420px){.g4{grid-template-columns:1fr}}
 """
+# Clarity layer (2026-11): one token set (paper, ink, 2 accents, 3 status colours), one type scale, flat hairline cards,
+# status colours that mean the same everywhere (green done/ok, orange in progress, red to do/problem), theme saved, print-friendly.
+CSS_V3 = """
+:root{--bg:#f6f5f1;--surface:#ffffff;--surface2:#efede7;--ink:#1c1b18;--ink2:#4f4d47;--muted:#7d7a72;--grid:#e4e2da;--rule:#e4e2da;--axis:#c9c6bb;--ring:rgba(28,27,24,.10);
+--acc:#2b67c6;--acc2:#c8622a;--acc-soft:#e6eefa;--s1:var(--acc);--good:#1e9a52;--goodtext:#14743d;--warn:#e38b00;--crit:#cf3a3a;
+--shadow:0 1px 0 rgba(28,27,24,.03);--radius:12px;--fs-0:.8125rem;--fs-1:.9375rem;--fs-2:1.0625rem;--fs-3:1.3125rem;--fs-4:1.75rem}
+@media (prefers-color-scheme:dark){:root:where(:not([data-theme="light"])){--bg:#121315;--surface:#1a1b1e;--surface2:#232428;--ink:#efeee9;--ink2:#c2c0b8;--muted:#8e8c85;--grid:#2c2d31;--rule:#2c2d31;--axis:#3d3e43;--ring:rgba(255,255,255,.09);
+--acc:#6a9ef0;--acc2:#ee8a4e;--acc-soft:#1f2b3f;--good:#3cc275;--goodtext:#5fd38f;--warn:#f0a32a;--crit:#ef6060;--shadow:none}}
+:root[data-theme="dark"]{--bg:#121315;--surface:#1a1b1e;--surface2:#232428;--ink:#efeee9;--ink2:#c2c0b8;--muted:#8e8c85;--grid:#2c2d31;--rule:#2c2d31;--axis:#3d3e43;--ring:rgba(255,255,255,.09);
+--acc:#6a9ef0;--acc2:#ee8a4e;--acc-soft:#1f2b3f;--good:#3cc275;--goodtext:#5fd38f;--warn:#f0a32a;--crit:#ef6060;--shadow:none}
+html,body{overflow-x:clip}body{font-family:"Segoe UI Variable Text","Segoe UI",system-ui,-apple-system,Roboto,sans-serif;font-size:var(--fs-1);line-height:1.6;background:var(--bg);color:var(--ink)}
+h1{font-size:var(--fs-4);font-weight:700}h2{font-size:var(--fs-3);font-weight:650;margin:44px 0 14px}h2::before{background:var(--acc)}h3{font-size:var(--fs-2);font-weight:600}
+.sub,.note,.tile .d,.tile .l,th,.chip,.tagx,.due,.owner,.mbadge,.stage,summary .count{font-size:var(--fs-0)}.tile .v{font-size:var(--fs-4)}.hero .big,.verdict .big{font-size:var(--fs-3)}
+.tile .l{text-transform:none;letter-spacing:0;color:var(--ink2)}th{text-transform:none;letter-spacing:0;color:var(--ink2);font-weight:600}
+.card{background:var(--surface);border:1px solid var(--ring);box-shadow:var(--shadow);border-radius:var(--radius);padding:20px}.card .card{border-color:var(--rule)}
+a{color:var(--acc)}a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.tabs{scrollbar-width:none}.tabs::-webkit-scrollbar{display:none}.tabs button[aria-selected="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.toc a{box-shadow:none}.toc a:hover,.toc a:focus{border-color:var(--acc)}
+button.theme{display:inline-flex;align-items:center;gap:6px;box-shadow:none;border:1px solid var(--ring);background:var(--surface);color:var(--ink)}button.theme svg{flex:none}
+details>summary{cursor:pointer}summary:hover{color:var(--ink)}
+.chartbox .why::before{content:"Come si legge: ";font-weight:600;color:var(--ink)}
+.owner.o-me{border-color:var(--acc2)}.owner.o-claude{border-color:var(--acc)}.owner.o-both{border-color:var(--ink2)}
+.progress span{background:var(--good)}
+@media (max-width:700px){h2{font-size:var(--fs-2);margin:32px 0 10px}.card{padding:14px}.tile .v{font-size:var(--fs-3)}.toc{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding-bottom:6px}.toc::-webkit-scrollbar{display:none}.top{padding-right:52px}button.theme{padding:8px}button.theme span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}}
+@media print{:root{--bg:#fff;--surface:#fff;--shadow:none}body{background:#fff;color:#000}.tabs,.toc,button.theme,button.copy,.filters,.tip{display:none!important}
+[role=tabpanel]{display:block!important}.card,details.fold,li.step,.num{break-inside:avoid}a{color:inherit;text-decoration:underline}main{max-width:none;padding:0}h2{break-after:avoid}}
+"""
+THEME_HEAD = "(function(){try{var t=localStorage.getItem('gls-theme');if(t==='dark'||t==='light')document.documentElement.setAttribute('data-theme',t);}catch(e){}})();"
+THEME_JS = """
+(function(){var b=document.getElementById('theme');if(!b)return;var r=document.documentElement;
+function dark(){return r.getAttribute('data-theme')==='dark'||(!r.getAttribute('data-theme')&&matchMedia('(prefers-color-scheme: dark)').matches);}
+function label(){var d=dark();b.querySelector('span').textContent=d?'Tema chiaro':'Tema scuro';b.setAttribute('aria-label',d?'Passa al tema chiaro':'Passa al tema scuro');b.setAttribute('aria-pressed',d?'true':'false');}
+b.addEventListener('click',function(){var t=dark()?'light':'dark';r.setAttribute('data-theme',t);try{localStorage.setItem('gls-theme',t);}catch(e){}label();});label();
+var opened=[];addEventListener('beforeprint',function(){opened=[].slice.call(document.querySelectorAll('details:not([open])'));opened.forEach(function(d){d.open=true;});});
+addEventListener('afterprint',function(){opened.forEach(function(d){d.open=false;});opened=[];});})();
+"""
 JS = """
 (function(){document.querySelectorAll('.copy').forEach(function(b){b.addEventListener('click',function(){var t=b.getAttribute('data-copy')||'';function ok(){var o=b.textContent;b.textContent='Copiato';b.classList.add('ok');setTimeout(function(){b.textContent=o;b.classList.remove('ok');},1500);}
 if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(ok,function(){fb(t,ok);});}else{fb(t,ok);}});});
 function fb(t,ok){var a=document.createElement('textarea');a.value=t;a.style.position='fixed';a.style.opacity='0';document.body.appendChild(a);a.select();try{document.execCommand('copy');ok();}catch(e){}document.body.removeChild(a);}
 document.querySelectorAll('.filters button').forEach(function(b){b.addEventListener('click',function(){var f=b.getAttribute('data-f');document.querySelectorAll('.filters button').forEach(function(x){x.setAttribute('aria-pressed',x===b?'true':'false');});
 document.querySelectorAll('.step').forEach(function(s){var o=s.getAttribute('data-owner');s.hidden=!(f==='all'||o===f||o==='both');});});});
-var b=document.getElementById('theme');if(b){b.addEventListener('click',function(){var r=document.documentElement,d=r.getAttribute('data-theme')==='dark'||(!r.getAttribute('data-theme')&&matchMedia('(prefers-color-scheme: dark)').matches);r.setAttribute('data-theme',d?'light':'dark');});}
 document.querySelectorAll('.chart').forEach(function(c){var tip=c.querySelector('.tip'),cross=c.querySelector('.cross');
 c.querySelectorAll('.hit').forEach(function(h){function show(){var x=h.getAttribute('data-x');if(cross){cross.setAttribute('x1',x);cross.setAttribute('x2',x);cross.style.display='block';}
 tip.textContent=h.getAttribute('data-tip');tip.style.display='block';var svg=c.querySelector('svg'),k=svg.getBoundingClientRect().width/svg.viewBox.baseVal.width;tip.style.left=Math.min(x*k+12,c.clientWidth-270)+'px';tip.style.top='8px';}
@@ -224,7 +261,7 @@ def fmt_date(s) -> str:
 ICONS = {  # always paired with a text label: colour never carries the meaning alone
     "pass": ('<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><circle cx="9" cy="9" r="8" fill="var(--good)"/><path d="M5 9.5l2.6 2.6L13 6.5" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>', "Superato"),
     "fail": ('<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><circle cx="9" cy="9" r="8" fill="var(--crit)"/><path d="M6 6l6 6M12 6l-6 6" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/></svg>', "Non superato"),
-    "pending": ('<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><circle cx="9" cy="9" r="7.2" fill="none" stroke="var(--muted)" stroke-width="2"/><path d="M9 5v4.5l3 1.5" stroke="var(--muted)" stroke-width="2" fill="none" stroke-linecap="round"/></svg>', "Da fare"),
+    "pending": ('<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><circle cx="9" cy="9" r="7.2" fill="none" stroke="var(--crit)" stroke-width="2"/><path d="M9 5v4.5l3 1.5" stroke="var(--crit)" stroke-width="2" fill="none" stroke-linecap="round"/></svg>', "Da fare"),
     "warn": ('<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M9 1.5L17 16H1z" fill="var(--warn)"/><path d="M9 6.5v4.5M9 13v.8" stroke="#0b0b0b" stroke-width="2" stroke-linecap="round"/></svg>', "Attenzione"),
     "info": ('<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><circle cx="9" cy="9" r="8" fill="none" stroke="var(--muted)" stroke-width="2"/><path d="M9 8v5M9 5.2v.8" stroke="var(--muted)" stroke-width="2" stroke-linecap="round"/></svg>', "Info"),
     "na": ('<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><circle cx="9" cy="9" r="7.2" fill="none" stroke="var(--muted)" stroke-width="2"/><path d="M5 9h8" stroke="var(--muted)" stroke-width="2" stroke-linecap="round"/></svg>', "Non applicabile")}
@@ -467,7 +504,7 @@ def todo_section(root: str, today: dt.date) -> str | None:
 
     def line(x):
         who = {"me": "👤 Tu", "claude": "🤖 Claude", "both": "👤+🤖 Insieme"}.get(x["owner"], "")
-        st = ("pass", "Fatto") if x["done"] else ("warn", "In ritardo") if x in overdue else ("pending", "Da fare")
+        st = ("pass", "Fatto") if x["done"] else ("fail", "In ritardo") if x in overdue else ("pending", "Da fare")
         meta = [m for m in (who, f"entro {x['due']}" if x["due"] else "", f"{x['hours']}" if x["hours"] else "", f"misura: {x['metric']}" if x["metric"] else "", x["done_note"]) if m]
         return (f'<div class="todo-l{" done" if x["done"] else ""}"><span>{state(*st)}</span><span class="txt">{inline(x["action"])}</span>'
                 + (f'<div class="meta">{"".join(f"<span>{inline(m)}</span>" for m in meta)}</div>' if meta else "") + "</div>")
@@ -491,7 +528,7 @@ def todo_section(root: str, today: dt.date) -> str | None:
 
 # ----------------------------------------------------------------------------- page
 OWNER = {"me": "👤 Tu", "claude": "🤖 Claude", "both": "👤+🤖 Insieme", "none": "—"}
-STEP_STATE = {"done": ("pass", "Fatto"), "open": ("pending", "Da fare"), "overdue": ("warn", "In ritardo")}
+STEP_STATE = {"done": ("pass", "Fatto"), "open": ("pending", "Da fare"), "overdue": ("fail", "In ritardo")}
 
 
 def note_parts(note: str) -> dict:
@@ -644,8 +681,8 @@ def kit_section(kit: dict, root: str | None = None) -> str:
     if fr:
         fresh = (f'<p>{state("pass", "Pagine store aggiornate")} <span>al {fmt_date(fr["kit_date"])}: nessuna decisione, ondata o gate più recente.</span></p>' if not fr["stale"] else
                  f'<p>{state("warn", "Pagine store da aggiornare")} <span>Il kit è del {fmt_date(fr["kit_date"])}; dopo sono arrivati: ' + "; ".join(f"{esc(w)} ({fmt_date(d)})" for w, d in fr["newer"])
-                 + '. Claude aggiorna <code>store_kit.json</code> e rilancia <code>store_kit.py</code>.</span></p>')
-    out = [f'<h2>Pagine store: scheda copiabile</h2><div class="card">{fresh}<p class="note">Ogni campo ha il suo pulsante Copia. I testi vengono da <code>store_kit.json</code>; i limiti di caratteri sono quelli dichiarati nel file con la data di verifica.</p></div>']
+                 + '. Claude li aggiorna.</span></p>')
+    out = [f'<h2>Pagine store: scheda copiabile</h2><div class="card">{fresh}<p class="note">Ogni campo ha il suo pulsante Copia. I limiti di caratteri sono quelli verificati alla data scritta accanto a ogni pagina.</p></div>']
     for pf, title in (("steam", "Pagina Steam"), ("itch", "Pagina itch.io")):
         if kit.get(pf):
             out.append(kit_platform(pf, title, kit[pf], kit.get("verified_on", "")))
@@ -925,7 +962,7 @@ def key_tiles(st: dict, wl_a, fg_rows, plan: dict, econ, today: dt.date, hide: s
 
 TABS = [("riepilogo", "Riepilogo", '<path d="M3 3h5v5H3zM10 3h5v5h-5zM3 10h5v5H3zM10 10h5v5h-5z"/>'),
         ("gioco", "Gioco e test", '<path d="M4 6h10a2 2 0 012 2v3a2 2 0 01-2 2h-1.5L11 11H7l-1.5 2H4a2 2 0 01-2-2V8a2 2 0 012-2zM6 8v2M5 9h2M12 9h.5"/>'),
-        ("marketing", "Marketing e store", '<path d="M3 7v4h2l5 3V4L5 7zM13 6.5a3 3 0 010 5"/>'),
+        ("marketing", "Marketing e social", '<path d="M3 7v4h2l5 3V4L5 7zM13 6.5a3 3 0 010 5"/>'),
         ("trailer", "Trailer", '<path d="M2 4h14v10H2zM2 7h14M5 4l1.5 3M9 4l1.5 3M13 4l1.5 3M7.5 9.5v3l2.6-1.5z"/>'),
         ("piano", "Piano e soldi", '<path d="M3 4h12v11H3zM3 7h12M6 2v3M12 2v3M6 10h2M10 10h2M6 12.5h2"/>'),
         ("calendario", "Calendario", '<path d="M3 4h12v11H3zM3 7.5h12M6 2v3M12 2v3"/><circle cx="7" cy="11" r="1.2" fill="currentColor"/><path d="M10 11h2.5"/>'),
@@ -933,7 +970,7 @@ TABS = [("riepilogo", "Riepilogo", '<path d="M3 3h5v5H3zM10 3h5v5h-5zM3 10h5v5H3
         ("docs", "Documenti", '<path d="M5 2h6l3 3v11H5zM11 2v3h3M7 8h5M7 10.5h5M7 13h3"/>')]
 TAB_INTRO = {"riepilogo": "Il punto della situazione: verdetto, cosa tocca adesso, numeri chiave e andamento.",
              "gioco": "Il gioco e i test: pilastri, criticità ondata per ondata con le tue decisioni, focus group, recensioni reali dei giochi simili.",
-             "marketing": "Come si presenta il gioco: posizionamento, pagine store da copiare, clip, creator, community.",
+             "marketing": "In cima: cosa fare adesso, i canali, i numeri contro i casi reali e il controllo «perché floppa». Sotto, da aprire: pagine store da copiare, clip, piano social, creator, prove e documenti.",
              "trailer": "Il trailer: prompt completo da copiare (positivo e negativo), storyboard a schede (una per inquadratura: tempo, cosa si vede, camera, testo, audio, come girarla), trailer dei concorrenti misurati e controlli di qualità.",
              "piano": "Quando e quanto: passi in ordine, TODO, cancelli, date, economia, piani se… allora, concorrenti e finestra di lancio.",
              "calendario": "Tutte le date in un colpo d'occhio: traguardi, passi tuoi e di Claude, scadenze di Steam e degli showcase, ondate del focus group, fino al lancio.",
@@ -1057,15 +1094,15 @@ def social_section(root: str, today: dt.date) -> str | None:
         H.append('<h3>Cosa funziona per noi (numeri veri)</h3><div class="wrap"><table><thead><tr><th>Dove</th><th class="n">Post</th><th class="n">Visual. mediane</th><th class="n">× il tipico</th><th class="n">Wishlist / 1.000</th></tr></thead><tbody>'
                  + "".join(f'<tr><td>{esc(N.get(p_["platform"], p_["platform"]))}</td><td class="n">{p_["n"]}</td><td class="n">{fmt_n(p_["median_views"])}</td><td class="n">{esc(p_["vs_typical"])}</td>'
                            f'<td class="n">{esc(p_["wishlists_per_1k"] if p_["wishlists_per_1k"] is not None else "—")}</td></tr>' for p_ in ln["platforms"])
-                 + "</tbody></table></div>" + (f'<p>Da rifare: {esc(", ".join(w["key"] for w in ln["winners"]))}</p>' if ln.get("winners") else "")
+                 + "</tbody></table></div>" + (f'<p>Da rifare: {esc(", ".join(str(w.get("label") or w["key"]).replace("_", " ") for w in ln["winners"]))}</p>' if ln.get("winners") else "")
                  + "".join(f'<p class="note">{esc(w)}</p>' for w in ln.get("warnings", [])))
     elif pl:
-        H.append('<p class="sub">Nessun post registrato ancora: dopo ogni post <code>social_content.py track add</code> (visualizzazioni, like, wishlist del giorno dopo).</p>')
+        H.append('<p class="sub">Nessun post registrato ancora: dopo ogni post passa a Claude visualizzazioni, like e wishlist del giorno dopo.</p>')
     if rt and rt.get("subs"):
         sug = [x for an in rt["subs"].values() for x in an.get("suggestions", [])][:6]
         H.append(f'<h3>Reddit questa settimana ({esc(rt.get("generated_on", ""))})</h3><ul>' + "".join(f"<li>{inline(x)}</li>" for x in sug) + "</ul>")
     elif rt and rt.get("blocked"):
-        H.append(f'<p class="note">Reddit: feed non leggibili il {esc(rt.get("generated_on", ""))} ({esc(", ".join(b["sub"] + " " + b["status"] for b in rt["blocked"][:4]))}): passi manuali in ricerche-manuali.md.</p>')
+        H.append(f'<p class="note">Reddit: feed non leggibili il {esc(rt.get("generated_on", ""))} ({esc(", ".join(b["sub"] + " " + b["status"] for b in rt["blocked"][:4]))}): passi manuali nel documento delle ricerche manuali.</p>')
     H.append("</div>")
     return "".join(H)
 
@@ -1110,7 +1147,7 @@ def clips_kit_section(root: str, today: dt.date) -> str | None:
                     rows.append(f'<tr><td>Reddit {esc(x["subreddit"])}</td><td>{esc(x["title"])}</td><td>{fmt_date(x["date"])} {esc(x["time"])}</td><td></td></tr>')
             H.append(f'<h2>Kit social della settimana</h2><div class="card"><p class="sub">Settimana del {fmt_date(cur["week"])}' + (" · prima della pagina Steam: profilo e prova dei testi d'apertura" if cur.get("pre_page") else " · link Steam con UTM") + "</p>"
                      f'<div class="wrap"><table><thead><tr><th>Post</th><th>Testo nei primi 2 s</th><th>Dove e quando</th><th>Clip</th></tr></thead><tbody>{"".join(rows)}</tbody></table></div>'
-                     f'<p class="note">Tutto il kit (didascalie, hashtag, regole Reddit, riga per registrare i numeri) in social-kit/kit-{esc(cur["week"])}.md. ~2-3 h a settimana.</p></div>')
+                     f'<p class="note">Il kit completo della settimana (didascalie, hashtag, regole Reddit, riga per i numeri) è nel documento del kit del {fmt_date(cur["week"])}. Circa 2-3 ore a settimana.</p></div>')
     if reg and reg.get("clips"):
         cl = reg["clips"]
         cnt = {k: sum(1 for c in cl if c.get("status") == k) for k in CLIP_STATE}
@@ -1118,7 +1155,7 @@ def clips_kit_section(root: str, today: dt.date) -> str | None:
                        f'<td class="n">{esc(c.get("length_s"))} s</td><td>{esc((c.get("record") or {}).get("scene", ""))}</td><td>{esc(c.get("file") or "—")}</td></tr>' for c in cl)
         H.append(f'<h2>Clip da fare</h2><div class="card"><p>{len(cl)} clip con storyboard completo · da registrare <strong>{cnt["todo"]}</strong> · registrate {cnt["recorded"]} · pubblicate {cnt["posted"]}.</p>'
                  f'<div class="wrap"><table><thead><tr><th>Clip</th><th>Cosa</th><th>Stato</th><th class="n">Durata</th><th>Dove si gira</th><th>File</th></tr></thead><tbody>{rows}</tbody></table></div>'
-                 '<p class="note">Storyboard secondo per secondo, inquadrature, testi, audio e come registrarla in clips.md. Stato: <code>social_kit.py set C01 --status recorded --file …</code>.</p></div>')
+                 '<p class="note">Storyboard secondo per secondo, inquadrature, testi, audio e come registrarla: documento «Clip da fare» qui sotto. Quando una clip è registrata o pubblicata dillo a Claude, che ne aggiorna lo stato.</p></div>')
     return "".join(H)
 
 
@@ -1230,18 +1267,25 @@ def build(root: str, audience: str, include: list[str], exclude: list[str], hide
     if st.get("full_game") and "fullgame" not in hide:
         add("gioco", full_game_section(st["full_game"]) + ("".join(f'<div class="card" style="margin-top:12px">{c}</div>' for c in G["fullgame"]["charts"]) if "fullgame" in G else ""))
 
-    # ---- Marketing e store
-    add("marketing", mp.marketing_card(mk))
+    # ---- Marketing e social: at a glance on top (marketing_glance.py), everything else folded below
+    mk_glance = None if "social" in hide else mg.glance(root, plan, today, wl_a, ps=ps)
+    fold = mg.wrap_fold if mk_glance else (lambda c, n="": c)
+    if mk_glance:
+        add("marketing", mk_glance[0])
+    add("marketing", fold(mp.marketing_card(mk)))
     if kit:
-        add("marketing", kit_section(kit, root))
+        add("marketing", fold(kit_section(kit, root), " · ".join(t for k_, t in (("steam", "Steam"), ("itch", "itch.io")) if kit.get(k_))))
+    if "social" not in hide:
+        add("marketing", "".join(fold(x) for x in re.split(r"(?=<h2>)", clips_kit_section(root, today) or "") if x) or None)
+        add("marketing", fold(social_section(root, today)))
     if "creators" not in hide:
         c = creators_section(root)
         if c:
-            add("marketing", c + ("".join(f'<div class="card" style="margin-top:12px">{x}</div>' for x in G["creators"]["charts"]) if "creators" in G else ""))
+            add("marketing", fold(c + ("".join(f'<div class="card" style="margin-top:12px">{x}</div>' for x in G["creators"]["charts"]) if "creators" in G else "")))
+    if mk_glance:
+        for x in mk_glance[1]:
+            add("marketing", x)
 
-    if "social" not in hide:
-        add("marketing", clips_kit_section(root, today))
-        add("marketing", social_section(root, today))
     if "trailer" not in hide:
         add("trailer", tk.status_section(root, esc, copy_btn))
 
@@ -1357,10 +1401,10 @@ def build(root: str, audience: str, include: list[str], exclude: list[str], hide
     name = st.get("game") or os.path.basename(os.path.dirname(os.path.abspath(root))) or "Progetto"
     label = {"private": "Uso interno", "partner": "Per i soci", "publisher": "Per il publisher"}[audience]
     return (f'<!doctype html><html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Stato del lancio, {esc(name)}</title>'
-            f'<style>{CSS}{mp.CSS}{CSS_POLISH}{cv.CSS}</style></head><body><main><div class="top"><div><h1>{esc(name)}: stato del lancio</h1><p class="sub">Aggiornato il {fmt_date(today.isoformat())}{(" · analisi del " + fmt_date(st["updated"])) if st.get("updated") and str(st["updated"])[:10] != today.isoformat() else ""} · {esc(label)}'
-            f'{" · modalità " + esc(st["mode"]) if st.get("mode") else ""}{" · valutato come: " + esc(product.get("label") or product.get("kind")) if product.get("kind") or product.get("label") else ""}</p><p class="sub">Questo è il <strong>cruscotto</strong>: cosa fare, numeri, pagine da copiare, piani. Il testo completo del report è in <code>REPORT.md</code>, con i grafici in <code>charts/*.svg</code>.</p></div><button class="theme" id="theme" type="button" aria-label="Tema chiaro/scuro" title="Tema chiaro/scuro"><span aria-hidden="true">◐</span> Tema</button></div>'
+            f'<script>{THEME_HEAD}</script><style>{CSS}{mp.CSS}{CSS_POLISH}{cv.CSS}{mg.CSS}{CSS_V3}</style></head><body><main><div class="top"><div><h1>{esc(name)}: stato del lancio</h1><p class="sub">Aggiornato il {fmt_date(today.isoformat())}{(" · analisi del " + fmt_date(st["updated"])) if st.get("updated") and str(st["updated"])[:10] != today.isoformat() else ""} · {esc(label)}'
+            f'{" · modalità " + esc(st["mode"]) if st.get("mode") else ""}{" · valutato come: " + esc(product.get("label") or product.get("kind")) if product.get("kind") or product.get("label") else ""}</p><p class="sub">Questo è il <strong>cruscotto</strong>: cosa fare, numeri, pagine da copiare, piani. Il report completo da leggere con calma è il file REPORT.md nella cartella del lancio.</p></div><button class="theme" id="theme" type="button" title="Cambia tema chiaro o scuro"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 1.5a6.5 6.5 0 010 13z" fill="currentColor"/></svg><span>Tema</span></button></div>'
             + nav + "".join(panels) + f'<footer class="note">Pagina generata da <code>status_page.py</code> il {today.isoformat()} da file locali, senza richieste di rete. Il focus group è simulato: non è un dato di mercato. '
-            f'Cifre con fonte nei documenti; ciò che è etichettato [DA VERIFICARE] resta da verificare.</footer></main><script>{JS}{gl.JS}{cr.JS}{qamod.JS}{cv.JS}</script></body></html>')
+            f'Cifre con fonte nei documenti; ciò che è etichettato [DA VERIFICARE] resta da verificare.</footer></main><script>{JS}{THEME_JS}{gl.JS}{cr.JS}{qamod.JS}{cv.JS}</script></body></html>')
 
 
 def main():

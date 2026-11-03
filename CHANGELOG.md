@@ -1,5 +1,18 @@
 # Changelog
 
+## 2026-11-03: STATUS.html, a clearer Marketing e social tab
+
+### Changed
+- The tab is now **Marketing e social**. At the top, at a glance (`scripts/research/marketing_glance.py`):
+  - what to do now: the 3 moves with deadline and owner (👤/🤖), taken from `top_moves.json` and the matching step;
+  - channels: ready / to connect / not used, with the case reference "wishlist per 1,000 views";
+  - our numbers against the real cases (above / below / to measure), with a "Come si legge" line under the meters;
+  - the "why games flop" check as a traffic light, one action per item; some items are filled from the plan (store text, languages, timing, wishlists).
+- Everything else is folded (details): store pages, recipe, weekly kit, clips, social, creators, plus new folds: social plan week by week, hooks, subreddit rules, evidence and sources, linked real cases.
+- Whole page: one token set (2 accents, 3 status colours with one meaning: green done/ok, orange in progress, red to do/problem), one type scale, flat cards, theme button that remembers the choice, print opens every fold, phone header and section index fixed.
+- Plain words in the tab: no file names or commands on screen.
+- Test: `tests/test_marketing_glance.py`.
+
 ## 2026-11-03: social platforms through Agent Reach, Reddit that works
 
 ### Added
