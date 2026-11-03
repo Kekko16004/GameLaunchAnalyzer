@@ -1,5 +1,5 @@
 {
- "_note": "Pesi della rubrica per genere (references/04-focus-group.md 7.0c). 'prior' = punto di partenza [OPINIONE] dai pilastri dei playbook (references/playbooks.md); in ogni ondata si mescola con le quote dei temi delle recensioni vere del genere (review_corpus.py) con `fg_waves.py weights`. Le 6 dimensioni sono sempre le stesse; i pesi sommano a 1.",
+ "_note": "Pesi della rubrica per genere (references/04-focus-group.md 7.0c). 'prior' = punto di partenza [OPINIONE] dai pilastri dei playbook (references/playbooks.md); in ogni ondata si mescola con le quote dei temi delle recensioni vere del genere (review_corpus.py) con `fg_waves.py weights`. Le 6 dimensioni sono sempre le stesse; i pesi sommano a 1. Aggiornamento 2026-11-03: dai 57 thread di flop di references/09-reddit-casi.md (gancio poco chiaro 15/57, grafica 14/57) i prior di ogni genere salgono di +0,04 su clarity (gancio leggibile in 2 s) e +0,02 su art (qualità visiva), presi da gameplay -0,03, content -0,02, value -0,01; la somma resta 1 (fonte: 09-reddit-casi.md, gancio 15/57 e grafica 14/57 thread di flop, 2026-11-03). Il criterio 'trailer: azione entro 3 s' non è una settima dimensione (le 6 sono fisse): sta nella checklist del trailer, references/08-trailer.md sezione G, e in FC01 di flopcheck.",
  "dims": ["gameplay", "art", "content", "clarity", "value", "social"],
  "theme_dim": {
   "fun_addictive": "gameplay", "challenge_rewarding": "gameplay", "polish_feel": "gameplay", "relaxing_cozy": "gameplay",
@@ -11,14 +11,14 @@
   "coop_friends": "social", "multiplayer_netcode": "social"
  },
  "genres": {
-  "default":                   {"label": "generico",                                   "prior": {"gameplay": 0.30, "art": 0.15, "content": 0.20, "clarity": 0.15, "value": 0.10, "social": 0.10}},
-  "roguelite":                 {"label": "roguelite / deckbuilder / survivors (playbook 1)", "prior": {"gameplay": 0.35, "art": 0.10, "content": 0.25, "clarity": 0.10, "value": 0.10, "social": 0.10}},
-  "cozy":                      {"label": "cozy / life sim (playbook 2)",               "prior": {"gameplay": 0.20, "art": 0.30, "content": 0.20, "clarity": 0.10, "value": 0.10, "social": 0.10}},
-  "horror":                    {"label": "horror (playbook 3, 17)",                    "prior": {"gameplay": 0.25, "art": 0.30, "content": 0.15, "clarity": 0.10, "value": 0.10, "social": 0.10}},
-  "puzzle_arcade":             {"label": "puzzle / arcade (playbook 6)",               "prior": {"gameplay": 0.35, "art": 0.10, "content": 0.20, "clarity": 0.20, "value": 0.10, "social": 0.05}},
-  "narrative":                 {"label": "narrativo / visual novel (playbook 7, 21)",  "prior": {"gameplay": 0.10, "art": 0.35, "content": 0.25, "clarity": 0.10, "value": 0.10, "social": 0.10}},
-  "strategy":                  {"label": "strategia / gestionale (playbook 5, 19)",    "prior": {"gameplay": 0.30, "art": 0.10, "content": 0.25, "clarity": 0.20, "value": 0.10, "social": 0.05}},
-  "party_physics":             {"label": "party / sandbox di fisica (playbook 12, 20)", "prior": {"gameplay": 0.35, "art": 0.10, "content": 0.15, "clarity": 0.10, "value": 0.10, "social": 0.20}},
-  "physics_comedy_roguelite":  {"label": "physics comedy roguelite (playbook 1 + 20)",  "prior": {"gameplay": 0.35, "art": 0.10, "content": 0.20, "clarity": 0.10, "value": 0.10, "social": 0.15}}
+  "default":                   {"label": "generico",                                   "prior": {"gameplay": 0.27, "art": 0.17, "content": 0.18, "clarity": 0.19, "value": 0.09, "social": 0.10}},
+  "roguelite":                 {"label": "roguelite / deckbuilder / survivors (playbook 1)", "prior": {"gameplay": 0.32, "art": 0.12, "content": 0.23, "clarity": 0.14, "value": 0.09, "social": 0.10}},
+  "cozy":                      {"label": "cozy / life sim (playbook 2)",               "prior": {"gameplay": 0.17, "art": 0.32, "content": 0.18, "clarity": 0.14, "value": 0.09, "social": 0.10}},
+  "horror":                    {"label": "horror (playbook 3, 17)",                    "prior": {"gameplay": 0.22, "art": 0.32, "content": 0.13, "clarity": 0.14, "value": 0.09, "social": 0.10}},
+  "puzzle_arcade":             {"label": "puzzle / arcade (playbook 6)",               "prior": {"gameplay": 0.32, "art": 0.12, "content": 0.18, "clarity": 0.24, "value": 0.09, "social": 0.05}},
+  "narrative":                 {"label": "narrativo / visual novel (playbook 7, 21)",  "prior": {"gameplay": 0.07, "art": 0.37, "content": 0.23, "clarity": 0.14, "value": 0.09, "social": 0.10}},
+  "strategy":                  {"label": "strategia / gestionale (playbook 5, 19)",    "prior": {"gameplay": 0.27, "art": 0.12, "content": 0.23, "clarity": 0.24, "value": 0.09, "social": 0.05}},
+  "party_physics":             {"label": "party / sandbox di fisica (playbook 12, 20)", "prior": {"gameplay": 0.32, "art": 0.12, "content": 0.13, "clarity": 0.14, "value": 0.09, "social": 0.20}},
+  "physics_comedy_roguelite":  {"label": "physics comedy roguelite (playbook 1 + 20)",  "prior": {"gameplay": 0.32, "art": 0.12, "content": 0.18, "clarity": 0.14, "value": 0.09, "social": 0.15}}
  }
 }

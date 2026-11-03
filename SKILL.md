@@ -28,6 +28,7 @@ Non sei un cheerleader. Sei utile quando dici la verità in tempo per poterla co
 | `references/05-outreach-community-legal.md` | 8, 9, 10 | creator, community, kit del test reale, legale e fiscale |
 | `references/07-contingenze.md` | 7C | piani "se… allora", metriche, soglie, matrice delle variabili |
 | `references/08-trailer.md` | Trailer | modalità **Trailer** (o "trailer", "prompt del trailer", "storyboard"): intervista sul trailer, controllo di brag/HyperFrames, trailer dei concorrenti misurati, regole del mestiere con fonte, prompt positivo e negativo, storyboard, asset e registro dei crediti, controllo di qualità e panel alla cieca, brief di registrazione per il lato sviluppo |
+| `references/09-reddit-casi.md` | 2, 6, 8, 9 | prima di pianificare i social e i canali, e per l'audit "perché floppa" (257 casi Reddit con fattori, numeri di conversione, checklist `flopcheck`) |
 | `references/06-synthesis-output.md` | 10B, 11 + output | sintesi, formato di REPORT/TODO/STATUS, debriefing, controllo qualità |
 | `references/dev-link.md` | B, 7, 11 | **contratto con `game-developer`** (gdl-v3, copia identica del suo `launch-link.md`): chi scrive quali file, decisioni in due registri, pacchetto dopo ogni ondata, gate con intestazione, regressioni, formati comuni di mappa, schermate e run. Leggilo quando il progetto ha `docs/gates/`, `DECISIONI.md` o `docs/design-review/` (o `project_scan.py` dice `linked`) |
 | `scripts/research/README.md` | tutte | opzioni e limiti degli script |
@@ -109,6 +110,8 @@ Non riscrivere scraper a ogni sessione: usa questi, eseguili con il percorso ass
 **Variabili d'ambiente opzionali** (mai nei file): `YOUTUBE_API_KEY`, `REDDIT_CLIENT_ID`, `REDDIT_CLIENT_SECRET`, `REDDIT_USER_AGENT`, `TWITCH_CLIENT_ID`, `TWITCH_CLIENT_SECRET`, `IG_OEMBED_TOKEN`, `THREADSNOOP_API_KEY` (Reddit, facoltativa). Interruttori: `GLS_REACH=off` (niente Agent Reach), `GLS_REDDIT_BACKENDS=arctic,rss` (ordine dei backend Reddit), `GLS_ARCTIC=off`.
 
 **Social con Agent Reach.** All'inizio di ogni sessione che tocca i social lancia `reach.py doctor`: dice canale per canale se è **pronto**. Se Agent Reach manca o un canale chiede il login, **non lo fai tu**: dai al proprietario i comandi di `reach.py setup` (`! agent-reach login twitter`, ecc.: login suo, nella finestra del browser dedicato, account secondario consigliato). Agent Reach è **sola lettura**: la skill non pubblica, non commenta, non mette like, non manda messaggi, mai.
+
+**Social e lancio:** prima di scegliere i canali leggi `references/09-reddit-casi.md` (257 casi Reddit, quali leve hanno funzionato e perché si floppa secondo i commenti) e lancia `social_content.py flopcheck` sulla pagina del gioco; le voci non superate entrano in `top_moves.py`.
 
 **Non aggirare** login, CAPTCHA, paywall o blocchi. Niente login fatti da Claude, niente cookie copiati o stampati. Le piattaforme con login si leggono solo con il login che il proprietario ha fatto lui in Agent Reach; quando un canale non è pronto il lavoro resta manuale e documentato in `ricerche-manuali.md`.
 

@@ -107,6 +107,8 @@ python3 <skill>/scripts/research/trailer_kit.py qa <render.mp4> --spec launch/tr
 ```
 Controlla: primo taglio ≤ 3 s (verticale ≤ 2 s), durata ±10 %, inquadratura media per terzo (da confrontare con i concorrenti), **-14 LUFS ± 1** integrati e **picco vero ≤ -1 dBTP**, nessuna immagine ferma oltre 1 s prima del cartello finale, niente nero nei primi 10 s, risoluzione/fps/codec (Steam 1920x1080 30/60 fps H.264/AAC; verticale 1080x1920). Leggibilità a misura di telefono, zone sicure TikTok e contenuti vietati dal prompt negativo si controllano già sullo storyboard (`check`) e poi **a mano**, fotogramma per fotogramma, su un foglio a 0,5 s (compenetrazioni, teste tagliate, testi di debug).
 
+**Criterio dai flop: trailer con azione entro 3 s.** Il gioco che gira (non logo, non intro, non sviluppatore davanti allo schermo) deve comparire entro i primi 3 secondi (verticale 2 s) e il gancio deve capirsi senza audio. Da guardare a mano sul foglio dei fotogrammi 0/2/5 s: se a 3 s non si vede ancora cosa fa il giocatore, il trailer non passa, anche se il primo taglio è nei tempi. Fonte: `references/09-reddit-casi.md`, 19 thread di flop su 57 accusano il trailer, 15 su 57 il gancio poco chiaro (2026-11-03); è la voce FC01 di `social_content.py flopcheck`. Nella rubrica del focus group non è una settima dimensione: pesa dentro "chiarezza" (peso alzato il 2026-11-03, `scripts/research/data/rubric_weights.json`).
+
 **Panel di spettatori alla cieca** (simulato, stesso metodo calibrato del focus group, `04-focus-group.md` 7.0b-7.0e):
 ```bash
 python3 <skill>/scripts/research/trailer_kit.py panel init --spec launch/trailer/<v>/trailer.json --render <render.mp4> --out-dir launch/trailer/<v>/panel
