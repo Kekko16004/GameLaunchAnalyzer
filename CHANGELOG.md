@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-11-07: Revisione GDD — valutare l'idea, non solo ritoccarla
+
+### Added
+- New mode **Revisione GDD** (`references/10-revisione-gdd.md`): for a GDD or a written idea with little game yet, typically right after game-developer locks the GDD. One question turn first: **how much the owner is willing to change the GDD** (1 ritocchi · 2 struttura · 3 tutto in discussione), what is untouchable (the engine always), whether the GDD describes the slice or the full game, the goal. Then the data with the existing scripts (comparables, genre benchmark, calibration, review corpus against the GDD's features, Reddit flop cases, store benchmark, case studies, the 2B positioning tests), a **scorecard of the idea on 10 fixed areas**, a verdict (forte / promettente / fragile / da ripensare) with the move that matters most, and proposals `P-GDD-n` up to the chosen level: touch-ups, structural changes and, at level 3, alternative concepts. Each proposal carries the GDD text ready to paste, evidence, impact, hours, risk and what is lost. Optional quick simulated panel (12 testers) comparing the original pitch with the strongest alternatives.
+- `scripts/research/gdd_review.py`: `init` (skeleton with the GDD's sections, never overwrites), `check` (dial and untouchables enforced, complete scorecard with labels and sources, ambition matching the level: >= 3 proposals, >= 2 structural at level 2+, >= 2 alternative concepts at level 3), `render` (`launch/gdd-review.md`), `decide` (accepted / refused with date; never above the dial), `pending` (accepted proposals not yet cited in `DECISIONI.md`, read only, used by game-developer). `tests/test_gdd_review.py`.
+
+### Changed
+- Contract with game-developer **gdl-v4** (`references/dev-link.md`, identical to its `launch-link.md`): §10 is now the idea and GDD review (offered once after the lock; the developer applies the accepted proposals to `GDD.md` with a recap and a new lock, one `DECISIONI.md` row each with `fonte: launch/gdd-review.md P-GDD-n`); §3 lists `gdd-review.*` and the trailer `recording-brief.*`; the developer may run `gdd_review.py pending` (read only).
+
 ## 2026-11-03 (5): copy the login from the owner's normal browser (X blocks the dedicated one)
 
 ### Added

@@ -13,6 +13,7 @@ The skill itself is written in **Italian** (instructions and generated reports);
 | **Mirata** | One area only, e.g. "just the store copy", "just pricing", "just creators". |
 | **Ondata** | `launch/fg/` already exists: runs the next focus-group wave with the **same testers** on the current state of the game, then delta and timeline. |
 | **Aggiornamento** | `launch/` already exists: re-runs the affected phases (including a new wave, with your OK) and reports what changed. |
+| **Revisione GDD** | You have a GDD or a written idea and little game yet. It first asks **how much you are willing to change** (1 touch-ups · 2 structure · 3 everything open) and what is untouchable, then grades the idea on 10 areas against real games (comparables, genre benchmark, real reviews, calibration, flop cases) and proposes the strongest version within that limit, up to alternative concepts, each with the GDD text ready to paste. Output: `launch/gdd-review.md`. game-developer offers it right after the GDD lock and applies what you accept. |
 
 ### Beta or full game: always asked first
 
@@ -78,7 +79,7 @@ How it works (the same installer as [GameDeveloperSkill](https://github.com/Kekk
 - **No duplicates.** Older copies in host folders (`~/.codex/skills`, `~/.kilo/skills`, `~/.kilocode/skills`, …) and the legacy names are moved to `~/.agents/skillkit/backup/<date>/`, never deleted. The extra slash commands the old installer wrote (Kilo, Antigravity workflows, Codex prompts) are removed.
 - **Slash command.** In Claude Code, Codex, Kilo and the others the skill itself is `/game-launch-strategist`. Only Gemini CLI, which has no skill commands, gets `commands/game-launch-strategist.md` as a TOML command.
 - **Checks.** Finds the real Python 3.9+ and compiles every research script without running it. `--test` also runs the offline unit tests.
-- **game-developer.** The installer offers [game-developer](https://github.com/Kekko16004/GameDeveloperSkill) as an optional module, preselected when it is already installed; game-developer's installer offers this skill the same way. After the vertical slice the two skills hand work to each other through `references/dev-link.md` (contract `gdl-v3`).
+- **game-developer.** The installer offers [game-developer](https://github.com/Kekko16004/GameDeveloperSkill) as an optional module, preselected when it is already installed; game-developer's installer offers this skill the same way. After the vertical slice the two skills hand work to each other through `references/dev-link.md` (contract `gdl-v4`); right after the GDD lock, game-developer offers the **idea and GDD review** of this skill.
 - **Receipt.** `~/.agents/skillkit/game-launch-strategist.json` keeps hosts and choices for `update`, `doctor` and `uninstall`. Hosts installed later are added on the next update.
 
 From inside the installed skill an agent updates with `node scripts/update.mjs`.

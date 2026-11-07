@@ -1,8 +1,8 @@
 # Contratto game-developer ⇄ game-launch-strategist
 
-contract: gdl-v3 · 2026-10-21
+contract: gdl-v4 · 2026-11-07
 
-> **Documento condiviso.** Questo stesso testo, identico, sta in `game-developer/references/launch-link.md` e in `game-launch-strategist/references/dev-link.md`. Si cambia in tutte e due le copie insieme, alzando la versione (`gdl-v3`…). Se all'avvio le due righe `contract:` non coincidono, la skill lo dice al proprietario una volta e segue la regola più prudente delle due.
+> **Documento condiviso.** Questo stesso testo, identico, sta in `game-developer/references/launch-link.md` e in `game-launch-strategist/references/dev-link.md`. Si cambia in tutte e due le copie insieme, alzando la versione (`gdl-v4`…). Se all'avvio le due righe `contract:` non coincidono, la skill lo dice al proprietario una volta e segue la regola più prudente delle due.
 > I percorsi sono relativi alla radice del progetto del gioco; gli script si indicano con la cartella della skill (`<game-developer>/scripts/…`, `<launch>/scripts/research/…`).
 
 Le due skill sono **complete da sole**. Insieme si passano il lavoro con file su disco, sempre gli stessi, in formati fissi. Nessuna delle due ha bisogno della chat dell'altra.
@@ -47,6 +47,8 @@ Nessuna skill installa o lancia l'altra senza chiedere. Se manca, si dice in una
 | `launch/**` (ondate, sintesi, store, report, `STATUS.html`, `00-intenzioni.md`) | launch | dev | dev: niente |
 | `launch/issue_status.json` | launch | dev | dev: **solo** con `gate_link.py apply-status` (§6) |
 | `launch/TODO.md` | launch (`todo_track.py`) | dev | dev: **solo** `done` sulle righe 🤖 chiuse da un gate (§6) |
+| `launch/gdd-review.md`, `launch/_raw/gdd_review.json` (revisione dell'idea e del GDD) | launch (`gdd_review.py`) | dev | dev: niente; applica le proposte accettate a `GDD.md` (§10) |
+| `launch/trailer/<v>/recording-brief.md` e `.json` (riprese del trailer) | launch (`trailer_kit.py build`) | dev | dev: niente; registra nel gioco con i suoi strumenti e chiude con un suo gate |
 | `DECISIONI.md`, `GDD.md`, `GAME_TASKS.md`, `GAME_CONTEXT.md` | dev | launch | launch: niente |
 | `docs/gates/**` (gate e `plan-wNN.md`) | dev | launch | launch: niente |
 | `docs/design-review/**` (mappa, schermate, run, `changes-since-wNN.md`) | dev | launch | launch: niente (le copia e le verifica nei suoi `wNN-*`) |
@@ -97,7 +99,7 @@ Prima della prossima ondata (o quando il launch la prepara):
 ```bash
 python <game-developer>/scripts/gate_link.py --project . since --out docs/design-review/changes-since-wNN.md
 ```
-Il launch poi rigenera `STATUS.html` (è suo). Il dev non lancia mai gli script del launch tranne `todo_track.py done`.
+Il launch poi rigenera `STATUS.html` (è suo). Il dev non lancia mai gli script del launch tranne `todo_track.py done` e `gdd_review.py pending` (sola lettura, §10).
 
 ### 6.2 Cosa legge il launch come "stato attuale"
 - `docs/design-review/changes-since-wNN.md`: gate nuovi, chiavi toccate, **rischi da ricontrollare**, scelte di design cambiate, cosa provare; il blocco `fixes` va **così com'è** nel JSON dell'ondata.
@@ -154,12 +156,18 @@ Le due skill scrivono questi file nello stesso formato, così `design_review.py`
 - **Run a tempi:** un titolo `## ` per run, righe di tabella che iniziano con il tempo dall'inizio della run (`m:ss` o `m:ss-m:ss`), e i segni `[MORTO]` `[TOP]` `[FRUSTRA]` `[ABBANDONO]` `[CONFUSO]` `[TROPPA-UI:n]` `[SPIRALE]`.
 - **Etichette:** **[FATTO]** letto nel codice o misurato · **[STIMA]** · **[OPINIONE]** · **[DA VERIFICARE]** · **SIMULATO** in testa a ogni file del panel.
 
-## 10. Controllo di mercato precoce (offerto dal dev, non imposto)
+## 10. Revisione dell'idea e del GDD (offerta dal dev, non imposta)
 
 Dopo il lock del GDD e prima del worker project (al più tardi prima della vertical slice), se la skill launch è installata il dev chiede una volta:
-> "Vuoi un controllo rapido del concept contro giochi simili? `game-launch-strategist` in modalità **Mirata**: posizionamento + 5-10 comparabili reali + un panel simulato breve. ~30-60 min, scrive solo in `launch/`."
-- Sì → si lancia la skill (Mirata: posizionamento, comparabili, focus group rapido) con `GDD.md`. Quello che cambierebbe il GDD si propone al proprietario; il GDD resta `locked` finché lui non accetta.
-- No → `DECISIONI.md`: `controllo di mercato precoce: no`. Non si ripropone.
+> "Vuoi una revisione dell'idea e del GDD con dati reali? `game-launch-strategist` in modalità **Revisione GDD**: ti chiede quanto sei disposto a cambiare il GDD, confronta l'idea con giochi simili veri (vendite, recensioni, casi di flop), dà una pagella dell'idea e propone miglioramenti fino al livello che scegli, anche alla struttura o al concept. ~45-90 min, scrive solo in `launch/`."
+
+- **No** → `DECISIONI.md`: `revisione idea/GDD: no`. Non si ripropone (il proprietario può chiederla quando vuole, anche dal pannello).
+- **Sì** → il launch esegue la modalità Revisione GDD (`references/10-revisione-gdd.md` della skill launch) su `GDD.md` e `DECISIONI.md`:
+  1. **Quanto si può cambiare** (domanda al proprietario, registrata in `00-intenzioni.md` e nel JSON): `1 ritocchi` (il concept resta, si rinforza: gancio, chiarezza, prima ora, scope) · `2 struttura` (stessa idea e stesso tema; possono cambiare loop, progressione, modalità, durata, scope, pitch) · `3 tutto in discussione` (anche genere, verbo centrale, ambientazione, pubblico, con versioni alternative del concept). Più gli **intoccabili** scelti dal proprietario. L'engine (Q0) è sempre intoccabile.
+  2. **File**: `launch/_raw/gdd_review.json` (fonte) e `launch/gdd-review.md` (da leggere), controllati e scritti da `gdd_review.py check` / `render`. Ogni proposta: ID `P-GDD-n`, livello 1-3 (mai sopra quello scelto, mai su un intoccabile), sezione del GDD toccata, testo attuale e testo proposto (pronto da incollare), perché con prove etichettate (§9), impatto, costo in ore [STIMA], rischio, cosa si perde, stato `da_decidere` / `accettata` / `rifiutata` con data.
+  3. **Scelte del proprietario** con `gdd_review.py decide` (e in `00-intenzioni.md`). Una proposta che cambia una riga di `DECISIONI.md` porta l'etichetta "Riapre la decisione" (§4.3) e, se accettata, diventa una decisione nuova che la sostituisce.
+- **Il dev applica le accettate** (il GDD è suo, §3): `python <launch>/scripts/research/gdd_review.py pending --launch-dir launch --decisions DECISIONI.md` elenca le accettate non ancora applicate (una proposta è applicata quando `DECISIONI.md` cita il suo `P-GDD-n`). Per ognuna il parent porta `GDD.md` a `status: draft`, sostituisce la sezione con il testo proposto, mostra al proprietario il recap delle sole modifiche e, con il suo ok, torna `locked`; una riga per proposta in `DECISIONI.md` con `fonte: launch/gdd-review.md P-GDD-n`. Con `pending` vuoto si passa al worker project. Rifiutate e da decidere non cambiano niente.
+- **Senza la skill dev**: il launch lascia in `gdd-review.md` il testo da incollare, sezione per sezione; non scrive mai `GDD.md`.
 
 ## 11. Liste di controllo
 
