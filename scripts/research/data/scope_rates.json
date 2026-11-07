@@ -1,0 +1,29 @@
+{
+ "_label": "[OPINIONE]",
+ "_note": "Ore di lavoro per unità di contenuto, per un indie piccolo con asset in parte comprati o generati. Ordini di grandezza da post-mortem e talk GDC, non misure: correggile con i tuoi tempi veri (scope_calc.py --rates tuo.json, stessi nomi). Ogni voce: ore per unità, cosa comprende.",
+ "units": {
+  "levels": {"hours": 30, "what": "livello o mappa giocabile: blockout, arte, pass di bilanciamento"},
+  "rooms": {"hours": 6, "what": "stanza o pezzo di livello generato a mano per roguelite"},
+  "biomes": {"hours": 60, "what": "bioma o set di ambientazione: tileset, props, luci, musica dedicata esclusa"},
+  "enemies": {"hours": 14, "what": "nemico: comportamento, animazioni, suoni, bilanciamento"},
+  "bosses": {"hours": 45, "what": "boss: fasi, pattern, arena, animazioni"},
+  "characters": {"hours": 35, "what": "personaggio giocabile: animazioni, abilità, bilanciamento"},
+  "npcs": {"hours": 8, "what": "personaggio non giocabile con dialoghi brevi"},
+  "items": {"hours": 2.5, "what": "oggetto, carta, upgrade o arma: icona, effetto, test"},
+  "mechanics": {"hours": 40, "what": "meccanica o sistema di gioco (crafting, inventario, dialoghi, salvataggi...)"},
+  "quests": {"hours": 10, "what": "missione o incarico scritto con logica"},
+  "dialogue_lines": {"hours": 0.15, "what": "riga di dialogo scritta e collegata (senza doppiaggio)"},
+  "cutscenes": {"hours": 25, "what": "scena animata o in-engine"},
+  "music_tracks": {"hours": 10, "what": "brano originale (0 se comprato: metti 0 o usa --rates)"},
+  "ui_screens": {"hours": 8, "what": "schermata di interfaccia completa (menu, opzioni, inventario...)"},
+  "game_modes": {"hours": 60, "what": "modalità di gioco in più (endless, co-op, sfide giornaliere...)"}
+ },
+ "base_hours": {"hours": 150, "what": "fondamenta: progetto, input, salvataggi, menu base, build"},
+ "overhead": {
+  "polish": {"pct": 30, "what": "rifinitura, feel, juice, bug dopo il primo giro"},
+  "qa_porting": {"pct": 15, "what": "test, prestazioni, piattaforme, Steam Deck"},
+  "launch": {"pct": 10, "what": "pagina Steam, trailer, demo, festival, community"}
+ },
+ "productive_share": 0.75,
+ "_productive_note": "quota delle ore disponibili che diventa lavoro sul gioco (il resto: imprevisti, riunioni, vita)"
+}

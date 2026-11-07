@@ -1,5 +1,41 @@
 # Changelog
 
+## 2026-11-07 (2): Revisione GDD — cuore del gioco, metà sviluppo, scope, flop simili, ancore vere, previsioni
+
+### Added
+- **The heart of the game.** The review opens with one free question, "cosa ti fa venire voglia di fare questo gioco?". The owner's answer is stored in `dial.heart`, and `check` requires it. Every level-3 proposal (concept change) must say in `keeps_heart` how it keeps that heart; `check` reports an error if it is missing.
+- **Mid-development review** (`--stage sviluppo`).
+  - It judges what the game really does today, from `basis`. `init` auto-detects the basis: design-review maps, `GAME_TASKS.md`, gates, the latest wave map.
+  - Proposals carry `kind`: `taglio` / `rinforzo` / `cambio`.
+- **Second review after the slice** (`--stage slice` + `gdd_review.py compare --before --after`).
+  - The new review lists `promises` (si vede / in parte / non si vede, each with evidence).
+  - `compare` writes the page "promesse contro realtà": the scorecard before and after, accepted proposals kept or not, promised strengths seen or not.
+- **Scorecard before/after.**
+  - Proposals may carry `score_delta {area: ±n}` [STIMA].
+  - The page gains the column "Dopo le accettate" (capped 1-5).
+  - `STATUS.html` (Gioco tab) gains the chart "Pagella dell'idea": paired bars, original vs with the accepted proposals. This adds `charts.paired` and `report_charts.idea_review`.
+- **Blind pitch panel with real anchors** (`gdd_review.py panel-score`).
+  - Inputs: 2+ successes and 1 weak game from the comps, with their band from real reviews.
+  - Same arithmetic as `fg_waves.py`: anchor drift, judgement direction, raw and anchor-normalized score for each version. Exit 3 on drift.
+  - `check` warns when there are no anchors, or not enough.
+- **Flop look-alikes** (`gdd_review.py flop-risk`).
+  - Inputs: the game's `risk_factors` (factor codes of `social_patterns.json`) and its `genres`.
+  - Output: the 63 flop cases of `data/case_studies.json` ranked by the share of their blamed factors this game shows, with the post link.
+  - `check` warns if the top look-alike is close and `rischio_flop` is still above 3.
+- **`scripts/research/scope_calc.py`** with `data/scope_rates.json` ([OPINIONE] hours per unit, overridable with `--rates`).
+  - Compares the hours the GDD's content needs with people × hours × weeks.
+  - Adds the real playtime of the comparables, from the review caches already downloaded, and price per hour.
+  - Warns at a needed/available ratio of 1.5 and 3, and suggests the `scope` score.
+- **`scripts/research/genre_patterns.py`.**
+  - `build` merges every review corpus (`launch/_raw/corpus*.json`) into `~/.game-launch-strategist/genre_patterns.json`, with runs, n and dates. The same run is never counted twice.
+  - `suggest --genre X` prints proposal candidates with their evidence already written.
+- **Predictions** (`gdd_review.py predictions`). Each scorecard vote becomes a [STIMA] prediction in `launch/predictions.json` (id `gdd-<date>-<area>`, idempotent, right if within one point). It is closed after release with `metrics_track.py add --metric idea_<area>_real`.
+- Tests: `tests/test_gdd_review.py` extended, plus new `tests/test_scope_genre.py`.
+
+### Changed
+- `references/10-revisione-gdd.md`: heart question first; new data rows for scope, genre memory and flop look-alikes; real anchors in the panel; predictions; new §10 (mid-development) and §11 (after the slice). `SKILL.md` and `README.md` updated.
+- The `dev-link.md` contract is unchanged (still gdl-v4).
+
 ## 2026-11-07: Revisione GDD — valutare l'idea, non solo ritoccarla
 
 ### Added

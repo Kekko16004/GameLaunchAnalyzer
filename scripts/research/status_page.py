@@ -980,7 +980,7 @@ DOC_TAB = {"01-dev": "gioco", "05-focusgroup": "gioco", "05a-critiche-simulate":
            "01b-positioning": "marketing", "04-clips": "marketing", "04b-store-copy": "marketing", "06-creators": "marketing", "07-community": "marketing",
            "02-platform": "piano", "03-pricing": "piano", "03-pricing-calc": "piano", "05c-premortem": "piano", "05d-contingenze": "piano", "window": "piano",
            "publisher-scout": "piano", "social-plan": "marketing", "clips": "marketing", "case-studies": "piano"}
-GROUP_TAB = {"product": "gioco", "fg": "gioco", "reviews": "gioco", "fullgame": "gioco", "creators": "marketing", "market": "piano", "window": "piano", "econ": "piano", "plan": "piano"}
+GROUP_TAB = {"product": "gioco", "idea": "gioco", "fg": "gioco", "reviews": "gioco", "fullgame": "gioco", "creators": "marketing", "market": "piano", "window": "piano", "econ": "piano", "plan": "piano"}
 
 
 def issue_matcher(root: str, st: dict, owner: dict):
@@ -1252,6 +1252,8 @@ def build(root: str, audience: str, include: list[str], exclude: list[str], hide
     # ---- Gioco e test
     if "product" in G:
         add("gioco", render_group(dict(G["product"], title="Pilastri: dove regge il gioco", intro="Pilastro per pilastro: come sta oggi, perché, e cosa fare dove non regge.")))
+    if "idea" in G:
+        add("gioco", render_group(G["idea"]))
     crit_data = None
     if "critiques" not in hide:
         crit_html, crit_data = cr.build(root, st, GATE_NAMES)

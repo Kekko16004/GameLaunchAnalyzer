@@ -2,7 +2,7 @@
 """Charts for the reports, built from files already in launch/ (nothing is fetched, nothing is invented).
 
 `groups(root, today)` returns the available chart groups as [{key, title, intro, charts:[html]}], in reading order:
-product (pillars, issues), focus group, market (comparables, genre, trailers), real reviews, economics, plan (steps by
+product (pillars, issues), idea review (scorecard before/after), focus group, market (comparables, genre, trailers), real reviews, economics, plan (steps by
 phase), creators, full game. A group whose source file is missing is simply absent. Used by status_page.py (section
 "Quadro d'insieme") and charts_export.py (one .svg per chart, for the Markdown reports).
 """
@@ -486,9 +486,31 @@ def criticita_charts(root: str) -> list[str]:
     return [card] if card else []
 
 
+def idea_review(root: str) -> list[str]:
+    """Scorecard of the idea review (gdd_review.json): the owner's original votes against the votes after the accepted proposals [STIMA]."""
+    data = _json(os.path.join(root, "_raw", "gdd_review.json"))
+    if not data:
+        return []
+    import gdd_review as gr
+    base = gr.scores_of(data)
+    if not base:
+        return []
+    after = gr.after_scores(data) or {}
+    rows = [dict(label=gr.AREA_SHORT[k], a=base.get(k), b=after.get(k, base.get(k)) if after else None) for k in gr.AREA_KEYS]
+    acc = [p.get("id") for p in data.get("proposals") or [] if isinstance(p, dict) and p.get("status") == "accettata"]
+    mean = lambda d: sum(d.values()) / len(d) if d else 0
+    why = (f"Voto 1-5 per area, prima e dopo le proposte accettate ({', '.join(acc)}): media {mean(base):.1f} → {mean(after):.1f}." if after else
+           f"Voto 1-5 per area, media {mean(base):.1f}. Il 'dopo' compare quando accetti proposte con un effetto stimato sulla pagella.")
+    ser = (("Idea originale", "var(--s2)"), ("Con le accettate [STIMA]", "var(--s1)"))
+    return [_chart(C.paired(rows, ser, aria="Pagella dell'idea prima e dopo le proposte accettate", vmax=5), title="Pagella dell'idea",
+                   why=why, leg=C.legend([(l, c) for l, c in (ser if after else ser[:1])]),
+                   note=f"Dalla Revisione GDD del {data.get('date', '')} (launch/gdd-review.md). Il 'dopo' è una stima, non una misura.")]
+
+
 def groups(root: str, today: dt.date | None = None) -> list[dict]:
     today = today or dt.date.today()
     spec = [("product", "Prodotto", "Dove regge il gioco e cosa costa sistemarlo.", lambda: pillars(root)),
+            ("idea", "Revisione dell'idea", "La pagella dell'idea confrontata con giochi veri, prima e dopo le proposte che hai accettato.", lambda: idea_review(root)),
             ("criticita", "Criticità", "I problemi trovati, ondata per ondata e per cancello.", lambda: criticita_charts(root)),
             ("fg", "Focus group", "Come reagiscono i tester simulati, ondata dopo ondata.", lambda: focus_group(root)),
             ("market", "Mercato e comparabili", "Il genere in numeri, da dati pubblici.", lambda: market(root)),

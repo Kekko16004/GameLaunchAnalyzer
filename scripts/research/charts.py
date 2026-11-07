@@ -221,6 +221,32 @@ def bullets(rows: list[dict], *, aria: str, label_w: int = 160) -> tuple[str, st
     return "".join(g), table_view(["Voce", "Valore", "Soglia", "Esito"], table)
 
 
+def paired(rows: list[dict], series: tuple[tuple[str, str], tuple[str, str]], *, aria: str, vmax: float = 5, unit: str = "", label_w: int = 130) -> tuple[str, str]:
+    """rows: {label, a, b, tip?}; series: ((label_a, color_a), (label_b, color_b)). Two thin bars per row (before / after),
+    each with its value written at the end; a None value is written "n/d"."""
+    rh, T = 34, 6
+    H = T + len(rows) * rh + 4
+    px0, px1 = label_w, W - 40
+    sx = lambda v: px0 + max(0, min(v, vmax)) / vmax * (px1 - px0)
+    g = [f'<svg viewBox="0 0 {W} {H}" role="img" aria-label="{esc(aria)}">']
+    for i, r in enumerate(rows):
+        y = T + i * rh
+        g.append(f'<text x="{label_w - 10}" y="{y + rh / 2 + 4:.1f}" text-anchor="end" font-size="12" fill="var(--ink2)">{esc(_short(r["label"], 20))}</text>')
+        for k, (key, (_, col)) in enumerate(zip(("a", "b"), series)):
+            v, by = r.get(key), y + 4 + k * 13
+            if v is None:
+                g.append(f'<text x="{px0 + 4}" y="{by + 10}" font-size="11" fill="var(--muted)">n/d</text>')
+                continue
+            g.append(f'<path d="{_bar_path(px0, sx(v), by, 11, 3)}" fill="{col}"/>'
+                     f'<text x="{sx(v) + 5:.1f}" y="{by + 10}" font-size="11" font-weight="600" fill="var(--ink)" style="font-variant-numeric:tabular-nums">{esc(fmt_n(v))}{esc(unit)}</text>')
+        tip = r.get("tip") or f'{r["label"]}: {series[0][0]} {r.get("a") if r.get("a") is not None else "n/d"}, {series[1][0]} {r.get("b") if r.get("b") is not None else "n/d"}'
+        g.append(f'<rect class="hit" tabindex="0" x="0" y="{y}" width="{W}" height="{rh}" fill="transparent" data-x="{sx(max(r.get("a") or 0, r.get("b") or 0)):.1f}" data-tip="{esc(tip)}"/>')
+    g.append("</svg>")
+    table = table_view(["Voce", series[0][0], series[1][0]], [[r["label"], "n/d" if r.get("a") is None else f'{r["a"]}{unit}',
+                                                              "n/d" if r.get("b") is None else f'{r["b"]}{unit}'] for r in rows])
+    return "".join(g), table
+
+
 def standalone_svg(chart_html: str, title: str = "") -> str:
     """One chart as a self-contained SVG file (light colors, white background, hit areas and tooltips removed)."""
     m = re.search(r"<svg .*?</svg>", chart_html, re.S)

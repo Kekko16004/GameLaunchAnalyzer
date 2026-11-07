@@ -13,7 +13,7 @@ The skill itself is written in **Italian** (instructions and generated reports);
 | **Mirata** | One area only, e.g. "just the store copy", "just pricing", "just creators". |
 | **Ondata** | `launch/fg/` already exists: runs the next focus-group wave with the **same testers** on the current state of the game, then delta and timeline. |
 | **Aggiornamento** | `launch/` already exists: re-runs the affected phases (including a new wave, with your OK) and reports what changed. |
-| **Revisione GDD** | You have a GDD or a written idea and little game yet. It first asks **how much you are willing to change** (1 touch-ups · 2 structure · 3 everything open) and what is untouchable, then grades the idea on 10 areas against real games (comparables, genre benchmark, real reviews, calibration, flop cases) and proposes the strongest version within that limit, up to alternative concepts, each with the GDD text ready to paste. Output: `launch/gdd-review.md`. game-developer offers it right after the GDD lock and applies what you accept. |
+| **Revisione GDD** | You have a GDD or a written idea and little game yet. It first asks what makes you want to make this game (the heart no proposal may lose), then **how much you are willing to change** (1 touch-ups · 2 structure · 3 everything open) and what is untouchable, then grades the idea on 10 areas against real games (comparables, genre benchmark, real reviews, calibration, flop cases) and proposes the strongest version within that limit, up to alternative concepts, each with the GDD text ready to paste. Output: `launch/gdd-review.md`. game-developer offers it right after the GDD lock and applies what you accept. |
 
 ### Beta or full game: always asked first
 
