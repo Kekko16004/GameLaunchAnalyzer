@@ -61,7 +61,7 @@ Output: **`launch/07-community.md`**.
   python3 <skill>/scripts/research/reddit_rules.py IndieDev indiegaming playmygame DestroyMyGame -o launch/_raw/reddit_rules.md
   ```
   Se risponde `403 Blocked` (senza OAuth succede quasi sempre), leggi la sidebar a mano e scrivilo in `ricerche-manuali.md`. Formati narrativi (problema risolto, clip curiosa, lezione appresa), non "comprate il mio gioco". Dichiara l'uso di AI generativa dove community o piattaforma lo richiedono.
-- **Discord e newsletter**: se l'obiettivo è vendere, valuta se vale il costo di moderazione e proponi la soglia minima sensata.
+- **Discord e newsletter**: confronta il beneficio osservabile del canale con il lavoro di moderazione. Proponi una prova sostenibile, senza presumere un volume di vendite da raggiungere.
 - **Cadenza di devlog**: frequenza e formato realistici per il team (meglio poco e costante).
 - **Kit del test reale (Gate B)**, pronto da usare:
   1. **Testo di reclutamento** (versioni per Reddit, Discord, social) senza hype e con chiarezza su cosa si chiede.
@@ -69,8 +69,8 @@ Output: **`launch/07-community.md`**.
   3. **Questionario di 5 domande**: cosa hai capito del gioco, dove ti sei annoiato o confuso, cosa ti è piaciuto di più, quanto pagheresti, lo consiglieresti (0-10 e perché).
   4. **Scheda di osservazione** per sessioni dal vivo (minuto del primo dubbio, minuto del primo sorriso, cosa non ha capito, se ha ricominciato).
   5. **Eventi di telemetria**: inizio e fine sessione, durata, morte o fallimento, punto di abbandono, seconda sessione.
-  6. **Soglie di passaggio** del Gate B e **regole di scarto** dei dati (es. tester che non ha completato i primi 10 minuti).
-  7. **Come confrontare** i risultati con le critiche simulate e reali (matrice di convergenza): le ipotesi della 7.3 diventano confermate o smentite.
+   6. **Prima del test** fissa soglie, popolazione, criteri di esclusione e finestra di ritorno spontaneo. Non scartare chi abbandona presto: è proprio il segnale da misurare. Riporta eventuali sessioni tecnicamente non misurabili separatamente. Una data prenotata non è un esito; applica il contratto Gate B in `02-audit-platform-pricing.md`.
+   7. **Come confrontare** i risultati con la matrice 7.3: cosa si è osservato sulla build, con quanti giocatori e per quanto tempo? Solo questa prova propria può confermare o ridimensionare il rischio del panel; se il campione è insufficiente l'esito resta aperto.
   8. **Consenso e privacy**: dichiara cosa raccogli e perché, chiedi consenso per telemetria e registrazioni, conserva il minimo.
 
 ---

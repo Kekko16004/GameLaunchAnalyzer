@@ -1,11 +1,10 @@
 ---
 description: Strategia di lancio per un gioco indie - analisi di mercato con dati reali, posizionamento, focus group, critiche reali, pre-mortem e piano operativo
-argument-hint: "[Completa | Rapida | Mirata <area> | Ondata | Aggiornamento | Trailer | Revisione GDD]"
+argument-hint: "[Demo cieca | Radar | Post-lancio | Completa | Rapida | Mirata <area> | Ondata | Aggiornamento | Trailer | Revisione GDD]"
 ---
 
 Carica la skill `game-launch-strategist` e applicala al progetto nella directory corrente. Se il tuo ambiente non ha uno strumento per caricare le skill (per esempio Codex), leggi tu `SKILL.md` dalla cartella della skill (`~/.agents/skills/game-launch-strategist/`, o il link `~/.claude/skills/game-launch-strategist/`) e seguila alla lettera. Richiesta dell'utente: $ARGUMENTS
 
-0. **Fase B, avvio a freddo** (`references/00a-bootstrap.md`): anche in una chat nuova, controlla gli strumenti che hai, scansiona il progetto con `scripts/research/project_scan.py`, leggi i documenti giusti e scrivi `launch/00-contesto.md`.
-1. Leggi la data di sistema e `references/01-discovery.md` della skill, poi esegui la Fase 0 a partire dal Context Pack (codice, GDD, asset, configurazioni, Steamworks).
-2. Se la richiesta indica una modalità (Completa, Rapida, Mirata, Ondata, Aggiornamento, Trailer, Revisione GDD: per "valuta la mia idea" o "migliora il GDD" segui `references/10-revisione-gdd.md`) o un'area (es. "solo prezzo", "solo testi dello store"), applicala subito. Se è vuota o ambigua usa **Completa** e dichiaralo.
-3. Segui la skill fase per fase: leggi il file di `references/` di ciascuna fase, usa gli script in `scripts/research/` per comparabili Steam, recensioni reali, creator e regole subreddit, scrivi i file in `launch/` e chiudi con il debriefing in chat. Esegui l'Ondata 1 del focus group subito dopo l'audit e manda la segnalazione problemi; lancia ondate successive solo con l'ok dell'utente.
+1. Scegli la modalità dalla tabella **Modalità di esecuzione** di `SKILL.md` prima di aprire il progetto. Essa determina le prove ammesse, le fasi e il punto di arresto. Se la richiesta è vuota usa Completa.
+2. **Demo cieca:** segui `references/demo-blind.md`. Chi giudica vede solo il pacchetto anonimo. Non leggere Steam, report, wishlist né il censimento del curatore. **Radar:** `references/radar.md`; chiedere lo stato non avvia una raccolta. **Post-lancio:** `references/post-launch.md`; parti dai risultati del titolo.
+3. Per le analisi ordinarie del gioco usa l'avvio della skill e le sole fasi della modalità scelta. Un giudizio rapido non autorizza una spesa. La modalità Mirata non apre un panel se l'area non lo richiede; le ondate successive richiedono sempre l'ok del proprietario.

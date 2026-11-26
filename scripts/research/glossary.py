@@ -58,7 +58,7 @@ TERMS: dict = {
     "fullgame": (r"gioco completo", "La versione finale del gioco, non la beta.", "fullgame"),
     "criticita": (r"criticit[àa]|critiche", "Un problema trovato nel gioco o nella pagina: dai tester simulati, dal test con persone vere o dalle recensioni. Ha una gravità (alta, media, bassa) e uno stato (aperta, in corso, risolta).", "critiche"),
     "todo": (r"\bTODO\b|prossime azioni", "L'elenco delle cose da fare, con scadenza e ore stimate.", "todo"),
-    "intentions": (r"profilo decisionale|intenzioni", "Ciò che vuoi davvero (obiettivo, tempo, budget, rischio): guida le soglie e il piano.", "intentions"),
+    "intentions": (r"profilo decisionale|intenzioni", "Le scelte sul gioco e sull'uscita, i vincoli noti e le spese autorizzate. Non è una previsione di vendita.", "intentions"),
 }
 LABEL = {"wishlist": "Wishlist", "gate": "Gate (cancello)", "ice": "ICE", "premortem": "Pre-mortem", "tripwire": "Tripwire (segnale d'allarme)", "breakeven": "Break-even", "conversione": "Conversione",
          "percentile": "Percentile", "mediana": "Mediana", "codaalta": "Coda alta", "focusgroup": "Focus group simulato", "ondata": "Ondata", "hook": "Hook (gancio)", "capsule": "Capsule", "nextfest": "Next Fest",

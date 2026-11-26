@@ -20,10 +20,10 @@ def quiet(fn, *a, **kw):
         r = fn(*a, **kw)
     return r, out.getvalue()
 
-# ---------------------------------------------------------------- metro on two synthetic release weeks with a planted signal
+# ---------------------------------------------------------------- a documented announcement signal, trained on already observed outcomes
 rnd = random.Random(7)
 ds = os.path.join(home, "cohorts"); os.makedirs(ds)
-for wk, (d0, d1) in enumerate((("2026-06-01", "2026-06-07"), ("2026-06-08", "2026-06-14"))):
+for wk, (d0, d1) in enumerate((("2026-04-06", "2026-04-12"), ("2026-06-01", "2026-06-07"), ("2026-08-03", "2026-08-09"))):
     name = f"cohort_{d0}_{d1}"
     work = os.path.join(ds, "_work", name); os.makedirs(os.path.join(work, "apps"))
     games, rows = [], []
@@ -39,18 +39,23 @@ for wk, (d0, d1) in enumerate((("2026-06-01", "2026-06-07"), ("2026-06-08", "202
         games.append(g)
         news = [dict(date=(dt.date.fromisoformat(rel) - dt.timedelta(days=90)).isoformat(), title="Demo out now", official=True, kinds=["demo"])] if demo else []
         json.dump(dict(details=dict(about_the_game="text"), news=news), open(os.path.join(work, "apps", f"{aid}.json"), "w"))
-        rows.append(dict(appid=aid, name=g["name"], release_date=rel, price=g["price"], status="keep", grade=grade, reviews_d30=rev, week=name))
+        rows.append(dict(appid=aid, name=g["name"], release_date=rel, price=g["price"], status="keep", grade=grade, reviews_d30=rev, week=name,
+                         checked_d30=(dt.date.fromisoformat(rel) + dt.timedelta(days=31)).isoformat()))
     json.dump(dict(read_on="2026-10-01", window=[d0, d1], games=games), open(os.path.join(work, "cohort.json"), "w"))
     cb.write_week(rows, os.path.join(ds, name + ".csv"))
+    json.dump(dict(complete=True, window_complete=True, n_games=140, n_store=140, n_reviews=140, generated_on=d1), open(os.path.join(ds, name + ".quality.json"), "w"))
     open(os.path.join(ds, name + ".source"), "w").write(work)
 met = cb.build_metro(ds, dt.date(2026, 10, 13))
-assert met["available"] and met["n"] == 280 and met["target"] == "y30", met.get("why")
+assert met["available"] and met["validated"] and met["n"] == 420 and met["target"] == "y30", met.get("why")
+assert "trailer" not in met["model"]["keys"] and "tier_A" not in met["model"]["keys"]
 bt = met["backtest"]
-assert bt["possible"] and bt["test_week"].endswith("06-14") and bt["n_train"] == 140 and bt["n_test"] == 140
+assert bt["possible"] and len(bt["test_weeks"]) == 2 and bt["n_train"] == 280 and bt["n_test"] == 280
+assert all(f["last_check"] < f["cutoff"] for f in bt["folds"])
 assert bt["per_threshold"]["p1k"]["auc"] >= 0.75 and bt["per_threshold"]["p1k"]["skill"] > 0 and bt["strength"] in ("utile", "debole"), bt["per_threshold"]["p1k"]
 top = met["effects"][0]
-assert top["feature"] in ("demo_pre", "tier_A") and top["delta_pp"] > 0, met["effects"][:3]
-x = cb.features_from_json(dict(tier="B", price=7.99, n_movies=0, n_screenshots=10, n_languages=2, demo_before=False, about_len=1500, release_day_crowd=20, genres=["Casual"]))
+assert top["feature"] in ("demo_pre", "news_pre_log", "comingsoon_log") and top["delta_pp"] > 0, met["effects"][:3]
+inputs = dict(tier="B", price=7.99, n_movies=0, n_screenshots=10, n_languages=2, demo_before=False, news_before=0, coming_soon_days=0, about_len=1500, release_day_crowd=20, genres=["Casual"])
+x = cb.features_from_json(inputs)
 sc = cb.score_features(met, x)
 assert abs(sum(sc["bands"]) - 1) < 0.01 and 0 <= sc["p10k"] <= sc["p1k"] <= sc["p100"] <= 1
 lev = {l["feature"]: l for l in sc["levers"]}
@@ -59,8 +64,8 @@ assert sc["levers"][0]["feature"] in ("demo_pre", "news_pre_log", "comingsoon_lo
 # a single week: no out-of-time check, said plainly
 assert not cb.backtest([r for r in cb.metro_rows(ds) if r["week"].endswith("06-07")], "y30")["possible"]
 json.dump(dict(generated_on="2026-10-10", primary="d30", metro=met), open(os.path.join(home, "calibration.json"), "w"))
-pj = os.path.join(home, "pre.json"); json.dump(dict(name="Gioco", tier="B", price=7.99, n_movies=0, n_screenshots=10, n_languages=2), open(pj, "w"))
-_, out = quiet(cb.main, ["score", "--features", pj, "-o", os.path.join(home, "metro_out.json")])
+pj = os.path.join(home, "pre.json"); json.dump(dict(inputs, name="Gioco"), open(pj, "w"))
+_, out = quiet(cb.main, ["--today", "2026-10-13", "score", "--features", pj, "-o", os.path.join(home, "metro_out.json")])
 assert "Cosa pesa" in out and "Se aggiungiamo" in out and "[STIMA]" in out
 
 # ---------------------------------------------------------------- 3 moves into TODO.md and calendar.md, no duplicates
@@ -69,9 +74,9 @@ open(os.path.join(L, "TODO.md"), "w", encoding="utf-8").write(
     "# TODO\nAggiornato: 2026-10-01\n\n## Marketing\n- [ ] 👤 **Montare il trailer di 40 s** — 2026-11-20 — 12 h — nessuna — trailer online\n- [ ] 👤 **Scrivere ai creator** — 2026-10-12 — 3 h — lista — 10 email\n")
 open(os.path.join(L, "calendar.md"), "w", encoding="utf-8").write(
     "# Calendario\n\n## ✅ Passi in ordine\n🤖 = io · 👤 = tu\n### FASE 1 — Adesso\n1. [ ] 👤 **Montare il trailer** per la pagina. · 📅 2026-11-20\n2. [x] 🤖 Ondata 1. · 📅 2026-10-10\n### FASE 2 — Dopo\n3. [ ] 👤 **Recluta tester**. · 📅 2026-11-05\n")
-json.dump(dict(score=dict(p1k=0.2, levers=[dict(feature="trailer", label="Trailer sulla pagina", p1k_after=0.33, delta_p1k_pp=13.0, delta_p10k_pp=2.0),
-                                             dict(feature="nextfest_pre", label="Steam Next Fest", p1k_after=0.31, delta_p1k_pp=11.0, delta_p10k_pp=3.0)]),
-               metro=dict(strength="debole")), open(os.path.join(L, "_raw", "metro.json"), "w"))
+json.dump(dict(scored_on="2026-10-13", score=dict(mode="model", p1k=0.2, levers=[dict(feature="trailer", supported=True, label="Trailer sulla pagina", p1k_after=0.33, delta_p1k_pp=13.0, delta_p10k_pp=2.0),
+                                             dict(feature="nextfest_pre", supported=True, label="Steam Next Fest", p1k_after=0.31, delta_p1k_pp=11.0, delta_p10k_pp=3.0)]),
+               metro=dict(protocol="asof-v1", validated=True, strength="debole")), open(os.path.join(L, "_raw", "metro.json"), "w"))
 cal = dict(generated_on="2026-10-10", marketing=dict(recipe=[dict(step="demo", label="Demo gratuita", winners=67.0, losers=22.0, n_winners=60, n_losers=54, median_days_before=165),
                                                               dict(step="trailer", label="Trailer pubblicato", winners=86.0, losers=39.0, n_winners=35, n_losers=31, median_days_before=143)]))
 cp = os.path.join(home, "cal_moves.json"); json.dump(cal, open(cp, "w"))
@@ -102,10 +107,12 @@ with open(os.path.join(L, "fg", "timeline.csv"), "w", encoding="utf-8", newline=
 assert pr.sync(L, today) == 4 and pr.sync(L, today) == 0   # full-game waves are not predictions of the real test; nothing duplicated
 open(os.path.join(L, "metrics.csv"), "w", encoding="utf-8").write("date,metric,value,note\n2026-11-16,real_wishlist_pct,50,test reale\n")
 e = pr.evaluate(L, today)
-assert e["evaluated"] == 2 and e["hits"] == 1 and e["accuracy"] == 50.0, e   # real 50: wave 1 said 30 (±10 -> miss), wave 3 said 41 (hit)
+assert e["evaluated"] == 0, e  # November cannot be observed from October
+e = pr.evaluate(L, dt.date(2026, 11, 16))
+assert e["evaluated"] == 1 and e["hits"] == 1 and e["accuracy"] == 100, e
 rows = {r["id"]: r for r in e["rows"]}
-assert rows["wave1-wishlist_pct"]["hit"] is False and rows["wave1-wishlist_pct"]["direction"] == "pessimista" and rows["wave3-wishlist_pct"]["hit"] is True
-assert rows["wave1-buy_pct"]["status"] == "manca il dato reale"
+assert rows["wave1-wishlist_pct"]["status"] == "versione superata" and rows["wave3-wishlist_pct"]["hit"] is True
+assert rows["wave3-buy_pct"]["status"] == "manca il dato reale"
 
 # ---------------------------------------------------------------- dossier: TikTok via oEmbed of links found, accounts from the page only, no CDN assets as press
 D = lambda s: int(dt.datetime(*map(int, s.split("-")), tzinfo=dt.timezone.utc).timestamp())  # noqa: E731
@@ -145,7 +152,7 @@ c30 = dict(milestones=dict(d30=dict(tiers=dict(A=dict(reviews=dict(median=300)),
 assert mtr.looks_like(400, c30).startswith("esito da fascia A") and "top 10" in mtr.looks_like(200, c30) and "nella media" in mtr.looks_like(5, c30)
 
 # ---------------------------------------------------------------- STATUS.html: header summary, Mercato reale tab, cards
-calib = dict(generated_on="2026-08-01", data_from="2026-06-01", data_to="2026-06-14", n_graded=280, primary="d30", junk_share=0.02, tier_share=dict(A=0.02, B=0.28, C=0.70),
+calib = dict(generated_on="2026-08-01", quality=dict(verified_weeks=2, legacy_weeks=0, incomplete_weeks=0), data_from="2026-06-01", data_to="2026-06-14", n_graded=280, primary="d30", junk_share=0.02, tier_share=dict(A=0.02, B=0.28, C=0.70),
              milestones=dict(d30=dict(n=280, tiers={t: dict(n=n, reviews=dict(p25=2, median=20, p75=80, p90=300), copies=dict(p25=[40, 120], median=[400, 1200], p75=[1600, 4800], p90=[6000, 18000]),
                                                          copies100={"pct_low": 70, "pct_high": 85, "ci_low": [60, 80], "ci_high": [75, 92]}, copies1000={"pct_low": 35, "pct_high": 55, "ci_low": [1, 2], "ci_high": [1, 2]},
                                                          copies10000={"pct_low": 8, "pct_high": 15, "ci_low": [1, 2], "ci_high": [1, 2]}, popular={"pct_low": 8, "pct_high": 15, "ci_low": [1, 2], "ci_high": [1, 2]}, small_sample=n < 30)

@@ -125,12 +125,21 @@ d = dict(cal={"generated_on": "2026-10-18", "primary": "d90"}, vol=None, metro={
          "score": {"p1k": 0.05, "levers": [{"label": "8 lingue", "delta_p1k_pp": 4.3, "p1k_after": .09}, {"label": "Playtest", "delta_p1k_pp": -0.9, "p1k_after": .04}]}},
          metro_plan={"score": {"p1k": 0.40}}, moves=None, comps=None, dossiers=[], today=today, root=L, age=0, stale=False, pred=None)
 crit = {"issues": [dict(now=True, severity="alta", label=f"Problema {k}") for k in range(4)]}
+legacy = mp.hero(d, {}, [], crit, plan, ("warn", "Giallo"), 40.0)
+assert "8 lingue (+4,3 punti)" not in legacy
+meta = dict(validated=True, protocol="asof-v1", strength="utile", target="d90", fitted_on="2026-10-17")
+d["cal"]["metro"] = dict(meta, available=True, backtest=dict(validated=True, possible=True, test_weeks=["w1","w2"], strength="utile"))
+for s in (d["metro"], d["metro_plan"]):
+    s["metro"] = meta
+    s["score"]["mode"] = "model"
 hh = mp.hero(d, {}, [dict(wave="9", date="2026-10-18", score="30", _stage="beta")], crit, plan, ("warn", "Giallo"), 40.0)
 assert "A rischio" in hh and "Cosa manca per passare al livello successivo" in hh and "Per passare a «Da sistemare prima di spingere»" in hh
 assert "da 30,0 ad almeno 40,0 (mancano 10,0 punti)" in hh and "Chiudi almeno 2 problemi gravi su 4" in hh and "8 lingue (+4,3 punti)" in hh and "Playtest" not in hh.split("Cosa manca")[1]
 assert "a 90 giorni dall&#x27;uscita" in hh and "nel primo mese" not in hh and "punteggio del 2026-10-18" in hh and "passo in ritardo" in hh
-ok = mp.hero(dict(d, metro=None, metro_plan=None), {}, [], {"issues": []}, dict(phases=[]), ("pass", "Verde"), None)
-assert "In linea con i dati" in ok and "Cosa manca" not in ok
+for evidence in (d, dict(d, metro=None, metro_plan=None)):
+    # A 5% estimate of crossing the model's reference volume is not a failed project goal.
+    ok = mp.hero(evidence, {}, [], {"issues": []}, dict(phases=[]), ("pass", "Verde"), None)
+    assert "In linea con i dati" in ok and "Cosa manca" not in ok
 
 # ---- metro heading: the scoring date, and the date of the game data when different
 assert cb.score_heading("Buffet Panic! (oggi, 2026-10-13)", "2026-10-18") == "Buffet Panic! · punteggio del 2026-10-18 (dati del gioco del 2026-10-13)"

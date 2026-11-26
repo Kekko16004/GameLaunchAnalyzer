@@ -23,7 +23,7 @@ A free beta is judged on one more thing: **does it make you want to pay when the
 
 ### Interview first
 
-Before any number, the skill **interviews you about your intentions in several rounds** (goals and what success means, capacity, money and risk, channels and style, what is non-negotiable, "what if it goes badly" scenarios, then a confirmation), gives advice with trade-offs after each round, flags tensions between your answers, and keeps a decision log. Thresholds, calendar, channels and contingency plans follow **your** decisions; when the data contradicts them it asks again instead of changing them silently.
+The interview covers the build, creative choices, release decisions and practical constraints, not how much you want to earn or sell. **The dashboard proposes scenarios** from comparable releases and observed signals: ranges with a time horizon, sources, assumptions and reasons outcomes may fall outside them. A goal you volunteer stays separate from the forecast. Actual costs or available hours are optional; missing inputs mean an unknown break-even or capacity, not zero. You still decide what changes and whether to spend.
 
 ### Data, planning and monitoring tools
 
@@ -87,6 +87,12 @@ From inside the installed skill an agent updates with `node scripts/update.mjs`.
 ## Use
 
 Open your game project and run `/game-launch-strategist`, optionally with a mode: `/game-launch-strategist Rapida`, `/game-launch-strategist Mirata solo prezzo`. Outputs go to `<project>/launch/`; start from `launch/REPORT.md` and `launch/TODO.md`.
+
+Three different questions need different evidence:
+
+- **“Which newly released demos will hold players' interest?”** Use [Demo cieca](references/demo-blind.md), not the commercial model's accuracy. A curator can run `python scripts/research/demo_intake.py --days 7` to enumerate *listed Steam demos* by release date (region-specific; no popularity filter). `--prepare-roster SNAPSHOT --out roster.json` converts a complete census into an editable **curator-only** roster without skipping missing demos. Capture anonymised evidence before judging; neither the census nor game identities go to the judge. Open future outcomes only after locking predictions. A good demo and a commercially successful launch are separate outcomes.
+- **“Is market research actually up to date?”** [Radar](references/radar.md): `python scripts/research/radar.py check` is offline. Scheduling is opt-in and independent of chat. Look at collection coverage and graded/mature outcomes, not just the last run date. For visual grading use [versioned anchors](references/visual-grades.md).
+- **“It's released. Where should we invest next?”** [Post-lancio](references/post-launch.md) uses your private aggregate exports and distinguishes lack of evidence from measured zero. A simulated panel, however large, is not a substitute for paid sales or observed player behaviour.
 
 ## Layout
 

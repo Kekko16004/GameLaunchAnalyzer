@@ -50,8 +50,15 @@ def load(root: str, today: dt.date) -> dict:
         d["pred"] = pr.evaluate(root, today) if os.path.exists(pr.path_of(root)) else None
     except Exception:  # noqa: BLE001
         d["pred"] = None
-    d["age"] = (today - dt.date.fromisoformat(cal["generated_on"])).days if cal and cal.get("generated_on") else None
-    d["stale"] = d["age"] is None or d["age"] > STALE_DAYS
+    def age(key):
+        try:
+            return (today - dt.date.fromisoformat((cal or {}).get(key))).days
+        except (TypeError, ValueError):
+            return None
+    d["age"], d["cohort_age"] = age("generated_on"), age("data_to")
+    checked = ((cal or {}).get("quality") or {}).get("verified_weeks")
+    d["verified"] = type(checked) is int and checked > 0
+    d["stale"] = (not d["verified"] or any(x is None or not 0 <= x <= STALE_DAYS for x in (d["age"], d["cohort_age"])))
     return d
 
 
@@ -72,14 +79,42 @@ def badge(kind: str, text: str) -> str:
     return f'<span class="mbadge {kind}">{esc(text)}</span>'
 
 
+def market_warning(d):
+    reasons = []
+    if d.get("age") is not None and d["age"] > STALE_DAYS:
+        reasons.append(f"vecchi di {d['age']} giorni")
+    if not d.get("verified"):
+        reasons.append("nessuna settimana con copertura verificata nella calibrazione")
+    if d.get("cohort_age") is not None and d["cohort_age"] > STALE_DAYS:
+        reasons.append(f"ultima uscita osservata {d['cohort_age']} giorni fa")
+    if any(d.get(k) is None or d[k] < 0 for k in ("age", "cohort_age")):
+        reasons.append("date della raccolta mancanti o incoerenti")
+    return "; ".join(reasons)
+
+
+def validated_model(m):
+    bt = (m or {}).get("backtest") or {}
+    return (m and m.get("available") and m.get("protocol") == "asof-v1" and bt.get("possible")
+            and m.get("validated") is True and bt.get("validated") is True
+            and len(set(bt.get("test_weeks") or [])) >= 2 and bt.get("strength") in ("utile", "debole"))
+
+
+def validated_score(met, model):
+    meta = (met or {}).get("metro") or {}
+    sc = (met or {}).get("score") or {}
+    return (validated_model(model) and meta.get("protocol") == "asof-v1" and meta.get("validated") is True
+            and meta.get("fitted_on") == model.get("fitted_on") and meta.get("target") == model.get("target")
+            and sc.get("mode") == "model" and sc.get("p1k") is not None)
+
+
 def freshness(d: dict) -> str:
     cal = d["cal"]
     if not cal:
         return (f'<div class="card mfresh crit"><strong>Nessuna calibrazione dal mercato reale.</strong> Le affermazioni su vendite e successo qui sotto non hanno ancora un '
                 f'ancoraggio reale. Per crearla: <code>{esc(UPDATE_CMD)}</code></div>')
-    when = f"dati del {cal['generated_on']} (uscite dal {cal.get('data_from')} al {cal.get('data_to')}, {cal.get('n_graded')} giochi giudicati)"
+    when = f"calibrazione del {cal.get('generated_on') or 'n/d'} (uscite dal {cal.get('data_from') or 'n/d'} al {cal.get('data_to') or 'n/d'}, {cal.get('n_graded', 'n/d')} giochi giudicati)"
     if d["stale"]:
-        age_txt = f"vecchi di {d['age']} giorni"
+        age_txt = market_warning(d)
         return (f'<div class="card mfresh warn">{badge("warn", age_txt)} <strong>I dati del mercato reale vanno aggiornati</strong>: {esc(when)}. '
                 f'Aggiorna con <code>{esc(UPDATE_CMD)}</code> (poi giudica le capsule nuove).</div>')
     return f'<div class="card mfresh ok">{badge("ok", "dati freschi")} Mercato reale: {esc(when)}.</div>'
@@ -98,8 +133,9 @@ def our_base(d: dict, price: float | None, tier: str = "B"):
 def game_price(root: str) -> float | None:
     kit = _j(os.path.join(root, "store_kit.json")) or {}
     econ = _j(os.path.join(root, "_raw", "econ.json")) or {}
-    p = ((econ.get("inputs") or {}).get("ea_price") or (econ.get("inputs") or {}).get("price"))
-    if p:
+    inputs = econ.get("inputs") or {}
+    p = inputs.get("ea_price") or inputs.get("price")
+    if p and str(inputs.get("currency") or "").upper() == "USD":
         return float(p)
     m = re.search(r"(\d+[.,]\d{2})\s*\$", json.dumps(kit, ensure_ascii=False))
     return float(m.group(1).replace(",", ".")) if m else None
@@ -117,9 +153,9 @@ def hero(d: dict, st: dict, fg_rows: list, crit: dict | None, plan: dict | None,
         level = max(level, 1)
         need[1].append(f"Crea la calibrazione dal mercato reale: {UPDATE_CMD}.")
     elif d["stale"]:
-        S.append(f"Prima di tutto: i dati del mercato reale sono vecchi di {d['age']} giorni (del {cal['generated_on']}); aggiornali prima di decidere.")
+        S.append(f"Prima di tutto: dati del mercato reale da verificare ({market_warning(d)}); aggiornali prima di decidere.")
         level = max(level, 1)
-        need[1].append(f"Aggiorna i dati del mercato reale (sono vecchi di {d['age']} giorni, il limite è {STALE_DAYS}).")
+        need[1].append(f"Raccogli le settimane mancanti e ricalibra. Non basta rigenerare il file; il limite di freschezza è {STALE_DAYS} giorni.")
     beta = [r for r in (fg_rows or []) if (r.get("_stage") or r.get("stage") or "beta") != "full"]
     if beta:
         last = beta[-1]
@@ -138,18 +174,20 @@ def hero(d: dict, st: dict, fg_rows: list, crit: dict | None, plan: dict | None,
     if g and g.get("n"):
         S.append(f"Nel mercato reale un gioco di {label} vende almeno 1.000 copie a {cal['primary'][1:]} giorni nel {rng(g, 'copies1000')} dei casi; "
                  f"la mediana è {nfmt(g['copies']['median'][0])}-{nfmt(g['copies']['median'][1])} copie (n = {g['n']}) [STIMA].")
-    if met and met.get("score"):
+    model = (cal or {}).get("metro")
+    if validated_score(met, model):
         sc_ = met["score"]
         strength = (met.get("metro") or {}).get("strength", "non verificato")
-        pl = (d.get("metro_plan") or {}).get("score")
+        pl = d["metro_plan"]["score"] if validated_score(d.get("metro_plan"), model) else None
         S.append(f"Il metro oggettivo (dati veri, affidabilità: {strength}) dà oggi il {round(100 * sc_['p1k'])} % di probabilità di superare 1.000 copie {_horizon(met)}" + (f" (punteggio del {met['scored_on']})" if met.get("scored_on") else "")
                  + (f"; con il piano attuale rispettato (trailer, demo, Next Fest, 8 lingue, pagina visibile da mesi) sale al {round(100 * pl['p1k'])} %" if pl else "") + " [STIMA].")
-        if sc_["p1k"] < 0.25:
-            level = max(level, 1)
-            lev = [lv for lv in sc_.get("levers") or [] if lv.get("delta_p1k_pp", 0) > 0][:3]
-            need[1].append(f"Metro oggettivo: P(≥1.000 copie) è al {round(100 * sc_['p1k'])} %, la soglia è 25 %."
-                           + (" Le leve che lo spostano di più: " + "; ".join(f"{lv['label']} (+{str(round(lv['delta_p1k_pp'], 1)).replace('.', ',')} punti)" for lv in lev) + "." if lev else "")
-                           + (f" Il piano completo lo porta al {round(100 * pl['p1k'])} %: si sale facendo davvero quei passi, poi rilanciando cohort_bench.py score." if pl else ""))
+        lev = [lv for lv in sc_.get("levers") or [] if lv.get("delta_p1k_pp", 0) > 0][:3]
+        S[-1] += " Mille copie è un riferimento del modello, non un requisito per il gioco."
+        if lev:
+            S[-1] += " Ipotesi che spostano la stima: " + "; ".join(
+                f"{lv['label']} (+{str(round(lv['delta_p1k_pp'], 1)).replace('.', ',')} punti)" for lv in lev) + "."
+    elif met:
+        S.append("Nessuna probabilità individuale verificata: usa solo il tasso di base del campione, se disponibile.")
     issues = [x for x in (crit or {}).get("issues", []) if x.get("now")]
     high = [x for x in issues if x.get("severity") == "alta"]
     moves = (d.get("moves") or {}).get("moves") or []
@@ -191,7 +229,7 @@ def hero(d: dict, st: dict, fg_rows: list, crit: dict | None, plan: dict | None,
     lk, lw = light
     chips.append(badge(lk, f"semaforo: {lw}"))
     if cal:
-        chips.append(badge("warn" if d["stale"] else "ok", f"mercato reale del {cal['generated_on']}"))
+        chips.append(badge("warn" if d["stale"] else "ok", f"mercato reale del {cal.get('generated_on') or 'n/d'}"))
     if pr and pr.get("evaluated"):
         chips.append(badge("info", f"previsioni giuste {pct(pr['accuracy'])}"))
     steps_html = ""
@@ -225,7 +263,7 @@ def _f(x):
 
 
 # ---------------------------------------------------------------- the tab
-def tab(d: dict, root: str) -> list[str]:
+def tab(d: dict, root: str, hide: set = frozenset()) -> list[str]:
     cal, out = d["cal"], [f"<h2>Mercato reale: freschezza dei dati</h2>{freshness(d)}"]
     met = d.get("metro")
     calm = (cal or {}).get("metro")
@@ -240,13 +278,13 @@ def tab(d: dict, root: str) -> list[str]:
             out.append(breakouts_section(d))
         if (cal.get("marketing") or {}).get("recipe"):
             out.append(recipe_section(cal))
-    comp = competitors_section(d)
+    comp = None if "watchlist" in hide else competitors_section(d)
     if comp:
         out.append(comp)
-    kpi = kpi_section(root, d["today"])
+    kpi = None if "contingencies" in hide or "economics" in hide else kpi_section(root, d["today"])
     if kpi:
         out.append(kpi)
-    pr = predictions_section(d)
+    pr = None if "economics" in hide else predictions_section(d)
     if pr:
         out.append(pr)
     man = manual_section(root)
@@ -259,11 +297,17 @@ def metro_section(calm: dict, met: dict | None, plan: dict | None = None) -> str
     if not calm.get("available"):
         return f'<h2>Metro oggettivo (dati veri)</h2><div class="card"><p>Non ancora disponibile: {esc(calm.get("why"))} (ora {calm.get("n")}).</p></div>'
     bt = calm.get("backtest") or {}
-    a1k = (bt.get("per_threshold") or {}).get("p1k") or {}
+    if calm.get("protocol") != "asof-v1":
+        return ('<h2>Metro oggettivo (dati veri)</h2><div class="card"><h3>Verifica onesta</h3>'
+                '<p>Modello storico non verificato con il protocollo attuale: nessuna probabilità individuale. Ricalcola il metro.</p></div>')
+    plan = plan if validated_score(plan, calm) else None
     parts = [f'<h2>Metro oggettivo (dati veri)</h2><p class="sub">Una misura del mercato reale per giochi non ancora usciti: usa solo ciò che si vede prima dell\'uscita '
              f'(capsule, prezzo, trailer, demo, Next Fest, lingue, notizie, durata del Coming Soon…). Allenato su {calm["n"]} giochi il {calm["fitted_on"]}; esito a {calm["target"][1:]} giorni [STIMA]. '
              'Affianca il focus group simulato, non lo sostituisce.</p><div class="cgrid">']
-    if met and met.get("score"):
+    if met and not validated_score(met, calm):
+        parts.append('<div class="card">Probabilità individuale non disponibile: dati fuori ambito o modello non verificato. '
+                     'Il tasso di base, se disponibile, descrive il campione, non il gioco.</div>')
+    if validated_score(met, calm):
         sc = met["score"]
         rows = [dict(label="Oggi", values={b: v * 100 for b, v in zip(calm["bands"], sc["bands"])})]
         if plan and plan.get("score"):
@@ -278,17 +322,18 @@ def metro_section(calm: dict, met: dict | None, plan: dict | None = None) -> str
                           color="var(--good)" if lv["delta_p1k_pp"] >= 0 else "var(--crit)") for lv in sc["levers"]]
             svg, table = ch.hbar(items, aria="Cosa sposta l'ago", fmt=lambda v: f"{v:+.1f}", unit=" punti", label_w=170)
             parts.append('<div class="card">' + ch.wrap(svg, title="Cosa sposta l'ago", why="Punti in più (o in meno) di probabilità di superare 1.000 copie se aggiungiamo ciascun fattore. Correlazione dal mercato, non garanzia.", table=table) + "</div>")
-    eff = calm.get("effects") or []
+    eff = (calm.get("effects") or []) if validated_model(calm) else []
     if eff:
         items = [dict(label=e["label"], value=e["delta_pp"], color="var(--s1)" if e["delta_pp"] >= 0 else "var(--s2)") for e in eff[:10]]
         svg, table = ch.hbar(items, aria="Peso dei fattori", fmt=lambda v: f"{v:+.1f}", unit=" punti", label_w=190)
         parts.append('<div class="card">' + ch.wrap(svg, title="Cosa pesa, in parole", why="Per un gioco B tipico: quanto cambia la probabilità di superare 1.000 copie quando il fattore c'è (o è alto). Niente scatola nera: è tutto qui.", table=table) + "</div>")
     if bt.get("possible"):
-        verdict = {"utile": ("ok", "utile"), "debole": ("warn", "debole: leggilo come un intervallo, fiducia bassa"), "non migliore del base rate": ("crit", "non migliore del base rate: non usarlo per decidere")}[bt["strength"]]
+        verdict = (("ok", "utile") if validated_model(calm) and bt.get("strength") == "utile" else
+                   ("warn", bt.get("strength") or "non verificato"))
         rowsv = "".join(f"<tr><td>{esc(k.replace('p', '≥ ').replace('1k', '1.000').replace('10k', '10.000'))}</td><td class=n>{v['auc']}</td><td class=n>{round(100 * (v['skill'] or 0))} %</td>"
                         f"<td class=n>{round(100 * v['actual_rate'])} %</td><td class=n>{round(100 * v['base_rate'])} %</td></tr>" for k, v in bt["per_threshold"].items())
-        parts.append(f'<div class="card"><h3>Verifica onesta (fuori dal tempo)</h3><p>{badge(*verdict)}</p><p class="why">Allenato sulle uscite di {esc(", ".join(w.replace("cohort_", "") for w in bt["train_weeks"]))}, '
-                     f'provato su quelle di {esc(bt["test_week"].replace("cohort_", ""))} (n = {bt["n_test"]}). AUC 0,5 = a caso, 1 = perfetto; "meglio del base rate" = quanto riduce l\'errore rispetto a usare solo la media.</p>'
+        parts.append(f'<div class="card"><h3>Verifica onesta (fuori dal tempo)</h3><p>{badge(*verdict)}</p><p class="why">Provato su {len(bt.get("folds") or [])} finestre successive: '
+                     f'{esc(", ".join(w.replace("cohort_", "") for w in bt.get("test_weeks", [])))} (n = {bt["n_test"]}); separazione temporale: {esc(bt.get("embargo_days"))} giorni. AUC 0,5 = a caso, 1 = perfetto; "meglio del base rate" = quanto riduce l\'errore rispetto a usare solo la media.</p>'
                      f'<div class="wrap"><table><thead><tr><th>Soglia di copie</th><th class=n>AUC</th><th class=n>meglio del base rate</th><th class=n>quota reale</th><th class=n>base rate</th></tr></thead><tbody>{rowsv}</tbody></table></div>'
                      f'<p class="note">Fascia indovinata: {round(100 * bt["band_accuracy"])} % (solo base rate {round(100 * bt["band_accuracy_base"])} %). Non usati ancora: {esc("; ".join(calm.get("not_used") or []))}.</p></div>')
     else:
@@ -298,6 +343,11 @@ def metro_section(calm: dict, met: dict | None, plan: dict | None = None) -> str
 
 def volume_section(d: dict) -> str:
     vol, cal = d["vol"], d["cal"] or {}
+    if vol.get("incomplete_offsets"):
+        return '<h2>Volume delle uscite</h2><div class="card">Finestra di ricerca parziale: nessuna stima del volume giornaliero finché la ricerca non è completa.</div>'
+    if not cal.get("tier_share"):
+        return (f'<h2>Volume delle uscite</h2><div class="card">Giochi osservati: {nfmt((vol.get("summary") or {}).get("total"))}. '
+                'Quote per fascia non disponibili.</div>')
     sh = cal.get("tier_share") or {}
     junk = cal.get("junk_share") or 0
     weeks: dict = {}
@@ -417,11 +467,20 @@ def competitors_section(d: dict) -> str | None:
         return None
     out = ['<h2>Concorrenti sul metro del mercato reale</h2>']
     if comps and comps.get("games"):
-        body = "".join(
-            f"<tr><td>{esc(g['name'])}</td><td>{esc(g.get('role') or '')}</td><td class=n>{esc(g.get('price') or '')}</td><td class=n>{nfmt(g.get('reviews_d30'))}</td><td class=n>{nfmt(g.get('reviews_d90'))}</td>"
-            f"<td class=n>{nfmt(g.get('reviews_total'))}</td><td>{esc(g.get('looks_like') or 'n/d')}</td></tr>" for g in comps["games"])
+        def comp_row(g):
+            try:
+                age = (dt.date.fromisoformat(comps["built_on"]) - dt.date.fromisoformat(g["release_date"])).days
+            except (KeyError, TypeError, ValueError):
+                age = -1
+            d30 = g.get("reviews_d30") if age >= 30 else None
+            d90 = g.get("reviews_d90") if age >= 90 else None
+            label = (g.get("looks_like") or "n/d") if d30 is not None else "n/d"
+            return (f"<tr><td>{esc(g.get('name'))}</td><td>{esc(g.get('role') or '')}</td><td class=n>{esc(g.get('price'))}</td>"
+                    f"<td class=n>{nfmt(d30)}</td><td class=n>{nfmt(d90)}</td><td class=n>{nfmt(g.get('reviews_total'))}</td><td>{esc(label)}</td></tr>")
+        body = "".join(comp_row(g) for g in comps["games"])
         out.append(f'<div class="card"><p class="why">Recensioni dei primi 30 e 90 giorni dopo l\'uscita (istogramma pubblico, {esc(comps.get("built_on"))}) confrontate con i giochi nuovi giudicati: '
-                   f'"esito da B vincente" = sopra il 90° percentile della fascia B al primo mese, "da fascia A" = sopra la mediana degli A. I giochi più vecchi sono usciti in un mercato meno affollato. [FATTO] sulle recensioni, [STIMA] sul confronto.</p>'
+                    f'"esito da B vincente" = sopra il 90° percentile della fascia B al primo mese, "da fascia A" = sopra la mediana degli A. '
+                    'n/d = orizzonte non ancora raggiunto o misura mancante. [FATTO] sul totale letto, [STIMA] su D30/D90 ricostruiti dai blocchi dell’istogramma e sul confronto.</p>'
                    '<div class="wrap"><table><thead><tr><th>Gioco</th><th>Ruolo</th><th class=n>Prezzo $</th><th class=n>Recensioni a 30 g</th><th class=n>a 90 g</th><th class=n>Totali</th><th>Somiglia a</th></tr></thead>'
                    f'<tbody>{body}</tbody></table></div></div>')
     for x in doss:
@@ -486,7 +545,12 @@ def predictions_section(d: dict) -> str | None:
     if not pr or not pr.get("n"):
         return None
     def row(x):
-        pred = f"{x['low']:g}-{x['high']:g}" if x.get("low") is not None else f"{x['value']:g}"
+        if x.get("low") is not None and x.get("high") is not None:
+            pred = f"{x['low']:g}-{x['high']:g}"
+        elif x.get("open_high") and x.get("low") is not None:
+            pred = f"≥{x['low']:g}"
+        else:
+            pred = f"{x['value']:g}" if x.get("value") is not None else "n/d"
         real = "" if x.get("actual") is None else f"{x['actual']:g}"
         res = badge("ok", "giusta") if x.get("hit") else badge("crit", x.get("direction", "")) if x.get("hit") is False else ""
         return (f"<tr><td>{esc(x['date'])}</td><td>{esc(x['source'])}</td><td>{esc(x['metric'])}</td><td class=n>{esc(pred)} {esc(x.get('unit') or '')}</td>"
@@ -531,9 +595,11 @@ def riepilogo_card(d: dict, fg_rows: list) -> str | None:
         lines.append(f"<li>Base rate reale per {esc(label)}: almeno 1.000 copie nel {rng(g, 'copies1000')} dei casi, popolare nel {rng(g, 'popular')}; mediana {nfmt(g['copies']['median'][0])}-{nfmt(g['copies']['median'][1])} copie a {cal['primary'][1:]} giorni (n = {g['n']}) [STIMA].</li>")
     else:
         lines.append("<li>Base rate reale: non disponibile (manca la calibrazione).</li>")
-    if met and met.get("score"):
+    if validated_score(met, (cal or {}).get("metro")):
         sc = met["score"]
         lines.append(f"<li>Metro oggettivo oggi: fascia <strong>{esc(sc['band'])}</strong> copie, P(≥1.000) {round(100 * sc['p1k'])} % ({esc((met.get('metro') or {}).get('strength', ''))}) [STIMA].</li>")
+    elif met:
+        lines.append("<li>Metro: nessuna probabilità individuale verificata.</li>")
     if beta:
         lines.append(f"<li>Ultima ondata: {esc(str(beta[-1].get('score') or 'n/d').replace('.', ','))} su 100, wishlist {esc(str(beta[-1].get('wishlist_pct') or 'n/d').replace('.', ','))} % dei tester (SIMULATO): non si confronta direttamente con le vendite reali.</li>")
     return (f'<h2>Dove siamo rispetto al mercato reale</h2><div class="card"><ul>{"".join(lines)}</ul><p class="note">Il dettaglio è nella scheda <a href="#p-mercato">Mercato reale</a>. '
@@ -568,21 +634,28 @@ def marketing_card(d: dict) -> str | None:
 
 
 def piano_card(d: dict, econ: dict | None) -> str | None:
-    cb = (econ or {}).get("calibrated")
-    if not cb:
-        cal = d["cal"]
-        price = game_price(d["root"])
-        g, label = our_base(d, price)
-        if not (g and g.get("n")) or not econ:
-            return None
-        net = econ["net_per_copy"]
-        rows = [(n_, g["copies"][q][0], g["copies"][q][1]) for n_, q in (("pessimistico (p25)", "p25"), ("base (mediana)", "median"), ("ottimistico (p75)", "p75"), ("raro (p90)", "p90"))]
-        cb = dict(group=label, n=g["n"], generated_on=cal["generated_on"], data_from=cal.get("data_from"), data_to=cal.get("data_to"), milestone=cal["primary"],
-                  scenarios=[dict(name=a, copies_low=lo, copies_high=hi, net_low=lo * net, net_high=hi * net) for a, lo, hi in rows])
-    body = "".join(f"<tr><td>{esc(s['name'])}</td><td class=n>{nfmt(s['copies_low'])}-{nfmt(s['copies_high'])}</td><td class=n>{nfmt(s['net_low'])}-{nfmt(s['net_high'])}</td></tr>" for s in cb["scenarios"])
-    return (f'<h2>Scenari di vendita dal mercato reale</h2><div class="card"><p class="why">Copie vendute a {cb["milestone"][1:]} giorni dai giochi reali di {esc(cb["group"])} (n = {cb["n"]}, uscite {esc(cb.get("data_from"))}..{esc(cb.get("data_to"))}, '
-            f'calibrazione del {esc(cb["generated_on"])}) [STIMA]. Stanno accanto agli scenari da wishlist di <code>calc_econ.py</code>, non li sostituiscono.</p>'
-            f'<div class="wrap"><table><thead><tr><th>Scenario</th><th class=n>Copie</th><th class=n>Netto</th></tr></thead><tbody>{body}</tbody></table></div></div>')
+    from calc_econ import calibrated, historical_only
+    econ = econ or {}
+    inputs = econ.get("inputs") or {}
+    cb = (calibrated(dict(inputs, calibration_data=d["cal"]), econ) if d.get("cal") else econ.get("calibrated")) or {}
+    title = '<h2>Scenari di vendita dal mercato reale</h2>'
+    if not (type(cb.get("verified_weeks")) is int and cb["verified_weeks"] > 0 and cb.get("n", 0) >= 30
+            and cb.get("milestone") in ("d30", "d90", "d180") and cb.get("scenarios")):
+        return title + ('<div class="card">Vendite del gioco non stimabili dal mercato: manca una coorte verificata '
+                        'di almeno 30 giochi confrontabili con risultati osservati allo stesso orizzonte. '
+                        'Il voto dei tester non sostituisce questi dati.</div>')
+    money = econ.get("net_per_copy") is not None
+    cur = esc(inputs.get("currency") or "")
+    body = "".join(f"<tr><td>{esc(s['name'])}</td><td class=n>{nfmt(s['copies_low'])}–{nfmt(s['copies_high'])}</td>"
+                   + (f"<td class=n>{nfmt(s['net_low'])}–{nfmt(s['net_high'])}</td>" if money else "") + "</tr>" for s in cb["scenarios"])
+    note = ("Riferimento storico, non una previsione attuale. " if historical_only(cb, d["today"]) else "")
+    return (title + f'<div class="card"><p>{note}Se il gioco si comportasse come quelli di {esc(cb["group"])}, '
+            f'questi sarebbero gli intervalli a {cb["milestone"][1:]} giorni dall’uscita. Fascia ipotizzata, non verificata per questo gioco.</p>'
+            f'<div class="wrap"><table><thead><tr><th>Posizione nel campione</th><th class=n>Copie [STIMA]</th>'
+            + (f'<th class=n>Netto prima dei costi ({cur})</th>' if money else '') + f'</tr></thead><tbody>{body}</tbody></table></div>'
+            f'<p class="note">Fonte: coorte Steam di {cb["n"]} giochi (n = {cb["n"]}), uscite {esc(cb.get("data_from") or "n/d")} – {esc(cb.get("data_to") or "n/d")}, '
+            f'calibrazione del {esc(cb.get("generated_on") or "n/d")}. Stima: recensioni × 20–60; la coda alta non è il caso tipico. '
+            + ('Il netto applica le ipotesi del piano economico.' if money else 'Nessun ricavo stimato senza un prezzo e un netto per copia.') + '</p></div>')
 
 
 CSS = """#p-mercato li,#p-mercato p,#p-mercato a,.toc a{overflow-wrap:anywhere}

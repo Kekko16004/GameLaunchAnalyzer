@@ -70,6 +70,7 @@ import criticita as cr
 import market_page as mp
 import glossary as gl
 import qa as qamod
+from launch_gates import GATE_NAMES, assess
 import plan_steps as ps
 import report_charts as rc
 import todo_track as tt
@@ -587,7 +588,10 @@ def step_li(s: dict, today: dt.date) -> str:
             + "".join(body) + "</li>")
 
 
-GATE_NAMES = {"0": "Gate 0 · Posizionamento", "A": "Gate A · Qualità percepita", "B": "Gate B · Test reale", "C": "Gate C · Capsule"}
+def gate_badge(gate, name=None):
+    kind = gate["state"]
+    label = "Esito non documentato" if kind == "unknown" else ICONS[kind][1]
+    return state("info" if kind == "unknown" else kind, f"{name}: {label}" if name else label)
 
 
 def now_block(plan: dict, today: dt.date) -> str:
@@ -946,15 +950,17 @@ def key_tiles(st: dict, wl_a, fg_rows, plan: dict, econ, today: dt.date, hide: s
     if plan["phases"] and "steps" not in hide:
         sm = ps.summary(plan, today)
         tiles.append(("Passi fatti", f"{sm['done']}/{sm['total']}", f"{sm['overdue']} in ritardo" if sm["overdue"] else "nessuno in ritardo"))
-    if econ:
+    if econ and econ.get("net_per_copy") is not None:
         be = econ["breakeven"]
-        if str(st.get("breakeven_basis", "")).lower() == "cash" and "copies_cash" in be:   # status.json: "breakeven_basis": "cash" counts only the money spent, not the hours
+        if be.get("copies_cash") is not None and (str(st.get("breakeven_basis", "")).lower() == "cash" or be.get("copies_with_time") is None):
             tiles.append(("Break-even (soldi spesi)", fmt_n(be["copies_cash"]), f"copie (netto per copia {econ['net_per_copy']:.2f}; contando le ore {fmt_n(be.get('copies_with_time'))})"))
-        else:
+        elif be.get("copies_with_time") is not None:
             tiles.append(("Break-even", fmt_n(be["copies_with_time"]), f"copie (netto per copia {econ['net_per_copy']:.2f})"))
-    gates = st.get("gates") or {}
-    if gates:
-        tiles.append(("Gate superati", f"{sum(1 for g in gates.values() if g.get('state') == 'pass')}/{len(gates)}", "Go/No-Go prima di Steam Direct"))
+    gates = assess(st.get("gates"))
+    missing = sum(g["state"] == "unknown" for g in gates.values())
+    passed = sum(g["state"] == "pass" for g in gates.values())
+    tiles.append(("Gate superati", "n/d" if missing == len(gates) else f"{passed}/{len(gates)}",
+                  f"Prima di Steam Direct: esiti non documentati {missing} su {len(gates)}." if missing else "Go/No-Go prima di Steam Direct"))
     for k in st.get("key_numbers", []):
         tiles.append((k.get("label", ""), k.get("value", ""), k.get("note", "")))
     return tiles
@@ -1052,14 +1058,16 @@ def publisher_section(root: str, st: dict) -> str | None:
                     f'<td class="n">{r["fit"]:.0f}</td><td class="n">{esc(r["band"])}</td><td>{esc(r["next_step"])}</td></tr>')
     cmp_ = d.get("compare")
     ctab = ""
-    if cmp_:
+    if cmp_ and cmp_.get("unavailable"):
+        ctab = f'<p class="note">Confronto economico non stimabile: {esc(cmp_["unavailable"])}.</p>'
+    elif cmp_:
         heads = "".join(f'<th class="n">{esc(p_["label"])}</th><th class="n">serve vendere ×</th>' for p_ in cmp_["profiles"])
         body = []
         for s_ in cmp_["scenarios"]:
             cells = "".join(f'<td class="n">{fmt_n(x["income_low"])} … {fmt_n(x["income_high"])}</td><td class="n">'
                             + ("basta l'anticipo" if x["breakeven_uplift"] == 0 else esc(x["breakeven_uplift"])) + "</td>" for x in s_["deals"])
             body.append(f'<tr><td>{esc(s_["name"])}</td><td class="n">{fmt_n(s_["copies"])}</td><td class="n">{fmt_n(s_["alone"])}</td>{cells}</tr>')
-        ctab = (f'<h3>Con o senza publisher: cosa ti resta ($)</h3><div class="wrap"><table><thead><tr><th>Scenario</th><th class="n">Copie</th><th class="n">Da soli</th>{heads}</tr></thead><tbody>{"".join(body)}</tbody></table></div>'
+        ctab = (f'<h3>Con o senza publisher: cosa ti resta ({esc(cmp_.get("currency") or "$")})</h3><div class="wrap"><table><thead><tr><th>Scenario</th><th class="n">Copie</th><th class="n">Da soli</th>{heads}</tr></thead><tbody>{"".join(body)}</tbody></table></div>'
                 '<p class="note">"Serve vendere ×": quante volte più copie deve farti vendere il publisher perché ti resti quanto da solo. Rev share e anticipi cambiano da contratto a contratto [DA VERIFICARE].</p>')
     pt = d.get("pitch_top") or {}
     head = (f'<h2>Publisher: sì, no o non so?</h2><div class="card"><p>Risposta del proprietario: <strong>{esc(ans)}</strong>. Realistici adesso: <strong>{c.get("realistic_now", 0)}</strong> · '
@@ -1159,8 +1167,55 @@ def clips_kit_section(root: str, today: dt.date) -> str | None:
     return "".join(H)
 
 
+def radar_notice(root, audience):
+    path = os.path.join(root, "_raw", "radar_status.json")
+    if not os.path.isfile(path):
+        return ""
+    try:
+        data = load_json(path)
+        issues = data["issues"]
+        if not isinstance(issues, dict):
+            raise ValueError("avvisi non leggibili")
+    except (OSError, ValueError, TypeError, KeyError):
+        return '<aside class="card"><strong>Radar: stato non verificabile.</strong></aside>'
+    if not issues:
+        return ""
+    details = ""
+    if audience == "private":
+        details = "<ul>" + "".join(f"<li>{esc(k)}: {esc(v)}</li>" for k, v in issues.items()) + "</ul>"
+    return (f'<aside class="card" role="status"><strong>Radar: dati parziali o non applicabili</strong>'
+            f' ({esc(data.get("as_of"))}). Non usare le misure mancanti come previsione.{details}</aside>')
+
+
+def economics_section(econ: dict) -> str:
+    inputs = econ.get("inputs") or {}
+    cur = esc(inputs.get("currency") or "")
+    blocks = ['<h2>Economia</h2><div class="card wrap">']
+    net = econ.get("net_per_copy")
+    if net is not None:
+        blocks.append(f'<p>Netto per copia prima dei costi: {net:.2f} {cur}. ')
+        rates = ", ".join(f"{label} {inputs[k]:.0%}" for k, label in (("avg_discount", "sconto"), ("refund", "rimborsi"), ("vat_share", "IVA"),
+                            ("steam_cut", "quota Steam"), ("local_tax", "imposte locali")) if isinstance(inputs.get(k), (int, float)))
+        blocks.append(f'Ipotesi [DA VERIFICARE]: {rates}.</p>' if rates else 'Aliquote da verificare nel piano.</p>')
+    else:
+        blocks.append('<p>Prezzo non disponibile: nessuna stima di ricavi.</p>')
+    scenarios = econ.get("scenarios") or []
+    if scenarios:
+        blocks.append(f'<p>Ipotesi da wishlist, primo anno. Fonte: {esc(inputs.get("wishlist_source") or "valori del piano, non verificati")}. '
+                      'Le copie sotto sono solo gli acquisti dalle wishlist al lancio, non tutte le vendite del gioco.</p>'
+                      '<table><thead><tr><th>Scenario</th><th>Wishlist</th><th>Conversione</th><th>Copie</th><th>Netto</th><th>Utile di cassa</th></tr></thead><tbody>')
+        for s in scenarios:
+            blocks.append(f'<tr><td>{esc(s["name"])}</td><td>{fmt_n(s["wishlists"])}</td><td>{s["conversion"]:.0%}</td><td>{fmt_n(s["copies"])}</td>'
+                          f'<td>{fmt_n(s["net"])}</td><td>{fmt_n(s["profit_cash"])}</td></tr>')
+        blocks.append('</tbody></table>')
+    if (econ.get("costs") or {}).get("total") is None:
+        blocks.append('<p class="note">Pareggio contando il tempo non stimabile senza spese, ore e tariffa. I dati assenti non valgono zero.</p>')
+    return "".join(blocks) + '</div>'
+
+
 def build(root: str, audience: str, include: list[str], exclude: list[str], hide: set[str], today: dt.date) -> str:
     st = load_json(os.path.join(root, "status.json")) if os.path.exists(os.path.join(root, "status.json")) else {}
+    gates = assess(st.get("gates"))
     hide = set(hide) | HIDE_BY_AUDIENCE[audience]
     owner = cr.load_owner(root)
     match = issue_matcher(root, st, owner)
@@ -1179,10 +1234,14 @@ def build(root: str, audience: str, include: list[str], exclude: list[str], hide
     product = st.get("product") or {}
     v = st.get("verdict") or {}
     mk = mp.load(root, today)
+    if "economics" in hide:
+        mk["pred"] = None   # includes scenarios copied from the private economic plan
+    if "todo" in hide:
+        mk["moves"] = None
     crit_pre = None
     if "critiques" not in hide:
         try:
-            _, crit_pre = cr.build(root, st, GATE_NAMES)
+            _, crit_pre = cr.build(root, dict(st, gates=gates), GATE_NAMES)
         except Exception:  # noqa: BLE001
             crit_pre = None
     lk, lw = LIGHT.get(str(v.get("color", "")).lower(), ("info", str(v.get("color", "n/d"))))
@@ -1193,7 +1252,7 @@ def build(root: str, audience: str, include: list[str], exclude: list[str], hide
             gate_thr = float(str(beta_rows[-1].get("gate") or "").replace(",", "."))
         except ValueError:
             gate_thr = None
-    add("riepilogo", mp.hero(mk, st, fg_rows or [], crit_pre, plan, ({"pass": "ok", "fail": "crit"}.get(lk, lk), lw), gate_thr))
+    add("riepilogo", mp.hero(mk, st, fg_rows or [], crit_pre, None if "steps" in hide else plan, ({"pass": "ok", "fail": "crit"}.get(lk, lk), lw), gate_thr))
     rm = None if "roadmap" in hide else cv.roadmap(root, st, plan, today)
     add("riepilogo", cv.roadmap_html(rm, today))
     if v:
@@ -1204,9 +1263,9 @@ def build(root: str, audience: str, include: list[str], exclude: list[str], hide
             keys = keys or match(text)
             risks.append(f"<li>{state('warn', f'Rischio {k}')}<span>{esc(text)}{badges_for(keys, owner, labels)}</span></li>")
         add("riepilogo", f'<details class="card verdict"><summary><strong>Verdetto del semaforo: {esc(word)}{" (provvisorio)" if v.get("provisional") else ""}</strong> · dettaglio, rischi e cancelli</summary><div><div>{ICONS[kind][0]}</div>'
-            f'<p>{esc(v.get("summary", ""))}</p>' + (f'<p class="sub">Probabilità stimata di recuperare i costi: {esc(v["probability"])}</p>' if v.get("probability") else "")
+            f'<p>{esc(v.get("summary", ""))}</p>' + (f'<p class="sub">Probabilità stimata di recuperare i costi: {esc(v["probability"])}</p>' if v.get("probability") and "economics" not in hide else "")
             + (f'<ul class="clean">{"".join(risks)}</ul>' if risks else "")
-            + ('<div class="gates">' + "".join(f'<span>{state({"pass": "pass", "fail": "fail", "pending": "pending"}.get(g.get("state"), "na"), GATE_NAMES.get(k, "Gate " + k))}</span>' for k, g in (st.get("gates") or {}).items()) + "</div>" if st.get("gates") else "")
+            + '<div class="gates">' + "".join(gate_badge(g, GATE_NAMES.get(k, "Gate " + k)) for k, g in gates.items()) + "</div>"
             + "</div></details>")
     if plan["phases"] and "steps" not in hide:
         add("riepilogo", now_block(plan, today))
@@ -1217,21 +1276,24 @@ def build(root: str, audience: str, include: list[str], exclude: list[str], hide
         except Exception as e:  # noqa: BLE001
             log(f"WARN odds: {e}")
     tiles = key_tiles(st, wl_a, fg_rows, plan, econ, today, hide)
-    gates = st.get("gates") or {}
     if tiles:
         add("riepilogo", '<h2>Numeri chiave</h2><div class="grid g4">' + "".join(f'<div class="card tile"><div class="l">{esc(l)}</div><div class="v">{esc(val)}</div><div class="d">{esc(d)}</div></div>' for l, val, d in tiles) + "</div>")
-    alerts = [(x["level"], x["text"]) for x in (wl_a or {}).get("alerts", [])] + cont_alerts + watch_alerts
+    alerts = ([] if audience == "publisher" else [(x["level"], x["text"]) for x in (wl_a or {}).get("alerts", [])]) + cont_alerts + watch_alerts
     fr = sk.freshness(root) if kit else {}
     if fr.get("stale"):
         alerts.append(("ATTENZIONE", f"Pagine store da aggiornare: il kit è del {fr['kit_date']}, dopo sono arrivati " + "; ".join(f"{w} ({d})" for w, d in fr["newer"])))
     if alerts:
         icon = {"ALARM": ("fail", "Allarme"), "ATTENZIONE": ("warn", "Attenzione"), "INFO": ("info", "Info")}
         add("riepilogo", '<h2>Alert</h2><div class="card"><ul class="clean">' + "".join(f"<li>{state(*icon[lv])}<span>{esc(t)}</span></li>" for lv, t in sorted(alerts, key=lambda x: ["ALARM", "ATTENZIONE", "INFO"].index(x[0]))) + "</ul></div>")
+    if audience == "publisher":
+        wl_svg = None  # the chart embeds private notes and scenario/tripwire trajectories; keep the measured tile
     if wl_svg or fg_svg:
         chunk = ["<h2>Andamento</h2><div class=\"grid g2\">"]
         if wl_svg:
-            chunk.append(f'<div class="card"><h3>Wishlist contro gli scenari</h3><div class="legend"><span><i style="border-color:var(--s1)"></i>Registrate</span><span><i style="border-color:var(--muted)"></i>Percorso degli scenari (lineare)</span></div>{wl_svg}'
-                         '<p class="note">Wishlist inserite a mano da Steamworks. I percorsi sono lineari: semplificazione, i picchi (festival, lancio) non sono previsti.</p></div>')
+            references = (wl_a or {}).get("scenarios")
+            chunk.append('<div class="card"><h3>Andamento delle wishlist</h3><div class="legend"><span><i style="border-color:var(--s1)"></i>Registrate</span>'
+                         + ('<span><i style="border-color:var(--muted)"></i>Percorsi ipotetici, lineari</span>' if references else '') + f'</div>{wl_svg}'
+                         '<p class="note">Wishlist registrate da Steamworks.' + (' Le linee di confronto non prevedono i picchi.' if references else '') + '</p></div>')
         if fg_svg:
             chunk.append(f'<div class="card"><h3>Focus group simulato, per ondata</h3><div class="legend"><span><i style="border-color:var(--s1)"></i>Beta</span><span><i style="border-color:var(--muted)"></i>Gioco completo (rombi) e soglia</span><span><i style="border-color:var(--good)"></i>Tetto (rombo verde)</span></div>{fg_svg}<p class="note">Panel simulato con gli stessi tester: ordina i problemi, non prevede le vendite. Beta e gioco completo non si confrontano tra loro.</p></div>')
         chunk.append("</div>")
@@ -1256,7 +1318,7 @@ def build(root: str, audience: str, include: list[str], exclude: list[str], hide
         add("gioco", render_group(G["idea"]))
     crit_data = None
     if "critiques" not in hide:
-        crit_html, crit_data = cr.build(root, st, GATE_NAMES)
+        crit_html, crit_data = cr.build(root, dict(st, gates=gates), GATE_NAMES)
         if crit_html:
             add("gioco", "<h2>Criticità, ondata per ondata</h2>" + crit_html)
     if "fg" in G:
@@ -1296,23 +1358,20 @@ def build(root: str, audience: str, include: list[str], exclude: list[str], hide
         add("piano", steps_section(plan, today) + ("".join(f'<div class="card" style="margin-top:12px">{x}</div>' for x in G["plan"]["charts"]) if "plan" in G else ""))
     if "todo" not in hide:
         add("piano", todo_section(root, today))
-    if gates:
-        add("piano", '<h2>Cancelli Go / No-Go</h2><div class="grid g4">' + "".join(
-            f'<div class="card"><div>{state({"pass": "pass", "fail": "fail", "pending": "pending"}.get(g.get("state"), "na"))}</div><h3>{esc(GATE_NAMES.get(k, "Gate " + k))}</h3><p class="note">{esc(g.get("note", ""))}</p></div>'
-            for k, g in gates.items()) + "</div>")
+    add("piano", '<h2>Cancelli Go / No-Go</h2><div class="grid g4">' + "".join(
+        f'<div class="card"><div>{gate_badge(g)}</div><h3>{esc(GATE_NAMES.get(k, "Gate " + k))}</h3><p class="note">{esc(g["note"])}</p></div>'
+        for k, g in gates.items()) + "</div>")
     if cal_md and "calendar" not in hide:
         rest = (plan.get("before", "") + "\n" + plan.get("after", "")) if plan["phases"] else cal_md
         if rest.strip():
             add("piano", f'<h2>Date fisse e piano a ritroso</h2><details class="card doc"><summary><strong>calendar.md</strong></summary>{md_to_html(rest)}</details>')
-    if econ:
-        add("piano", '<h2>Economia</h2><div class="card wrap"><table><thead><tr><th>Scenario</th><th class="n">Wishlist</th><th class="n">Copie</th><th class="n">Netto</th><th class="n">Utile (cassa)</th></tr></thead><tbody>' + "".join(
-            f'<tr><td>{esc(s_["name"])}</td><td class="n">{fmt_n(s_["wishlists"])}</td><td class="n">{fmt_n(s_["copies"])}</td><td class="n">{fmt_n(s_["net"])}</td><td class="n">{fmt_n(s_["profit_cash"])}</td></tr>' for s_ in econ["scenarios"])
-            + f'</tbody></table><p class="note">Netto per copia {econ["net_per_copy"]:.2f}; aliquote e conversioni sono ipotesi dichiarate nel piano, da verificare.</p></div>'
-            + ('<div class="cgrid" style="margin-top:12px">' + "".join(f'<div class="card">{x}</div>' for x in G["econ"]["charts"]) + "</div>" if "econ" in G else ""))
-    elif "econ" in G:
-        add("piano", render_group(G["econ"]))
-    add("piano", mp.piano_card(mk, econ))
-    if "publisher" not in hide:
+    if "economics" not in hide:
+        add("piano", mp.piano_card(mk, econ))
+        if econ:
+            add("piano", economics_section(econ))
+        if "econ" in G:
+            add("piano", '<div class="cgrid">' + "".join(f'<div class="card">{x}</div>' for x in G["econ"]["charts"]) + "</div>")
+    if "publisher" not in hide and "economics" not in hide:
         add("piano", publisher_section(root, st))
     add("piano", cont_html)
     if "window" not in hide:
@@ -1341,11 +1400,12 @@ def build(root: str, audience: str, include: list[str], exclude: list[str], hide
             add("calendario", cv.roadmap_html(rm, today, compact=True) + cv.calendar_html(items, rm, today, launch_d))
 
     # ---- Mercato reale
-    for chunk in mp.tab(mk, root):
+    for chunk in mp.tab(mk, root, hide):
         add("mercato", chunk)
 
     # ---- documents, each in the tab it belongs to; the rest + Q&A in Documenti
-    stems = [x for x in (include or AUDIENCES[audience]) if x not in exclude]
+    stems = [x for x in (include or AUDIENCES[audience]) if x not in exclude and (audience == "private" or x in AUDIENCES[audience])
+             and not ("economics" in hide and x in ("03-pricing", "03-pricing-calc", "publisher-scout"))]
 
     def hook(cells):
         return badges_for(match(cells[0]) if cells else [], owner, labels)
@@ -1354,7 +1414,9 @@ def build(root: str, audience: str, include: list[str], exclude: list[str], hide
         pth = os.path.join(root, f"{stem}.md")
         if os.path.exists(pth):
             tab = DOC_TAB.get(stem, "docs")
-            per_tab.setdefault(tab, []).append(f'<details class="card doc"><summary><strong>{esc(DOCS.get(stem, stem))}</strong> <span class="note">{esc(stem)}.md</span></summary>{md_to_html(open(pth, encoding="utf-8").read(), hook)}</details>')
+            with open(pth, encoding="utf-8") as f:
+                text = md_to_html(f.read(), hook)
+            per_tab.setdefault(tab, []).append(f'<details class="card doc"><summary><strong>{esc(DOCS.get(stem, stem))}</strong> <span class="note">{esc(stem)}.md</span></summary>{text}</details>')
     for tab in ("gioco", "marketing", "piano"):
         if per_tab.get(tab):
             add(tab, "<h2>Documenti di questa parte</h2>" + "".join(per_tab[tab]))
@@ -1405,7 +1467,7 @@ def build(root: str, audience: str, include: list[str], exclude: list[str], hide
     return (f'<!doctype html><html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Stato del lancio, {esc(name)}</title>'
             f'<script>{THEME_HEAD}</script><style>{CSS}{mp.CSS}{CSS_POLISH}{cv.CSS}{mg.CSS}{CSS_V3}</style></head><body><main><div class="top"><div><h1>{esc(name)}: stato del lancio</h1><p class="sub">Aggiornato il {fmt_date(today.isoformat())}{(" · analisi del " + fmt_date(st["updated"])) if st.get("updated") and str(st["updated"])[:10] != today.isoformat() else ""} · {esc(label)}'
             f'{" · modalità " + esc(st["mode"]) if st.get("mode") else ""}{" · valutato come: " + esc(product.get("label") or product.get("kind")) if product.get("kind") or product.get("label") else ""}</p><p class="sub">Questo è il <strong>cruscotto</strong>: cosa fare, numeri, pagine da copiare, piani. Il report completo da leggere con calma è il file REPORT.md nella cartella del lancio.</p></div><button class="theme" id="theme" type="button" title="Cambia tema chiaro o scuro"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 1.5a6.5 6.5 0 010 13z" fill="currentColor"/></svg><span>Tema</span></button></div>'
-            + nav + "".join(panels) + f'<footer class="note">Pagina generata da <code>status_page.py</code> il {today.isoformat()} da file locali, senza richieste di rete. Il focus group è simulato: non è un dato di mercato. '
+            + radar_notice(root, audience) + nav + "".join(panels) + f'<footer class="note">Pagina generata da <code>status_page.py</code> il {today.isoformat()} da file locali, senza richieste di rete. Il focus group è simulato: non è un dato di mercato. '
             f'Cifre con fonte nei documenti; ciò che è etichettato [DA VERIFICARE] resta da verificare.</footer></main><script>{JS}{THEME_JS}{gl.JS}{cr.JS}{qamod.JS}{cv.JS}</script></body></html>')
 
 

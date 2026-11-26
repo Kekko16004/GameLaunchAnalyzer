@@ -9,7 +9,7 @@ Si esegue **dopo** la lettura del progetto (Fase 0, `01-discovery.md`) e **prima
 1. **Non chiedere ciò che puoi leggere.** Parti da `launch/00-contesto.md` (Fase B): ciò che il progetto, un GDD `locked`, `GAME_TASKS.md` o `CLAUDE.md` già dicono lo proponi come risposta dedotta ("dal GDD: pubblico cozy co-op, è giusto?") e chiedi solo conferma; le **lacune** del Context Pack sono le domande vere. Poi ispeziona repo, README, GDD, store page, build. Chiedi solo ciò che sa soltanto l'utente: intenzioni, preferenze, rischio, limiti personali.
 2. **Ogni domanda dice perché la fai** (una riga) **e cosa cambierà nel piano.** Niente domande retoriche, nessuna ripetizione.
 3. **Dopo ogni round dai consigli** (formato sotto), non solo raccogli. L'utente risponde "ok" per accettare un default.
-4. **Segnala le tensioni** tra risposte ("vuoi vivere di questo ma hai 5 ore a settimana e 100 € di budget") con gentilezza e con numeri, senza giudicare.
+4. **Segnala le tensioni** tra scelte e vincoli noti (per esempio una demo da preparare in due settimane quando le ore disponibili coprono solo il tutorial). Non dedurre intenzioni dalle risorse.
 5. **Formato.** Se hai lo strumento di domande strutturate (AskUserQuestion) usalo: 2-4 opzioni, la tua raccomandata per prima con "(Recommended)", massimo 4 domande per chiamata, più chiamate nello stesso round. Altrimenti un blocco numerato (massimo 6 domande) con il default tra parentesi. Le domande aperte vanno in testo libero.
 6. **Aggiorna il registro a ogni round** (`00-intenzioni.md`) e non perdere nulla: le risposte decidono soglie, date, canali, contingenze.
 7. **Tono rilassato.** Nessuna fretta; ma ogni round ha un obiettivo chiaro e si chiude.
@@ -48,21 +48,20 @@ Se è una beta **senza** piano del gioco completo: valuta come beta e dì chiara
 
 - **Completa**: domanda zero, round 1-7 sotto, più i round di verifica dei dati (R-A, R-B, R-C) e, se è una beta con piano del gioco completo, R-D.
 - **Rapida**: un solo blocco di massimo 8 domande che condensa i round 1-5 (con default); **la domanda zero (beta o gioco completo) è sempre la prima**.
-- **Mirata**: la domanda zero più le sole domande dell'area richiesta (es. canali per "solo creator", budget e prezzo per "solo prezzo").
+- **Mirata**: la domanda zero più le sole domande dell'area richiesta (es. canali per "solo creator", prezzo già fissato o ancora da valutare per "solo prezzo").
 - **Aggiornamento / Ondata**: riassumi `00-intenzioni.md` in 5 righe e chiedi **solo cosa è cambiato**.
 
 ## I round
 
-### Round 1: obiettivi e successo
-- Cosa significa "successo" per te, in numeri o fatti (copie, euro, wishlist, community, portfolio, lavoro, soddisfazione)? Quale risultato ti farebbe dire "ne è valsa la pena" e quale "è andata molto bene"?
-- Perché questo gioco e perché adesso? Ci sono scadenze personali (fine studi, contratto, Next Fest)?
-- Quanto pesano guadagnare, imparare, costruire un portfolio, divertirsi? In ordine.
-- Dopo il lancio: aggiornamenti, DLC, seguito, un nuovo gioco, o chiudere?
+### Round 1: decisioni già prese e prossima uscita
+- C'è una scadenza già fissata (contratto, festival, data pubblica)?
+- Dopo il lancio sono già previsti aggiornamenti, DLC o un passaggio ad altro?
 - Tra data e qualità: se dovessi scegliere, cosa sacrifichi?
-**Cambia:** soglie del verdetto (obiettivo vendite o portfolio), break-even, ambizione degli scenari, calendario.
+
+**Cambia:** calendario, ordine delle prove e lavoro da proteggere. Non chiedere quale risultato renderebbe il progetto un successo, né far scegliere copie, euro, wishlist o una categoria come vendita/portfolio. Se il proprietario offre spontaneamente un traguardo, annotalo con le sue parole, separato dalle stime. Senza, procedi allo stesso modo.
 
 ### Round 2: capacità, tempo e persone
-- Ore **reali** a settimana per ciascuna persona (non quelle ideali) e periodi di stop prossimi.
+- Se disponibili: ore **reali** a settimana per ciascuna persona (non quelle ideali) e periodi di stop prossimi. Altrimenti stima il lavoro, non la capacità privata.
 - Chi fa arte, codice, marketing, amministrazione? Chi decide se non siete d'accordo?
 - Esperienza di marketing e community che avete già (pubblico, account, newsletter).
 - Comfort a esporsi: video con la faccia, streaming, scrivere post, rispondere in pubblico.
@@ -71,7 +70,7 @@ Se è una beta **senza** piano del gioco completo: valuta come beta e dì chiara
 **Cambia:** verifica di capacità delle TODO, mix di canali, quali passi sono 👤 e quali 🤖, disclosure.
 
 ### Round 3: soldi, rischio e regole personali
-- Budget in cassa, tetto massimo di perdita accettabile, cosa è già stato speso.
+- Per valutare il pareggio puoi usare costi effettivi già documentati o condivisi facoltativamente. Per proporre una spesa verifica i limiti di cassa e le autorizzazioni reali: senza, nessun impegno. Non chiedere un guadagno desiderato né dedurre un budget o un costo orario; se manca il dato, lascia il pareggio non calcolabile e prosegui.
 - Steam Direct: pagare presto per iniziare a raccogliere wishlist o solo dopo i gate?
 - Pubblicità e creator a pagamento: mai, dopo i gate, subito? Chiavi gratuite ai creator?
 - Prezzo: filosofia (accessibile, premium, early access), tolleranza agli sconti, prezzi regionali.
@@ -100,7 +99,7 @@ Se è una beta **senza** piano del gioco completo: valuta come beta e dì chiara
 **Cambia:** posizionamento (differenziatori ammessi), audit, dealbreaker accettabili, tagli di scope.
 
 ### Round 6: scenari "e se…" (le intenzioni sotto stress)
-Chiedi cosa farebbero davvero. Sono la base delle contingenze (`07-contingenze.md`): soglie e azioni devono essere **le loro**, non le tue.
+Proponi tu i segnali di controllo, con finestra e fonte (`07-contingenze.md`). Chiedi quali azioni sono praticabili, non quanti risultati il proprietario desidera.
 - Dopo **una settimana su itch.io** i numeri sono molto sotto le attese: insisti per altri giorni, cambi cover e pagina, chiedi feedback, ti fermi?
 - Un gate (A, B o C) fallisce: ritardi, riposizioni il gioco, pubblichi comunque?
 - La pagina Steam viene rifiutata o la verifica fiscale ritarda.
@@ -108,18 +107,18 @@ Chiedi cosa farebbero davvero. Sono la base delle contingenze (`07-contingenze.m
 - Un concorrente diretto esce nella vostra finestra.
 - Un socio esce o il tempo si dimezza.
 - Il gioco va **molto bene** all'improvviso: come reagite (hotfix, aggiornamenti, DLC, stampa)?
-- Soglia di stop: a quali risultati misurabili ridimensionate, cambiate genere o spostate l'obiettivo?
+- Se una prova consuma le risorse concordate senza chiarire il problema, quale intervento reversibile è praticabile?
 **Cambia:** soglie, azioni e decisioni di `05d-contingenze.md`, criteri di stop e pivot.
 
 ### Round 7: riepilogo e conferma
-Presenta il **profilo decisionale** in 10-15 righe (obiettivo, capacità, budget e rischio, canali, non negoziabili, regole di stop), le tensioni rimaste e le decisioni aperte. Chiedi conferma o correzioni. Solo dopo la conferma parte l'analisi.
+Presenta il **profilo decisionale** in 10-15 righe (scelte creative e di uscita, risorse note, canali, non negoziabili, regole di stop), le tensioni rimaste e le decisioni aperte. Chiedi conferma o correzioni sulle decisioni, non il completamento di dati privati facoltativi.
 
 ## Round di verifica con i dati (reality check)
 
 Quando i dati contraddicono o confermano un'intenzione, **riapri la domanda** con numeri reali e lascia decidere:
 
 - **R-A, dopo Fase 2B e Ondata 1**: "il posizionamento è marginale e i 3 problemi sono questi: ne correggi quanti, entro quando?"
-- **R-B, dopo Fase 5 (economia)**: "con i tuoi costi il break-even è N copie, cioè M wishlist al lancio: è realistico per te? Cambi prezzo, scope o obiettivo?"
+- **R-B, dopo Fase 5 (economia)**: mostra le fasce proposte dalla skill, entro quando, su quali comparabili e sotto quali ipotesi. Se i costi sono noti, confronta il pareggio con le fasce; altrimenti lascia aperta la sostenibilità. Chiedi solo se una decisione operativa (prezzo, scope, spesa) cambia alla luce dei dati.
 - **R-C, prima di fissare calendario e contingenze**: conferma date, soglie e chi fa cosa.
 - **R-D, dopo la Fase 10 (solo beta con piano del gioco completo)**: domande sul gioco completo prima dell'analisi rapida: quante ore di gioco e quali contenuti nel totale; cosa si aggiunge oltre la beta (Atti, modalità, co-op, contenuti); cosa è ancora solo un'idea; data di uscita e prezzo previsti; accesso anticipato sì o no; quante ore servono ancora e chi le fa; cosa tagliereste se il tempo non bastasse. Poi "ecco cosa vedo, ecco cosa migliorerei adesso".
   - **Domande sull'Early Access** (sempre, se il percorso può essere "beta gratis → EA a pagamento → 1.0"; criteri, regole e numeri in `02-audit-platform-pricing.md`, "Early Access o lancio 1.0"):
@@ -140,7 +139,7 @@ Anche questi round hanno il formato del consiglio e finiscono nel registro.
 Aggiornato: AAAA-MM-GG · Round completati: 1-7, R-A, R-B
 
 ## Profilo decisionale
-(10-15 righe: obiettivo, capacità, budget e rischio, canali, non negoziabili, regole di stop)
+(10-15 righe: prodotto, scelte creative e di uscita, risorse condivise, canali, non negoziabili, regole di stop)
 
 ## Registro
 | Round | Tema | Domanda | Risposta | Consiglio dato | Decisione | Impatto sul piano |
@@ -155,7 +154,7 @@ In `status.json`: `"product": {"kind": "beta|demo|vertical_slice|full|post_launc
 
 | Risposta su… | Effetto |
 |---|---|
-| obiettivo e successo | criteri del semaforo, scenari, break-even |
+| traguardo eventualmente offerto senza domanda | solo contesto nel registro; non modifica scenari o pareggio |
 | ore e persone | verifica di capacità, ripartizione 👤/🤖 dei passi |
 | budget e rischio | ordine dei pagamenti, ads, prezzo, tripwire |
 | canali e comfort | mix creator, hook, calendario dei contenuti |

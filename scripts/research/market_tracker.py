@@ -241,10 +241,9 @@ def due_labels(e: dict, now: datetime.datetime, done: set[str]) -> list[str]:
     if rel:
         rd = datetime.date.fromisoformat(rel)
         age = (now.date() - rd).days
-        if age <= 120:
-            # the latest milestone reached and not yet captured (a missed one is not faked later)
-            reached = [lab for lab, d in SCHEDULE if age >= d]
-            return [reached[-1]] if reached and reached[-1] not in done else []
+        for label, day in SCHEDULE:
+            if day == age:    # exact calendar day; current players and price cannot be backfilled
+                return [] if label in done else [label]
     week = f"wk{now.date().isocalendar()[0]}-{now.date().isocalendar()[1]:02d}"
     return [] if week in done else [week]
 
@@ -271,7 +270,7 @@ def fetch_meta(e: dict, th: dict) -> dict | None:
 def snapshot_one(e: dict, label: str, now: datetime.datetime, th: dict, data: dict | None = None) -> dict:
     appid = e["appid"]
     rv = api_json(APPREVIEWS.format(appid=appid), throttle=th["store"])
-    qs = rv.get("query_summary") if isinstance(rv, dict) and rv.get("success") == 1 else {}
+    qs = (rv.get("query_summary") or {}) if isinstance(rv, dict) and rv.get("success") == 1 else {}
     data = data if data is not None else fetch_meta(e, th)
     po = (data or {}).get("price_overview") or {}
     spy = api_json(STEAMSPY.format(appid=appid), throttle=th["spy"]) if th.get("spy") else {}
@@ -279,9 +278,14 @@ def snapshot_one(e: dict, label: str, now: datetime.datetime, th: dict, data: di
     rel = e.get("release_date")
     return dict(ts=now.isoformat(timespec="minutes"), appid=appid, label=label,
                 days_out=(now.date() - datetime.date.fromisoformat(rel)).days if rel else "",
-                reviews_total=tot if tot is not None else "", pct_positive=round(100 * qs.get("total_positive", 0) / tot, 1) if tot else "",
+                reviews_total=tot if tot is not None else "", pct_positive=round(100 * qs["total_positive"] / tot, 1) if tot and qs.get("total_positive") is not None else "",
                 players_now=players_now(appid, th["api"]), spy_owners=(spy or {}).get("owners", ""),
-                price=(0.0 if (data or {}).get("is_free") else (po.get("initial", 0) / 100 if po else "")), discount=po.get("discount_percent", "") if po else "")
+                price=(0.0 if (data or {}).get("is_free") else (po["initial"] / 100 if po.get("initial") is not None else "")), discount=po.get("discount_percent", "") if po else "")
+
+
+def snapshot_complete(row):
+    """Spy is optional and percent positive is undefined at zero reviews."""
+    return all(row.get(k) not in ("", None, "None") for k in ("reviews_total", "players_now", "price"))
 
 
 def cmd_snapshot(a):
@@ -289,24 +293,37 @@ def cmd_snapshot(a):
     t = load_tracked(a)
     th = dict(store=Throttle(a.rate), details=Throttle(1.6), api=Throttle(1.0), spy=Throttle(1.1) if a.steamspy else None)
     if a.players_only:
-        rows = [dict(ts=now.isoformat(timespec="minutes"), appid=e["appid"], players=players_now(e["appid"], th["api"])) for e in t.values()]
-        append_rows(mdir(a, "players.csv"), ["ts", "appid", "players"], rows)
-        print(f"{len(rows)} conteggi di giocatori registrati in {mdir(a, 'players.csv')}")
+        path = mdir(a, "players.csv")
+        stamp = now.isoformat(timespec="minutes")
+        sampled = {r["appid"] for r in read_rows(path) if r.get("ts", "")[:13] == stamp[:13] and r.get("players") not in ("", None, "None")}
+        n = 0
+        for e in [e for e in t.values() if str(e["appid"]) not in sampled][:a.limit or None]:
+            count = players_now(e["appid"], th["api"])
+            if count is not None:
+                append_rows(path, ["ts", "appid", "players"], [dict(ts=stamp, appid=e["appid"], players=count)])
+                n += 1
+        print(f"{n} conteggi di giocatori registrati in {path}")
         return
     prev = read_rows(mdir(a, "snapshots.csv"))
     done: dict[str, set] = {}
     for r in prev:
-        done.setdefault(r["appid"], set()).add(r["label"])
-    out = []
-    for e in list(t.values())[: a.limit or None]:
+        if snapshot_complete(r):
+            done.setdefault(r["appid"], set()).add(r["label"])
+    n, attempts = 0, 0
+    for e in t.values():
+        if a.limit and attempts >= a.limit:
+            break
         data = None
         if not e.get("release_date"):
             data = fetch_meta(e, th)     # the schedule depends on the release date
         for lab in due_labels(e, now, done.get(str(e["appid"]), set())):
-            out.append(snapshot_one(e, lab, now, th, data))
-    append_rows(mdir(a, "snapshots.csv"), SNAP_FIELDS, out)
+            attempts += 1
+            row = snapshot_one(e, lab, now, th, data)
+            if any(row.get(k) not in (None, "") for k in ("reviews_total", "players_now", "price", "spy_owners")):
+                append_rows(mdir(a, "snapshots.csv"), SNAP_FIELDS, [row])
+                n += 1
     save_tracked(a, t)
-    print(f"{len(out)} snapshot nuovi in {mdir(a, 'snapshots.csv')} ({len(t)} giochi seguiti)")
+    print(f"{n} snapshot nuovi in {mdir(a, 'snapshots.csv')} ({len(t)} giochi seguiti)")
 
 
 # ---------------------------------------------------------------- estimates
@@ -824,24 +841,23 @@ def marketing_patterns(market_dir: str, graded: dict, milestone: str | None) -> 
 
 
 def cmd_market(a):
-    from cohort_bench import read_csv as rc
+    from cohort_bench import read_csv as rc, verified_week
     ds = a.dataset or user_dir("cohorts")
     rows = []
     for f in sorted(os.listdir(ds)) if os.path.isdir(ds) else []:
-        if f.startswith("cohort_") and f.endswith(".csv"):
+        if f.startswith("cohort_") and f.endswith(".csv") and verified_week(os.path.join(ds, f)):
             rows += [r for r in rc(os.path.join(ds, f)) if r.get("status") == "keep"]
-    vals = sorted((int(float(r.get("reviews_total_now") or 0)) for r in rows), reverse=True)
-    tot = sum(vals) or 1
+    vals = sorted((int(float(r["reviews_total_now"])) for r in rows if r.get("reviews_total_now") not in ("", None)), reverse=True)
+    tot = sum(vals)
     share = lambda q: round(100 * sum(vals[:max(1, math.ceil(len(vals) * q))]) / tot, 1)  # noqa: E731
     t = load_tracked(a)
     head = [e for e in t.values() if "most_played" in e["roles"] or "top_seller" in e["roles"]]
-    L = ["# Forma del mercato", "", f"Coorti del dataset: {len(rows)} giochi nuovi (junk e 1.0 di vecchi Early Access esclusi). **[FATTO]** sulle recensioni lette.", "",
-         f"- Il **top 1 %** dei giochi nuovi prende il **{share(.01)} %** di tutte le recensioni della coorte; il top 10 % il **{share(.10)} %**; la metà bassa il "
-         f"**{round(100 * sum(vals[len(vals) // 2:]) / tot, 1)} %**.",
+    L = ["# Forma del mercato", "", f"Coorti verificate del dataset: {len(rows)} giochi nuovi (junk e 1.0 di vecchi Early Access esclusi). **[FATTO]** sulle recensioni lette.", "",
+         (f"- Il **top 1 %** dei giochi nuovi prende il **{share(.01)} %** di tutte le recensioni della coorte; il top 10 % il **{share(.10)} %**; la metà bassa il "
+          f"**{round(100 * sum(vals[len(vals) // 2:]) / tot, 1)} %**." if tot else "- Concentrazione non misurabile: mancano recensioni osservate su coorti verificate."),
          f"- Giochi con 0 recensioni: {sum(1 for v in vals if v == 0)} su {len(vals)}.",
          f"- La testa del mercato seguita (più giocati e più venduti): {len(head)} giochi; i nuovi che decollano (breakout): "
-         f"{sum(1 for e in t.values() if 'breakout' in e['roles'])}.", "",
-         "_La coda lunga è la regola: la mediana di un gioco nuovo è poche recensioni, e pochi titoli prendono quasi tutto._"]
+          f"{sum(1 for e in t.values() if 'breakout' in e['roles'])}."]
     text = "\n".join(L) + "\n"
     if a.md:
         with open(a.md, "w", encoding="utf-8", newline="\n") as f:
@@ -1044,6 +1060,7 @@ def looks_like(d30: float | None, cal: dict | None) -> str:
 
 def cmd_comps(a):
     from cohort_bench import reviews_within, read_csv as rc
+    today = datetime.date.fromisoformat(a.today) if getattr(a, "today", None) else datetime.date.today()
     rows = [dict(appid=int(r["appid"]), name=r.get("gioco") or r.get("name"), role=r.get("ruolo") or r.get("role") or "") for r in rc(a.csv) if (r.get("appid") or "").strip().isdigit()] if os.path.exists(a.csv) else []
     for x in a.appid or []:
         if not any(r["appid"] == int(x) for r in rows):
@@ -1056,16 +1073,18 @@ def cmd_comps(a):
         e = dict(appid=r["appid"], name=r["name"])
         data = fetch_meta(e, th)
         rv = api_json(APPREVIEWS.format(appid=r["appid"]), throttle=th["store"])
-        tot = ((rv.get("query_summary") or {}).get("total_reviews")) if isinstance(rv, dict) else None
-        h = api_json(HISTOGRAM.format(appid=r["appid"]), throttle=th["store"])
-        hist = h.get("results") if isinstance(h, dict) and h.get("success") == 1 else None
+        tot = ((rv.get("query_summary") or {}).get("total_reviews")) if isinstance(rv, dict) and rv.get("success") == 1 else None
         rel = e.get("release_date")
-        d30 = reviews_within(hist, rel, 30, tot) if rel else None
-        d90 = reviews_within(hist, rel, 90, tot) if rel else None
+        age = (today - datetime.date.fromisoformat(rel)).days if rel else -1
+        h = api_json(HISTOGRAM.format(appid=r["appid"]), throttle=th["store"]) if age >= 30 and tot else None
+        hist = h.get("results") if isinstance(h, dict) and h.get("success") == 1 else None
+        d30 = reviews_within(hist, rel, 30, tot) if age >= 30 else None
+        d90 = reviews_within(hist, rel, 90, tot) if age >= 90 else None
         po = (data or {}).get("price_overview") or {}
-        out.append(dict(appid=r["appid"], name=e.get("name") or r["name"], role=r["role"], release_date=rel, price=(po.get("initial", 0) / 100) if po else (0.0 if (data or {}).get("is_free") else None),
-                        reviews_total=tot, reviews_d30=d30, reviews_d90=d90, looks_like=looks_like(d30, cal)))
-    res = dict(built_on=datetime.date.today().isoformat(), calibration=(cal or {}).get("generated_on"), games=out)
+        calibrated = ((cal or {}).get("quality") or {}).get("verified_weeks", 0)
+        out.append(dict(appid=r["appid"], name=e.get("name") or r["name"], role=r["role"], release_date=rel, price=po["initial"] / 100 if po.get("initial") is not None else (0.0 if (data or {}).get("is_free") else None),
+                        reviews_total=tot, reviews_d30=d30, reviews_d90=d90, looks_like=looks_like(d30, cal if type(calibrated) is int and calibrated > 0 else None)))
+    res = dict(built_on=today.isoformat(), calibration=(cal or {}).get("generated_on"), games=out)
     write_json(res, a.out)
     for g in out:
         print(f"{(g['name'] or '')[:34]:34s} 30g {g['reviews_d30']!s:>6} 90g {g['reviews_d90']!s:>6}  -> {g['looks_like']}")

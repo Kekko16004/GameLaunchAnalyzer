@@ -106,8 +106,8 @@ def measure(sig: dict, rows: list[dict], today: dt.date):
         return last[1], f"{m} = {last[1]:g} ({last[0]})"
     if kind == "ratio":
         o = series(rows, sig["of"], today)
-        if not o or not o[-1][1]:
-            return None, f"nessun dato per `{sig['of']}`"
+        if not o or not o[-1][1] or o[-1][0] != last[0]:
+            return None, f"serve un denominatore `{sig['of']}` non nullo riferito alla stessa data"
         return last[1] / o[-1][1], f"{m} / {sig['of']} = {last[1]:g} / {o[-1][1]:g}"
     days = int(sig.get("days", 7))
     if kind == "avg":
@@ -137,10 +137,12 @@ def evaluate(cont: dict, rows: list[dict], today: dt.date) -> list[dict]:
             ok = None if v is None else OPS[sig["op"]](v, sig["value"])
             results.append(ok)
             r["signals_eval"].append(dict(label=sig.get("label") or sig["metric"], op=sig["op"], threshold=sig["value"], value=None if v is None else round(v, 3), holds=ok, detail=why))
-        if sc.get("when", "any") == "all":
-            r["status"] = "SCATTATO" if results and all(x is True for x in results) else "SENZA DATI" if any(x is None for x in results) and not any(x is False for x in results) else "OK"
+        if not results:
+            r["status"] = "SENZA DATI"
+        elif sc.get("when", "any") == "all":
+            r["status"] = "OK" if False in results else "SENZA DATI" if None in results else "SCATTATO"
         else:
-            r["status"] = "SCATTATO" if any(x is True for x in results) else "SENZA DATI" if results and all(x is None for x in results) else "OK"
+            r["status"] = "SCATTATO" if True in results else "SENZA DATI" if None in results else "OK"
         out.append(r)
     return out
 

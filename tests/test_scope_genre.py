@@ -28,6 +28,11 @@ json.dump([{"playtime_forever_h": None, "playtime_at_review_h": 40}], open(os.pa
 small = {"content": {"enemies": 2, "items": 4}, "capacity": {"people": 2, "hours_per_week": 20, "weeks": 30}}
 r = sc.calc(small, rates, cache)
 assert r["ratio"] < 1 and r["verdict"] == "ci sta" and r["scope_score"] == 5 and not r["notes"]
+unknown = sc.calc({"content": small["content"], "capacity": {"people": 2}}, rates, cache)
+assert unknown["needed_h"] == r["needed_h"] and unknown["available_h"] is None and unknown["scope_score"] is None
+assert "capacità non nota" in sc.to_md(unknown) and "n/d h/settimana" in sc.to_md(unknown)
+no_hours = sc.calc({**small, "capacity": {**small["capacity"], "weeks": 0}}, rates, cache)
+assert no_hours["available_h"] == 0 and "nessuna ora disponibile" in sc.to_md(no_hours)
 huge = {"content": {"levels": 40, "bosses": 10, "mechanics": 12}, "capacity": {"people": 1, "hours_per_week": 10, "weeks": 26},
         "target_hours": 25, "price_usd": 20, "comps": [{"appid": 11, "name": "Undici", "price_usd": 10}, {"appid": 99}]}
 r = sc.calc(huge, rates, cache)

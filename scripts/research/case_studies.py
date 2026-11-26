@@ -154,14 +154,40 @@ def quart(xs: list[float]) -> tuple[float, float, float]:
 def survey_for(benchmarks: list[dict], n: int, event: str = "next_fest") -> dict | None:
     """The survey bucket (e.g. Zukowski's 1,000-9,999) that contains N wishlists at entry; latest first."""
     hits = [b for b in benchmarks if b.get("event", "next_fest") == event and b.get("bucket_min") is not None
-            and b["bucket_min"] <= n <= (b.get("bucket_max") if b.get("bucket_max") is not None else 10 ** 9) and b.get("median_gain") is not None]
+            and b["bucket_min"] <= n and (b.get("bucket_max") is None or n <= b["bucket_max"]) and b.get("median_gain") is not None]
     return sorted(hits, key=lambda b: str(b.get("date", "")), reverse=True)[0] if hits else None
+
+
+def survey_scenario(benchmarks: list[dict], sv: dict, entering: int) -> tuple[int, dict | None]:
+    """Blend medians only at contiguous boundaries of the same survey. A planning convention, not a fit."""
+    low, high = sv["bucket_min"], sv.get("bucket_max")
+    edges = [(low, low - 1)]
+    if high is not None:
+        edges.append((high + 1, high + 1))
+    for boundary, other_entry in edges:
+        if boundary <= 0 or abs(entering - boundary) > boundary * 0.1:
+            continue
+        other = survey_for(benchmarks, other_entry)
+        if not other or not sv.get("url") or not sv.get("date") or (sv["url"], sv["date"]) != (other.get("url"), other.get("date")):
+            continue
+        left, right = (other, sv) if boundary == low else (sv, other)
+        if left.get("bucket_max") != boundary - 1 or right["bucket_min"] != boundary:
+            continue
+        # Clamp to half of each bucket's width so two transition zones never overlap.
+        width = min(boundary * 0.1, (boundary - left["bucket_min"]) / 2)
+        if right.get("bucket_max") is not None:
+            width = min(width, (right["bucket_max"] + 1 - boundary) / 2)
+        if abs(entering - boundary) <= width:
+            weight = (entering - boundary + width) / (2 * width)
+            a, b = left["median_gain"], right["median_gain"]
+            return round(a + weight * (b - a)), dict(boundary=boundary, half_width=width, left_median=a, right_median=b)
+    return sv["median_gain"], None
 
 
 def bench(recs: list[dict], benchmarks: list[dict], entering: int, genre: str | None = None, band: float = 0.5) -> dict:
     """Next Fest gain for games that entered with about `entering` wishlists: our case records + the survey bucket."""
-    pool = [r for r in recs if r.get("event") == "next_fest" and r.get("tier") != "anecdotal" and r.get("wishlists_before") and r.get("wishlists_after") is not None
-            and r["wishlists_after"] >= r["wishlists_before"]]
+    pool = [r for r in recs if r.get("event") == "next_fest" and r.get("tier") != "anecdotal"
+            and all(r.get(key) is not None and r[key] >= 0 for key in ("wishlists_before", "wishlists_after"))]
     if genre:
         g_pool = [r for r in pool if any(genre.lower() in g for g in r.get("genres") or [])]
         pool = g_pool if len(g_pool) >= 3 else pool
@@ -171,27 +197,26 @@ def bench(recs: list[dict], benchmarks: list[dict], entering: int, genre: str | 
         used_band = b
         if len(near) >= 5:
             break
-    out = dict(entering=entering, band=used_band, n=len(near), genre=genre, records=[r["id"] for r in near])
+    out = dict(entering=entering, band=used_band, n=len(near), genre=genre, records=[r["id"] for r in near],
+               caveat="Scenario di pianificazione, non intervallo di confidenza. Lo scarto non identifica la causa.")
     if near:
         gains = [r["wishlists_after"] - r["wishlists_before"] for r in near]
-        mult = [r["wishlists_after"] / r["wishlists_before"] for r in near]
+        mult = [r["wishlists_after"] / r["wishlists_before"] for r in near if r["wishlists_before"] > 0]
         g25, gm, g75 = quart(gains)
-        m25, mm, m75 = quart(mult)
-        out.update(gain_p25=round(g25), gain_median=round(gm), gain_p75=round(g75), mult_median=round(mm, 2), mult_p25=round(m25, 2), mult_p75=round(m75, 2),
+        out.update(gain_p25=round(g25), gain_median=round(gm), gain_p75=round(g75),
                    small_sample=len(near) < 5)
+        if mult:
+            m25, mm, m75 = quart(mult)
+            out.update(mult_median=round(mm, 2), mult_p25=round(m25, 2), mult_p75=round(m75, 2))
     sv = survey_for(benchmarks, entering)
     if sv:
-        out["survey"] = dict(label=sv.get("label"), median_gain=sv["median_gain"], n=sv.get("n"), url=sv.get("url"), date=sv.get("date"),
+        out["survey"] = dict(label=sv.get("label"), median_gain=sv["median_gain"], survey_n=sv.get("survey_n"), bucket_n=sv.get("bucket_n"), url=sv.get("url"), date=sv.get("date"),
                              bucket=[sv.get("bucket_min"), sv.get("bucket_max")])
-    # the line to trust: the survey (large n, less survivorship bias) unless it is missing
-    if sv:
-        lo = round(sv["median_gain"] * 0.5)
-        hi = round(sv["median_gain"] * 1.6)
-        if near and not out.get("small_sample"):
-            lo, hi = min(lo, out["gain_p25"]), max(hi, out["gain_p75"])
-        out["expected"] = dict(low=lo, mid=sv["median_gain"], high=hi, basis="sondaggio" + (" + casi" if near else ""))
-    elif near:
-        out["expected"] = dict(low=out["gain_p25"], mid=out["gain_median"], high=out["gain_p75"], basis="casi (campione piccolo)" if out["small_sample"] else "casi")
+        mid, transition = survey_scenario(benchmarks, sv, entering)
+        out["expected"] = dict(low=round(mid * 0.5), mid=mid, high=round(mid * 1.6), basis="scenario euristico da mediane di fascia",
+                               transition=transition)
+    elif near and not out["small_sample"]:
+        out["expected"] = dict(low=out["gain_p25"], mid=out["gain_median"], high=out["gain_p75"], basis="casi auto-dichiarati (quartili osservati)")
     return out
 
 
@@ -199,18 +224,41 @@ def fmt(n) -> str:
     return "?" if n is None else f"{int(n):,}".replace(",", ".")
 
 
+def delta(n) -> str:
+    return ("+" if n is not None and n >= 0 else "") + fmt(n)
+
+
+def survey_counts(sv: dict) -> str:
+    def count(key):
+        return fmt(sv[key]) if sv.get(key) is not None else "non noto"
+    return f"n totale: {count('survey_n')}; n di fascia: {count('bucket_n')}"
+
+
 def tripwire_md(rows: list[dict], fest: str, today: dt.date) -> str:
-    L = [f"Da `case_studies.py` ({today.isoformat()}): quante wishlist porta il Next Fest a chi entra con N wishlist. "
-         "**[FATTO]** il sondaggio (n alto) e **[STIMA]** la forchetta; i casi singoli sono auto-dichiarati e di solito ottimisti (chi posta è chi è andato bene).", "",
-         f"| Entri nel {fest} con | Atteso alla fine del fest [STIMA] | Mediana del sondaggio | Casi simili (n, mediana) | Se sei sotto la forchetta bassa |",
-         "|---|---|---|---|---|"]
+    L = [f"Da `case_studies.py` ({today.isoformat()}): wishlist aggiunte durante il fest, non wishlist attribuibili al fest. "
+          "**[FATTO]** La mediana di fascia è quella riportata dal sondaggio; rispondenti e casi pubblicati si autoselezionano. "
+          "**[STIMA]** Per pianificare usiamo da 0,5× a 1,6× il valore centrale: non sono percentili misurati né un intervallo di confidenza. "
+          "Entro ±10% dal confine tra due fasce contigue dello stesso sondaggio, il centro passa gradualmente da una mediana all’altra. "
+          "Senza sondaggio mostriamo i quartili dei casi solo da 5 casi in su.", "",
+          f"| Entri nel {fest} con | Guadagno e totale finale [STIMA] | Mediana osservata nella fascia | Casi simili (n, mediana) |",
+          "|---|---|---|---|"]
     for b in rows:
         e = b.get("expected") or {}
         sv = b.get("survey") or {}
-        cases = f"{b['n']}, +{fmt(b.get('gain_median'))}" + (" (pochi)" if b.get("small_sample") else "") if b["n"] else "nessuno"
-        rng = f"+{fmt(e.get('low'))} … +{fmt(e.get('high'))} (totale {fmt(b['entering'] + (e.get('low') or 0))} … {fmt(b['entering'] + (e.get('high') or 0))})" if e else "?"
-        svs = f"+{fmt(sv.get('median_gain'))} ([fonte]({sv['url']}), {sv.get('date')}, n = {sv.get('n') or '?'})" if sv else "—"
-        L.append(f"| {fmt(b['entering'])} | {rng} | {svs} | {cases} | il problema è la pagina o la demo, non il fest: rivedi capsule, primi 5 s del trailer, demo→wishlist |")
+        cases = f"{b['n']}, {delta(b.get('gain_median'))}" + (" (pochi)" if b.get("small_sample") else "") if b["n"] else "nessuno"
+        rng = f"{delta(e['low'])} … {delta(e['high'])} (totale {fmt(max(0, b['entering'] + e['low']))} … {fmt(max(0, b['entering'] + e['high']))})" if e else "dati insufficienti"
+        tr = e.get("transition")
+        if tr:
+            rng += f"; tra le mediane +{fmt(tr['left_median'])} e +{fmt(tr['right_median'])}"
+        svs = "—"
+        if sv:
+            low, high = sv["bucket"]
+            bucket = f"{fmt(low)}–{fmt(high)}" if high is not None else f"da {fmt(low)}"
+            svs = f"+{fmt(sv['median_gain'])} (fascia {bucket}; [fonte]({sv['url']}), {sv.get('date')}; {survey_counts(sv)})"
+        L.append(f"| {fmt(b['entering'])} | {rng} | {svs} | {cases} |")
+    L += ["", "Sotto la forchetta non conosciamo la causa. Confronta a parità di giorni impressioni e provenienza del traffico, "
+          "visite alla pagina, avvii della demo e wishlist in Steamworks: quale passaggio è cambiato? "
+          "Se mancano misure comparabili, registra il dato mancante prima di cambiare pagina o demo."]
     return "\n".join(L)
 
 
@@ -232,12 +280,13 @@ def to_md(data: dict, genre: str | None, entering: list[int], today: dt.date) ->
     L = ["# Casi reali: cosa hanno fatto giochi come il nostro", "",
          f"Generato da `case_studies.py` il {today.isoformat()} · {len(recs)} casi ({sum(1 for r in recs if r.get('origin') == 'mine')} aggiunti da te) · "
          f"{len(data['benchmarks'])} benchmark da sondaggi. Numeri **auto-dichiarati** dagli sviluppatori salvo dove scritto; ogni riga ha la fonte.", "",
-         "## Next Fest: quanto porta, in base a quante wishlist hai quando entri", ""]
+          "## Next Fest: wishlist aggiunte durante il festival, per fascia di ingresso", ""]
     rows = [bench(recs, data["benchmarks"], n, genre) for n in entering]
     L.append(tripwire_md(rows, "Next Fest", today))
-    L += ["", "## Benchmark dai sondaggi", "", "| Cosa | Valore | n | Fonte |", "|---|---|---|---|"]
+    L += ["", "## Benchmark dai sondaggi", "", "| Cosa | Valore | Campione | Fonte |", "|---|---|---|---|"]
     for b in data["benchmarks"]:
-        L.append(f"| {b.get('label')} | {b.get('value') or ('+' + fmt(b.get('median_gain')) if b.get('median_gain') is not None else '?')} | {b.get('n') or '?'} | [{b.get('source') or 'fonte'}]({b.get('url')}) {b.get('date') or ''} |")
+        sample = survey_counts(b) if b.get("bucket_min") is not None else fmt(b.get("n"))
+        L.append(f"| {b.get('label')} | {b.get('value') or ('+' + fmt(b.get('median_gain')) if b.get('median_gain') is not None else '?')} | {sample} | [{b.get('source') or 'fonte'}]({b.get('url')}) {b.get('date') or ''} |")
     L += ["", f"## Giochi alla nostra fase{(' (' + genre + ')') if genre else ''}", ""] + stage_table(recs, genre)
     L += ["", "_Correlazione non è causa; chi pubblica i propri numeri di solito è andato meglio della media (bias del sopravvissuto)._"]
     return "\n".join(L) + "\n"

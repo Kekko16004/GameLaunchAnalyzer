@@ -1,6 +1,6 @@
 # Fase 7C: piani di contingenza ("se… allora") e metriche
 
-Decidere **prima** cosa guardare, quando diventa un problema, cosa controllare per primo e cosa fare. Il pre-mortem (7B) dice cosa può andare storto; qui diventa un sistema misurabile. Si esegue dopo la Fase 7B e dopo il Round 6 dell'intervista (`00-intervista.md`): soglie e azioni sono quelle **del proprietario**, tu le rendi misurabili e le correggi con i dati.
+Decidere **prima** cosa guardare, quando diventa un problema, cosa controllare per primo e cosa fare. Il pre-mortem (7B) dice cosa può andare storto; qui diventa un sistema misurabile. Dopo la Fase 7B e il Round 6 (`00-intervista.md`) **proponi tu** soglie diagnostiche da segnali misurati o comparabili; al proprietario restano la scelta dell'azione e l'autorizzazione di eventuali spese. Un allarme non impone un risultato commerciale.
 
 Output: `launch/_raw/contingencies.json` (sorgente), `launch/05d-contingenze.md` (testo del report), `launch/metrics.csv` (le metriche che l'utente registra) e, nella pagina HTML, la sezione "Se… allora" aggiornata dallo strumento.
 
@@ -13,6 +13,8 @@ python3 <skill>/scripts/research/metrics_track.py check                         
 python3 <skill>/scripts/research/metrics_track.py status --md launch/metrics-status.md --json launch/_raw/metrics_status.json
 ```
 Esce con codice 2 se uno scenario con gravità `ALARM` è scattato. Le wishlist si leggono da sole da `launch/wishlists.csv`. Formato completo di `contingencies.json` nella testata dello script.
+
+**Se il gioco è già uscito**, usa il [percorso post-lancio](post-launch.md): `post_launch.py` importa aggregati locali e mette a confronto finestre omogenee per scegliere una prova sostenibile oppure fermarsi. Non chiedere accesso all'account e non sostituire un dato privato mancante con stime pubbliche.
 
 ## Come si costruisce
 
@@ -64,4 +66,4 @@ Le soglie dei tripwire di vendita ("sotto N copie a 30 / 90 giorni") si ancorano
 
 ## Casi reali (soglie di wishlist)
 
-Da `references/09-reddit-casi.md`: partendo da zero, le prime 5 settimane dei casi fanno una mediana di 367 wishlist a settimana (successi 875, flop 27); da 0-499 la mediana è 230 a settimana. Con meno di 1.000 wishlist all'entrata la Next Fest dei casi porta +388 (sondaggio HTMAG 322). Uscite sotto 2.000 wishlist vendono decine o poche centinaia di copie nei casi; i commenti più votati indicano 7-10k come soglia [OPINIONE]. Usa queste forchette come tripwire di wishlist prima dell'uscita (`case_benchmarks` in `scripts/research/data/social_patterns.json`).
+Da `references/09-reddit-casi.md`: partendo da zero, le prime 5 settimane dei casi fanno una mediana di 367 wishlist a settimana (successi 875, flop 27); da 0-499 la mediana è 230 a settimana. Nei casi con meno di 1.000 wishlist all'entrata, la variazione mediana **durante** il Next Fest è +388 (sondaggio HTMAG: +322). Non è l'effetto attribuibile al festival. Uscite sotto 2.000 wishlist vendono decine o poche centinaia di copie nei casi; i commenti più votati indicano 7-10k come soglia [OPINIONE]. Usa `case_studies.py tripwires` per distinguere numerosità del sondaggio e della fascia, osservazioni pubblicate e scenario di pianificazione. Uno scarto è un invito a confrontare esposizione, visite e avvii a parità di finestra, non la diagnosi di una pagina o demo difettosa.

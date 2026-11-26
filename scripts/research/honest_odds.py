@@ -64,24 +64,25 @@ def cards(root: str, today: dt.date) -> list[dict]:
     st = j(root, "status.json") or {}
     met = j(root, "_raw", "metro.json")
     vtext = str((st.get("verdict") or {}).get("probability") or "")
-    if met and (met.get("score") or {}).get("p1k") is not None:
+    from market_page import validated_score
+    cal = j(root, "_raw", "calibration.json") or j(common.user_dir(), "calibration.json") or {}
+    if validated_score(met, cal.get("metro")):
         sc, mm = met["score"], met.get("metro") or {}
         t = str(mm.get("target") or "")
         hz = f"a {t[1:]} giorni dall'uscita" if t[1:].isdigit() else "dopo l'uscita"
         c = dict(key="copies_1k", decision="Arrivare a 1.000 copie", odds=pct(sc["p1k"]), odds_low=sc["p1k"], odds_high=sc["p1k"], label="[STIMA]",
                  basis=f"metro oggettivo su {mm.get('n', '?')} giochi veri usciti di recente, {hz} (affidabilità: {mm.get('strength', '?')}, calcolato il {met.get('scored_on') or mm.get('fitted_on')})",
-                 moves="le leve del metro (demo, Next Fest, video di creator prima dell'uscita, lingue, pagina visibile da mesi): `cohort_bench.py score`",
+                 moves="verificare le leve indicate da `cohort_bench.py score`: un'associazione non prova l'effetto di un investimento",
                  also=[f"≥ 100 copie: {pct(sc['p100'])}" if sc.get("p100") is not None else "", f"≥ 10.000 copie: {pct(sc['p10k'])}" if sc.get("p10k") is not None else ""])
         v = _pcts(vtext, "1.000 copie")
         if v:
-            mid = (v[0] + v[1]) / 2
-            ratio = mid / sc["p1k"] if sc["p1k"] else None
             c["cross_check"] = dict(other=f"il verdetto scritto dice {round(100 * v[0])}-{round(100 * v[1])} % (anno 1)",
-                                    agree=bool(ratio and 0.5 <= ratio <= 2),
-                                    note=("le due stime concordano" if ratio and 0.5 <= ratio <= 2 else
-                                          f"le due stime NON concordano ({round(100 * mid)} % contro {pct(sc['p1k'])}): l'orizzonte è diverso ({hz} contro anno 1), "
-                                          "ma la differenza è più grande di quanto l'orizzonte spieghi. Vale la più prudente finché il metro non viene ricalcolato con il piano rispettato."))
+                                    agree=None, note=f"Orizzonti diversi ({hz} contro anno 1): non è una verifica reciproca.")
         out.append(c)
+    elif met:
+        out.append(dict(key="copies_1k", decision="Arrivare a 1.000 copie", odds="Non verificabile",
+                        label="[DA VERIFICARE]", basis="Il metro disponibile non ha superato la verifica temporale corrente.",
+                        moves="Raccogliere coorti complete, con segnali datati prima del lancio ed esiti maturi."))
     pub = j(root, "_raw", "publisher_scout.json")
     if pub and pub.get("pitch_top"):
         pt = pub["pitch_top"]
@@ -97,15 +98,18 @@ def cards(root: str, today: dt.date) -> list[dict]:
         e = row.get("expected") or {}
         sv = row.get("survey") or {}
         if e:
+            from case_studies import delta, survey_counts
             c = dict(key="nextfest", decision=f"Wishlist guadagnate al {nf.get('fest') or 'Next Fest'} entrando con ~{row['entering']:,}".replace(",", "."),
-                     odds=f"+{e['low']:,} … +{e['high']:,} (mediana +{e['mid']:,})".replace(",", "."), label="[STIMA]",
-                     basis=(f"sondaggio con n = {sv.get('n')} ({sv.get('date')})" if sv else "casi reali") + (f" e {row['n']} casi simili auto-dichiarati" if row.get("n") else "")
-                     + (f"; wishlist registrate oggi: {wl}" if wl is not None else "; nessuna wishlist registrata: riga centrale"),
-                     moves="entrare con più wishlist (la correlazione più forte), demo pubblica settimane prima, trailer forte nei primi 5 secondi")
+                     odds=f"{delta(e['low'])} … {delta(e['high'])} (scenario centrale {delta(e['mid'])})", label="[STIMA]",
+                     basis=(f"scenario euristico, non un intervallo di confidenza; sondaggio {sv.get('date')} ({survey_counts(sv)})" if sv else "quartili dei casi")
+                     + (f"; {row['n']} casi simili auto-dichiarati" if row.get("n") else "")
+                     + (f"; ultime wishlist registrate: {wl}" if wl is not None else "; nessuna wishlist registrata: riga centrale"),
+                     moves="uno scarto non indica la causa: confronta impressioni, visite, avvii della demo e wishlist nella stessa finestra")
             if row.get("n") and row.get("gain_median") is not None and sv.get("median_gain"):
-                r_ = row["gain_median"] / sv["median_gain"] if sv["median_gain"] else None
-                c["cross_check"] = dict(other=f"casi auto-dichiarati: mediana +{row['gain_median']}", agree=bool(r_ and r_ <= 1.6),
-                                        note="i casi postati sono più ottimisti del sondaggio: normale, chi va bene lo racconta" if r_ and r_ > 1.6 else "casi e sondaggio concordano")
+                ratio = row["gain_median"] / sv["median_gain"]
+                close = 1 / 1.6 <= ratio <= 1.6
+                c["cross_check"] = dict(other=f"casi auto-dichiarati: mediana {delta(row['gain_median'])}", agree=close,
+                                        note=("mediane vicine" if close else "mediane distanti") + "; confronto descrittivo, campioni autoselezionati")
             out.append(c)
     sl = j(root, "_raw", "social_learn.json")
     if sl and sl.get("platforms"):
@@ -116,12 +120,8 @@ def cards(root: str, today: dt.date) -> list[dict]:
     pr = j(root, "predictions.json")
     if pr and pr.get("items"):
         sim = [x for x in pr["items"] if x.get("label") == "SIMULATO"]
-        try:
-            import predictions as pdm
-            act = pdm.actuals(root)
-        except Exception:  # noqa: BLE001
-            act = {}
-        real = [x for x in sim if act.get(x.get("actual_metric") or "")]
+        import predictions as pdm
+        real = [x for x in pdm.evaluate(root, today)["rows"] if x.get("label") == "SIMULATO" and x["status"] == "verificata"]
         out.append(dict(key="sim_vs_real", decision="Il focus group simulato contro la realtà", odds=f"{len(real)} previsioni su {len(sim)} hanno già un dato vero",
                         label="[FATTO]", basis="predictions.py: ogni ondata è una previsione; il confronto si fa solo quando arrivano i numeri dei tester veri e di Steam",
                         moves="registrare wishlist, giocatori della demo e risultati del test reale (wl_track.py, metrics_track.py)",

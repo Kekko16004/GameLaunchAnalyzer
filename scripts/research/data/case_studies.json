@@ -29498,7 +29498,8 @@
    "bucket_min": 0,
    "bucket_max": 999,
    "median_gain": 322,
-   "n": 182,
+   "survey_n": 182,
+   "bucket_n": null,
    "source": "How To Market A Game (sondaggio)",
    "url": "https://howtomarketagame.com/2025/03/26/benchmarks-how-many-wishlists-can-i-get-from-steam-next-fest/",
    "date": "2026-02"
@@ -29510,7 +29511,8 @@
    "bucket_min": 1000,
    "bucket_max": 9999,
    "median_gain": 1006,
-   "n": 182,
+   "survey_n": 182,
+   "bucket_n": null,
    "source": "How To Market A Game (sondaggio)",
    "url": "https://howtomarketagame.com/2025/03/26/benchmarks-how-many-wishlists-can-i-get-from-steam-next-fest/",
    "date": "2026-02"
@@ -29522,7 +29524,8 @@
    "bucket_min": 10000,
    "bucket_max": 99999,
    "median_gain": 5215,
-   "n": 182,
+   "survey_n": 182,
+   "bucket_n": null,
    "source": "How To Market A Game (sondaggio)",
    "url": "https://howtomarketagame.com/2025/03/26/benchmarks-how-many-wishlists-can-i-get-from-steam-next-fest/",
    "date": "2026-02"

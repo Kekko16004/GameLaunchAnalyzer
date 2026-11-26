@@ -42,6 +42,7 @@ import re
 import common
 import plan_steps as ps
 import todo_track as tt
+from cohort_bench import METRO_LEVERS, METRO_PROTOCOL
 
 MARK = "⭐ mossa top · "
 SEV_W = {"alta": 3, "media": 2, "bassa": 1}
@@ -113,12 +114,24 @@ def candidates(root: str, today: dt.date, cal: dict | None) -> list[dict]:
                             hours=STEP_HOURS.get(r["step"]), owner=STEP_OWNER.get(r["step"], "👤"), due=None, match=STEP_WORDS.get(r["step"], [])))
     # ---- metro levers ([STIMA]); same step as a recipe move -> one move
     met = common.load_json(os.path.join(root, "_raw", "metro.json")) if os.path.exists(os.path.join(root, "_raw", "metro.json")) else None
-    for lv in ((met or {}).get("score") or {}).get("levers") or []:
-        if lv["delta_p1k_pp"] < 2:
+    meta, score = (met or {}).get("metro") or {}, (met or {}).get("score") or {}
+    try:
+        scored = dt.date.fromisoformat((met or {}).get("scored_on") or "")
+    except (TypeError, ValueError):
+        scored = None
+    valid = (meta.get("protocol") == METRO_PROTOCOL and meta.get("validated") is True
+             and meta.get("strength") in ("utile", "debole") and score.get("mode") == "model"
+             and isinstance(score.get("p1k"), (int, float)) and 0 <= score["p1k"] <= 1
+             and scored and scored <= today)
+    for lv in (score.get("levers") or []) if valid else []:
+        if (lv.get("supported") is not True or lv.get("feature") not in {k for k, _, _ in METRO_LEVERS} or not isinstance(lv.get("delta_p1k_pp"), (int, float))
+                or not 2 <= lv["delta_p1k_pp"] <= 100 or not isinstance(lv.get("p1k_after"), (int, float))
+                or not score["p1k"] < lv["p1k_after"] <= 1
+                or abs(100 * (lv["p1k_after"] - score["p1k"]) - lv["delta_p1k_pp"]) > 0.16):
             continue
         step = METRO_STEP.get(lv["feature"])
         sc = min(100.0, 2 * lv["delta_p1k_pp"])
-        why = f"il metro oggettivo stima +{lv['delta_p1k_pp']} punti di probabilità di superare 1.000 copie [STIMA, {((met or {}).get('metro') or {}).get('strength', 'non verificato')}]"
+        why = f"nel metro oggettivo il fattore è associato a +{lv['delta_p1k_pp']} punti di probabilità di superare 1.000 copie, non è un effetto causale [STIMA, {meta['strength']}]"
         twin = next((c for c in out if c["source"] == "recipe" and c["key"] == step), None) if step else None
         if twin:
             twin["why"] += "; " + why

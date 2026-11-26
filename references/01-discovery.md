@@ -4,7 +4,7 @@ Percorsi: `launch/` è nella radice del progetto del gioco. Date, etichette e re
 
 ---
 
-## FASE 0: scoperta, fase del progetto e obiettivo
+## FASE 0: scoperta, fase del progetto e vincoli noti
 
 **Parti dal Context Pack** della Fase B (`launch/00-contesto.md`, `00a-bootstrap.md`): motore, versione, documenti, strumenti e lacune sono già lì; qui li approfondisci e li verifichi, non li ricostruisci. Se manca (chat nuova senza Fase B), falla adesso. Poi leggi README, GDD, note, TODO, file di configurazione dell'engine, cartelle di asset, plugin, build script, file Steam, screenshot e trailer presenti. Segnali utili per riconoscere l'engine:
 
@@ -30,20 +30,20 @@ Costruisci **`launch/00-brief.md`**:
    | Pilastri del playbook | PASS se la beta **dimostra** il pilastro per ciò che contiene; "non ancora" non è FAIL se è nel piano e dichiarato | PASS solo se presente e rifinito |
    | Contenuto mancante | non penalizzato, registrato come distanza dal gioco completo | penalizzato (è il tema "poco contenuto" delle recensioni) |
    | Focus group | i tester sanno di giudicare una beta: valutano loop, feel e promessa; se la beta è gratuita si chiede anche **se pagherebbero il prezzo previsto all'uscita** (`would_buy`) | giudicano il prodotto come acquisto |
-   | Cancelli | Gate A, B, C prima di Steam Direct; la beta può essere la demo del Next Fest | gli stessi, più il lancio |
+   | Cancelli | Gate 0, A, B e C prima di Steam Direct; la beta può essere la demo del Next Fest | gli stessi, più il lancio |
    | Economia | break-even sul gioco completo; la beta gratuita non si prezza ma **si giudica da quanto converte**: wishlist, voglia di comprare, ritorno dei giocatori | break-even sul gioco completo |
    | Verdetto | riguarda la beta; sul gioco finale è **provvisorio** (Fase 10B) | definitivo |
    | Pagina store | Coming Soon e demo costruite sulla beta | pagina completa |
 
    Se è una beta con piano del gioco completo: prima l'analisi come beta, poi domande e analisi rapida del gioco completo (Fase 10B).
-5. **Obiettivo dichiarato**: vendite, community, portfolio, hobby con possibile ritorno. Cambia le soglie: un portfolio non ha bisogno di break-even.
-6. **Team e vincoli**: persone, ore a settimana, budget, **paese e inquadramento fiscale**, soci.
+5. **Scelte già prese**: data annunciata, distribuzione, impegni sui contenuti. Un traguardo personale già espresso può stare in una nota distinta: non è un campo da completare né la base delle previsioni.
+6. **Team e vincoli documentati o condivisi**: persone, ore disponibili, spese, soci; paese e inquadramento fiscale solo se pertinenti. Dove mancano, lascia «non noto», non zero.
 7. **Stato dei contenuti**: cosa è giocabile, cosa manca, durata di run o sessione, volumi, bug noti.
 8. **Materiale disponibile e confidenza**: elenca cosa hai (build giocabile, screenshot, clip, GDD, pagina store, dati wishlist). Ogni sezione del report riceve una confidenza **bassa / media / alta** in base al materiale: senza screenshot la capsule non si valuta, senza build il game feel non si valuta, e lo dici.
 
 ### Poi l'intervista sulle intenzioni
 
-Dopo aver letto il progetto **non andare avanti da solo**: esegui l'intervista a più round di `references/00-intervista.md` (obiettivi, capacità, soldi e rischio, canali, non negoziabili, scenari "e se…", conferma) e scrivi `launch/00-intenzioni.md`. Le ipotesi che non vengono confermate restano segnate nel brief. In Rapida basta un blocco di massimo 8 domande.
+Dopo aver letto il progetto esegui l'intervista di `references/00-intervista.md` (uscita, capacità nota, spese, canali, non negoziabili, azioni “se… allora”) e scrivi `launch/00-intenzioni.md`. Non fare della mancanza di numeri privati una domanda obbligatoria. In Rapida basta un blocco di massimo 8 domande.
 
 ---
 
@@ -76,9 +76,9 @@ I giochi più recensiti del tag, con anno di uscita, prezzo e demo, dicono cosa 
 
 ```bash
 python3 <skill>/scripts/research/genre_bench.py --tag Roguelike --tag Cooking --enrich 80 \
-  --mine price=<prezzo> --mine reviews_per_year=<obiettivo> --md launch/_raw/genre_bench.md -o launch/_raw/genre_bench.json
+  --md launch/_raw/genre_bench.md -o launch/_raw/genre_bench.json
 ```
-Distribuzioni (p25 / mediana / p75 / p90), coorti per anno di uscita, fasce di prezzo, demo contro senza demo, soglia di visibilità e la posizione dei tuoi numeri. **Limite da ripetere sempre:** la lista contiene i giochi *più recensiti* del tag, cioè la coda alta di successo, non il gioco mediano: le cifre dicono cosa serve per emergere, non cosa aspettarsi. Cita tag, n e data di lettura.
+Distribuzioni (p25 / mediana / p75 / p90), coorti per anno di uscita, fasce di prezzo, demo contro senza demo, soglia di visibilità. Aggiungi `--mine` solo per confrontare valori del gioco realmente disponibili. **Limite da ripetere sempre:** la lista contiene i giochi *più recensiti* del tag, cioè la coda alta di successo, non il gioco mediano: le cifre dicono cosa serve per emergere, non cosa aspettarsi. Cita tag, n e data di lettura.
 
 Poi metti sotto osservazione i comparabili più vicini e i possibili concorrenti della tua finestra: `watchlist.py add <appid...> --role comp|competitor`; ogni controllo successivo con `watchlist.py snap` e `report --launch <data>` (segnala impennate, saldi, uscite, cali di % positive e collisioni con la tua data).
 
@@ -109,9 +109,9 @@ python3 <skill>/scripts/research/cohort_bench.py update --new-weeks 0           
 python3 <skill>/scripts/research/cohort_bench.py calibrate                                         # -> ~/.game-launch-strategist/calibration.json
 ```
 
-Il giudizio A/B/C resta un passo di giudizio (dell'agente o dell'utente), severo, e i voti si accumulano nel dataset. Per la testa del mercato, i nuovi che decollano e il marketing dei giochi: `market_tracker.py` (README degli script).
+I voti in `grades.csv` confrontano le immagini con **questo progetto**: utili al report del progetto, non sono una classe riutilizzabile per tutti i giochi. Per un livello comune servono [ancore versionate, voto cieco e verifica](visual-grades.md). Per l'automazione e il recupero delle settimane parziali usa il [radar](radar.md); il rilevamento di nuovi titoli non misura i loro risultati. Per la testa del mercato, i nuovi che decollano e il marketing dei giochi: `market_tracker.py` (README degli script).
 
-**Metro oggettivo pre-uscita e dossier.** Con il dataset di almeno due settimane di uscite giudicate: `cohort_bench.py --dir <cartella della settimana> news` (notizie ufficiali Steam di ogni gioco), `cohort_bench.py metro` (allena e verifica fuori dal tempo), poi `cohort_bench.py score --features launch/prelaunch.json -o launch/_raw/metro.json --md launch/_raw/metro.md` con le caratteristiche visibili **oggi** del gioco (e una seconda versione `prelaunch-piano.json` con quelle previste dal piano). Riporta fascia, probabilità e leve sempre con il giudizio della verifica ("utile", "debole", "non migliore del base rate") e la dimensione del campione. Per i comparabili e i concorrenti: `market_tracker.py comps` (misurati a 30/90 giorni come la coorte) e `cohort_bench.py dossier --appid X` (tutto il marketing pubblico del gioco, con date, abbinato al gioco).
+**Metro commerciale pre-uscita e dossier.** `cohort_bench.py --dir <cartella della settimana> news`, poi `cohort_bench.py metro` e `cohort_bench.py score --features launch/prelaunch.json -o launch/_raw/metro.json --md launch/_raw/metro.md`. Usa solo caratteristiche note alla data della previsione; le modifiche pianificate sono uno scenario distinto. Riporta protocollo, settimane di verifica, orizzonte, copertura e confronto con la sola frequenza storica. Se la verifica non è possibile o non batte il riferimento, non presentare la probabilità del modello come validata. **Non è il test delle demo cieche**: quello confronta pronostici di un giudice isolato con esiti successivi ([protocollo](demo-blind.md)). Per i comparabili: `market_tracker.py comps`; per il marketing pubblico datato: `cohort_bench.py dossier --appid X`, mai davanti al giudice cieco.
 
 **Fonti: cosa si legge con gli script e cosa no.** Si usano solo endpoint ufficiali di Steam, SteamSpy e API ufficiali (YouTube, Reddit, Twitch, Gamalytic con chiave). **SteamDB non si legge mai con script** (i termini lo vietano ed è dietro Cloudflare), così come TikTok, Instagram e X: si scrivono in `launch/ricerche-manuali.md` le pagine e le ricerche da fare a mano, con gli appid. Non "correggere" questa scelta con uno scraper.
 

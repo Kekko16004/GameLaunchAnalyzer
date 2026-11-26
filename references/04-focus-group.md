@@ -179,7 +179,7 @@ Aggiungi nel report: **problema N.1 di game feel** (la cosa più pesante per il 
 
 ### Passo 3b: le due domande del tetto (`ceiling.version` e `ceiling.full`)
 
-Dopo il verdetto sullo stato attuale, ogni tester risponde a **due** domande, separate e in quest'ordine:
+Dopo il verdetto sullo stato attuale, ogni **tester simulato**, non il proprietario, risponde a due domande. Il «tetto» qui riguarda soltanto il punteggio di gradimento nel panel a parità di contenuti: non è un limite a pubblico, copie o ricavi, né una previsione di mercato.
 
 1. **Tetto di questa versione**: "se si sistemasse **solo** ciò che si può sistemare in questa versione (bug, chiarezza, rifinitura, bilanciamento), **senza contenuti né modalità nuove**, cosa faresti?". Nel pacchetto di evidenze ripeti cosa NON entra (es. altre mappe, co-op, nuovi atti).
 2. **Tetto del gioco completo**: "e con i contenuti pianificati del gioco completo (elencati), cosa faresti?".
@@ -266,7 +266,7 @@ Qui **non si inventa nulla**. Ogni voce ha una fonte. Si raccoglie **una volta**
    | Tema ricorrente | Frequenza nel campione | Fonti (URL) | Perché il pubblico lo punisce | Il nostro gioco ne soffre? |
    |---|---|---|---|---|
 
-   Ultima colonna: **[SÌ]**, **[A RISCHIO]**, **[NO]**, **[NON VALUTABILE]**, con evidenza dal progetto.
+   Ultima colonna: **[A RISCHIO]** o **[NON VALUTABILE]** finché non c'è prova pertinente sulla nostra build; per **[SÌ]** o **[NO nel campione osservato]** cita prova propria, build, data e limiti.
 6. **Motivi di rimborso e abbandono**: i 5 più citati e come il gioco li affronta.
 7. **Contro-lista**: i 5 temi più premiati (campione `--type positive`) e se il gioco li ha, per non tagliare per sbaglio ciò che il pubblico ama.
 
@@ -276,15 +276,16 @@ Qui **non si inventa nulla**. Ogni voce ha una fonte. Si raccoglie **una volta**
 
 ## 7.3 Matrice di convergenza (in `05-focusgroup.md`, rifatta a ogni ondata)
 
-Incrocia A (ultima ondata) e B. Una critica in entrambe è la più affidabile.
+Incrocia A (ultima ondata simulata) e B (recensioni vere **di altri giochi**). Distingui entrambe dalla prova sul nostro gioco: si possono ordinare i test prima di aver confermato un problema.
 
-| Tema | Simulata (freq. su N) | Reale (freq. nel campione) | Stato | Priorità |
+| Tema | Panel simulato (freq. su N) | Recensioni dei comparabili (freq. su N) | Prova propria (build, fonte, data, n) | Stato e prossimo test |
 |---|---|---|---|---|
 
-- **CONFERMATA**: in A e B → priorità massima.
-- **PUNTO CIECO**: solo in B (il mercato si lamenta, il panel non l'ha vista) e il gioco ne soffre → priorità alta; aggiungi il tema al panel nell'ondata successiva.
+- **RISCHIO SUPPORTATO**: in A e B → verifica prima sulla nostra build. Non dichiararlo un difetto del gioco e non impegnare un rifacimento solo per questa coincidenza.
+- **PUNTO CIECO**: solo in B e il nostro gioco ha una caratteristica analoga. Aggiungi una prova mirata.
 - **IPOTESI**: solo in A → da verificare con il test reale (Fase 9) prima di spendere ore.
-- **FALSO ALLARME**: in A ma smentita dai dati reali (il genere premia proprio quella scelta) → declassa e spiega.
+- **SEGNALI DISCORDANTI**: il panel critica ciò che altri giocatori premiano altrove. Non basta per smentire l'ipotesi; verifica con il pubblico di questo gioco.
+- **CONFERMATA / NON RISCONTRATA NEL TEST**: richiede riscontro pertinente sulla nostra versione (es. osservazione degli abbandoni, bug riprodotto, recensioni della nostra build). Indica cosa è stato osservato e su quanti, senza trasformare la frequenza nel campione in frequenza di tutta la popolazione. Se pochi o fuori bersaglio: **INCONCLUSIVA**.
 
 I **3 dealbreaker** nascono da questa matrice, non da una lista precostituita.
 
@@ -298,7 +299,7 @@ Appena l'ondata è scritta, **scrivi in chat** (anche nel mezzo di una Completa)
 ONDATA [N] - segnalazione problemi (panel simulato, non dato di mercato)
 Stato valutato: [build/commit, materiali visti]. Metodo gruppi: [subagenti separati / sequenziale].
 Punteggio wishlist [X] (soglia [S], motivata) | A [..] vs B [..] | click [..]% | pitch capito [..]%
-Tetto [T] | margine [T-X] punti | [vicino al tetto: stop idee, si testa con persone vere / ancora margine: solo problemi risolvibili]
+Gradimento simulato con le sole correzioni di questa versione: [T]/100 | margine [T-X] punti | [test con persone vere / problemi risolvibili]
 [Ondate > 1: punteggio [prima] -> [dopo] ([+/-]); risolti: [..]; peggiorati o nuovi: [..]]
 
 Problemi, dal più pesante:
@@ -313,6 +314,7 @@ Nel frattempo continuo con le fasi che non dipendono dai fix: [elenco].
 ```
 
 Regole:
+- Se la domanda riguarda anche le prospettive commerciali, il curatore affianca al giudizio del panel gli scenari della Fase 5 (oppure «non stimabile»). Non trasforma voti o ipotetici acquirenti simulati in copie/euro; non chiede al proprietario un numero per colmare la lacuna. I dati di mercato restano fuori dai dossier ciechi.
 - Non fermare tutto in attesa: prosegui con le fasi indipendenti dai fix (piattaforme, calendario, ricerca creator, legale) e rimanda a dopo l'ok ciò che dipende dal prodotto (testi dello store, capsule, trailer).
 - Se l'utente non risponde subito, nel debriefing finale segnala che **l'Ondata N+1 è in attesa del suo ok**.
 - Tu **non modifichi il progetto** (regola 8): proponi gli interventi, li fa l'utente.
@@ -324,9 +326,9 @@ Regole:
 **Mai in automatico.** Una nuova ondata parte solo quando l'utente la chiede o dà l'ok dopo una segnalazione. Proponila a questi momenti e mettila in `calendar.md` come riga di tipo `ondata`:
 
 1. **Dopo i 3 problemi risolti** (di norma 14-20 giorni dopo l'Ondata 1).
-2. **Dopo capsule, testi dello store o trailer nuovi** (Fase 6/6B): è anche il test del Gate C.
+2. **Dopo capsule, testi dello store o trailer nuovi** (Fase 6/6B): il pre-test simulato aiuta a preparare il Gate C, ma non sostituisce le prove con esterni.
 3. **Dopo l'aggiornamento della demo o prima di Next Fest.**
-4. **Prima di pagare Steam Direct** (rivalutazione dei Gate A e C).
+4. **Prima di pagare Steam Direct**: l'ondata può rivedere A e suggerire cosa ricontrollare in C; la decisione richiede tutti i Gate 0/A/B/C, con le prove esterne previste in B e C.
 5. **Pre-lancio** e dopo ogni grande aggiornamento di contenuto.
 
 Procedura (modalità **Ondata**, o parte di **Aggiornamento**):

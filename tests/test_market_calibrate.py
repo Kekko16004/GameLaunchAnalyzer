@@ -90,13 +90,13 @@ for i in range(60):
     aid = 2000 + i * 1000 + (5 + (i * 37) % 400)        # appid % 1000 = reviews in the fake
     grade = "B" if i < 40 else ("A" if i < 44 else "C")
     games.append(dict(appid=aid, name=f"G{i}", release_date=REL, price=7.99 if i % 2 else 12.99, genres=["Casual"], tags=["Physics"] if i % 3 == 0 else ["Puzzle"],
-                      n_movies=2 if i % 2 else 1, n_screenshots=10, n_languages=8 if i % 2 else 1, has_demo=i % 2 == 0, early_access=False,
+                      has_details=True, n_movies=2 if i % 2 else 1, n_screenshots=10, n_languages=8 if i % 2 else 1, has_demo=i % 2 == 0, early_access=False,
                       developers=[f"Dev{i}"], publishers=["Pub"] if i % 4 == 0 else [f"Dev{i}"], reviews_total=aid % 1000, header_image=f"https://x/{aid}.jpg"))
     fl.append(dict(appid=aid, status="keep", reasons=""))
     gr.append(dict(appid=aid, grade=grade if i < 50 else ""))      # 10 not graded yet
     with open(os.path.join(work, "apps", f"{aid}.json"), "w") as f:
         json.dump(dict(hist=hist_for(aid % 1000)), f)
-json.dump(dict(read_on="2026-02-10", window=[REL, "2026-01-11"], games=games), open(os.path.join(work, "cohort.json"), "w"))
+json.dump(dict(read_on="2026-02-10", window_complete=True, window=[REL, "2026-01-11"], games=games), open(os.path.join(work, "cohort.json"), "w"))
 with contextlib.redirect_stderr(io.StringIO()):
     common.write_csv(fl, os.path.join(work, "filtered.csv")); common.write_csv(gr, os.path.join(work, "grades.csv"))
 ds = os.path.join(home, "cohorts")
@@ -116,6 +116,14 @@ assert cb.last_full_week(dt.date(2026, 10, 13)) == (dt.date(2026, 10, 5), dt.dat
 assert cb.reviews_within(hist_for(0), REL, 30, 0) == 0
 
 # ---- calibrate -> calibration.json
+# Simulate the independent, globally anchored visual review; a legacy grade alone
+# is still retained by the collector but is not a verified market tier.
+for r in rows:
+    r.update(global_tier=r["grade"], grade_scope="global_verified", anchor_pack="casual/v1@" + "a"*64, visual_batch="fixture-v1")
+with contextlib.redirect_stderr(io.StringIO()):
+    common.write_csv(rows, week)
+json.dump(dict(complete=True, window_complete=True, n_games=len(rows), n_reviews=len(rows), n_store=len(rows), generated_on="2026-07-20"),
+          open(week[:-4] + ".quality.json", "w"))
 quiet(cb.main, ["--today", "2026-07-20", "calibrate"])
 cal = json.load(open(os.path.join(home, "calibration.json"), encoding="utf-8"))
 assert cal["primary"] == "d90" and cal["n_graded"] == 60 and cal["data_from"] == REL
@@ -139,7 +147,7 @@ assert "Scenari dal mercato reale" in open(md, encoding="utf-8").read()
 m = os.path.join(home, "market")
 quiet(mt.main, ["--market-dir", m, "add", "1001", "--role", "comp"])
 assert mt.due_labels(dict(release_date="2026-01-05"), dt.datetime(2026, 1, 6, 12), set()) == ["h24"]
-assert mt.due_labels(dict(release_date="2026-01-05"), dt.datetime(2026, 2, 10), {"h24", "h48", "w1"}) == ["m1"]
+assert mt.due_labels(dict(release_date="2026-01-05"), dt.datetime(2026, 2, 10), {"h24", "h48", "w1"}) == ["wk2026-07"]  # at D36 the D30 snapshot was missed
 assert mt.due_labels(dict(release_date="2020-01-05"), dt.datetime(2026, 2, 10), set())[0].startswith("wk")
 quiet(mt.main, ["--market-dir", m, "snapshot", "--now", "2026-01-12T10:00", "--steamspy"])
 quiet(mt.main, ["--market-dir", m, "snapshot", "--now", "2026-01-12T11:00"])      # nothing new due

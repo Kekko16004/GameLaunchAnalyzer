@@ -18,7 +18,9 @@ assert ea["full_price"] == 9.99 and ea["ea_first_month"] == 0.35 and ea["full_vs
 b = ea["scenarios"][1]                                                                         # base: 3000 x 0.2 = 600 copies
 assert b["ea_month_copies"] == round(600 * 0.35) and abs(b["ea_month_net"] - round(210 * 7.99 * k, 2)) < 0.02
 assert abs(b["full_month_net"] - round(210 * 7.99 * k * 0.40, 2)) < 0.02 and b["full_month_copies"] == round(210 * 7.99 * k * 0.40 / (9.99 * k))
-assert ea["breakeven_copies_ea"] == -(-150 // (7.99 * k)) or ea["breakeven_copies_ea"] == int(150 / (7.99 * k)) + 1
+assert ea["breakeven_cash_ea"] == int(150 / (7.99 * k)) + 1 and ea["breakeven_copies_ea"] is None
+including_time = ce.compute({**base, "ea_price": 7.99, "hours": 10, "hourly": 15})["early_access"]
+assert including_time["breakeven_copies_ea"] == int(300 / (7.99 * k)) + 1
 assert all(x["full_month_net"] < x["ea_month_net"] for x in ea["scenarios"])                   # the 1.0 month is the smaller push (default 40 %)
 o2 = ce.compute({**base, "ea_price": 7.99, "full_price": 12.99, "full_vs_ea": 60, "ea_first_month": 50})
 assert o2["early_access"]["full_vs_ea"] == 0.60 and o2["early_access"]["ea_first_month"] == 0.50 and o2["early_access"]["full_price"] == 12.99

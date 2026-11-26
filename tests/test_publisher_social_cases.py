@@ -103,12 +103,18 @@ except SystemExit:
 data = cs.load(os.path.join(cs.HERE, "data", "case_studies.json"), loc)
 mine = [r for r in data["records"] if r.get("origin") == "mine"]
 assert len(mine) == 6 and next(r for r in mine if r["game"] == "G0")["followers"] == 500
-bm = [dict(label="survey 1k-10k", event="next_fest", bucket_min=1000, bucket_max=9999, median_gain=1006, n=182, url="https://example.com/s", date="2026-03")]
+bm = [dict(label="survey 1k-10k", event="next_fest", bucket_min=1000, bucket_max=9999, median_gain=1006, survey_n=182, bucket_n=None, url="https://example.com/s", date="2026-03")]
 b = cs.bench(mine, bm, 2000)
 assert b["n"] == 5 and b["gain_median"] == 1100 and b["survey"]["median_gain"] == 1006 and b["expected"]["mid"] == 1006
-assert b["expected"]["low"] <= 503 and b["expected"]["high"] >= 1610
-b2 = cs.bench(mine, bm, 300)                                                              # no survey bucket, 1 case: small sample, cases lead
-assert b2["small_sample"] and b2["expected"]["basis"].startswith("casi")
+assert b["expected"]["low"] == 503 and b["expected"]["high"] == 1610
+b2 = cs.bench(mine, bm, 300)                                                              # one case is descriptive, not a forecast
+assert b2["small_sample"] and b2["n"] == 1 and b2["gain_median"] == 200 and "expected" not in b2
+cases_only = cs.bench(mine, [], 2000)
+assert cases_only["n"] == 5 and cases_only["expected"]["mid"] == cases_only["gain_median"]
+losses = cs.bench([dict(id=str(i), event="next_fest", wishlists_before=100, wishlists_after=80) for i in range(5)], [], 100)
+assert losses["expected"]["mid"] == -20 and "+-" not in cs.tripwire_md([losses], "Test", TODAY)
+zero = cs.bench([dict(id="z", event="next_fest", wishlists_before=0, wishlists_after=15)], [], 0)
+assert zero["gain_median"] == 15 and "mult_median" not in zero
 assert len(cs.query(mine, genre="roguelite", wl_min=1000, wl_max=3000)) == 5
 cal = os.path.join(tempfile.mkdtemp(), "calendar.md")
 open(cal, "w", encoding="utf-8").write("# Cal\n\n## ✅ Passi in ordine\n### FASE 1\n1. [ ] 👤 **Primo** · 📅 2026-11-01\n\n## 3. Tripwire\n\n| a | b |\n|---|---|\n\n## 4. Piano B\n\ntesto\n")
@@ -116,8 +122,25 @@ for _ in range(2):
     pst.upsert_section(cal, "📊 Next Fest: cosa aspettarsi", "📊 Next Fest: cosa aspettarsi (test)", cs.tripwire_md([b, b2], "Next Fest", TODAY), after_prefix="3. Tripwire")
 txt = open(cal, encoding="utf-8").read()
 assert txt.count("### 📊 Next Fest") == 1 and txt.index("### 📊 Next Fest") < txt.index("## 4. Piano B") and "+1.006" in txt
+assert "n totale: 182; n di fascia: non noto" in txt and "dati insufficienti" in txt
+assert "non conosciamo la causa" in txt and "il problema è la pagina" not in txt
 seed = cs.load(None, "")
 assert seed["records"] and all(r.get("source_url", "").startswith("http") for r in seed["records"]) and seed["benchmarks"]
+for edge, left, right in [(1000, 322, 1006), (10000, 1006, 5215)]:
+    lo, hi = [cs.bench([], seed["benchmarks"], i) for i in (edge - 1, edge)]
+    assert [r["survey"]["median_gain"] for r in (lo, hi)] == [left, right]   # published data unchanged
+    assert all(r["survey"]["survey_n"] == 182 and r["survey"]["bucket_n"] is None for r in (lo, hi))
+    assert left < lo["expected"]["mid"] <= hi["expected"]["mid"] < right
+    assert 0 <= hi["expected"]["mid"] - lo["expected"]["mid"] <= 4
+    assert hi["expected"]["transition"]["boundary"] == edge
+    for offset, expected in [(-0.1, left), (0.1, right)]:
+        assert cs.bench([], seed["benchmarks"], round(edge * (1 + offset)))["expected"]["mid"] == expected
+legacy = dict(bm[0], n=182); del legacy["survey_n"], legacy["bucket_n"]
+sv = cs.bench([], [legacy], 2000)["survey"]
+assert sv["survey_n"] is None and sv["bucket_n"] is None                    # ambiguous old n isn't assigned
+adjacent = dict(bm[0], bucket_min=0, bucket_max=999, median_gain=322, date="2025-03")
+assert cs.bench([], bm + [adjacent], 1000)["expected"]["transition"] is None # don't mix editions
+assert "expected" not in cs.bench([], seed["benchmarks"], 100000)           # no extrapolation
 print("case studies ok: n", len(seed["records"]), "seed records")
 
 # ---- calendar steps block helper (idempotent)
@@ -209,8 +232,15 @@ J("social_learn.json", ln)
 J("reddit_trends.json", dict(generated_on="2026-10-20", subs={"indiegames": dict(an, suggestions=sug)}, blocked=[]))
 cards = ho.cards(root, TODAY)
 k = {c["key"]: c for c in cards}
-assert k["copies_1k"]["cross_check"]["agree"] is False and "NON concordano" in k["copies_1k"]["cross_check"]["note"]
+assert k["copies_1k"]["odds"] == "Non verificabile"  # legacy metro cannot masquerade as validated
+mmeta = dict(n=699, target="y90", strength="utile", fitted_on="2026-10-17", protocol="asof-v1", validated=True)
+J("metro.json", dict(metro=mmeta, score=dict(mode="model", p100=0.7, p1k=0.05, p10k=0.014, band="100-1k", bands=[0.3, 0.65, 0.036, 0.014])))
+assert next(c for c in ho.cards(root, TODAY) if c["key"] == "copies_1k")["odds"] == "Non verificabile"
+J("calibration.json", dict(metro=dict(mmeta, available=True, backtest=dict(validated=True, possible=True, test_weeks=["w1","w2"], strength="utile"))))
+assert next(c for c in ho.cards(root, TODAY) if c["key"] == "copies_1k")["cross_check"]["agree"] is None  # different horizons
+os.remove(os.path.join(root, "_raw", "calibration.json"))  # rest of case tests the page with missing calibration
 assert k["publisher"]["odds"].startswith("≤") and k["nextfest"]["odds"].startswith("+") and "social_tiktok" in k
+assert "n totale: 182; n di fascia: non noto" in k["nextfest"]["basis"] and "scenario centrale" in k["nextfest"]["odds"]
 assert "Probabilità oneste" in ho.to_md(cards)
 page = status_page.build(root, "private", [], [], set(), TODAY)
 for h_ in ("Probabilità oneste, decisione per decisione", "Publisher: sì, no o non so?", "Social: piano e cosa funziona", "Con o senza publisher", "Reddit questa settimana", "non so"):

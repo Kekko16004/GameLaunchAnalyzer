@@ -26,6 +26,7 @@ import argparse
 import csv
 import datetime as dt
 import json
+import math
 import os
 
 from common import log, user_dir
@@ -60,19 +61,30 @@ def put(d: dict, item: dict) -> bool:
 
 def _f(x):
     try:
-        return float(str(x).replace(",", "."))
+        v = float(str(x).replace(",", "."))
+        return v if math.isfinite(v) else None
     except (TypeError, ValueError):
         return None
 
 
 def sync(root: str, today: dt.date, cal_path: str | None = None) -> int:
     d, n = load(root), 0
+    old_ids = {p["id"] for p in d["items"]}
+    wl_plan = os.path.join(root, "_raw", "wl_plan.json")
+    launch = None
+    if os.path.exists(wl_plan):
+        with open(wl_plan, encoding="utf-8") as f:
+            launch = _day(json.load(f).get("launch"))
+
+    def horizon(days):
+        return (launch + dt.timedelta(days=days)).isoformat() if launch else None
+
     tl = os.path.join(root, "fg", "timeline.csv")
     if os.path.exists(tl):
         with open(tl, encoding="utf-8-sig", newline="") as f:
             for r in csv.DictReader(f):
                 w, stage = r.get("wave"), (r.get("stage") or "beta").strip() or "beta"
-                if stage == "full":
+                if stage == "full" or not _day(r.get("date")) or _day(r["date"]) > today:
                     continue   # the full game is not what the real test measures
                 for m, actual in (("wishlist_pct", "real_wishlist_pct"), ("buy_pct", "real_buy_pct")):
                     v = _f(r.get(m))
@@ -84,25 +96,24 @@ def sync(root: str, today: dt.date, cal_path: str | None = None) -> int:
         with open(ep, encoding="utf-8") as f:
             e = json.load(f)
         sc = e.get("scenarios") or []
-        wl_plan = os.path.join(root, "_raw", "wl_plan.json")
-        due = None
-        if os.path.exists(wl_plan):
-            with open(wl_plan, encoding="utf-8") as f:
-                due = json.load(f).get("launch")
+        due = horizon(0)
         if len(sc) >= 2:
             n += put(d, dict(id=f"econ-wishlists-{today.isoformat()[:7]}", date=today.isoformat(), source="Piano economico (calc_econ.py), scenari", metric="wishlists",
                              value=None, low=min(s["wishlists"] for s in sc), high=max(s["wishlists"] for s in sc), unit="wishlist", label="STIMA", subject="al lancio",
-                             actual_metric="wishlists", due=due))
+                             actual_metric="wishlists", due=due, until=due))
             n += put(d, dict(id=f"econ-copies-{today.isoformat()[:7]}", date=today.isoformat(), source="Piano economico (calc_econ.py), scenari", metric="copies_year1",
                              value=None, low=min(s["copies"] for s in sc), high=max(s["copies"] for s in sc), unit="copie", label="STIMA", subject="anno 1",
-                             actual_metric="copies_year1", due=None))
+                             actual_metric="copies_year1", due=horizon(365)))
         cb = e.get("calibrated")
         if cb:
             med = next((x for x in cb["scenarios"] if x["name"].startswith("base")), None)
-            if med:
-                n += put(d, dict(id=f"calib-copies90-{cb.get('generated_on')}", date=today.isoformat(), source=f"Base rate reale ({cb['group']}, n = {cb['n']}, dati {cb.get('data_from')}..{cb.get('data_to')})",
-                                 metric="copies_90d", value=None, low=med["copies_low"], high=med["copies_high"], unit="copie", label="STIMA", subject="mediana della fascia, 3 mesi",
-                                 actual_metric="copies_90d", due=None))
+            milestone = cb.get("milestone")
+            if med and milestone in ("d30", "d90", "d180") and _day(cb.get("generated_on")) and _day(cb["generated_on"]) <= today:
+                days = milestone[1:]
+                metric = f"copies_{days}d"
+                n += put(d, dict(id=f"calib-asof-v1-copies{days}-{cb.get('generated_on')}", protocol="asof-v1", date=today.isoformat(), source=f"Base rate reale ({cb['group']}, n = {cb['n']}, dati {cb.get('data_from')}..{cb.get('data_to')})",
+                                 metric=metric, value=None, low=med["copies_low"], high=med["copies_high"], unit="copie", label="STIMA", subject=f"mediana della fascia, {days} giorni",
+                                 actual_metric=metric, due=horizon(int(days))))
     for fn, subject in (("metro.json", "pagina com'è oggi"), ("metro-piano.json", "con il piano rispettato")):
         mp = os.path.join(root, "_raw", fn)
         if os.path.exists(mp):
@@ -110,12 +121,18 @@ def sync(root: str, today: dt.date, cal_path: str | None = None) -> int:
                 m = json.load(f)
             sc, meta = m.get("score") or {}, m.get("metro") or {}
             band = sc.get("band")
-            if band:
-                lo, hi = {"<100": (0, 100), "100-1k": (100, 1000), "1k-10k": (1000, 10000), ">10k": (10000, 10 ** 7)}[band]
-                n += put(d, dict(id=f"metro-{fn[:-5]}-{meta.get('fitted_on')}", date=today.isoformat(), source=f"Metro oggettivo ({meta.get('strength')}, n = {meta.get('n')}, {meta.get('fitted_on')})",
-                                 metric=f"copies_{(meta.get('target') or 'y30')[1:]}d", value=None, low=lo, high=hi, unit="copie", label="STIMA", subject=f"fascia più probabile, {subject}",
-                                 actual_metric=f"copies_{(meta.get('target') or 'y30')[1:]}d", due=None, p1k=sc.get("p1k")))
+            if (band in ("<100", "100-1k", "1k-10k", ">10k") and meta.get("target") in ("y30", "y90")
+                    and meta.get("protocol") == "asof-v1" and meta.get("validated") is True and sc.get("mode") == "model"
+                    and _day(meta.get("fitted_on")) and _day(m.get("scored_on")) and _day(meta["fitted_on"]) <= _day(m["scored_on"]) <= today):
+                lo, hi = {"<100": (0, 99), "100-1k": (100, 999), "1k-10k": (1000, 9999), ">10k": (10000, None)}[band]
+                metric = f"copies_{meta['target'][1:]}d"
+                n += put(d, dict(id=f"metro-{fn[:-5]}-{meta.get('fitted_on')}-{m['scored_on']}", protocol="asof-v1", date=today.isoformat(), source=f"Metro oggettivo ({meta.get('strength')}, n = {meta.get('n')}, {meta.get('fitted_on')})",
+                                 metric=metric, value=None, low=lo, high=hi, open_high=hi is None, unit="copie", label="STIMA", subject=f"fascia più probabile, {subject}",
+                                 actual_metric=metric, due=horizon(int(meta["target"][1:])), p1k=sc.get("p1k")))
     if n:
+        for item in d["items"]:
+            if item["id"] not in old_ids:
+                item["registered_on"] = today.isoformat()
         save(root, d, today)
     return n
 
@@ -141,20 +158,59 @@ def actuals(root: str) -> dict[str, list[tuple[str, float]]]:
     return out
 
 
+def _day(value):
+    try:
+        return dt.date.fromisoformat(value)
+    except (ValueError, TypeError):
+        return None
+
+
+def _series(p):
+    """A revision supersedes only the same target/scenario, never an unrelated forecast."""
+    if p.get("series"):
+        return ("explicit", p["series"], p.get("actual_metric"))
+    pid = p.get("id") or ""
+    family = next((k for k in ("wave", "calib-", "metro-", "econ-", "gdd-") if pid.startswith(k)), p.get("source"))
+    return family, p.get("subject"), p.get("metric"), p.get("actual_metric")
+
+
 def evaluate(root: str, today: dt.date) -> dict:
     d, act = load(root), actuals(root)
     rows = []
-    for p in d["items"]:
+    items = d["items"]
+    for i, p in enumerate(items):
         series = act.get(p.get("actual_metric") or "", [])
-        pick = [x for x in series if not p.get("due") or x[0] >= p["due"]] if series else []
-        if p.get("due") and not pick and p["due"] > today.isoformat():
+        if (p.get("id") or "").startswith(("calib-", "metro-")) and p.get("protocol") != "asof-v1":
+            rows.append(dict(p, status="protocollo storico non verificabile", actual=None, actual_date=None, hit=None))
+            continue
+        issue = _day(p.get("date"))
+        registered = _day(p.get("registered_on", p.get("date")))
+        due, until = _day(p.get("due")), _day(p.get("until"))
+        if not issue or not registered or (p.get("due") and not due) or (p.get("until") and not until):
+            rows.append(dict(p, status="finestra non verificabile", actual=None, actual_date=None, hit=None))
+            continue
+        if due and max(issue, registered) >= due:
+            rows.append(dict(p, status="registrata a scadenza raggiunta", actual=None, actual_date=None, hit=None))
+            continue
+        # On date-only logs the order within a day is unknown; score the first subsequent
+        # observation, not the latest one, and never recycle it for every wave/version.
+        next_version = min((day for j, q in enumerate(items) if _series(q) == _series(p)
+                            and (day := _day(q.get("date"))) and (day, j) > (issue, i)), default=None)
+        pick = [x for x in series if (ad := _day(x[0])) and max(issue, registered) < ad <= today
+                and (not due or ad >= due) and (not until or ad <= until) and (not next_version or ad < next_version)]
+        if max(issue, registered, due or issue) > today:
             rows.append(dict(p, status="in attesa", actual=None, actual_date=None, hit=None))
             continue
         if not pick:
-            rows.append(dict(p, status="manca il dato reale", actual=None, actual_date=None, hit=None))
+            status = "versione superata" if next_version and next_version <= today else "manca il dato reale"
+            rows.append(dict(p, status=status, actual=None, actual_date=None, hit=None))
             continue
-        ad, av = pick[0] if p.get("due") else pick[-1]
+        ad, av = pick[0]
         lo, hi = p.get("low"), p.get("high")
+        if p.get("open_high") and lo is not None:
+            rows.append(dict(p, status="verificata", actual=av, actual_date=ad, hit=av >= lo, error=None,
+                             direction="giusta" if av >= lo else "ottimista"))
+            continue
         if lo is None or hi is None:
             v = p["value"]
             tol = 10 if p.get("unit") == "%" else abs(v) * 0.10
@@ -163,11 +219,16 @@ def evaluate(root: str, today: dt.date) -> dict:
         rows.append(dict(p, status="verificata", actual=av, actual_date=ad, hit=lo <= av <= hi, error=round(av - mid, 1),
                          direction="ottimista" if av < lo else ("pessimista" if av > hi else "giusta")))
     ev = [r for r in rows if r["status"] == "verificata"]
+    # A band hit is not a probability score. Check the preregistered P(>=1k) separately.
+    probs = [(_f(r.get("p1k")), int(r["actual"] >= 1000)) for r in ev
+             if r.get("protocol") == "asof-v1" and r.get("actual_metric") in ("copies_30d", "copies_90d") and _f(r.get("p1k")) is not None]
+    probs = [(p, y) for p, y in probs if 0 <= p <= 1]
     by_date = []
     for i in range(len(ev)):
         part = sorted(ev, key=lambda r: r["actual_date"])[: i + 1]
         by_date.append(dict(date=part[-1]["actual_date"], accuracy=round(100 * sum(r["hit"] for r in part) / len(part), 1), n=len(part)))
     return dict(rows=rows, n=len(rows), evaluated=len(ev), hits=sum(1 for r in ev if r["hit"]),
+                n_p1k=len(probs), brier_p1k=round(sum((p-y)**2 for p, y in probs) / len(probs), 4) if probs else None,
                 accuracy=round(100 * sum(1 for r in ev if r["hit"]) / len(ev), 1) if ev else None,
                 optimistic=sum(1 for r in ev if r["direction"] == "ottimista"), over_time=by_date)
 
@@ -178,7 +239,7 @@ def main(argv=None):
     sp = ap.add_subparsers(dest="cmd", required=True)
     sp.add_parser("sync")
     a_ = sp.add_parser("add")
-    for k in ("metric", "source", "subject", "due", "actual_metric", "unit", "note"):
+    for k in ("metric", "source", "subject", "due", "until", "series", "actual_metric", "unit", "note"):
         a_.add_argument("--" + k.replace("_", "-"), dest=k)
     a_.add_argument("--value", type=float); a_.add_argument("--low", type=float); a_.add_argument("--high", type=float)
     a_.add_argument("--label", default="STIMA", choices=list(LABELS)); a_.add_argument("--id")
@@ -191,10 +252,14 @@ def main(argv=None):
     elif a.cmd == "add":
         if a.value is None and (a.low is None or a.high is None):
             raise SystemExit("give --value or --low and --high")
+        if not a.metric or any(not math.isfinite(v) for v in (a.value, a.low, a.high) if v is not None) or (a.high is not None and a.low is not None and a.low > a.high):
+            raise SystemExit("metrica obbligatoria e intervallo numerico valido")
+        if any(s and not _day(s) for s in (a.due, a.until)) or (a.due and a.until and a.until < a.due):
+            raise SystemExit("finestra non valida: usare date ISO e --until >= --due")
         d = load(root)
         pid = a.id or f"{a.metric}-{today.isoformat()}-{len(d['items']) + 1}"
         ok = put(d, dict(id=pid, date=today.isoformat(), source=a.source or "manuale", metric=a.metric, value=a.value, low=a.low, high=a.high, unit=a.unit or "",
-                         label=a.label, subject=a.subject or "", actual_metric=a.actual_metric or a.metric, due=a.due, note=a.note or ""))
+                         label=a.label, subject=a.subject or "", actual_metric=a.actual_metric or a.metric, due=a.due, until=a.until, series=a.series, note=a.note or ""))
         save(root, d, today)
         print(("registrata " if ok else "già presente ") + pid)
     else:
@@ -204,7 +269,7 @@ def main(argv=None):
                 json.dump(r, f, ensure_ascii=False, indent=1)
         print(f"{r['n']} previsioni, {r['evaluated']} verificate con dati reali, {r['hits']} giuste" + (f" ({r['accuracy']} %)" if r["accuracy"] is not None else ""))
         for x in r["rows"]:
-            rng = f"{x['low']:g}-{x['high']:g}" if x.get("low") is not None else f"{x['value']:g}"
+            rng = f">={x['low']:g}" if x.get("open_high") else f"{x['low']:g}-{x['high']:g}" if x.get("low") is not None else f"{x['value']:g}"
             print(f"  {x['date']}  {x['metric']:<16} {rng:>14} {x['unit']:<8} {x['label']:<9} -> {x['status']}" + (f": reale {x['actual']:g} ({'giusta' if x['hit'] else x['direction']})" if x.get("actual") is not None else ""))
 
 

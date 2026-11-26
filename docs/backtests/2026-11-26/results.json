@@ -1,0 +1,377 @@
+{
+  "seal": "d37336fac5b6e0e060038ec40bb19ae5fe882d835cf71498d43cbc7da2781208",
+  "threshold": "reviews_d30>=30",
+  "population": 574,
+  "market_scored": 571,
+  "market": {
+    "simple": {
+      "n": 538,
+      "tp": 86,
+      "tn": 309,
+      "fp": 83,
+      "fn": 60,
+      "accuracy": 0.7342007434944238,
+      "precision": 0.5088757396449705,
+      "recall": 0.589041095890411
+    },
+    "strict": {
+      "n": 538,
+      "tp": 80,
+      "tn": 322,
+      "fp": 70,
+      "fn": 66,
+      "accuracy": 0.7472118959107806,
+      "precision": 0.5333333333333333,
+      "recall": 0.547945205479452
+    },
+    "always_no": {
+      "n": 538,
+      "tp": 0,
+      "tn": 392,
+      "fp": 0,
+      "fn": 146,
+      "accuracy": 0.7286245353159851,
+      "precision": null,
+      "recall": 0.0
+    }
+  },
+  "pitch": {
+    "intuitive": {
+      "n": 47,
+      "tp": 16,
+      "tn": 15,
+      "fp": 6,
+      "fn": 10,
+      "accuracy": 0.6595744680851063,
+      "precision": 0.7272727272727273,
+      "recall": 0.6153846153846154,
+      "auc": 0.7655677655677655,
+      "brier": 0.21226728723404256
+    },
+    "structured": {
+      "n": 47,
+      "tp": 21,
+      "tn": 4,
+      "fp": 17,
+      "fn": 5,
+      "accuracy": 0.5319148936170213,
+      "precision": 0.5526315789473685,
+      "recall": 0.8076923076923077,
+      "auc": 0.5082417582417582,
+      "brier": 0.2624875332446808
+    },
+    "always_no": {
+      "n": 47,
+      "tp": 0,
+      "tn": 21,
+      "fp": 0,
+      "fn": 26,
+      "accuracy": 0.44680851063829785,
+      "precision": null,
+      "recall": 0.0
+    },
+    "accuracy_change": {
+      "mean": -0.1276595744680851,
+      "ci95": [
+        -0.2978723404255319,
+        0.06382978723404255
+      ]
+    },
+    "brier_gain": {
+      "mean": -0.0502202460106383,
+      "ci95": [
+        -0.08982297207446809,
+        -0.011490192819148936
+      ]
+    }
+  },
+  "pitch_selected": 48,
+  "abstentions": {
+    "intuitive": 0,
+    "structured": 0
+  },
+  "pitch_matched": [
+    {
+      "alias": "P37",
+      "outcome": 0,
+      "intuitive": 4,
+      "structured": 4.75
+    },
+    {
+      "alias": "P31",
+      "outcome": 1,
+      "intuitive": 2.5,
+      "structured": 3.75
+    },
+    {
+      "alias": "P34",
+      "outcome": 1,
+      "intuitive": 2.5,
+      "structured": 4.5
+    },
+    {
+      "alias": "P23",
+      "outcome": 1,
+      "intuitive": 3,
+      "structured": 3.75
+    },
+    {
+      "alias": "P19",
+      "outcome": 1,
+      "intuitive": 4,
+      "structured": 2.75
+    },
+    {
+      "alias": "P47",
+      "outcome": 0,
+      "intuitive": 2.5,
+      "structured": 4.75
+    },
+    {
+      "alias": "P29",
+      "outcome": 1,
+      "intuitive": 3.5,
+      "structured": 4
+    },
+    {
+      "alias": "P14",
+      "outcome": 1,
+      "intuitive": 4,
+      "structured": 4.75
+    },
+    {
+      "alias": "P26",
+      "outcome": 1,
+      "intuitive": 4,
+      "structured": 4.25
+    },
+    {
+      "alias": "P20",
+      "outcome": 0,
+      "intuitive": 2,
+      "structured": 4
+    },
+    {
+      "alias": "P11",
+      "outcome": 0,
+      "intuitive": 2,
+      "structured": 4
+    },
+    {
+      "alias": "P16",
+      "outcome": 1,
+      "intuitive": 4,
+      "structured": 4
+    },
+    {
+      "alias": "P13",
+      "outcome": 1,
+      "intuitive": 4.5,
+      "structured": 4.5
+    },
+    {
+      "alias": "P35",
+      "outcome": 0,
+      "intuitive": 3.5,
+      "structured": 4.5
+    },
+    {
+      "alias": "P03",
+      "outcome": 1,
+      "intuitive": 3,
+      "structured": 3.75
+    },
+    {
+      "alias": "P08",
+      "outcome": 0,
+      "intuitive": 2.5,
+      "structured": 4.25
+    },
+    {
+      "alias": "P44",
+      "outcome": 1,
+      "intuitive": 4,
+      "structured": 4.25
+    },
+    {
+      "alias": "P21",
+      "outcome": 1,
+      "intuitive": 3.5,
+      "structured": 4.25
+    },
+    {
+      "alias": "P45",
+      "outcome": 0,
+      "intuitive": 3.5,
+      "structured": 4
+    },
+    {
+      "alias": "P30",
+      "outcome": 1,
+      "intuitive": 3.5,
+      "structured": 4.25
+    },
+    {
+      "alias": "P43",
+      "outcome": 0,
+      "intuitive": 3,
+      "structured": 4.75
+    },
+    {
+      "alias": "P01",
+      "outcome": 0,
+      "intuitive": 2,
+      "structured": 3.5
+    },
+    {
+      "alias": "P38",
+      "outcome": 1,
+      "intuitive": 3,
+      "structured": 4.75
+    },
+    {
+      "alias": "P40",
+      "outcome": 0,
+      "intuitive": 1,
+      "structured": 1.75
+    },
+    {
+      "alias": "P25",
+      "outcome": 0,
+      "intuitive": 3.5,
+      "structured": 3.5
+    },
+    {
+      "alias": "P22",
+      "outcome": 0,
+      "intuitive": 2,
+      "structured": 4.5
+    },
+    {
+      "alias": "P17",
+      "outcome": 0,
+      "intuitive": 2.5,
+      "structured": 3.5
+    },
+    {
+      "alias": "P04",
+      "outcome": 0,
+      "intuitive": 2.5,
+      "structured": 4
+    },
+    {
+      "alias": "P28",
+      "outcome": 0,
+      "intuitive": 2,
+      "structured": 2.75
+    },
+    {
+      "alias": "P15",
+      "outcome": 0,
+      "intuitive": 2,
+      "structured": 3.25
+    },
+    {
+      "alias": "P09",
+      "outcome": 0,
+      "intuitive": 3.5,
+      "structured": 3.5
+    },
+    {
+      "alias": "P27",
+      "outcome": 1,
+      "intuitive": 4,
+      "structured": 4
+    },
+    {
+      "alias": "P18",
+      "outcome": 1,
+      "intuitive": 3,
+      "structured": 3.5
+    },
+    {
+      "alias": "P39",
+      "outcome": 0,
+      "intuitive": 3,
+      "structured": 4.75
+    },
+    {
+      "alias": "P42",
+      "outcome": 1,
+      "intuitive": 4.5,
+      "structured": 4.75
+    },
+    {
+      "alias": "P07",
+      "outcome": 1,
+      "intuitive": 4,
+      "structured": 4.5
+    },
+    {
+      "alias": "P05",
+      "outcome": 1,
+      "intuitive": 3.5,
+      "structured": 4.25
+    },
+    {
+      "alias": "P41",
+      "outcome": 1,
+      "intuitive": 2.5,
+      "structured": 4
+    },
+    {
+      "alias": "P12",
+      "outcome": 1,
+      "intuitive": 2.5,
+      "structured": 1.75
+    },
+    {
+      "alias": "P48",
+      "outcome": 1,
+      "intuitive": 3.5,
+      "structured": 4.25
+    },
+    {
+      "alias": "P24",
+      "outcome": 1,
+      "intuitive": 3,
+      "structured": 2
+    },
+    {
+      "alias": "P46",
+      "outcome": 0,
+      "intuitive": 2.5,
+      "structured": 2.25
+    },
+    {
+      "alias": "P32",
+      "outcome": 1,
+      "intuitive": 4,
+      "structured": 4.75
+    },
+    {
+      "alias": "P02",
+      "outcome": 0,
+      "intuitive": 2.5,
+      "structured": 4.25
+    },
+    {
+      "alias": "P36",
+      "outcome": 1,
+      "intuitive": 3.5,
+      "structured": 2.5
+    },
+    {
+      "alias": "P33",
+      "outcome": 0,
+      "intuitive": 4,
+      "structured": 4.5
+    },
+    {
+      "alias": "P10",
+      "outcome": 1,
+      "intuitive": 2,
+      "structured": 2
+    }
+  ]
+}

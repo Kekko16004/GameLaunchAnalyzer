@@ -425,12 +425,13 @@ def economics(root: str) -> list[str]:
                           title="Dal prezzo a quanto resta per copia", why=f"Ogni passaggio toglie una parte. Netto per copia: {e.get('net_per_copy', 0):.2f}."))
     sc = e.get("scenarios") or []
     be = (e.get("breakeven") or {}).get("copies_with_time")
-    if sc:
+    if sc and be is not None:
         out.append(_chart(C.hbar([dict(label=s["name"], value=s["copies"], color="var(--s1)" if (not be or s["copies"] >= be) else "var(--s2)",
                                        tip=f"{s['name']}: {C.fmt_n(s['copies'])} copie da {C.fmt_n(s['wishlists'])} wishlist ({s['conversion']:.0%})") for s in sc],
                                  aria="Copie per scenario contro il break-even", ref=(be, "break-even") if be else None),
                           title="Copie per scenario contro il break-even", why="La linea tratteggiata è il numero di copie che copre i costi (tempo compreso). Blu = la supera, arancione = no.",
                           leg=C.legend([("sopra il break-even", "var(--s1)"), ("sotto", "var(--s2)")]), note="Conversioni e aliquote sono ipotesi dichiarate nel piano."))
+    if sc and all(s.get("profit_cash") is not None for s in sc):
         out.append(_chart(C.hbar([dict(label=s["name"], value=s["profit_cash"], color="var(--s1)" if s["profit_cash"] >= 0 else "var(--crit)", tip=f"{s['name']}: utile di cassa {C.fmt_n(s['profit_cash'])}") for s in sc], aria="Utile di cassa per scenario"),
                           title="Utile di cassa per scenario", why="Netto incassato meno i costi vivi. A sinistra dello zero si perde.", leg=C.legend([("utile", "var(--s1)"), ("perdita", "var(--crit)")])))
     sens = e.get("sensitivity") or []

@@ -26,6 +26,7 @@ import os
 import re
 
 import common  # noqa: F401  (side effect: UTF-8 stdout, so accents do not crash on a Windows console)
+from launch_gates import GATE_NAMES, assess
 
 CSS = """
 .qa input[type=search]{width:100%;padding:8px 10px;border:1px solid var(--ring);border-radius:8px;background:var(--surface);color:var(--ink);font:inherit;margin-bottom:8px}
@@ -78,8 +79,8 @@ def faq(ctx: dict) -> list[tuple]:
     st, wl, econ, win, crit, plan, today = ctx.get("st") or {}, ctx.get("wl_a") or {}, ctx.get("econ"), ctx.get("window"), ctx.get("crit"), ctx.get("plan") or {}, ctx["today"]
     out = []
     v = st.get("verdict") or {}
-    gates = st.get("gates") or {}
-    names = ctx.get("gate_names") or {}
+    gates = assess(st.get("gates"))
+    names = ctx.get("gate_names") or GATE_NAMES
     if v:
         word = str(v.get("color", "")).capitalize() or "n/d"
         notpass = [names.get(k, f"Gate {k}") for k, g in gates.items() if g.get("state") != "pass"]
@@ -114,16 +115,16 @@ def faq(ctx: dict) -> list[tuple]:
         lines = [f'<li><strong>{esc(x["label"])}</strong>, gravità {esc(x["severity"])}' + (f', {x["last_pct"]:g}% dei tester' if x.get("last_pct") is not None else "") + (f', cancello {esc(x["gate"])}' if x.get("gate") else "") + "</li>" for x in opened]
         lines += [f'<li><strong>{esc(m["label"])}</strong>, gravità {esc(m["severity"])}, da {esc(m["source"])}</li>' for m in reg[:max(0, 3 - len(lines))]]
         out.append(("Ondate", "Quali sono le criticità aperte più gravi?", ("<ul>" + "".join(lines) + "</ul>Sono quelle ancora segnalate e senza una tua decisione chiusa. Tutte, ondata per ondata, in [[critiche|Criticità]]." if lines else "Nessuna criticità da affrontare adesso: le altre hanno già una decisione.")))
-    if gates:
-        nopass = [(k, g) for k, g in gates.items() if g.get("state") != "pass"]
-        if nopass:
-            a = "Non ancora: restano da superare " + esc(", ".join(names.get(k, f"Gate {k}") for k, _ in nopass)) + ". " + esc(next((g.get("note") for _, g in nopass if g.get("note")), "")) + " Pagare prima di aver superato i cancelli vuol dire spendere senza prove ([[gates|cancelli]])."
-        else:
-            a = "I cancelli sono tutti superati. Resta da controllare il resto: soldi disponibili, accordo tra soci e commercialista ([[gates|cancelli]])."
-        out.append(("Cancelli", "Posso pagare Steam Direct adesso?", a))
-        first = next((g for _, g in nopass if g.get("note")), None)
-        if first:
-            out.append(("Cancelli", "Cosa serve per superare il prossimo cancello?", esc(first.get("note")) + " ([[gates|cancelli]])"))
+    nopass = [(k, g) for k, g in gates.items() if g["state"] != "pass"]
+    if nopass:
+        labels = {"fail": "non superato", "pending": "in attesa", "unknown": "esito non documentato"}
+        a = "Non ancora: " + esc("; ".join(f"{names.get(k, 'Gate ' + k)} ({labels[g['state']]})" for k, g in nopass)) + ". Non impegnare la spesa finché mancano prove o esiti positivi ([[gates|cancelli]])."
+    else:
+        a = "I cancelli sono tutti superati. Resta da controllare il resto: soldi disponibili, accordo tra soci e commercialista ([[gates|cancelli]])."
+    out.append(("Cancelli", "Posso pagare Steam Direct adesso?", a))
+    if nopass:
+        k, g = _next_gate(nopass)
+        out.append(("Cancelli", "Cosa serve per superare il prossimo cancello?", esc(names.get(k, f"Gate {k}") + ": " + (g["note"] or "Verificare la prova concordata e registrarne l’esito.")) + " ([[gates|cancelli]])"))
     if win and win.get("chosen"):
         ch = win["chosen"]
         best = win["best"][0] if win.get("best") else None
@@ -132,7 +133,11 @@ def faq(ctx: dict) -> list[tuple]:
     if econ:
         be = econ["breakeven"]
         sc = econ.get("scenarios") or []
-        a = f'Servono circa <strong>{_fmt(be["copies_with_time"])}</strong> copie per coprire soldi e ore (solo i soldi spesi: {_fmt(be.get("copies_cash"))}). Per ogni copia restano {econ["net_per_copy"]:.2f}.' + (" Gli scenari vendono " + ", ".join(f'{esc(s["name"])}: {_fmt(s["copies"])}' for s in sc) + "." if sc else "") + " ([[economy|economia]])"
+        a = (f'Copie per coprire le spese: {_fmt(be["copies_cash"])}.' if be.get("copies_cash") is not None else 'Pareggio di cassa non stimabile senza spese e netto per copia.')
+        a += (f' Contando il tempo: {_fmt(be["copies_with_time"])}.' if be.get("copies_with_time") is not None else ' Pareggio con il tempo non stimabile dai dati disponibili.')
+        if econ.get("net_per_copy") is not None:
+            a += f' Per ogni copia restano {econ["net_per_copy"]:.2f} prima dei costi.'
+        a += (" Ipotesi di copie da wishlist nel primo anno: " + ", ".join(f'{esc(s["name"])}: {_fmt(s["copies"])}' for s in sc) + "." if sc else "") + " ([[economy|economia]])"
         out.append(("Economia", "Quante copie servono per coprire i costi?", a))
     if wl.get("current") is not None:
         vel = wl.get("velocity_4w")
@@ -140,7 +145,7 @@ def faq(ctx: dict) -> list[tuple]:
         alerts = [x["text"] for x in wl.get("alerts", []) if x.get("level") in ("ALARM", "ATTENZIONE")]
         out.append(("Wishlist", "A che punto sono le wishlist?", esc(a) + (" Attenzione: " + esc(alerts[0]) if alerts else "") + " ([[trend|andamento]])"))
     out.append(("Ondate", "Cosa significa il punteggio del focus group?", "È un voto che dà il gruppo di tester simulati: più è alto, più tester metterebbero il gioco in wishlist. Non è una percentuale (va da -80 a 100) e serve a confrontare un'ondata con l'altra e con la soglia del cancello A. Differenze di pochi punti sono rumore."))
-    out.append(("Ondate", "Il focus group prevede le vendite?", "No. I tester sono simulati: ordinano i problemi e dicono cosa sistemare per primo, ma non sono dati di mercato. Le critiche reali vengono dalle recensioni vere e dal test con persone vere."))
+    out.append(("Ondate", "Il focus group prevede le vendite?", "No. Il panel simulato aiuta a scegliere cosa verificare. Una critica presente anche nelle recensioni di altri giochi è un rischio supportato, non un difetto confermato del tuo: serve una prova sulla tua build con giocatori reali o misure pertinenti."))
     out.append(("Wishlist", "Come registro le wishlist?", "Una volta a settimana copia il totale da Steamworks e dillo a Claude, oppure esegui <code>wl_track.py add --wishlists N</code>. Steam non rende pubbliche le wishlist, quindi non si possono leggere da fuori."))
     cont = ctx.get("contingencies")
     if cont:
@@ -153,15 +158,19 @@ def faq(ctx: dict) -> list[tuple]:
     return out
 
 
+def _next_gate(nopass):
+    return next((pair for pair in nopass if pair[1]["state"] != "unknown" and pair[1]["note"]), nopass[0])
+
+
 def suggested(ctx: dict) -> list[tuple]:
     """[(question, why)]: questions worth asking now, from the state of the project, then the ones that always help."""
     st, crit, win = ctx.get("st") or {}, ctx.get("crit"), ctx.get("window")
-    names = ctx.get("gate_names") or {}
+    names = ctx.get("gate_names") or GATE_NAMES
     out = []
-    for k, g in (st.get("gates") or {}).items():
-        if g.get("state") != "pass":
-            out.append((f"Cosa manca per superare il {names.get(k, 'Gate ' + k)}?", "Un cancello non superato blocca il pagamento di Steam: meglio sapere cosa serve e quando rifare la prova."))
-            break
+    nopass = [(k, g) for k, g in assess(st.get("gates")).items() if g["state"] != "pass"]
+    if nopass:
+        k, _ = _next_gate(nopass)
+        out.append((f"Cosa manca per superare il {names.get(k, 'Gate ' + k)}?", "Prima del pagamento di Steam serve un esito positivo per ogni cancello."))
     if crit:
         top = next((x for x in crit.get("issues", []) if x["open"] and x.get("now", True) and x["severity"] == "alta"), None)
         if top:

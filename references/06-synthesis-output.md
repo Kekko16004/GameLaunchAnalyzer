@@ -27,7 +27,7 @@ Costruisci in `REPORT.md` la sezione che massimizza davvero le probabilità di s
 
 1. **Le 5 leve a più alto impatto**, ordinate per punteggio **ICE** (Impatto, Confidenza, Facilità, da 1 a 10; ICE = media, mostra il calcolo), ciascuna con ore, scadenza e metrica. Alimentate da matrice di convergenza, posizionamento e pre-mortem.
 2. **Le 3 cose da NON fare ora** (es. spendere in ads prima del gate, lanciare una pagina Steam acerba, aggiungere contenuto prima di sistemare l'apertura).
-3. **Criteri di stop e di pivot**: a quali risultati misurabili (gate falliti due volte, tripwire scattati, wishlist sotto soglia a data X) conviene ridimensionare, cambiare genere o spostare l'obiettivo (da vendite a portfolio). Senza drammi: è gestione del rischio.
+3. **Criteri di stop e di pivot**: quali segnali misurabili (gate falliti due volte, tripwire scattati, risorse della prova esaurite) suggeriscono di sospendere la spesa, ripetere un test o proporre una modifica. La decisione creativa resta al proprietario.
 4. **Scenario migliore realistico**: cosa deve accadere, in ordine, perché il gioco superi le attese, e quali di quegli eventi dipendono dal team.
 5. **Verifica di capacità**: confronta le ore totali delle TODO con le ore settimanali del team nel periodo fino al lancio. Se il piano supera la capacità, taglia e dillo.
 
@@ -87,9 +87,10 @@ Alla ripresa ("continua") leggi `STATUS.md` e riparti dalla prima fase non compl
   "verdict": {"color": "verde|giallo|rosso", "provisional": false,
               "summary": "2-3 frasi, le stesse del verdetto esecutivo", "probability": "intervallo",
               "risks": ["rischio 1", {"text": "rischio 2", "issues": ["chiave-criticità"]}, "rischio 3"]},
-  "gates": {"0": {"state": "pass|fail|pending", "note": "..."}, "A": {}, "B": {}, "C": {}},
+  "gates": {"0": {"state": "pass|fail|pending", "note": "..."}, "A": {},
+            "B": {"state": "pending", "test_stage": "scheduled", "note": "Data fissata, nessun esito."}, "C": {}},
   "key_numbers": [{"label": "Comparabili analizzati", "value": "18", "note": "con dati verificati"}],
-  "intentions": {"summary": "obiettivo, capacità, budget, canali, regole di stop in 2-3 frasi",
+  "intentions": {"summary": "scelte di uscita, vincoli noti, canali e regole di stop in 2-3 frasi",
                  "decisions": [{"topic": "Budget", "choice": "solo Steam Direct", "why": "nessuna ads prima dei gate"}]},
   "product": {"kind": "beta|demo|vertical_slice|full|post_launch", "label": "Beta (Atto I)", "has_full_plan": true},
   "full_game": {"summary": "verdetto provvisorio sul gioco completo in 1-2 frasi",
@@ -101,6 +102,8 @@ Alla ripresa ("continua") leggi `STATUS.md` e riparti dalla prima fase non compl
                               "step": 23, "approx": true}]}
 }
 ```
+I gate **0/A/B/C** sono obbligatori prima della fee; una chiave o uno stato assente significa *esito non documentato*, non superato né fallito. Un gate aggiuntivo non ne sostituisce uno. Per **B**, dopo il test cambia `test_stage` in `collected`, indica in `evidence` un riferimento non nominativo al riepilogo delle osservazioni (build, date, n, misura e soglia) e in `state` l'esito: `pass`, `fail`, o `pending` se è ancora inconclusivo. Lo script legge questa dichiarazione, non certifica i dati alla fonte. Un vecchio `pass` o `fail` senza prova raccolta va verificato, non migrato per supposizione.
+
 `issue_aliases` (facoltativo, espressioni regolari senza distinzione di maiuscole) collega a una chiave di criticità i testi che la nominano con altre parole: i rischi del verdetto e le righe delle tabelle nei documenti (per esempio la matrice di convergenza di `05-focusgroup.md`). Così accanto a quel testo compare la decisione del proprietario. Un rischio può anche dire le sue chiavi direttamente (`{"text": …, "issues": [...]}`).
 `product` va scritto sempre (la pagina lo mostra in testa: "valutato come: Beta"); `full_game` solo se la Fase 10B è stata eseguita.
 `roadmap` è un'uscita **standard**: solo le tappe chiave vere (di solito test con amici o chiuso, Steam Direct pagato, pagina Coming Soon, beta gratuita su itch, demo pubblica su Steam, Steam Next Fest, Early Access, 1.0), prese da `calendar.md`, `00-intenzioni.md` e dalle decisioni del proprietario. Campi facoltativi: `end` (tappa che dura più giorni), `phase`, `state` (altrimenti si calcola da data e passi), `step` (numero del passo in `calendar.md`, per il link ai dettagli), `approx` (data stimata). **Claude la aggiorna dopo ogni decisione.** Se manca, `status_page.py` ricava le tappe da `calendar.md` per parole chiave (al meglio).
@@ -211,13 +214,13 @@ Per ogni ricerca che non hai potuto fare: obiettivo, query o URL suggeriti, a co
 
 ## `REPORT.md` (struttura rigida)
 
-1. **Verdetto esecutivo (max 15 righe)**: semaforo verde/giallo/rosso secondo i criteri in `SKILL.md`, probabilità stimata di recuperare i costi (intervallo), 3 rischi killer. Se il posizionamento non è PASS il verdetto non può essere verde.
+1. **Verdetto esecutivo (max 15 righe)**: semaforo secondo i criteri in `SKILL.md` e 3 rischi principali. Indica la probabilità di recuperare i costi solo con dati sufficienti; altrimenti «non valutabile». Se il posizionamento non è PASS il verdetto non può essere verde.
 2. **Genere, playbook, fase e confidenza per sezione.** Dichiara qui il **tipo di prodotto valutato** (beta, demo, completo…) e il metro usato. In testa al report: il **profilo decisionale** (da `00-intenzioni.md`): cosa vuole il proprietario e quali decisioni guidano il piano.
 3. **Posizionamento e differenziazione**: pitch, 3 differenziatori, esito del test contro i comparabili.
 4. **Audit dev e pilastri di genere.**
 5. **Critiche e ondate**: top critiche simulate (A) dell'ultima ondata, temi reali del genere (B), matrice di convergenza, 3 dealbreaker, metriche del panel con calibrazione dichiarata e **timeline delle ondate** (`fg/timeline.md`) se ce n'è più d'una.
 6. **Pre-mortem**: le 5 cause e la tabella dei tripwire.
-7. **Mercato, comparabili e prezzo**: scenari con "cosa deve essere vero".
+7. **Mercato, comparabili e prezzo**: nel report e nella scheda «Piano e soldi» presenta scenari aperti con intervalli, orizzonte, fonti (coorte, numerosità, data), ipotesi e segnali che li farebbero rivedere. Se mancano prove, dichiara quali fasce non sono stimabili. Una soglia di controllo o un desiderio espresso spontaneamente non è una previsione.
 8. **Capsule, hook, testi dello store e trailer**, con la **scheda copiabile delle pagine Steam e itch.io** (`store_kit.md`): ogni campo, la descrizione lunga con le posizioni di foto e GIF, tag in ordine, screenshot, capsule, impostazioni e checklist.
 9. **Piano piattaforme, Next Fest e gate** con date, e il **calendario a passi** (`calendar.md`): fasi, chi fa cosa (👤/🤖), scadenze, prossimi 5 passi per l'utente.
 10. **Creator e community**, kit del test reale. Includi un riepilogo di `creators.csv` (numero totale, tabella dei creator di priorità A con piattaforma, lingua e perché, e il rimando al file completo; la tabella intera è collassabile in `STATUS.html`).
@@ -273,7 +276,7 @@ Una volta scritti i file, rispondi in chat con un debriefing diretto, numerico e
 ```text
 [N] persone simulate in due gruppi indipendenti, critiche reali dei comparabili e strategia di lancio completa. Parti da launch/REPORT.md e launch/TODO.md; il resto è nei file 00-08 e in fg/. Nessuna delle persone simulate ha giocato: hanno giudicato da documenti, codice, screenshot e capsule. Sono opinioni simulate, non dati di mercato. Le critiche reali vengono da fonti online verificate.
 
-Intenzioni confermate: [obiettivo, capacità, budget e rischio, canali, regola di stop, in 3 righe]. Decisioni ancora aperte: [elenco o "nessuna"].
+Decisioni confermate: [scelte creative e di uscita, risorse note, canali, regola di stop, in 3 righe]. Decisioni ancora aperte: [elenco o "nessuna"].
 
 Genere e fase: [genere primario/secondario, confidenza, fase, playbook usato]. Prodotto valutato come: [beta / demo / completo, e con quale metro].
 
@@ -306,7 +309,7 @@ Steam: [pagare o non pagare adesso, motivo]. Date e cancelli:
 
 Testi dello store: pronti in launch/04b-store-copy.md (descrizioni, tag, 3 varianti di capsule, script del trailer).
 
-Prezzo e vendite: prezzo consigliato [X], sconto di lancio [Y]%. Scenario base con [Z] wishlist: [A-B] copie nell'anno 1; pessimistico [C-D]; ottimistico [E-F]. Probabilità di recuperare i costi: [intervallo].
+Prezzo e vendite: [prezzo consigliato e ragione]. Entro [orizzonte] i comparabili [fonte, n e data] suggeriscono [intervalli prudente, centrale e favorevole] se [condizioni]; [segnale] cambierebbe la stima. Non sono limiti. Se mancano prove: [non stimabile e perché]. Pareggio: [solo per le voci di costo note].
 
 Canali: [piattaforma principale per questo genere e perché]. [2 hook più forti]. In lista [X] creator verificati ([Y] su [piattaforma], [Z] nella lingua del team, oppure istruzioni per cercarli a mano). Community: [dove e con quali regole].
 
@@ -338,7 +341,7 @@ In **Rapida** e **Mirata** il debriefing si accorcia alle sole righe delle fasi 
 - [ ] La fase del progetto ha determinato la profondità dell'audit.
 - [ ] Il posizionamento è stato valutato contro i comparabili, e un eventuale FAIL/MARGINAL ha cambiato verdetto, scenari e TODO n. 1.
 - [ ] Critiche **simulate** e **reali** in due file separati; le reali hanno fonte e sono parafrasate; nessuna critica "reale" è inventata.
-- [ ] Matrice di convergenza presente e i 3 dealbreaker ne derivano.
+- [ ] Matrice di convergenza presente e i 3 dealbreaker ne derivano. Panel + recensioni di altri giochi è rischio supportato, non conferma sulla build; per ogni conferma è indicata la prova propria.
 - [ ] Pre-mortem con 5 cause, segnale misurabile, soglia e data; almeno una contraddice il verdetto positivo.
 - [ ] Testi dello store scritti (descrizioni, tag, 3 capsule, trailer) e ogni affermazione ha un'evidenza nel gioco.
 - [ ] Roster con ID stabili e giuria fissa; ogni ondata ha la preparazione completa (`wave_kit.py check` tutto ✅: mappa del gioco, schermate, 3+ run a tempi, mercato, proposte con "Riapre la decisione", domande extra) e il suo file JSON validato da `fg_waves.py`; punteggi, delta e timeline vengono dal tool; metodo di indipendenza dei gruppi dichiarato.

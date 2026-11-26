@@ -106,12 +106,12 @@ def calc(inp: dict, rates: dict, corpus_dir: str = os.path.join("launch", "_raw"
     over = {k: round(content_h * float(v["pct"]) / 100, 1) for k, v in rates["overhead"].items()}
     needed = round(content_h + sum(over.values()), 1)
     cap = inp.get("capacity") or {}
-    people, hpw, weeks = (float(cap.get(k) or 0) for k in ("people", "hours_per_week", "weeks"))
+    people, hpw, weeks = (float(cap[k]) if cap.get(k) is not None else None for k in ("people", "hours_per_week", "weeks"))
     share = float(rates.get("productive_share", 0.75))
-    available = round(people * hpw * weeks * share, 1)
+    available = None if None in (people, hpw, weeks) else round(people * hpw * weeks * share, 1)
     ratio = round(needed / available, 2) if available else None
-    word, score = verdict(ratio) if ratio is not None else ("capacità mancante", None)
-    weeks_needed = round(needed / (people * hpw * share), 1) if people and hpw else None
+    word, score = verdict(ratio) if ratio is not None else ("nessuna ora disponibile" if available == 0 else "capacità non nota", None)
+    weeks_needed = round(needed / (people * hpw * share), 1) if people and hpw and share else None
 
     comps = []
     for c in inp.get("comps") or []:
@@ -148,10 +148,13 @@ def calc(inp: dict, rates: dict, corpus_dir: str = os.path.join("launch", "_raw"
 
 
 def to_md(r: dict) -> str:
+    def value(x):
+        return "n/d" if x is None else f"{x:g}"
+
     L = ["# Scope: ore necessarie contro ore disponibili", "",
-         f"**{r['needed_h']} h necessarie contro {r['available_h']} h disponibili: rapporto {r['ratio']} → {r['verdict']}** [STIMA] "
+         f"**{r['needed_h']} h necessarie contro {value(r['available_h'])} h disponibili: rapporto {value(r['ratio'])} → {r['verdict']}** [STIMA] "
          f"(tariffe [OPINIONE] di `data/scope_rates.json`; voto suggerito per l'area scope della pagella: {r['scope_score'] or '—'}/5).", "",
-         f"Capacità: {r['capacity']['people']:g} persone × {r['capacity']['hours_per_week']:g} h/settimana × {r['capacity']['weeks']:g} settimane × "
+         f"Capacità: {value(r['capacity']['people'])} persone × {value(r['capacity']['hours_per_week'])} h/settimana × {value(r['capacity']['weeks'])} settimane × "
          f"{r['productive_share']:g} di ore produttive." + (f" Al ritmo attuale servirebbero {r['weeks_needed']} settimane." if r["weeks_needed"] else ""), "",
          "| Contenuto | Quantità | Ore l'una | Ore | Cosa comprende |", "|---|---|---|---|---|"]
     for x in r["rows"]:
@@ -180,7 +183,7 @@ def cmd_calc(a) -> int:
     elif a.md:
         with open(a.md, "w", encoding="utf-8") as f:
             f.write(to_md(r))
-        print(f"scritto {a.md}: rapporto {r['ratio']} ({r['verdict']})")
+        print(f"scritto {a.md}: {r['verdict']}" + (f" (rapporto {r['ratio']})" if r["ratio"] is not None else ""))
     else:
         print(to_md(r))
     if r["ratio"] is not None and r["ratio"] >= WARN:

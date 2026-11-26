@@ -425,7 +425,11 @@ def breakeven_uplift(copies: float, net: float, cash: float, rev_share: float, a
 
 
 def compare(econ: dict, profiles: list[dict] | None = None) -> dict:
-    net, cash = float(econ["net_per_copy"]), float((econ.get("costs") or {}).get("cash") or 0)
+    net, cash = econ.get("net_per_copy"), (econ.get("costs") or {}).get("cash")
+    currency = (econ.get("inputs") or {}).get("currency") or "$"
+    if net is None or cash is None or not econ.get("scenarios"):
+        return dict(unavailable="servono un netto per copia, spese di cassa dichiarate e uno scenario di copie",
+                    net_per_copy=net, cash=cash, currency=currency, scenarios=[], profiles=[])
     out = []
     for sc in econ.get("scenarios") or []:
         copies = float(sc["copies"])
@@ -439,7 +443,7 @@ def compare(econ: dict, profiles: list[dict] | None = None) -> dict:
                               breakeven_uplift=breakeven_uplift(copies, net, cash, d["rev_share"], d["advance"], d["recoup"])))
         out.append(dict(name=sc["name"], wishlists=sc.get("wishlists"), copies=int(copies), alone=alone, deals=deals))
     prof = [dict(d, recoup_copies=math.ceil((d["advance"] + d["recoup"]) / net) if net else None) for d in (profiles or DEAL_PROFILES)]
-    return dict(net_per_copy=net, cash=cash, scenarios=out, profiles=prof)
+    return dict(net_per_copy=net, cash=cash, currency=currency, scenarios=out, profiles=prof)
 
 
 # ---------------------------------------------------------------- report
@@ -492,11 +496,14 @@ def to_md(res: dict, cmp_: dict | None, game: dict, top: int = 15) -> str:
     unv = [r for r in rows[:top] if r["unverified"]]
     if unv:
         L += ["", "**[DA VERIFICARE]** per publisher: " + "; ".join(f"{r['name']}: {', '.join(r['unverified'][:4])}" for r in unv) + "."]
-    if cmp_:
+    if cmp_ and cmp_.get("unavailable"):
+        L += ["", f"Confronto economico non stimabile: {cmp_['unavailable']}.", ""]
+    elif cmp_:
+        cur = cmp_.get("currency") or "$"
         L += ["", "## Con o senza publisher: i nostri numeri", "",
-              f"Dal piano economico (`calc_econ.py`): netto per copia {cmp_['net_per_copy']:.2f} $, costi di cassa {fmt_money(cmp_['cash'])} $. "
-              "Profili di accordo tipici [DA VERIFICARE per contratto]: " + "; ".join(
-                  f"{d['label']}: {round(d['rev_share'] * 100)} % al publisher, anticipo {fmt_money(d['advance'])} $, spese da recuperare {fmt_money(d['recoup'])} $, "
+              f"Dal piano economico (`calc_econ.py`): netto per copia {cmp_['net_per_copy']:.2f} {cur}, costi di cassa {fmt_money(cmp_['cash'])} {cur}. "
+              "Accordi ipotetici nella valuta del piano [DA VERIFICARE per contratto]: " + "; ".join(
+                  f"{d['label']}: {round(d['rev_share'] * 100)} % al publisher, anticipo {fmt_money(d['advance'])} {cur}, spese da recuperare {fmt_money(d['recoup'])} {cur}, "
                   f"il publisher fa vendere da {d['uplift'][0]}× a {d['uplift'][1]}× [STIMA]" for d in cmp_["profiles"]) + ".", "",
               "| Scenario | Copie da soli | Da soli ti restano | " + " | ".join(f"{d['label']}: ti restano | ...serve vendere ×" for d in cmp_["profiles"]) + " |",
               "|---|---|---|" + "---|---|" * len(cmp_["profiles"])]
@@ -504,8 +511,8 @@ def to_md(res: dict, cmp_: dict | None, game: dict, top: int = 15) -> str:
             cells = []
             for d in s["deals"]:
                 be = d["breakeven_uplift"]
-                cells += [f"{fmt_money(d['income_low'])} … {fmt_money(d['income_high'])} $", "l'anticipo basta" if be == 0 else (f"{be}×" if be is not None else "?")]
-            L.append(f"| {s['name']} | {fmt_money(s['copies'])} | {fmt_money(s['alone'])} $ | " + " | ".join(cells) + " |")
+                cells += [f"{fmt_money(d['income_low'])} … {fmt_money(d['income_high'])} {cur}", "l'anticipo basta" if be == 0 else (f"{be}×" if be is not None else "?")]
+            L.append(f"| {s['name']} | {fmt_money(s['copies'])} | {fmt_money(s['alone'])} {cur} | " + " | ".join(cells) + " |")
         for d in cmp_["profiles"]:
             if d.get("advance") and d.get("recoup_copies"):
                 L.append("")

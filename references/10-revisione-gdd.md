@@ -22,11 +22,12 @@ Poi le altre insieme, con la raccomandata per prima. Sono la regola 17 (beta o c
    - **3 · Tutto in discussione**: anche genere, verbo centrale, ambientazione o pubblico, con versioni alternative del concept a confronto.
 2. **Cosa non si tocca?** (scelta multipla): genere · tema e ambientazione · stile grafico · verbo centrale · piattaforma · scope e tempi · multiplayer. Il motore è sempre intoccabile (Q0 del dev).
 3. **Il GDD descrive** la vertical slice / beta, o il gioco completo? (cambia il metro, come nella regola 17)
-4. **Obiettivo** (se non è già in `00-intenzioni.md`): vendere / portfolio o lavoro / hobby / jam. Per hobby e portfolio i criteri economici pesano poco: dillo nella pagella.
+
+Il quadrante protegge le scelte creative: non aggiungere domande su quanto vendere, guadagnare o ottenere dal progetto. Se nel registro c'è già una preferenza offerta dal proprietario, citala come contesto, non usarla per limitare i possibili esiti.
 
 Se l'utente risponde "decidi tu": livello 2, intoccabili = quelli che il GDD dichiara non negoziabili. Registra in `gdd_review.json` → `dial` (`level`, `untouchable` con le chiavi `genere`, `tema`, `stile`, `verbo`, `piattaforma`, `scope`, `multiplayer`; `owner_words` con le sue parole; `asked` = data) e una riga in `00-intenzioni.md`.
 
-Se mancano capacità e tempi (squadra, ore a settimana, data desiderata) e il GDD non li dice, chiedili in una seconda domanda breve: lo scope si giudica solo contro la capacità.
+Se la squadra vuole condividere capacità e tempi effettivi, confrontali con il lavoro da fare. Se non sono noti, stima il lavoro ma lascia la fattibilità non verificata; non presumere quante persone o ore ci siano.
 
 ## 3. I dati (in parallelo con subagenti dove puoi)
 
@@ -102,7 +103,7 @@ e una riga datata in `00-intenzioni.md` per ogni scelta. Una proposta rifiutata 
 python3 <skill>/scripts/research/gdd_review.py predictions --launch-dir launch
 ```
 
-registra ogni voto come previsione [STIMA] in `launch/predictions.json` (`predictions.py`; id `gdd-<data>-<area>`, rilanciarlo non duplica; giusta se entro un punto). Dopo l'uscita si dà lo stesso voto 1-5 con le recensioni vere (`metrics_track.py add --metric idea_<area>_real --value N`) e `predictions.py evaluate` dice quanto la revisione ci aveva preso: è il modo per tarare le revisioni successive.
+registra ogni voto come previsione [STIMA] in `launch/predictions.json` (`predictions.py`; id `gdd-<data>-<area>`, rilanciarlo non duplica; giusta se entro un punto). Dopo l'uscita si dà lo stesso voto 1-5 con le recensioni vere (`metrics_track.py add --metric idea_<area>_real --value N`) e `predictions.py eval` verifica le osservazioni del periodo pertinente. È un controllo sulla pagella GDD, non l'accuratezza del pronostico su una demo giocata alla cieca.
 
 ## 8. Passaggio al GDD
 

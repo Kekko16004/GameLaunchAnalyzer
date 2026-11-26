@@ -65,6 +65,12 @@ r = wl_track.analyse(rows, plan, dt.date(2026, 12, 3))
 st = {t["label"]: t["status"] for t in r["tripwires"]}; assert st == {"T1": "ALLARME", "T2": "IN ATTESA", "T0": "SENZA DATI"}, st
 assert any(x["level"] == "ALARM" and "cut ads" in x["text"] for x in r["alerts"]) and r["pace"].startswith("sotto")
 assert wl_track.at(rows, dt.date(2026, 10, 8)) == 200 + (520 - 200) * 7 / 14 and wl_track.at(rows, dt.date(2026, 9, 1)) is None
+scenarios = dict(start="2026-10-01", launch=rows[-1]["date"], targets={"prudente": 800, "base": 1000, "favorevole": 1500})
+day = dt.date.fromisoformat(rows[-1]["date"])
+assert wl_track.analyse(rows, scenarios, day)["pace"] == "tra 'base' e 'favorevole'"
+assert wl_track.analyse(rows, dict(scenarios, targets={"base": 1100}), day)["pace"] == "sul percorso: base"
+assert not wl_track.analyse(rows, dict(scenarios, targets={}), day)["scenarios"]
+assert "non traguardi" in wl_track.to_md(r) and "Obiettivo al lancio" not in wl_track.to_md(r)
 print("wishlist tracker ok:", st)
 
 # ---- status page: escaping, audiences

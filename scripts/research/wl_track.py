@@ -2,7 +2,7 @@
 """Wishlist tracker: record the Steamworks wishlist total once a week, compare it with the plan and raise alarms.
 
 Steam does not publish wishlists, so you type them: Steamworks > your app > Wishlist reports (total outstanding
-wishlists). The tool keeps one row per date in a CSV, compares it with the scenario targets from calc_econ.py and
+wishlists). The tool keeps one row per date in a CSV, compares it with conditional scenarios from calc_econ.py and
 with the pre-mortem tripwires, and tells you when an alarm has fired.
 
   wl_track.py add --wishlists 1840 [--date 2026-10-06] [--followers 310] [--note "Reddit post"] [--csv launch/wishlists.csv]
@@ -11,7 +11,7 @@ with the pre-mortem tripwires, and tells you when an alarm has fired.
         --event "2026-11-17:Next Fest" -o launch/_raw/wl_plan.json
   wl_track.py status [--csv ...] [--plan ...] [--today D] [--md launch/wishlist-status.md] [--json out.json]
 
-Exit code 2 when at least one ALARM is active (so a script or the skill can react). Targets are interpolated
+Exit code 2 when at least one ALARM is active (so a script or the skill can react). Scenarios are interpolated
 linearly from the first record to the scenario value at launch: a simplification [OPINIONE], real curves are
 spiky (festivals, press, launch week), so read "on pace" as a direction, not a forecast.
 """
@@ -106,8 +106,6 @@ def cmd_plan(a):
     for e in a.event or []:
         date, _, label = e.partition(":")
         plan["events"].append(dict(date=date, label=label))
-    if not plan["targets"]:
-        log("WARN no scenario targets: give --econ (calc_econ.py output) or --target name=wishlists")
     write_json(plan, a.out)
 
 
@@ -148,12 +146,17 @@ def analyse(rows: list[dict], plan: dict | None, today: dt.date) -> dict:
                                      needed_per_week=need and round(need), projected_at_launch=round(last["wishlists"] + v4 * weeks_left) if v4 is not None else None))
     if out["scenarios"]:
         ordered = sorted(out["scenarios"], key=lambda s: s["target"])
-        below = [s for s in ordered if last["wishlists"] < s["expected_today"]]
-        out["pace"] = ("sotto il percorso dello scenario più basso" if len(below) == len(ordered) else
-                       "sopra il percorso dello scenario più alto" if not below else
-                       f"tra '{ordered[len(below) - 1]['name']}' e '{ordered[len(below)]['name']}'" if below else "")
-        if len(below) == len(ordered):
+        lower = [s for s in ordered if s["expected_today"] < last["wishlists"]]
+        equal = [s["name"] for s in ordered if s["expected_today"] == last["wishlists"]]
+        if equal:
+            out["pace"] = "sul percorso: " + ", ".join(equal)
+        elif not lower:
+            out["pace"] = "sotto il percorso dello scenario più basso"
             out["alerts"].append(dict(level="ATTENZIONE", text=f"Sei {out['pace']} ({ordered[0]['name']}: attese {ordered[0]['expected_today']} oggi, hai {last['wishlists']})."))
+        elif len(lower) == len(ordered):
+            out["pace"] = "sopra il percorso dello scenario più alto"
+        else:
+            out["pace"] = f"tra '{lower[-1]['name']}' e '{ordered[len(lower)]['name']}'"
     for t in plan.get("tripwires", []):
         d = D(t["date"])
         row = dict(t, status="", value=None)
@@ -184,7 +187,8 @@ def to_md(o: dict) -> str:
         L.append(f"Lancio: {o['launch']} (tra {o['days_to_launch']} giorni). Posizione: **{o.get('pace', 'n/d')}**.")
     L += ["", "## Alert", ""] + ([f"- **{a['level']}**: {a['text']}" for a in sorted(o["alerts"], key=lambda a: ["ALARM", "ATTENZIONE", "INFO"].index(a["level"]))] or ["- Nessun alert."])
     if o["scenarios"]:
-        L += ["", "## Scenari", "", "| Scenario | Obiettivo al lancio | Atteso oggi | Tu / atteso | Servono a settimana | Proiezione a velocità attuale |", "|---|---|---|---|---|---|"]
+        L += ["", "## Scenari", "", "Traiettorie di confronto, non traguardi: i risultati possono uscire da queste fasce.", "",
+              "| Scenario | Wishlist ipotizzate al lancio | Valore sul percorso oggi | Osservato / ipotesi | Ritmo implicito a settimana | Proiezione a velocità attuale |", "|---|---|---|---|---|---|"]
         L += [f"| {s['name']} | {s['target']} | {s['expected_today']} | {s['ratio']} | {s['needed_per_week']} | {s['projected_at_launch']} |" for s in o["scenarios"]]
     if o["tripwires"]:
         L += ["", "## Tripwire del pre-mortem", "", "| Data | Segnale | Soglia | Valore | Stato |", "|---|---|---|---|---|"]
@@ -215,9 +219,9 @@ def main():
     s.add_argument("--wishlists", type=int, required=True); s.add_argument("--date"); s.add_argument("--followers", type=int)
     s.add_argument("--note", help="what happened that week (post, festival, press)"); s.add_argument("--csv", default="launch/wishlists.csv")
     s.set_defaults(fn=cmd_add)
-    p = sub.add_parser("plan", help="create the plan: launch date, scenario targets, tripwires, events")
+    p = sub.add_parser("plan", help="create the plan: launch date, optional scenarios, tripwires, events")
     p.add_argument("--launch", required=True); p.add_argument("--start", help="date the Steam page went live (default: first record)")
-    p.add_argument("--econ", help="calc_econ.py JSON: scenario wishlists become the targets"); p.add_argument("--target", action="append", help="name=wishlists (repeatable)")
+    p.add_argument("--econ", help="calc_econ.py JSON with conditional wishlist scenarios"); p.add_argument("--target", action="append", help="optional scenario name=wishlists (repeatable)")
     p.add_argument("--tripwire", action="append", help='"DATE:MIN_WISHLISTS:label[:emergency action]" (repeatable)')
     p.add_argument("--event", action="append", help='"DATE:label" (repeatable)'); p.add_argument("-o", "--out", default="launch/_raw/wl_plan.json")
     p.set_defaults(fn=cmd_plan)

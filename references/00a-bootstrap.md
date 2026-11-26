@@ -59,7 +59,7 @@ Nell'ordine che dà lo scan, fino a circa 15 file e le prime 200 righe di ciascu
 | `docs/design-review/` (`game-map.md`, `screen-map.md`, `runs.md`, `changes-since-wNN.md`), `docs/gates/plan-wNN.md` | stato attuale del gioco dopo i gate e piano dei gate: base della prossima ondata (`references/dev-link.md` §6.2, `04-focus-group.md` Passo 0) |
 | `ASSET-LEDGER.md` | licenze degli asset, dichiarazione AI di Steam, crediti: Fasi 4 e 10 |
 | `screenshots/000-index.md`, `art/reference/BOARD.md`, `docs/scene-map.md` | evidenze reali, riferimenti visivi, contenuto della scena |
-Il GDD non contiene prezzo, budget, date e capacità del team: quelli restano all'intervista.
+Se prezzo, date o capacità non sono documentati, distinguere decisioni ancora aperte e risorse private facoltative. Per il prezzo si possono proporre fasce dai comparabili; budget e ore sconosciuti restano tali. Non dedurre né richiedere un risultato commerciale.
 Con `game-developer` vale il contratto `references/dev-link.md` (leggilo se lo scan dà `dev_work` o `docs/design-review/`): chi scrive quali file, decisioni in due registri, cosa lasciare su disco dopo ogni ondata, cosa leggere dopo ogni gate. Si scrive solo in `launch/`.
 
 ## 5. Guarda la build con gli strumenti del motore (sola lettura)

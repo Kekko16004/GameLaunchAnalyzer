@@ -241,12 +241,11 @@ def numbers(root: str, db: dict, today: dt.date, wl_a: dict | None) -> list[dict
                         ref=f"Se manca: {plain(nxt.get('emergency', ''))}" if nxt.get("emergency") else "", kind=kind, verdict=verdict, meter=""))
     lw = cb.get("launch_wishlists") or {}
     base = (wlp.get("targets") or {}).get("base")
-    if base and lw.get("threshold_ok"):
+    if base is not None and lw.get("threshold_ok"):
         ok, alarm = lw["threshold_ok"], lw.get("threshold_alarm")
-        kind = "ok" if base >= ok else "bad" if alarm and base < alarm else "prog"
-        out.append(dict(label="Wishlist all'uscita (obiettivo base)", ours=n_it(base), sub=f"uscita il {fmt_date(wlp['launch'])}" if wlp.get("launch") else "",
-                        ref=f"Nei casi: sotto {n_it(alarm)} si vende pochissimo, da {n_it(ok)} in su si entra tra i più attesi", kind=kind,
-                        verdict={"ok": "Sopra la soglia dei casi", "bad": "Sotto la soglia d'allarme", "prog": "Tra allarme e soglia buona"}[kind], meter=meter(base, alarm, ok, "allarme", "soglia buona")))
+        out.append(dict(label="Wishlist all'uscita (scenario centrale)", ours=n_it(base), sub=f"uscita il {fmt_date(wlp['launch'])}" if wlp.get("launch") else "",
+                        ref=f"Riferimenti nei casi osservati: {n_it(alarm)} e {n_it(ok)} wishlist. Non sono requisiti di vendita.",
+                        kind="info", verdict="Ipotesi, non dato misurato", meter=""))
     nf = cb.get("next_fest_by_entry") or []
     entry = next((t["min_wishlists"] for t in (wlp.get("tripwires") or []) if "next fest" in t.get("label", "").lower() and "ingresso" in t.get("label", "").lower()), None)
     if nf and entry is not None:

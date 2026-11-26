@@ -51,6 +51,7 @@ assert re.search(r"TikTok</span><span class=\"spill todo\"><i aria-hidden=\"true
 # numbers against the cases, with a reading line for the meters
 assert "Descrizione Steam" in mk and "1.800 caratteri" in mk and "Sopra i successi" in mk and "Lingue della pagina" in mk and "Come i flop" in mk
 assert "Da misurare" in mk and "Prossima soglia" in mk and 'class="meter"' in mk and "Come si legge:" in mk
+assert "scenario centrale" in mk and "Ipotesi, non dato misurato" in mk and "obiettivo base" not in mk
 # flop traffic light: answers and facts from the plan, one action per item, no technical keys
 fc = mg.flop(L, mg.__dict__.get("_db") or __import__("social_content").load_db(), today, None)
 st = {x["id"]: x["status"] for x in fc["items"]}
